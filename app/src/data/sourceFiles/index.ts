@@ -1,0 +1,10 @@
+export { phb_2014_source } from './phb-2014';
+export { phb_2024_source } from './phb-2024';
+export { dmg_source } from './dmg';
+export { mm_source } from './mm';
+export { tashas_cauldron_of_everything_source } from './tashas-cauldron-of-everything';
+export { xanathars_guide_to_everything_source } from './xanathars-guide-to-everything';
+export { mordenkainens_tome_of_foes_source } from './mordenkainens-tome-of-foes';
+export { fizbans_treasury_of_dragons_source } from './fizbans-treasury-of-dragons';
+export { unearthed_arcana_source } from './unearthed-arcana';
+export { sourceFileRegistry, getSourceFileById, getSourceFilesById, getSourceBuckets, getSourceBucketsById, getSourceEntryCount } from './registry';

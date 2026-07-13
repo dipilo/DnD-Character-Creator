@@ -1,0 +1,578 @@
+{
+  "schemaVersion": "ddbcc-v1",
+  "source": {
+    "sourceId": "monstrous-compendium-vol-3-minecraft-creatures",
+    "label": "Monstrous Compendium Vol. 3: Minecraft Creatures",
+    "category": "expansion",
+    "aliases": [],
+    "origin": "parsed-html",
+    "importedAt": "2026-07-13T03:14:09.172Z",
+    "parser": "html-statblock",
+    "visibility": "private"
+  },
+  "content": {
+    "species": [],
+    "classes": [],
+    "subclasses": [],
+    "backgrounds": [],
+    "spells": [],
+    "equipment": [],
+    "feats": [],
+    "monsters": [
+      {
+        "id": "monstrous-compendium-vol-3-minecraft-creatures-blaze",
+        "name": "Blaze",
+        "description": "Blaze from the Monstrous Compendium Vol. 3: Minecraft Creatures.",
+        "size": "Medium",
+        "type": "Elemental",
+        "alignment": "Typically Neutral Evil",
+        "ac": 13,
+        "hp": {
+          "average": 75,
+          "formula": "10d8 + 30"
+        },
+        "speed": "20 ft., fly 20 ft. (vertical movement only; hover)",
+        "abilityScores": {
+          "strength": 16,
+          "dexterity": 17,
+          "constitution": 16,
+          "intelligence": 6,
+          "wisdom": 10,
+          "charisma": 7
+        },
+        "damageResistances": [
+          "bludgeoning",
+          "piercing",
+          "and slashing damage from nonmagical attacks"
+        ],
+        "damageImmunities": [
+          "fire"
+        ],
+        "conditionImmunities": [
+          "exhaustion",
+          "grappled",
+          "paralyzed",
+          "petrified",
+          "poisoned",
+          "prone",
+          "restrained"
+        ],
+        "senses": [
+          "darkvision 60 ft., passive Perception 10"
+        ],
+        "challengeRating": "5",
+        "proficiencyBonus": 3,
+        "traits": [
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-blaze-traits-1",
+            "name": "Blaze Rod",
+            "description": "When the blaze drops to 0 hit points, it disappears in a cloud of smoke and has a 50 percent chance of leaving behind a glowing rod worth 100 gp. The rod sheds dim light in a 5-foot radius. As an action, a creature can try to snap the rod, doing so with a successful DC 14 Strength check. The snapped rod releases its fiery energy in a 5-foot-radius sphere centered on itself. Each creature in that area must make a DC 14 Dexterity saving throw, taking 6 (1d12) fire damage on a failed save, or half as much damage on a successful one."
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-blaze-traits-2",
+            "name": "Heat Aura",
+            "description": "Any creature that starts its turn within 5 feet of the blaze takes 3 (1d6) fire damage."
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-blaze-traits-3",
+            "name": "Illumination",
+            "description": "The blaze sheds bright light in a 20-foot radius and dim light for an additional 20 feet."
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-blaze-traits-4",
+            "name": "Water Susceptibility",
+            "description": "The blaze takes 1 cold damage for every 5 feet it moves in water, for every gallon of water splashed on it, or whenever it starts its turn in the rain."
+          }
+        ],
+        "actions": [
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-blaze-actions-1",
+            "name": "Multiattack",
+            "description": "The blaze makes three Fiery Doom attacks."
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-blaze-actions-2",
+            "name": "Fiery Doom",
+            "description": "Melee or Ranged Spell Attack: +6 to hit; reach 5 ft. or ranged 60 ft., one target. Hit: 8 (1d10 + 3) fire damage, and the target catches fire if it’s a creature or a flammable object. Until a creature takes an action to extinguish the fire, the burning target takes 3 (1d6) fire damage at the end of each of its turns. A creeper is a green, armless creature that emerges in darkness and silently prowls the Overworld on its four short legs. Its peculiar face bears no clue of its motives, but its destructiveness makes it one of the greatest threats to both life and property in the Overworld. A creeper quietly shuffles toward Humanoid prey. When it gets close enough, it halts and begins to hiss like a burning fuse. Unless the creeper is defeated or its target gets far enough away that the creeper defuses itself, the creeper explodes a few short moments later, leaving a crater where it once stood. Creepers have an uncanny ability to appear when least expected, and few places are safe from their explosive nature. Yet creepers have one strange weakness: they fear cats and do all they can to avoid them. If a creeper is struck by lightning, rather than being harmed, it becomes charged with electrical power. In this charged state, the creeper gains a bluish aura and can explode with even greater power.",
+            "damage": "1d10+3"
+          }
+        ],
+        "source": "Monstrous Compendium Vol. 3: Minecraft Creatures",
+        "sourceId": "monstrous-compendium-vol-3-minecraft-creatures"
+      },
+      {
+        "id": "monstrous-compendium-vol-3-minecraft-creatures-ender-dragon",
+        "name": "Ender Dragon",
+        "description": "Ender Dragon from the Monstrous Compendium Vol. 3: Minecraft Creatures.",
+        "size": "Gargantuan",
+        "type": "Dragon",
+        "alignment": "Chaotic Evil",
+        "ac": 22,
+        "hp": {
+          "average": 350,
+          "formula": "20d20 + 140"
+        },
+        "speed": "30 ft., fly 120 ft.",
+        "abilityScores": {
+          "strength": 27,
+          "dexterity": 14,
+          "constitution": 25,
+          "intelligence": 10,
+          "wisdom": 15,
+          "charisma": 19
+        },
+        "savingThrows": [
+          "Con +13",
+          "Int +6",
+          "Wis +8"
+        ],
+        "skills": [
+          "Perception +14",
+          "Stealth +8"
+        ],
+        "damageResistances": [
+          "fire"
+        ],
+        "damageImmunities": [
+          "necrotic"
+        ],
+        "conditionImmunities": [
+          "charmed",
+          "frightened"
+        ],
+        "senses": [
+          "darkvision 240 ft., passive Perception 24"
+        ],
+        "languages": [
+          "Draconic"
+        ],
+        "challengeRating": "19",
+        "proficiencyBonus": 6,
+        "traits": [
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-ender-dragon-traits-1",
+            "name": "Dragon Egg",
+            "description": "When the Ender Dragon drops to 0 hit points, it radiates beams of purple light and then disappears, leaving behind an inert, jet-black dragon egg worth 5,000 gp."
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-ender-dragon-traits-2",
+            "name": "Legendary Resistance (4/Day)",
+            "description": "If the dragon fails a saving throw, it can choose to succeed instead."
+          }
+        ],
+        "actions": [
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-ender-dragon-actions-1",
+            "name": "Multiattack",
+            "description": "The dragon makes one Bite attack and uses Beating Wings."
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-ender-dragon-actions-2",
+            "name": "Bite",
+            "description": "Melee Weapon Attack: +14 to hit; reach 15 ft., one target. Hit: 18 (3d6 + 8) piercing damage plus 7 (2d6) necrotic damage.",
+            "attackBonus": 14,
+            "damage": "3d6+8"
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-ender-dragon-actions-3",
+            "name": "Beating Wings",
+            "description": "The dragon beats its great wings. Each creature within 15 feet of the dragon must succeed on a DC 21 Dexterity saving throw or take 10 (1d4 + 8) bludgeoning damage, be pushed 10 feet away from the dragon, and have the prone condition."
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-ender-dragon-actions-4",
+            "name": "Harmful Breath (Recharge 5–6)",
+            "description": "The dragon exhales putrid gas in a 60-foot cone. Each creature in that area must make a DC 21 Constitution saving throw, taking 52 (15d6) necrotic damage on a failed save, or half as much damage on a successful one. The dragon then chooses a point it can see where the cone makes contact with the ground. That point becomes the center of a 10-foot-high, 10-foot-radius cylinder of lingering gas that disappears at the start of the dragon’s next turn. Any creature that starts its turn in the cylinder takes 10 (3d6) necrotic damage. Endermen are tall, black, bipedal creatures with long, thin limbs and piercing, purple eyes. Violet particles flicker in and out of existence around them. Endermen are unnerving and enigmatic, acting in a manner that is all but impossible to interpret. Endermen seem particularly drawn to the End, where they gather in large groups. They are uncommon visitors to other dimensions, although they appear more often in pairs in such peculiar places as the warped forests of the Nether. They shun sunlight and are hurt by water, including rain. When an Enderman becomes the target of a ranged weapon or takes damage, it teleports to a safer location nearby and makes a distinctive “voop” sound at its destination. Endermen have no known predators. When a Humanoid looks directly at an Enderman, the Enderman becomes enraged, opens its mouth horrifyingly wide, and rushes to attack with its long arms. A defeated Enderman implodes and sometimes leaves behind an Ender pearl, which, when thrown, teleports the thrower to the place it lands."
+          }
+        ],
+        "source": "Monstrous Compendium Vol. 3: Minecraft Creatures",
+        "sourceId": "monstrous-compendium-vol-3-minecraft-creatures"
+      },
+      {
+        "id": "monstrous-compendium-vol-3-minecraft-creatures-enderman",
+        "name": "Enderman",
+        "description": "Enderman from the Monstrous Compendium Vol. 3: Minecraft Creatures.",
+        "size": "Medium",
+        "type": "Aberration",
+        "alignment": "Typically Chaotic Neutral",
+        "ac": 14,
+        "hp": {
+          "average": 78,
+          "formula": "12d8 + 24"
+        },
+        "speed": "40 ft.",
+        "abilityScores": {
+          "strength": 15,
+          "dexterity": 18,
+          "constitution": 15,
+          "intelligence": 10,
+          "wisdom": 18,
+          "charisma": 11
+        },
+        "savingThrows": [
+          "Str +5",
+          "Con +5"
+        ],
+        "skills": [
+          "Perception +7",
+          "Stealth +7",
+          "Survival +7"
+        ],
+        "damageResistances": [
+          "necrotic"
+        ],
+        "senses": [
+          "darkvision 60 ft., passive Perception 17"
+        ],
+        "languages": [
+          "Endspeech"
+        ],
+        "challengeRating": "6",
+        "proficiencyBonus": 3,
+        "traits": [
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-enderman-traits-1",
+            "name": "Evasive Teleportation",
+            "description": "Whenever it takes damage or is the target of a ranged attack, the Enderman can teleport, along with any equipment it is wearing or carrying, to an unoccupied space it can see within 20 feet of itself (no action required). If this effect is triggered by a ranged attack, the Enderman teleports just before the attack hits, causing the attack to miss it. This trait is suppressed while the Enderman has the incapacitated condition."
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-enderman-traits-2",
+            "name": "Implosion",
+            "description": "When the Enderman drops to 0 hit points, it dies as its body implodes. Roll a d10. On a roll of 9 or less, the Enderman leaves no remains. On a roll of 10, the Enderman leaves behind a glowing, purple orb called an Ender pearl, worth 500 gp. A creature can throw the pearl up to 60 feet; if the pearl lands in an unoccupied space big enough to contain the creature, the creature teleports to that space, along with any equipment it is wearing or carrying, and the pearl disappears."
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-enderman-traits-3",
+            "name": "Sunlight Sensitivity",
+            "description": "While in sunlight, the Enderman has disadvantage on attack rolls."
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-enderman-traits-4",
+            "name": "Water Susceptibility",
+            "description": "The Enderman takes 1 cold damage for every 5 feet it moves in water, for every gallon of water splashed on it, or whenever it starts its turn in the rain."
+          }
+        ],
+        "actions": [
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-enderman-actions-1",
+            "name": "Multiattack",
+            "description": "The Enderman makes two Slam attacks."
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-enderman-actions-2",
+            "name": "Slam",
+            "description": "Melee Weapon Attack: +7 to hit; reach 10 ft., one target. Hit: 8 (1d8 + 4) bludgeoning damage plus 9 (2d8) necrotic damage. Running through the forests of the Overworld on four legs, this gray-furred hunter is at home in the cold of the taiga. Wolves hunt in packs, roaming their territories and chasing sheep, rabbits, and foxes. Wild wolves are typically indifferent to Humanoids, neither running from nor attacking them, but a pack of wolves becomes hostile toward any creature that hurts one of the pack’s members. Wolves can be tamed by adventurers who feed and look after them. Tamed wolves follow their masters everywhere they go. Wolves instinctively regard animated skeletons as enemies and attack them without hesitation. Even tamed wolves, which obediently hold themselves back from attacking their natural prey, freely charge at skeletons unless they are commanded to sit.",
+            "attackBonus": 7,
+            "damage": "1d8+4"
+          }
+        ],
+        "source": "Monstrous Compendium Vol. 3: Minecraft Creatures",
+        "sourceId": "monstrous-compendium-vol-3-minecraft-creatures"
+      },
+      {
+        "id": "monstrous-compendium-vol-3-minecraft-creatures-wolf-of-the-overworld",
+        "name": "Wolf of the Overworld",
+        "description": "Wolf of the Overworld from the Monstrous Compendium Vol. 3: Minecraft Creatures.",
+        "size": "Medium",
+        "type": "Beast",
+        "alignment": "Unaligned",
+        "ac": 13,
+        "hp": {
+          "average": 11,
+          "formula": "2d8 + 2"
+        },
+        "speed": "40 ft.",
+        "abilityScores": {
+          "strength": 12,
+          "dexterity": 15,
+          "constitution": 12,
+          "intelligence": 3,
+          "wisdom": 12,
+          "charisma": 6
+        },
+        "skills": [
+          "Perception +5",
+          "Stealth +4"
+        ],
+        "senses": [
+          "passive Perception 15"
+        ],
+        "challengeRating": "1/4",
+        "proficiencyBonus": 2,
+        "traits": [
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-wolf-of-the-overworld-traits-1",
+            "name": "Pack Tactics",
+            "description": "The wolf has advantage on attack rolls against a creature if at least one of the wolf’s allies is within 5 feet of the creature and the ally doesn’t have the incapacitated condition."
+          }
+        ],
+        "actions": [
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-wolf-of-the-overworld-actions-1",
+            "name": "Bite",
+            "description": "Melee Weapon Attack: +4 to hit; reach 5 ft., one target. Hit: 7 (2d4 + 2) piercing damage. If the target is a creature, it must succeed on a DC 11 Strength saving throw or have the prone condition.",
+            "attackBonus": 4,
+            "damage": "2d4+2"
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-wolf-of-the-overworld-actions-2",
+            "name": "Project Lead and Designer:",
+            "description": "Christopher Perkins"
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-wolf-of-the-overworld-actions-3",
+            "name": "Art Director:",
+            "description": "Josh Herman"
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-wolf-of-the-overworld-actions-4",
+            "name": "Rules Developers:",
+            "description": "Jeremy Crawford, Dan Dillon"
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-wolf-of-the-overworld-actions-5",
+            "name": "Editor:",
+            "description": "Adrian Ng"
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-wolf-of-the-overworld-actions-6",
+            "name": "Graphic Designer:",
+            "description": "Matt Cole"
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-wolf-of-the-overworld-actions-7",
+            "name": "Illustrator:",
+            "description": "Anton Stenvall"
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-wolf-of-the-overworld-actions-8",
+            "name": "Senior Producer:",
+            "description": "Dan Tovar"
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-wolf-of-the-overworld-actions-9",
+            "name": "Producer:",
+            "description": "Gabriel Waluconis"
+          },
+          {
+            "id": "monstrous-compendium-vol-3-minecraft-creatures-wolf-of-the-overworld-actions-10",
+            "name": "Product Manager:",
+            "description": "Natalie Egan"
+          }
+        ],
+        "source": "Monstrous Compendium Vol. 3: Minecraft Creatures",
+        "sourceId": "monstrous-compendium-vol-3-minecraft-creatures"
+      }
+    ],
+    "ua": []
+  },
+  "sections": [
+    {
+      "id": "minecraft-creatures",
+      "title": "Minecraft Creatures",
+      "level": 1
+    },
+    {
+      "id": "monstrous-compendium-vol-3-minecraft-creatures",
+      "title": "Monstrous Compendium Vol. 3: Minecraft Creatures",
+      "level": 1
+    },
+    {
+      "id": "creature-summary",
+      "title": "Creature Summary",
+      "level": 2
+    },
+    {
+      "id": "creature-type-and-cr",
+      "title": "Creature Type and CR",
+      "level": 3
+    },
+    {
+      "id": "blaze",
+      "title": "Blaze",
+      "level": 3
+    },
+    {
+      "id": "creeper",
+      "title": "Creeper",
+      "level": 3
+    },
+    {
+      "id": "ender-dragon",
+      "title": "Ender Dragon",
+      "level": 3
+    },
+    {
+      "id": "enderman",
+      "title": "Enderman",
+      "level": 3
+    },
+    {
+      "id": "wolf-of-the-overworld",
+      "title": "Wolf of the Overworld",
+      "level": 3
+    },
+    {
+      "id": "credits",
+      "title": "Credits",
+      "level": 2
+    },
+    {
+      "id": "support",
+      "title": "Support",
+      "level": 5
+    },
+    {
+      "id": "about",
+      "title": "About",
+      "level": 5
+    },
+    {
+      "id": "find-us-on-social-media",
+      "title": "Find us on social media",
+      "level": 5
+    },
+    {
+      "id": "download-the-d-d-beyond-app",
+      "title": "Download the D&D Beyond App",
+      "level": 5
+    },
+    {
+      "id": "skip-to-content",
+      "title": "Skip to Content",
+      "level": 2,
+      "href": "#content"
+    },
+    {
+      "id": "d-d-beyond-basic-rules",
+      "title": "D&D Beyond Basic Rules",
+      "level": 2,
+      "href": "https://dndbeyond.com/sources/dnd/br-2024"
+    },
+    {
+      "id": "unearthed-arcana",
+      "title": "Unearthed Arcana",
+      "level": 2,
+      "href": "https://dndbeyond.com/sources/dnd/ua"
+    },
+    {
+      "id": "monstrous-compendium-vol-1-spelljammer-creatures",
+      "title": "Monstrous Compendium Vol. 1: Spelljammer Creatures",
+      "level": 2,
+      "href": "https://www.dndbeyond.com/sources/dnd/mcv1"
+    },
+    {
+      "id": "frozen-sick",
+      "title": "Frozen Sick",
+      "level": 2,
+      "href": "https://www.dndbeyond.com/sources/dnd/wa"
+    },
+    {
+      "id": "d-d-beyond-basic-rules",
+      "title": "D&D Beyond Basic Rules",
+      "level": 2,
+      "href": "https://www.dndbeyond.com/sources/dnd/br-2024"
+    },
+    {
+      "id": "basic-rules-2014",
+      "title": "Basic Rules (2014)",
+      "level": 2,
+      "href": "https://www.dndbeyond.com/sources/dnd/basic-rules-2014"
+    },
+    {
+      "id": "dungeons-dragons",
+      "title": "Dungeons & Dragons",
+      "level": 2,
+      "href": "/sources/dnd"
+    },
+    {
+      "id": "monstrous-compendium-volume-three",
+      "title": "Monstrous Compendium Volume Three",
+      "level": 2,
+      "href": "/sources/dnd/mcv3"
+    },
+    {
+      "id": "minecraft-creatures",
+      "title": "Minecraft Creatures",
+      "level": 2,
+      "href": "http://www.dndbeyond.com/sources/dnd/mcv3/minecraft-creatures"
+    },
+    {
+      "id": "introduction",
+      "title": "introduction",
+      "level": 2,
+      "href": "https://www.dndbeyond.com/sources/mm/introduction"
+    },
+    {
+      "id": "monster-manual",
+      "title": "Monster Manual",
+      "level": 2,
+      "href": "https://www.dndbeyond.com/sources/mm"
+    },
+    {
+      "id": "blaze",
+      "title": "Blaze",
+      "level": 2,
+      "href": "#Blaze"
+    },
+    {
+      "id": "creeper",
+      "title": "Creeper",
+      "level": 2,
+      "href": "#Creeper"
+    },
+    {
+      "id": "ender-dragon",
+      "title": "Ender Dragon",
+      "level": 2,
+      "href": "#EnderDragon"
+    },
+    {
+      "id": "enderman",
+      "title": "Enderman",
+      "level": 2,
+      "href": "#Enderman"
+    },
+    {
+      "id": "wolf-of-the-overworld",
+      "title": "Wolf of the Overworld",
+      "level": 2,
+      "href": "#WolfoftheOverworld"
+    },
+    {
+      "id": "player-s-handbook",
+      "title": "Player’s Handbook",
+      "level": 2,
+      "href": "https://www.dndbeyond.com/sources/phb"
+    },
+    {
+      "id": "dungeon-master-s-guide",
+      "title": "Dungeon Master’s Guide",
+      "level": 2,
+      "href": "https://www.dndbeyond.com/sources/dmg"
+    },
+    {
+      "id": "do-not-sell-or-share-my-personal-information",
+      "title": "Do Not Sell or Share My Personal Information",
+      "level": 2,
+      "href": "#"
+    },
+    {
+      "id": "your-privacy-choices",
+      "title": "Your Privacy Choices",
+      "level": 2,
+      "href": "#"
+    }
+  ],
+  "documents": [
+    {
+      "type": "html",
+      "title": "Minecraft Creatures - Monstrous Compendium Volume Three - Dungeons & Dragons - Sources - D&D Beyond",
+      "path": "C:\\Programs\\DnD Character Creator\\MonstrousCompendiumVol.3_MinecraftCreatures.txt",
+      "contentExcerpt": "``` <!DOCTYPE html> !function () { window.semaphore = window.semaphore || [], window.ketch = function () { window.semaphore.push(arguments) }; var e =",
+      "sectionCount": 35
+    }
+  ],
+  "notes": [
+    "Document structure extracted from a raw source file.",
+    "Semantic extraction mapped 4 entries into canonical content buckets."
+  ]
+}
