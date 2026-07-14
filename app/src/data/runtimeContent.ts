@@ -955,6 +955,19 @@ const mergeClassCandidates = (candidates: Class[]) => {
   }, primary);
 };
 
+// Built-in subclasses carry no source metadata of their own, so their compatibility track
+// resolves to 'shared' and they leak across rules editions (e.g. the 2014 Draconic Bloodline
+// and Wild Magic surfacing under the 2024 Sorcerer). Inherit the owning class's source before
+// any merging so track filtering can scope them to that class's edition.
+const withInheritedSubclassSources = (cls: Class): Class => ({
+  ...cls,
+  subclasses: cls.subclasses.map((subclass) => ({
+    ...subclass,
+    source: subclass.source ?? cls.source,
+    sourceId: subclass.sourceId ?? cls.sourceId
+  }))
+});
+
 const mergeClassCollections = (classes: Class[]) => {
   const grouped = classes.reduce<Map<string, Class[]>>((entries, cls) => {
     const key = getClassFallbackLookupKey(cls);
@@ -1162,7 +1175,9 @@ export const getRuntimeSubclasses = () => {
 };
 
 export const getRuntimeClasses = () => {
-  const mergedClasses = mergeClassCollections(mergeDynamicBucket(runtimeStaticClasses, 'classes'));
+  const mergedClasses = mergeClassCollections(
+    mergeDynamicBucket(runtimeStaticClasses, 'classes').map(withInheritedSubclassSources)
+  );
   const fallbackClasses = mergedClasses.reduce<Record<string, Class>>((groups, cls) => {
     const key = getClassFallbackLookupKey(cls);
     const current = groups[key];

@@ -842,7 +842,10 @@ const addFeatureLevelsFromRow = (cells, featureLevels, currentSubclassLevel) => 
       continue;
     }
 
-    featureLevels.set(normalized, level);
+    // A feature repeated on later rows (Metamagic at 2/10/17, Ability Score Improvement at
+    // 4/8/12/16) is gained at its first row; later rows only grant additional uses.
+    const existingLevel = featureLevels.get(normalized);
+    featureLevels.set(normalized, existingLevel === undefined ? level : Math.min(existingLevel, level));
   }
 
   return subclassLevel;
@@ -1786,6 +1789,14 @@ const extractBasicRulesClasses = (raw, label, sourceId) => {
       const tablePairs = extractTableLabelValuePairs(block.content);
       const paragraphPairs = extractLabeledParagraphPairs(block.content);
       const introDescription = extractParagraphTexts(block.content.split(/<h[3-6][^>]*>/i)[0]).join(' ') || summary.description;
+      // The subclass section's heading ("Sorcerer Subclass") collides with the class-table
+      // feature of the same name, and its section block would win the name dedupe and swallow
+      // the whole subclass body as the feature description. Subclasses are extracted
+      // separately, so cut the section out before collecting class features.
+      const subclassSection = getSubclassSectionForClassBlock(block, sourceId);
+      const classFeatureContent = subclassSection
+        ? block.content.slice(0, subclassSection.start) + block.content.slice(subclassSection.contentStart + subclassSection.content.length)
+        : block.content;
       const { featureLevels, subclassLevel } = extractClassFeatureLevels(block.content);
       const hitDieText = getPairValue([tablePairs, paragraphPairs], 'Hit Point Die', 'Hit Dice') || (summary.hitDieText ?? '');
       const primaryAbilityText = getPairValue([tablePairs, paragraphPairs], 'Primary Ability') || (summary.primaryAbilityText ?? '');
@@ -1820,7 +1831,7 @@ const extractBasicRulesClasses = (raw, label, sourceId) => {
         toolProficiencies: toolProficiencies.length > 0 ? toolProficiencies : undefined,
         skillChoices,
         skillCount,
-        features: extractClassFeaturesFromBlock(block.content, label, featureLevels),
+        features: extractClassFeaturesFromBlock(classFeatureContent, label, featureLevels),
         subclasses: [],
         subclassLevel,
         spellcasting: extractBasicRulesSpellcasting(block.content, classId, primaryAbility),

@@ -142,9 +142,18 @@ const getAssetPath = () => {
     return '/assets/';
   }
 
-  const resolvedBaseUrl = new URL(import.meta.env.BASE_URL || './', globalThis.window.location.href);
-  const normalizedPath = resolvedBaseUrl.pathname.replace(/\/+$/, '');
-  return normalizedPath ? `${normalizedPath}/assets/` : '/assets/';
+  // The build uses a relative Vite base ('./'), so BASE_URL resolved against
+  // location.href follows the client-side route: on /builder the dice assets would
+  // resolve to /builder/assets/… and 404. Built chunks are emitted into the same
+  // directory the public/assets tree is copied to (dist/assets), so the module URL
+  // anchors the assets independently of the route.
+  if (!import.meta.env.DEV) {
+    return new URL('./', import.meta.url).pathname;
+  }
+
+  // The dev server serves this module from /src/…, so anchor on its base URL
+  // instead, which is always absolute in dev.
+  return new URL(`${import.meta.env.BASE_URL}assets/`, globalThis.window.location.href).pathname;
 };
 
 export const DiceScene = forwardRef<DiceSceneHandle, DiceSceneProps>(function DiceScene({
