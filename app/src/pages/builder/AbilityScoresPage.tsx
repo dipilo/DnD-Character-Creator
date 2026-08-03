@@ -16,14 +16,16 @@ import {
   getAbilityScoreChoiceConfigs,
   getBackgroundAbilityScoreModeKey,
   getRulesEdition,
+  isPointBuyAllocation,
+  isStandardArrayAllocation,
+  pointBuyCosts,
+  pointBuyTotal,
   resolveBackgroundGrantedFeat,
+  standardArrayScores,
   type AbilityScoreChoiceConfig,
   type AbilityScoreChoiceMode
 } from '@/lib/builderRules';
 
-const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8];
-const POINT_BUY_COSTS: Record<number, number> = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 };
-const POINT_BUY_TOTAL = 27;
 const ABILITY_NAMES: (keyof AbilityScores)[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 const nativeSelectClassName = 'surface-select h-9 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-xs outline-none transition-colors hover:border-ring focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 dark:bg-input/80';
 type AbilityScoreMethod = 'standard' | 'point-buy' | 'rolled';
@@ -38,18 +40,6 @@ const defaultScores = (value = 10): AbilityScores => ({
   charisma: value
 });
 
-const getSortedAbilityValues = (scores?: AbilityScores) => Object.values(scores ?? {}).sort((left, right) => right - left);
-const isStandardArrayAllocation = (scores?: AbilityScores) => {
-  return JSON.stringify(getSortedAbilityValues(scores)) === JSON.stringify([...STANDARD_ARRAY].sort((left, right) => right - left));
-};
-const isPointBuyAllocation = (scores?: AbilityScores) => {
-  if (!scores) {
-    return false;
-  }
-
-  return Object.values(scores).every((score) => score >= 8 && score <= 15)
-    && Object.values(scores).reduce((total, score) => total + (POINT_BUY_COSTS[score] || 0), 0) <= POINT_BUY_TOTAL;
-};
 const getInitialScores = (method: StoredAbilityScoreMethod, storedScores?: AbilityScores): AbilityScores => {
   if (method === 'standard') {
     return storedScores && isStandardArrayAllocation(storedScores)
@@ -182,10 +172,10 @@ export function AbilityScoresPage() {
   };
 
   const calculatePointBuyUsed = (): number => {
-    return Object.values(scores).reduce((total, score) => total + (POINT_BUY_COSTS[score] || 0), 0);
+    return Object.values(scores).reduce((total, score) => total + (pointBuyCosts[score] || 0), 0);
   };
 
-  const pointBuyRemaining = POINT_BUY_TOTAL - calculatePointBuyUsed();
+  const pointBuyRemaining = pointBuyTotal - calculatePointBuyUsed();
   const isRolledMode = method === 'rolled';
 
   const rolledComplete = useMemo(
@@ -519,7 +509,7 @@ export function AbilityScoresPage() {
           </CardHeader>
           <CardContent>
             <p className="mb-4 text-sm text-muted-foreground">
-              Each number may be used once: {STANDARD_ARRAY.join(', ')}
+              Each number may be used once: {standardArrayScores.join(', ')}
             </p>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {ABILITY_NAMES.map((ability) => {
@@ -536,7 +526,7 @@ export function AbilityScoresPage() {
                       onChange={(e) => handleScoreChange(ability, Number.parseInt(e.target.value, 10))}
                       className={nativeSelectClassName}
                     >
-                      {STANDARD_ARRAY.map((val) => (
+                      {standardArrayScores.map((val) => (
                         <option
                           key={val}
                           value={val}
@@ -583,7 +573,7 @@ export function AbilityScoresPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleScoreChange(ability, Math.min(15, scores[ability] + 1))}
-                      disabled={scores[ability] >= 15 || pointBuyRemaining < (POINT_BUY_COSTS[scores[ability] + 1] - POINT_BUY_COSTS[scores[ability]])}
+                      disabled={scores[ability] >= 15 || pointBuyRemaining < (pointBuyCosts[scores[ability] + 1] - pointBuyCosts[scores[ability]])}
                     >
                       +
                     </Button>

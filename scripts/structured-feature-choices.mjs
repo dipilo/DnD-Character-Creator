@@ -106,8 +106,14 @@ const mergeFeatureOptions = (...collections) => {
   return Array.from(merged.values()).sort((left, right) => left.name.localeCompare(right.name));
 };
 
+// Prerequisites are written both ways: "9th level" and "12th-level warlock". Requiring
+// whitespace before the noun missed every hyphenated form, so those options (Bond of the
+// Talisman, Far Scribe, Undying Servitude, ...) carried no minimum level and stayed selectable
+// at level 1.
+const minimumLevelPattern = /\b(\d+)(?:st|nd|rd|th)?\+?[\s-]?(?:level|warlock|sorcerer|fighter)\b/i;
+
 const parseMinimumLevel = (text) => {
-  const match = /(?:level\s+)?(\d+)(?:st|nd|rd|th)?\+?\s*(?:level|warlock|sorcerer|fighter)/i.exec(stripTags(text));
+  const match = minimumLevelPattern.exec(stripTags(text));
   return match ? Number(match[1]) : undefined;
 };
 
@@ -129,7 +135,9 @@ const parseFeatureOptionPrerequisites = (raw, text) => {
     .filter((entry) => entry.href.startsWith('#'))
     .map((entry) => toOptionId(entry.text));
   const extraRequiredOptions = [];
-  const pactMatch = prerequisiteText.match(/Pact of the (Blade|Chain|Tome)/gi) ?? [];
+  // Talisman is a Tasha's Pact Boon option, so it belongs here alongside the three core boons —
+  // without it the talisman invocations carried no pact requirement at all.
+  const pactMatch = prerequisiteText.match(/Pact of the (Blade|Chain|Tome|Talisman)/gi) ?? [];
   pactMatch.forEach((entry) => {
     extraRequiredOptions.push(toOptionId(entry));
   });
@@ -184,7 +192,8 @@ const extractNamedBattleMasterManeuvers = (raw) => {
 const documentChoicePoolConfigs = {
   'basic-rules-2014': {
     metamagic: { sectionTitle: 'Metamagic', sectionLevel: 3, optionLevel: 4 },
-    eldritchInvocations: { sectionTitle: 'Eldritch Invocations', sectionLevel: 2, optionLevel: 4 }
+    eldritchInvocations: { sectionTitle: 'Eldritch Invocations', sectionLevel: 2, optionLevel: 4 },
+    pactBoons: { sectionTitle: 'Pact Boon', sectionLevel: 3, optionLevel: 4 }
   },
   'basic-rules-2024': {
     metamagic: { sectionTitle: 'Metamagic Options', sectionLevel: 4, optionLevel: 5 },
@@ -193,7 +202,8 @@ const documentChoicePoolConfigs = {
   tashas: {
     metamagic: { sectionTitle: 'Metamagic Options', sectionLevel: 3, optionLevel: 4 },
     eldritchInvocations: { sectionTitle: 'Eldritch Invocation Options', sectionLevel: 3, optionLevel: 4 },
-    maneuverOptions: { sectionTitle: 'Maneuver Options', sectionLevel: 2, optionLevel: 3 }
+    maneuverOptions: { sectionTitle: 'Maneuver Options', sectionLevel: 2, optionLevel: 3 },
+    pactBoons: { sectionTitle: 'Pact Boon Option', sectionLevel: 3, optionLevel: 4 }
   }
 };
 
@@ -314,6 +324,7 @@ const buildExtractedChoicePools = async (pack, rawDocument) => {
   const localMetamagicOptions = extractFeatureOptionsFromSection(localRaw, localConfig.metamagic);
   const localInvocationOptions = extractFeatureOptionsFromSection(localRaw, localConfig.eldritchInvocations);
   const localTashaManeuvers = extractFeatureOptionsFromSection(localRaw, localConfig.maneuverOptions);
+  const localPactBoonOptions = extractFeatureOptionsFromSection(localRaw, localConfig.pactBoons);
 
   let tashasRaw = null;
   if (sourceId === 'tashas') {
@@ -325,6 +336,7 @@ const buildExtractedChoicePools = async (pack, rawDocument) => {
   const tashasMetamagicOptions = extractFeatureOptionsFromSection(tashasRaw, tashasConfig.metamagic);
   const tashasInvocationOptions = extractFeatureOptionsFromSection(tashasRaw, tashasConfig.eldritchInvocations);
   const tashasManeuverAdditions = extractFeatureOptionsFromSection(tashasRaw, tashasConfig.maneuverOptions);
+  const tashasPactBoonOptions = extractFeatureOptionsFromSection(tashasRaw, tashasConfig.pactBoons);
   const baseBattleMasterNames = extractNamedBattleMasterManeuvers(tashasRaw)
     .filter((name) => !tashasManeuverAdditions.some((option) => normalizeIdentifier(option.name) === normalizeIdentifier(name)))
     .map((name) => createFeatureOption(name, 'Battle Master maneuver option.'));
@@ -337,6 +349,12 @@ const buildExtractedChoicePools = async (pack, rawDocument) => {
     eldritchInvocationOptions: edition === '2014'
       ? mergeFeatureOptions(localInvocationOptions, tashasInvocationOptions)
       : localInvocationOptions,
+    // Pact of the Talisman lives in Tasha's, and the talisman invocations require it, so the
+    // 2014 boon pool has to include the supplement's option or those invocations can never
+    // become selectable.
+    pactBoonOptions: edition === '2014'
+      ? mergeFeatureOptions(localPactBoonOptions, tashasPactBoonOptions)
+      : localPactBoonOptions,
     battleMasterManeuverOptions: mergeFeatureOptions(baseBattleMasterNames, localTashaManeuvers, tashasManeuverAdditions)
   };
 };
@@ -366,10 +384,13 @@ const enrichClassEntry = (entry, extractedPools) => {
   if (classKey === 'warlock' && extractedPools.eldritchInvocationOptions.length > 0) {
     const levels = extractedPools.edition === '2024' ? [2, 5, 7, 9, 12, 15, 18] : [5, 7, 9, 12, 15, 18];
     const baseChooseCount = extractedPools.edition === '2024' ? 1 : 2;
+    const withPactBoons = extractedPools.pactBoonOptions.length > 0
+      ? applyFeatureChoice(entry.features, 'pact boon', { chooseCount: 1, options: extractedPools.pactBoonOptions })
+      : entry.features;
     return {
       ...entry,
       features: addGrantFeatures(
-        applyFeatureChoice(entry.features, 'eldritch invocations', { chooseCount: baseChooseCount, options: extractedPools.eldritchInvocationOptions }),
+        applyFeatureChoice(withPactBoons, 'eldritch invocations', { chooseCount: baseChooseCount, options: extractedPools.eldritchInvocationOptions }),
         levels.map((level) => createGrantFeature(
           `eldritch-invocations-additional-${level}`,
           'Additional Eldritch Invocation',
@@ -450,14 +471,21 @@ const appendTashasSupplements = (pack, extractedPools) => {
     }));
   }
 
-  if (extractedPools.eldritchInvocationOptions.length > 0) {
+  if (extractedPools.eldritchInvocationOptions.length > 0 || extractedPools.pactBoonOptions.length > 0) {
     classSupplements.push(emptyClassSupplement({
       id: 'tashas-warlock-choice-pool-supplement',
       name: 'Warlock',
-      description: 'Source-derived Eldritch Invocation option supplement.',
+      description: 'Source-derived Eldritch Invocation and Pact Boon option supplement.',
       source,
       sourceId,
-      features: [createGrantFeature('tashas-eldritch-invocation-pool', 'Eldritch Invocations', 'Additional Eldritch Invocation options become available from this source.', 2, source, 2, extractedPools.eldritchInvocationOptions)]
+      features: [
+        ...(extractedPools.eldritchInvocationOptions.length > 0
+          ? [createGrantFeature('tashas-eldritch-invocation-pool', 'Eldritch Invocations', 'Additional Eldritch Invocation options become available from this source.', 2, source, 2, extractedPools.eldritchInvocationOptions)]
+          : []),
+        ...(extractedPools.pactBoonOptions.length > 0
+          ? [createGrantFeature('tashas-pact-boon-pool', 'Pact Boon', 'Additional Pact Boon options become available from this source.', 3, source, 1, extractedPools.pactBoonOptions)]
+          : [])
+      ]
     }));
   }
 

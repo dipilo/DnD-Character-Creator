@@ -56,7 +56,9 @@ export function SpeciesDetails() {
     .filter((feature) => feature.name.trim() || feature.description.trim());
   const visibleLanguages = species.languages.filter((entry) => entry && !isChoicePlaceholderLabel(entry));
   const languageChoiceCount = species.languages.filter((entry) => isChoicePlaceholderLabel(entry)).length;
-  const visibleProficiencies = [...(species.proficiencies ?? []), ...(selectedVariantData?.proficiencies ?? [])];
+  // "One skill of choice" is the Skills feature restated; that feature already renders a selector.
+  const visibleProficiencies = [...(species.proficiencies ?? []), ...(selectedVariantData?.proficiencies ?? [])]
+    .filter((entry) => !isChoicePlaceholderLabel(entry.name));
   const availableLanguageOptions = Array.from(new Set(defaultLanguageOptions)).sort((left, right) => left.localeCompare(right));
   const speciesLanguageSlotIds = Array.from(
     { length: languageChoiceCount },
@@ -345,7 +347,9 @@ export function SpeciesDetails() {
                             variant="secondary"
                             className="text-xs"
                           >
-                            {asi.ability === 'choose' ? `Choose (+${asi.amount})` : `${asi.ability.slice(0, 3).toUpperCase()} +${asi.amount}`}
+                            {asi.ability === 'choose'
+                              ? `Choose ${asi.chooseCount ?? 1} (+${asi.amount})`
+                              : `${asi.ability.slice(0, 3).toUpperCase()} +${asi.amount}`}
                           </Badge>
                         ))}
                       </div>

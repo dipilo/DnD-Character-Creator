@@ -9,8 +9,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { Search, Shield } from 'lucide-react';
 import { toast } from 'sonner';
+import type { Feat } from '@/types/dnd';
 import {
   getClassFeatSelectionSources,
   getAdditionalFeatSelectionLimit,
@@ -99,23 +101,42 @@ const getFeatCategory = (feat: { name: string; sourceId?: string; features?: Arr
   return 'general';
 };
 
-const formatFeatPrerequisites = (feat: { prerequisites?: { race?: string[]; class?: string[]; level?: number } }) => {
-  if (!feat.prerequisites) {
+const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+
+// The structured fields only ever capture part of a prerequisite line (Grappler's "Strength 13
+// or higher" lands in `ability`, Eldritch Adept's "Spellcasting or Pact Magic feature" in
+// `pactMagic`), so every populated field is reported, and the source's own text is the fallback.
+const formatFeatPrerequisites = (feat: Feat) => {
+  const prerequisites = feat.prerequisites;
+  if (!prerequisites) {
     return 'No prerequisites listed';
   }
 
   const parts: string[] = [];
-  if (feat.prerequisites.race?.length) {
-    parts.push(`Race: ${feat.prerequisites.race.join(', ')}`);
+  Object.entries(prerequisites.ability ?? {}).forEach(([ability, score]) => {
+    parts.push(`${capitalize(ability)} ${score}+`);
+  });
+  if (prerequisites.race?.length) {
+    parts.push(`Race: ${prerequisites.race.join(', ')}`);
   }
-  if (feat.prerequisites.class?.length) {
-    parts.push(`Class: ${feat.prerequisites.class.join(', ')}`);
+  if (prerequisites.class?.length) {
+    parts.push(`Class: ${prerequisites.class.join(', ')}`);
   }
-  if (feat.prerequisites.level) {
-    parts.push(`Level ${feat.prerequisites.level}+`);
+  if (prerequisites.level) {
+    parts.push(`Level ${prerequisites.level}+`);
+  }
+  if (prerequisites.spellcasting) {
+    parts.push('Spellcasting feature');
+  }
+  if (prerequisites.pactMagic) {
+    parts.push('Pact Magic feature');
   }
 
-  return parts.join(' • ') || 'No prerequisites listed';
+  if (parts.length > 0) {
+    return `Prerequisite: ${parts.join(' • ')}`;
+  }
+
+  return prerequisites.text ? `Prerequisite: ${prerequisites.text}` : 'No prerequisites listed';
 };
 
 const EMPTY_SOURCE_IDS: string[] = [];
@@ -379,7 +400,35 @@ export function FeatsSelectionPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3 pt-0">
-                  <p className="line-clamp-3 text-sm text-muted-foreground">{feat.description}</p>
+                  {feat.description ? (
+                    <p className="text-sm text-muted-foreground"><ContentReferenceText text={feat.description} /></p>
+                  ) : null}
+                  {/* Most feats print a preamble ("You gain the following benefits:") and put the
+                      actual benefits in a bullet list, which the card used to drop entirely. */}
+                  {feat.features.length > 0 ? (
+                    <ul className="space-y-1 text-sm text-muted-foreground">
+                      {feat.features.map((feature) => (
+                        <li key={feature.id}>
+                          • {feature.name ? <span className="font-medium text-foreground">{feature.name}: </span> : null}
+                          <ContentReferenceText text={feature.description} />
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {feat.abilityScoreIncreases?.length ? (
+                    <div className="flex flex-wrap gap-1">
+                      {feat.abilityScoreIncreases.map((increase) => (
+                        <Badge key={`${feat.id}-${increase.ability}-${increase.amount}`} variant="secondary">
+                          {increase.ability === 'choose'
+                            ? `+${increase.amount} to ${increase.chooseCount ?? 1} of your choice`
+                            : `${capitalize(increase.ability)} +${increase.amount}`}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : null}
+                  {feat.description || feat.features.length > 0 ? null : (
+                    <p className="text-sm text-muted-foreground">No description was extracted for this feat from its source.</p>
+                  )}
                   <div className="text-xs text-muted-foreground">{formatFeatPrerequisites(feat)}</div>
                   {disabledReason ? <div className="text-xs text-amber-600">{disabledReason}</div> : null}
                   {shouldShowNoPicksNotice ? (

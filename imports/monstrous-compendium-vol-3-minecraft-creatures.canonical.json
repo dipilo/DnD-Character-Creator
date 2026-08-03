@@ -3,10 +3,10 @@
   "source": {
     "sourceId": "monstrous-compendium-vol-3-minecraft-creatures",
     "label": "Monstrous Compendium Vol. 3: Minecraft Creatures",
-    "category": "expansion",
+    "category": "supplement",
     "aliases": [],
     "origin": "parsed-html",
-    "importedAt": "2026-07-13T23:28:38.573Z",
+    "importedAt": "2026-08-03T09:34:44.348Z",
     "parser": "html-statblock",
     "visibility": "private"
   },

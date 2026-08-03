@@ -29,7 +29,8 @@ const builderSteps = [
 export function CharacterBuilderPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { resetBuilder, builderState, updateBuilderCharacter } = useCharacterStore();
+  const { resetBuilder, builderState, getCharacter, updateBuilderCharacter } = useCharacterStore();
+  const editedCharacter = builderState.editingCharacterId ? getCharacter(builderState.editingCharacterId) : undefined;
   const [classLevelDrafts, setClassLevelDrafts] = useState<Record<string, string>>({});
   const isAbilityScoresRoute = location.pathname.startsWith('/builder/ability-scores');
   const isSubclassRoute = location.pathname.startsWith('/builder/subclass');
@@ -132,6 +133,13 @@ export function CharacterBuilderPage() {
     });
   };
 
+  const handleResetBuilder = () => {
+    resetBuilder();
+    if (editedCharacter) {
+      navigate(`/character/${editedCharacter.id}`);
+    }
+  };
+
   const isFirstStep = currentStepIndex <= 0;
   const isLastStep = currentStepIndex === builderSteps.length - 1;
   const nextButtonLabel = classDetailTabs && currentDetailTabIndex >= 0 && currentDetailTabIndex < classDetailTabs.length - 1
@@ -141,6 +149,10 @@ export function CharacterBuilderPage() {
     ? classDetailTabLabels[classDetailTabs[currentDetailTabIndex - 1] as keyof typeof classDetailTabLabels]
     : 'Back';
   const shellClassName = isAbilityScoresRoute ? 'mx-auto w-full max-w-6xl px-4 md:px-6' : '';
+  const builderSubtitle = editedCharacter
+    ? `Editing ${editedCharacter.name} — changes are saved from the Review step`
+    : 'Create your D&D 5e character step by step';
+  const resetButtonLabel = editedCharacter ? 'Discard Changes' : 'Start Over';
 
   return (
     <div className={isAbilityScoresRoute ? 'flex w-full flex-col space-y-6 py-6' : 'mx-auto flex w-full max-w-6xl flex-col space-y-6'}>
@@ -149,11 +161,11 @@ export function CharacterBuilderPage() {
           <div>
             <h1 className="text-3xl font-bold">Character Builder</h1>
             <p className="text-muted-foreground">
-              Create your D&D 5e character step by step
+              {builderSubtitle}
             </p>
           </div>
-          <Button variant="outline" onClick={resetBuilder} className="w-fit">
-            Start Over
+          <Button variant="outline" onClick={handleResetBuilder} className="w-fit">
+            {resetButtonLabel}
           </Button>
         </div>
       </div>

@@ -58,6 +58,16 @@ const choosePreferredText = (primary?: string, fallback?: string) => {
 };
 const choosePreferredArray = <T,>(primary?: T[], fallback?: T[]) => (primary && primary.length > 0 ? primary : (fallback ?? []));
 const choosePreferredNumber = (primary?: number, fallback?: number) => primary ?? fallback;
+// Counts are "unset" at 0, not at undefined: a source pack that parsed no skill choices reports
+// `skillCount: 0`, and `??` happily keeps that zero, which left the merged class offering
+// "Choose 0 from" a full skill list. Prefer the first positive value instead.
+const choosePreferredCount = (primary?: number, fallback?: number) => {
+  if (primary && primary > 0) {
+    return primary;
+  }
+
+  return (fallback && fallback > 0) ? fallback : (primary ?? fallback ?? 0);
+};
 const normalizeFeatureName = (value: string) => normalizeIdentifier(value).replaceAll(/\s*\([^)]*\)/g, '').trim();
 const chromeNoisePatterns = [
   /\/\/\s*<!\[CDATA\[[\s\S]*$/i,
@@ -923,6 +933,19 @@ const enrichClass = (primary: Class, fallback?: Class): Class => {
   return sanitizeClass(applyClassFeatureChoiceSupplements(applyOptionalFeatureSupplements(enriched)));
 };
 
+// Which candidate wins `primary` depends on how much a source pack happened to parse, so letting
+// it decide the merged id makes class ids move whenever the importer improves — breaking saved
+// characters and bookmarked /builder/class/<id> URLs. Built-in ids are the stable ones, so they
+// name the merged class whenever a built-in printing exists.
+const getStableClassId = (candidates: Class[]) => {
+  const builtIn = candidates.find((candidate) => !candidate.sourceId);
+  if (builtIn) {
+    return builtIn.id;
+  }
+
+  return [...candidates].sort((left, right) => left.id.localeCompare(right.id))[0].id;
+};
+
 const mergeClassCandidates = (candidates: Class[]) => {
   const primary = candidates.reduce((best, candidate) => {
     if (!best || getClassFallbackScore(candidate) > getClassFallbackScore(best)) {
@@ -931,8 +954,9 @@ const mergeClassCandidates = (candidates: Class[]) => {
 
     return best;
   }, undefined as Class | undefined) ?? candidates[0];
+  const stableId = getStableClassId(candidates);
 
-  return candidates.reduce((current, candidate) => {
+  const merged = candidates.reduce((current, candidate) => {
     if (candidate.id === primary.id) {
       return current;
     }
@@ -944,15 +968,17 @@ const mergeClassCandidates = (candidates: Class[]) => {
       weaponProficiencies: choosePreferredArray(current.weaponProficiencies, candidate.weaponProficiencies),
       toolProficiencies: choosePreferredArray(current.toolProficiencies, candidate.toolProficiencies),
       skillChoices: choosePreferredArray(current.skillChoices, candidate.skillChoices),
-      skillCount: choosePreferredNumber(current.skillCount, candidate.skillCount) ?? 0,
+      skillCount: choosePreferredCount(current.skillCount, candidate.skillCount),
       features: mergeFeatureCollections(current.features, candidate.features),
       subclasses: mergeCollectionsById(current.subclasses, candidate.subclasses),
-      subclassLevel: choosePreferredNumber(current.subclassLevel, candidate.subclassLevel) ?? current.subclassLevel,
+      subclassLevel: choosePreferredCount(current.subclassLevel, candidate.subclassLevel),
       spellcasting: current.spellcasting ?? candidate.spellcasting,
       equipmentOptions: choosePreferredArray(current.equipmentOptions, candidate.equipmentOptions),
       startingGold: choosePreferredNumber(current.startingGold, candidate.startingGold)
     } satisfies Class;
   }, primary);
+
+  return { ...merged, id: stableId } satisfies Class;
 };
 
 // Built-in subclasses carry no source metadata of their own, so their compatibility track
@@ -1011,6 +1037,7 @@ const enrichEquipment = (primary: Equipment, fallback?: Equipment): Equipment =>
   source: sanitizeImportedText(primary.source) ?? primary.source,
   weaponCategory: primary.weaponCategory ?? fallback?.weaponCategory,
   weaponType: primary.weaponType ?? fallback?.weaponType,
+  toolCategory: primary.toolCategory ?? fallback?.toolCategory,
   damage: primary.damage ?? fallback?.damage,
   damageType: primary.damageType ?? fallback?.damageType,
   properties: choosePreferredArray(primary.properties, fallback?.properties),
@@ -1235,7 +1262,24 @@ export const getRuntimeSpeciesVariant = (speciesId: string, variantId: string) =
   return getRuntimeSpeciesById(speciesId)?.variants?.find((variant) => variant.id === variantId);
 };
 
-export const getRuntimeClassById = (id: string) => getRuntimeClasses().find((entry) => entry.id === id);
+// Characters store a class id, and merged class ids can move as source packs improve. Resolve a
+// stored id canonically (name plus the edition its prefix implies) so an older id still opens the
+// same class instead of dropping the character's class entirely.
+const getEditionFromClassId = (id: string) => (/^(basic-rules|phb)-2024-/.test(id) ? '2024' : '2014');
+
+export const getRuntimeClassById = (id: string) => {
+  const runtimeClasses = getRuntimeClasses();
+  const exactMatch = runtimeClasses.find((entry) => entry.id === id);
+  if (exactMatch) {
+    return exactMatch;
+  }
+
+  const canonicalKey = getCanonicalClassKey(id);
+  const edition = getEditionFromClassId(id);
+  return runtimeClasses.find((entry) => {
+    return getClassKeyFromClass(entry) === canonicalKey && getRulesEdition(entry.sourceId, entry.source) === edition;
+  });
+};
 
 export const getRuntimeSubclass = (classId: string, subclassId: string) => {
   return getRuntimeClassById(classId)?.subclasses.find((entry) => entry.id === subclassId);

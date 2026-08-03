@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { applyAbilityScoreBonuses, deriveAbilityScoreBonuses, deriveCharacterHitPoints, resolveBackgroundGrantedFeat } from '@/lib/builderRules';
+import {
+  applyAbilityScoreBonuses,
+  deriveAbilityScoreBonuses,
+  deriveCharacterHitPoints,
+  extractSelectedProficiencies,
+  resolveAbilityScoreEntryState,
+  resolveBackgroundGrantedFeat,
+  resolveCharacterClasses
+} from '@/lib/builderRules';
 import type { Character, CharacterSummary, BuilderState, BuilderStep, AbilityScores } from '@/types/dnd';
 
 interface CharacterState {
@@ -20,6 +28,7 @@ interface CharacterState {
   setBuilderStep: (step: BuilderStep) => void;
   updateBuilderState: (updates: Partial<BuilderState>) => void;
   updateBuilderCharacter: (updates: Partial<Character>) => void;
+  loadCharacterIntoBuilder: (id: string) => boolean;
   resetBuilder: () => void;
   
   // Dark mode
@@ -171,6 +180,49 @@ export const useCharacterStore = create<CharacterState>()(
         });
       },
 
+      loadCharacterIntoBuilder: (id) => {
+        const character = get().characters.find((entry) => entry.id === id);
+        if (!character) {
+          return false;
+        }
+
+        const species = character.speciesId ? getRuntimeSpeciesById(character.speciesId) : undefined;
+        const variant = character.speciesId && character.variantId
+          ? getRuntimeSpeciesVariant(character.speciesId, character.variantId)
+          : undefined;
+        const background = character.backgroundId ? getRuntimeBackgroundById(character.backgroundId) : undefined;
+        const resolvedClasses = resolveCharacterClasses({
+          classes: character.classes ?? [],
+          getClassById: getRuntimeClassById,
+          getSubclassById: getRuntimeSubclass
+        });
+        const abilityScoreEntry = resolveAbilityScoreEntryState(character);
+
+        set({
+          builderState: {
+            ...initialBuilderState,
+            currentStep: 'review',
+            editingCharacterId: character.id,
+            character: {
+              ...character,
+              // The sheet stores merged proficiencies; the builder needs the player's own picks.
+              proficiencies: extractSelectedProficiencies({
+                character,
+                resolvedClasses,
+                background,
+                species,
+                variant
+              })
+            },
+            abilityScoreMethod: abilityScoreEntry.abilityScoreMethod,
+            rolledScores: abilityScoreEntry.rolledScores,
+            rolledScoreAssignments: abilityScoreEntry.rolledScoreAssignments
+          }
+        });
+
+        return true;
+      },
+
       resetBuilder: () => {
         set({ builderState: initialBuilderState });
       },
@@ -199,7 +251,8 @@ import {
   getRuntimeFeatById,
   getRuntimeFeats,
   getRuntimeSpeciesById,
-  getRuntimeSpeciesVariant
+  getRuntimeSpeciesVariant,
+  getRuntimeSubclass
 } from '@/data';
 
 export const useCharacterSummaries = (): CharacterSummary[] => {

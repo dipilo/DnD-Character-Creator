@@ -7,9 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ContentReferenceText } from '@/components/ContentReferenceText';
+import { ToolProficiencyChoices } from '@/components/builder/ToolProficiencyChoices';
 import { ArrowLeft, Check } from 'lucide-react';
 import { toast } from 'sonner';
-import { defaultLanguageOptions, getRulesEdition, resolveBackgroundGrantedFeat } from '@/lib/builderRules';
+import { defaultLanguageOptions, getRulesEdition, getToolChoiceIdPrefix, resolveBackgroundGrantedFeat } from '@/lib/builderRules';
 
 const formatEquipmentOptionLabel = (item: { name: string; count?: number }) => {
   const prefix = item.count ? `${item.count} ` : '';
@@ -258,10 +259,13 @@ export function BackgroundDetails() {
                   <Separator />
                   <div>
                     <span className="text-muted-foreground">Tool Proficiencies</span>
-                    <div className="mt-1 flex flex-wrap gap-1">
-                      {background.toolProficiencies.map((tool) => (
-                        <Badge key={tool} variant="outline"><ContentReferenceText text={tool} /></Badge>
-                      ))}
+                    <div className="mt-1">
+                      <ToolProficiencyChoices
+                        labels={background.toolProficiencies}
+                        idPrefix={getToolChoiceIdPrefix('background', background.id)}
+                        disabled={!isSelected}
+                        disabledHint="Select this background first to lock in its tool choices."
+                      />
                     </div>
                   </div>
                 </>

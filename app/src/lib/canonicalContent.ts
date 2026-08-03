@@ -91,7 +91,9 @@ const abilityScoreIncreaseSchema: z.ZodType<AbilityScoreIncrease> = z.object({
 
 const featureSchema: z.ZodType<Feature> = z.object({
   id: z.string().min(1),
-  name: z.string().min(1),
+  // Feat benefits are often unnamed bullets in the source; inventing "<Feat> Benefit 1" for them
+  // only adds noise, so a nameless feature is valid as long as it carries a description.
+  name: z.string(),
   description: z.string().min(1),
   level: z.number().int().nonnegative(),
   source: z.string().min(1),
@@ -267,6 +269,7 @@ export const equipmentSchema: z.ZodType<Equipment> = z.object({
   description: z.string().optional(),
   weaponCategory: z.enum(['simple', 'martial']).optional(),
   weaponType: z.enum(['melee', 'ranged']).optional(),
+  toolCategory: z.string().min(1).optional(),
   damage: z.string().optional(),
   damageType: z.string().optional(),
   properties: z.array(z.string().min(1)).optional(),

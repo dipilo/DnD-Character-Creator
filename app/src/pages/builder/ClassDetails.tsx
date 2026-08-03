@@ -9,10 +9,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FeatureOptionSelector } from '@/components/builder/FeatureOptionSelector';
+import { ToolProficiencyChoices } from '@/components/builder/ToolProficiencyChoices';
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { ArrowLeft, Check, Shield, Sword, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { canMixClassEditions, getRulesEditionLabel, sortFeaturesByLevel, type SelectedClassWithLevel } from '@/lib/builderRules';
+import { canMixClassEditions, getRulesEditionLabel, getToolChoiceIdPrefix, sortFeaturesByLevel, type SelectedClassWithLevel } from '@/lib/builderRules';
 import { getDescriptionPreview } from '@/lib/contentPresentation';
 import { getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
 
@@ -38,9 +39,15 @@ export function ClassDetails() {
   const { builderState, updateBuilderCharacter } = useCharacterStore();
 
   const cls = classId ? getRuntimeClassById(classId) : undefined;
-  const classEntry = builderState.character?.classes?.find((entry) => entry.classId === classId);
+  // The character stores whichever class id was current when it was saved, and the URL carries
+  // whichever id the class list is showing now. Matching on the raw id alone silently missed the
+  // entry, so the page fell back to level 1 and showed only 1st-level features next to a
+  // Subclasses tab that lists every level — resolve through the class the id actually points at.
+  const classEntry = builderState.character?.classes?.find((entry) => {
+    return entry.classId === classId || (cls && getRuntimeClassById(entry.classId)?.id === cls.id);
+  });
   const isSelected = !!classEntry;
-  const selectedSubclass = classEntry?.subclassId ? getRuntimeSubclass(classId ?? '', classEntry.subclassId) : undefined;
+  const selectedSubclass = classEntry?.subclassId ? getRuntimeSubclass(cls?.id ?? '', classEntry.subclassId) : undefined;
   const characterLevel = classEntry?.level || 1;
   const selectedSkills = builderState.character?.proficiencies?.skills || [];
   const selectedFeatureChoices = builderState.character?.features || [];
@@ -83,10 +90,12 @@ export function ClassDetails() {
 
   const setClassEntry = (updater: (current: NonNullable<typeof classEntry>) => NonNullable<typeof classEntry> | undefined) => {
     const existing = builderState.character?.classes || [];
-    const current = existing.find((entry) => entry.classId === cls.id);
-    const nextEntry = current ? updater(current) : updater({ classId: cls.id, level: 1, hitDiceUsed: 0 });
+    const nextEntry = classEntry
+      ? updater({ ...classEntry, classId: cls.id })
+      : updater({ classId: cls.id, level: 1, hitDiceUsed: 0 });
 
-    const nextClasses = existing.filter((entry) => entry.classId !== cls.id);
+    // Drop the entry under whichever id it was stored with, then re-add it under the current one.
+    const nextClasses = existing.filter((entry) => entry !== classEntry && entry.classId !== cls.id);
     if (nextEntry) nextClasses.push(nextEntry);
     updateBuilderCharacter({ classes: nextClasses });
   };
@@ -282,6 +291,11 @@ export function ClassDetails() {
             <Card>
               <CardHeader>
                 <CardTitle>Class Features (Level {characterLevel})</CardTitle>
+                {isSelected ? null : (
+                  <p className="text-sm text-muted-foreground">
+                    Previewing at level 1 because {cls.name} is not part of this character yet. Select it to see the features for your level.
+                  </p>
+                )}
               </CardHeader>
               <CardContent className="space-y-4">
                 <Accordion type="multiple" className="w-full">
@@ -546,15 +560,16 @@ export function ClassDetails() {
                 <h4 className="mb-2 flex items-center gap-2 font-medium">
                   <Wand2 className="h-4 w-4" /> Tools
                 </h4>
-                <div className="flex flex-wrap gap-2">
-                  {cls.toolProficiencies ? (
-                    cls.toolProficiencies.map((prof) => (
-                      <Badge key={prof} variant="secondary"><ContentReferenceText text={prof} /></Badge>
-                    ))
-                  ) : (
-                    <span className="text-sm text-muted-foreground">None</span>
-                  )}
-                </div>
+                {cls.toolProficiencies?.length ? (
+                  <ToolProficiencyChoices
+                    labels={cls.toolProficiencies}
+                    idPrefix={getToolChoiceIdPrefix('class', cls.id)}
+                    disabled={!isSelected}
+                    disabledHint="Select this class first to lock in its tool choices."
+                  />
+                ) : (
+                  <span className="text-sm text-muted-foreground">None</span>
+                )}
               </div>
 
               <Separator />

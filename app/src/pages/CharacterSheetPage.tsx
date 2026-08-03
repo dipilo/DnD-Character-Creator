@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, FileDown, Trash2 } from 'lucide-react';
+import { ArrowLeft, FileDown, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   applyAbilityScoreBonuses,
@@ -93,7 +93,7 @@ const emptyCharacter: Character = {
 export function CharacterSheetPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getCharacter, deleteCharacter } = useCharacterStore();
+  const { getCharacter, deleteCharacter, loadCharacterIntoBuilder } = useCharacterStore();
   const { backgrounds, equipment, feats } = useContentLibrary();
 
   const character = id ? getCharacter(id) : undefined;
@@ -292,6 +292,15 @@ export function CharacterSheetPage() {
     return mod >= 0 ? `+${mod}` : `${mod}`;
   };
 
+  const handleEdit = () => {
+    if (!loadCharacterIntoBuilder(character.id)) {
+      toast.error('Character could not be opened in the builder');
+      return;
+    }
+
+    navigate('/builder/review');
+  };
+
   const handleDelete = () => {
     if (confirm(`Are you sure you want to delete ${character.name}?`)) {
       deleteCharacter(character.id);
@@ -324,6 +333,10 @@ export function CharacterSheetPage() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button onClick={handleEdit}>
+            <Pencil className="mr-2 h-4 w-4" />
+            Edit
+          </Button>
           <Button variant="outline" onClick={handleExportPDF}>
             <FileDown className="mr-2 h-4 w-4" />
             Export PDF

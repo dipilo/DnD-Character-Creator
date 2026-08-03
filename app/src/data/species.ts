@@ -405,7 +405,8 @@ export const baseSpecies: Species[] = [
         ]
       }
     ],
-    languages: ['Common', 'Elvish'],
+    // Half-elves "can speak, read, and write Common, Elvish, and one extra language of your choice".
+    languages: ['Common', 'Elvish', 'One of your choice'],
     source: 'Player\'s Handbook'
   },
   {
@@ -540,7 +541,8 @@ export const baseSpecies: Species[] = [
       { ability: 'charisma', amount: 1 }
     ],
     features: [],
-    languages: ['Common'],
+    // Humans "can speak, read, and write Common and one extra language of your choice".
+    languages: ['Common', 'One of your choice'],
     variants: [
       {
         id: 'variant-human',

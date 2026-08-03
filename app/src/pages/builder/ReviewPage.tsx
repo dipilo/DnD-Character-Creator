@@ -58,10 +58,12 @@ function formatSelectedEquipmentLabel(name: string, quantity: number) {
 
 export function ReviewPage() {
   const navigate = useNavigate();
-  const { builderState, addCharacter, resetBuilder, updateBuilderCharacter } = useCharacterStore();
+  const { builderState, addCharacter, getCharacter, resetBuilder, updateBuilderCharacter, updateCharacter } = useCharacterStore();
   const { backgrounds, equipment, feats } = useContentLibrary();
 
   const character = builderState.character;
+  const editedCharacter = builderState.editingCharacterId ? getCharacter(builderState.editingCharacterId) : undefined;
+  const isEditing = Boolean(editedCharacter);
   const characterName = character.name || '';
   const species = character?.speciesId ? getRuntimeSpeciesById(character.speciesId) : undefined;
   const variant = character?.speciesId && character?.variantId
@@ -207,12 +209,20 @@ export function ReviewPage() {
   };
 
   const handleSaveCharacter = () => {
-    const newCharacter = buildReviewCharacter();
-    if (!newCharacter) {
+    const nextCharacter = buildReviewCharacter();
+    if (!nextCharacter) {
       return;
     }
 
-    addCharacter(newCharacter);
+    if (isEditing) {
+      updateCharacter(nextCharacter);
+      toast.success(`Character "${characterName}" updated`);
+      resetBuilder();
+      navigate(`/character/${nextCharacter.id}`);
+      return;
+    }
+
+    addCharacter(nextCharacter);
     toast.success(`Character "${characterName}" created successfully!`);
     resetBuilder();
     navigate('/characters');
@@ -252,11 +262,12 @@ export function ReviewPage() {
     const now = new Date().toISOString();
 
     return {
-      id: crypto.randomUUID(),
+      id: editedCharacter?.id ?? crypto.randomUUID(),
       name: characterName,
       avatar: character.portrait?.imageDataUrl || character.avatar,
       speciesId: species.id,
       variantId: variant?.id,
+      size: character.size,
       backgroundId: background.id,
       classes: persistedClasses,
       abilityScores: character.abilityScores || {
@@ -268,6 +279,14 @@ export function ReviewPage() {
         charisma: 10
       },
       abilityScoreBonuses: character.abilityScoreBonuses || {},
+      abilityScoreChoiceModes: character.abilityScoreChoiceModes,
+      abilityScoreChoiceSelections: character.abilityScoreChoiceSelections,
+      backgroundLanguageSelections: character.backgroundLanguageSelections,
+      speciesLanguageSelections: character.speciesLanguageSelections,
+      toolProficiencySelections: character.toolProficiencySelections,
+      abilityScoreMethod: builderState.abilityScoreMethod,
+      rolledScores: builderState.rolledScores,
+      rolledScoreAssignments: builderState.rolledScoreAssignments,
       proficiencies: {
         skills: derivedProficiencies.skills,
         tools: derivedProficiencies.tools,
@@ -286,18 +305,24 @@ export function ReviewPage() {
       faction: character.faction,
       portrait: character.portrait,
       notes: character.notes,
-      createdAt: now,
+      createdAt: editedCharacter?.createdAt ?? now,
       updatedAt: now
     };
   };
+
+  const reviewHeading = isEditing ? `Edit ${editedCharacter?.name || 'Character'}` : 'Review Your Character';
+  const reviewDescription = isEditing
+    ? 'Change any step, then save your updates back to this character.'
+    : 'Review your choices and give your character a name before saving.';
+  const saveButtonLabel = isEditing ? 'Save Changes' : 'Create Character';
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Review Your Character</h2>
+          <h2 className="text-2xl font-bold">{reviewHeading}</h2>
           <p className="text-muted-foreground">
-            Review your choices and give your character a name before saving.
+            {reviewDescription}
           </p>
         </div>
         <Button variant="outline" onClick={handleExportPDF} disabled={!species || !primaryClass || !background}>
@@ -609,7 +634,7 @@ export function ReviewPage() {
 
       <div className="flex justify-center">
         <Button size="lg" onClick={handleSaveCharacter} disabled={!isComplete}>
-          Create Character
+          {saveButtonLabel}
         </Button>
       </div>
 

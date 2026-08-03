@@ -246,6 +246,51 @@ const inferEquipmentType = (entry) => {
   return 'gear';
 };
 
+// The 2014 SRD records a tool's family in `tool_category`; the 2024 dataset dropped that field
+// and lists the family as one of the entry's `equipment_categories` instead.
+const toolCategoryNames = new Set(['Artisan’s Tools', "Artisan's Tools", 'Gaming Sets', 'Musical Instruments', 'Other Tools']);
+
+const getToolCategory = (entry) => {
+  if (entry.tool_category) {
+    return entry.tool_category;
+  }
+
+  return (entry.equipment_categories ?? [])
+    .map((category) => category?.name)
+    .find((name) => name && toolCategoryNames.has(name));
+};
+
+// Feats carry their benefits in two different shapes: the 2014 dataset splits them into a `desc`
+// array whose benefit lines start with "-", while the 2024 dataset ships one markdown
+// `description` string whose benefits are "**Name.** text" lines. Reading only the 2014 shape
+// left every 2024 feat with an empty description and no benefits at all.
+const featBenefitHeadingPattern = /^\*\*(.+?)\.?\*\*\s*/;
+
+const parseFeatText = (feat) => {
+  const lines = Array.isArray(feat.desc) && feat.desc.length > 0
+    ? feat.desc
+    : String(feat.description ?? '').split('\n');
+  const preamble = [];
+  const benefits = [];
+
+  lines.map((line) => String(line).trim()).filter(Boolean).forEach((line) => {
+    const headingMatch = featBenefitHeadingPattern.exec(line);
+    if (headingMatch) {
+      benefits.push({ name: headingMatch[1].trim(), description: line.slice(headingMatch[0].length).trim() });
+      return;
+    }
+
+    if (line.startsWith('-')) {
+      benefits.push({ name: '', description: line.replace(/^-\s*/, '') });
+      return;
+    }
+
+    preamble.push(line);
+  });
+
+  return { description: preamble.join(' '), benefits };
+};
+
 const toEquipmentOptionType = (name = 'gear') => {
   const normalized = name.toLowerCase();
   if (normalized.includes('weapon')) return 'weapon';
@@ -760,6 +805,9 @@ export const createPack = async ({ edition, sourceId, label, category, includeCo
         description: (entry.desc ?? []).join(' ') || undefined,
         weaponCategory: entry.weapon_category ? entry.weapon_category.toLowerCase() : undefined,
         weaponType: entry.weapon_range ? entry.weapon_range.toLowerCase() : undefined,
+        // "Artisan's Tools" / "Gaming Sets" / "Musical Instruments" — what a proficiency phrased
+        // as "one type of gaming set" is actually choosing between.
+        toolCategory: getToolCategory(entry),
         damage: entry.damage?.damage_dice,
         damageType: entry.damage?.damage_type?.name,
         properties: (entry.properties ?? []).map((property) => property.name),
@@ -770,29 +818,32 @@ export const createPack = async ({ edition, sourceId, label, category, includeCo
         strengthRequirement: entry.str_minimum,
         stealthDisadvantage: entry.stealth_disadvantage || undefined
       })),
-      feats: feats.map((feat) => ({
-        id: toSourcedEntryId(feat.index),
-        name: feat.name,
-        description: (feat.desc ?? []).filter((entry) => !entry.startsWith('-')).join(' '),
-        prerequisites: (feat.prerequisites ?? []).length > 0
-          ? {
-              ability: Object.fromEntries((feat.prerequisites ?? [])
-                .filter((entry) => entry.ability_score?.index)
-                .map((entry) => [abilityIndexMap[entry.ability_score.index], entry.minimum_score]))
-            }
-          : undefined,
-        features: (feat.desc ?? [])
-          .filter((entry) => entry.startsWith('-'))
-          .map((entry, index) => ({
+      feats: feats.map((feat) => {
+        const { description, benefits } = parseFeatText(feat);
+        return {
+          id: toSourcedEntryId(feat.index),
+          name: feat.name,
+          description,
+          prerequisites: (feat.prerequisites ?? []).length > 0
+            ? {
+                ability: Object.fromEntries((feat.prerequisites ?? [])
+                  .filter((entry) => entry.ability_score?.index)
+                  .map((entry) => [abilityIndexMap[entry.ability_score.index], entry.minimum_score]))
+              }
+            : undefined,
+          // Only the 2024 dataset names its benefits; a synthetic "<Feat> Benefit 1" label adds
+          // nothing the reader can use, so unnamed benefits stay unnamed and render as plain text.
+          features: benefits.map((benefit, index) => ({
             id: `${feat.index}-feature-${index + 1}`,
-            name: `${feat.name} Benefit ${index + 1}`,
-            description: entry.replace(/^-\s*/, ''),
+            name: benefit.name,
+            description: benefit.description,
             level: 1,
             source: label
           })),
-        source: label,
-        sourceId
-      })),
+          source: label,
+          sourceId
+        };
+      }),
       monsters: monsters.map((monster) => ({
         id: toSourcedEntryId(monster.index),
         name: monster.name,

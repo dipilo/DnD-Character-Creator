@@ -1,5 +1,6 @@
 import type {
   AbilityScoreIncrease,
+  AbilityScoreMethod,
   AbilityScores,
   Background,
   Character,
@@ -174,6 +175,27 @@ const defaultAbilityScores: AbilityScores = {
   charisma: 10
 };
 
+export const standardArrayScores = [15, 14, 13, 12, 10, 8];
+export const pointBuyCosts: Record<number, number> = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 };
+export const pointBuyTotal = 27;
+
+const sortScoresDescending = (scores?: AbilityScores) => Object.values(scores ?? {}).sort((left, right) => right - left);
+
+export const isStandardArrayAllocation = (scores?: AbilityScores) => {
+  const sorted = sortScoresDescending(scores);
+  const expected = [...standardArrayScores].sort((left, right) => right - left);
+  return sorted.length === expected.length && sorted.every((value, index) => value === expected[index]);
+};
+
+export const isPointBuyAllocation = (scores?: AbilityScores) => {
+  if (!scores) {
+    return false;
+  }
+
+  return Object.values(scores).every((score) => score >= 8 && score <= 15)
+    && Object.values(scores).reduce((total, score) => total + (pointBuyCosts[score] || 0), 0) <= pointBuyTotal;
+};
+
 export const skillNames = [
   'Acrobatics',
   'Animal Handling',
@@ -222,7 +244,9 @@ export const defaultLanguageOptions = [
 
 const skillNameSet = new Set<string>(skillNames);
 const originFeatNameSet = new Set(['alert', 'crafter', 'healer', 'lucky', 'magic initiate', 'musician', 'savage attacker', 'skilled', 'tavern brawler']);
-const choicePlaceholderPattern = /\b(any|one|two|three|another|extra)\b[\s\w'-]*(?:of|from)?\s*your choice|choose .* language|language of your choice/i;
+// Sources write an unmade choice as a proficiency: "One of your choice", "One skill of choice",
+// "Any 2 of your choice". The bounded lazy spans keep the alternatives from backtracking.
+const choicePlaceholderPattern = /\b(?:any|one|two|three|four|another|extra)\b[^.]{0,40}?\bof (?:your )?choice\b|\bchoose\b[^.]{0,40}?\blanguage\b|\blanguage of your choice\b/i;
 
 const abilityNamePattern = /(strength|dexterity|constitution|intelligence|wisdom|charisma)/i;
 const apostrophePattern = /['’]/g;
@@ -367,6 +391,95 @@ const resolveReferencedEquipmentItem = ({
 const isDefined = <T,>(value: T | null | undefined): value is T => Boolean(value);
 
 export const isChoicePlaceholderLabel = (value?: string) => Boolean(value && choicePlaceholderPattern.test(value));
+
+// Tool proficiencies are printed as an unresolved choice far more often than as a named tool:
+// "One type of gaming set", "Three musical instruments of your choice", "Choose one type of
+// artisan's tools or one musical instrument". Those are picks the character still has to make,
+// so they are matched to the tool families in the equipment catalogue (Equipment.toolCategory)
+// and offered as selectors instead of being written onto the sheet verbatim.
+const toolChoiceFamilyKeywords: Array<{ pattern: RegExp; category: RegExp }> = [
+  { pattern: /artisan/i, category: /artisan/i },
+  { pattern: /gaming set/i, category: /gaming/i },
+  { pattern: /musical instrument/i, category: /musical instrument/i }
+];
+const toolChoiceIntentPattern = /\bof your choice\b|\bone type of\b|^choose\b|\bany\b/i;
+const countWordValues = new Map([['one', 1], ['two', 2], ['three', 3], ['four', 4], ['five', 5], ['six', 6]]);
+
+const parseChoiceCount = (label: string) => {
+  const digitMatch = /\b(\d+)\b/.exec(label);
+  if (digitMatch) {
+    return Number(digitMatch[1]);
+  }
+
+  const wordMatch = /\b(one|two|three|four|five|six)\b/i.exec(label);
+  return wordMatch ? (countWordValues.get(wordMatch[1].toLowerCase()) ?? 1) : 1;
+};
+
+export interface ToolProficiencyChoice {
+  id: string;
+  label: string;
+  chooseCount: number;
+  options: string[];
+}
+
+export const getToolChoiceIdPrefix = (ownerKind: 'background' | 'class', ownerId: string) => `${ownerKind}:${ownerId}:tool`;
+
+export const isToolProficiencyChoiceLabel = (label: string) => {
+  return toolChoiceIntentPattern.test(label) && toolChoiceFamilyKeywords.some((family) => family.pattern.test(label));
+};
+
+export const getToolProficiencyChoice = (
+  label: string,
+  slotId: string,
+  toolEquipment: Equipment[]
+): ToolProficiencyChoice | undefined => {
+  const families = toolChoiceFamilyKeywords.filter((family) => family.pattern.test(label));
+  if (families.length === 0 || !toolChoiceIntentPattern.test(label)) {
+    return undefined;
+  }
+
+  const options = Array.from(new Set(
+    toolEquipment
+      .filter((entry) => families.some((family) => family.category.test(entry.toolCategory ?? '')))
+      .map((entry) => entry.name)
+  )).sort((left, right) => left.localeCompare(right));
+
+  if (options.length === 0) {
+    return undefined;
+  }
+
+  return {
+    id: slotId,
+    label,
+    chooseCount: parseChoiceCount(label),
+    options
+  };
+};
+
+export const getSelectedToolProficiencies = (
+  character: Pick<Character, 'toolProficiencySelections'> | undefined,
+  choiceId: string
+) => character?.toolProficiencySelections?.[choiceId] ?? [];
+
+export const updateToolProficiencySelection = (
+  current: Character['toolProficiencySelections'],
+  choiceId: string,
+  slotIndex: number,
+  value: string | undefined,
+  chooseCount: number
+) => {
+  const selections = [...(current?.[choiceId] ?? [])];
+  if (value) {
+    selections[slotIndex] = value;
+  } else {
+    selections.splice(slotIndex, 1);
+  }
+
+  return {
+    ...current,
+    [choiceId]: selections.filter(Boolean).slice(0, chooseCount)
+  };
+};
 
 export const isOriginFeat = (feat: Feat) => {
   return originFeatNameSet.has(normalizeName(feat.name));
@@ -532,7 +645,10 @@ const toSortedSaves = (values: Iterable<keyof AbilityScores>) => {
 
 const addProficiencyEntries = (entries: Proficiency[] | undefined, type: Proficiency['type'], bucket: Set<string>) => {
   entries?.forEach((entry) => {
-    if (entry.type === type && entry.name.trim()) {
+    // "One skill of choice" describes a pick the player still owes, not a proficiency they have.
+    // The matching feature already offers a selector, so writing the placeholder onto the sheet
+    // just prints an unresolved choice next to real proficiencies.
+    if (entry.type === type && entry.name.trim() && !isChoicePlaceholderLabel(entry.name)) {
       bucket.add(entry.name.trim());
     }
   });
@@ -1110,8 +1226,23 @@ export const deriveCharacterProficiencies = ({
   const weapons = new Set(character.proficiencies?.weapons ?? []);
   const saves = new Set<keyof AbilityScores>(character.proficiencies?.saves ?? []);
 
+  // An unresolved tool choice ("One type of gaming set") is not a proficiency; the tools the
+  // player actually picked for it are. Keep the placeholder off the sheet either way.
+  const addToolProficiency = (choiceIdPrefix: string) => (label: string, index: number) => {
+    const choiceId = `${choiceIdPrefix}-${index}`;
+    const selections = character.toolProficiencySelections?.[choiceId];
+    if (selections?.length) {
+      selections.forEach((entry) => tools.add(entry));
+      return;
+    }
+
+    if (!isToolProficiencyChoiceLabel(label)) {
+      tools.add(label);
+    }
+  };
+
   background?.skillProficiencies.forEach((skill) => skills.add(skill));
-  background?.toolProficiencies?.forEach((tool) => tools.add(tool));
+  background?.toolProficiencies?.forEach(addToolProficiency(getToolChoiceIdPrefix('background', background.id)));
 
   addProficiencyEntries(species?.proficiencies, 'skill', skills);
   addProficiencyEntries(species?.proficiencies, 'tool', tools);
@@ -1139,7 +1270,7 @@ export const deriveCharacterProficiencies = ({
     cls.savingThrows.forEach((save) => saves.add(save));
     cls.armorProficiencies.forEach((entry) => armor.add(entry));
     cls.weaponProficiencies.forEach((entry) => weapons.add(entry));
-    cls.toolProficiencies?.forEach((entry) => tools.add(entry));
+    cls.toolProficiencies?.forEach(addToolProficiency(getToolChoiceIdPrefix('class', cls.id)));
   });
 
   const featurePool = [
@@ -1182,6 +1313,99 @@ export const deriveCharacterProficiencies = ({
     armor: toSortedArray(armor),
     weapons: toSortedArray(weapons),
     saves: toSortedSaves(saves)
+  };
+};
+
+const emptyCharacterProficiencies = (): Character['proficiencies'] => ({
+  skills: [],
+  tools: [],
+  languages: [],
+  armor: [],
+  weapons: [],
+  saves: []
+});
+
+/**
+ * A saved character stores the merged proficiency list (picks plus everything species, background,
+ * and class grant), but the builder's `character.proficiencies` holds only the player's own picks —
+ * `ClassDetails` counts those against `skillCount`. Re-deriving the grants and subtracting them
+ * recovers the pick layer so reopening a character does not present granted skills as class picks.
+ */
+export const extractSelectedProficiencies = ({
+  character,
+  resolvedClasses,
+  background,
+  species,
+  variant
+}: {
+  character: Partial<Character>;
+  resolvedClasses: ResolvedCharacterClass[];
+  background?: Background;
+  species?: Species;
+  variant?: SpeciesVariant;
+}): Character['proficiencies'] => {
+  const stored = character.proficiencies ?? emptyCharacterProficiencies();
+  const granted = deriveCharacterProficiencies({
+    character: { ...character, proficiencies: emptyCharacterProficiencies() },
+    resolvedClasses,
+    background,
+    species,
+    variant
+  });
+
+  const withoutGranted = <T extends string>(values: T[], grantedValues: T[]): T[] => {
+    const grantedSet = new Set<string>(grantedValues);
+    return values.filter((value) => !grantedSet.has(value));
+  };
+
+  return {
+    skills: withoutGranted(stored.skills, granted.skills),
+    tools: withoutGranted(stored.tools, granted.tools),
+    languages: withoutGranted(stored.languages, granted.languages),
+    armor: withoutGranted(stored.armor, granted.armor),
+    weapons: withoutGranted(stored.weapons, granted.weapons),
+    saves: withoutGranted(stored.saves, granted.saves)
+  };
+};
+
+export interface AbilityScoreEntryState {
+  abilityScoreMethod: AbilityScoreMethod;
+  rolledScores: number[];
+  rolledScoreAssignments: Partial<Record<keyof AbilityScores, number>>;
+}
+
+/**
+ * Restores the ability score entry mode for a saved character. Characters saved before the mode was
+ * recorded are classified from their scores; anything that is neither the standard array nor a legal
+ * point buy is treated as rolled, with the stored scores standing in for the rolled pool.
+ */
+export const resolveAbilityScoreEntryState = (character: Partial<Character>): AbilityScoreEntryState => {
+  const scores = character.abilityScores;
+
+  if (character.abilityScoreMethod) {
+    return {
+      abilityScoreMethod: character.abilityScoreMethod,
+      rolledScores: character.rolledScores ?? [],
+      rolledScoreAssignments: character.rolledScoreAssignments ?? {}
+    };
+  }
+
+  if (isStandardArrayAllocation(scores)) {
+    return { abilityScoreMethod: 'standard', rolledScores: [], rolledScoreAssignments: {} };
+  }
+
+  if (isPointBuyAllocation(scores)) {
+    return { abilityScoreMethod: 'point-buy', rolledScores: [], rolledScoreAssignments: {} };
+  }
+
+  const resolvedScores = scores ?? defaultAbilityScores;
+  return {
+    abilityScoreMethod: 'rolled',
+    rolledScores: sortScoresDescending(resolvedScores),
+    rolledScoreAssignments: abilityDisplayOrder.reduce<Partial<Record<keyof AbilityScores, number>>>((assignments, ability) => {
+      assignments[ability] = resolvedScores[ability];
+      return assignments;
+    }, {})
   };
 };
 

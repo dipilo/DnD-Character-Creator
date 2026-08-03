@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2024 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-07-13T23:28:16.178Z",
+    "importedAt": "2026-08-03T10:07:27.925Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -58,6 +58,7 @@
           }
         ],
         "languages": [],
+        "variants": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
@@ -99,13 +100,14 @@
           }
         ],
         "languages": [],
+        "variants": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
       {
         "id": "basic-rules-2024-elf",
         "name": "Elf",
-        "description": "Created by the god Corellon, the first elves could change their forms at will. They lost this ability when Corellon cursed them for plotting with the deity Lolth, who tried and failed to usurp Corellon’s dominion. When Lolth was cast into the Abyss, most elves renounced her and earned Corellon’s forgiveness, but that which Corellon had taken from them was lost forever. No longer able to shape-shift at will, the elves retreated to the Feywild, where their sorrow was deepened by that plane’s influence. Over time, curiosity led many of them to explore other planes of existence, including worlds in the Material Plane. Elves have pointed ears and lack facial and body hair. They live for around 750 years, and they don’t sleep but instead enter a trance when they need to rest. In that state, they remain aware of their surroundings while immersing themselves in memories and meditations. An environment subtly transforms elves after they inhabit it for a millennium or more, and it grants them certain kinds of magic. Drow, high elves, and wood elves are examples of elves who have been transformed thus. Drow typically dwell in the Underdark and have been shaped by it. Some drow individuals and societies avoid the Underdark altogether yet carry its magic. In the Eberron setting, for example, drow dwell in rainforests and cyclopean ruins on the continent of Xen’drik. High elves have been infused with the magic of crossings between the Feywild and the Material Plane. On some worlds, high elves refer to themselves by other names. For example, they call themselves sun or moon elves in the Forgotten Realms setting, Silvanesti and Qualinesti in the Dragonlance setting, and Aereni in the Eberron setting. Wood elves carry the magic of primeval forests within themselves. They are known by many other names, including wild elves, green elves, and forest elves. Grugach are reclusive wood elves of the Greyhawk setting, while the Kagonesti and the Tairnadal are wood elves of the Dragonlance and Eberron settings, respectively.",
+        "description": "Created by the god Corellon, the first elves could change their forms at will. They lost this ability when Corellon cursed them for plotting with the deity Lolth, who tried and failed to usurp Corellon’s dominion. When Lolth was cast into the Abyss, most elves renounced her and earned Corellon’s forgiveness, but that which Corellon had taken from them was lost forever. No longer able to shape-shift at will, the elves retreated to the Feywild, where their sorrow was deepened by that plane’s influence. Over time, curiosity led many of them to explore other planes of existence, including worlds in the Material Plane. Elves have pointed ears and lack facial and body hair. They live for around 750 years, and they don’t sleep but instead enter a trance when they need to rest. In that state, they remain aware of their surroundings while immersing themselves in memories and meditations. An environment subtly transforms elves after they inhabit it for a millennium or more, and it grants them certain kinds of magic. Drow, high elves, and wood elves are examples of elves who have been transformed thus.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -147,6 +149,7 @@
           }
         ],
         "languages": [],
+        "variants": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
@@ -195,6 +198,7 @@
           }
         ],
         "languages": [],
+        "variants": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
@@ -229,6 +233,7 @@
           }
         ],
         "languages": [],
+        "variants": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
@@ -270,6 +275,7 @@
           }
         ],
         "languages": [],
+        "variants": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
@@ -308,6 +314,7 @@
           }
         ],
         "languages": [],
+        "variants": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
@@ -342,13 +349,14 @@
           }
         ],
         "languages": [],
+        "variants": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
       {
         "id": "basic-rules-2024-tiefling",
         "name": "Tiefling",
-        "description": "Tieflings are either born in the Lower Planes or have fiendish ancestors who originated there. A tiefling (pronounced TEE-fling) is linked by blood to a devil, a demon, or some other Fiend. This connection to the Lower Planes is the tiefling’s fiendish legacy, which comes with the promise of power yet has no effect on the tiefling’s moral outlook. A tiefling chooses whether to embrace or lament their fiendish legacy. The three legacies are described below. The entropy of the Abyss, the chaos of Pandemonium, and the despair of Carceri call to tieflings who have the abyssal legacy. Horns, fur, tusks, and peculiar scents are common physical features of such tieflings, most of whom have the blood of demons coursing through their veins. Tieflings who have the chthonic legacy feel not only the tug of Carceri but also the greed of Gehenna and the gloom of Hades. Some of these tieflings look cadaverous. Others possess the unearthly beauty of a succubus, or they have physical features in common with a night hag, a yugoloth, or some other Neutral Evil fiendish ancestor. The infernal legacy connects tieflings not only to Gehenna but also the Nine Hells and the raging battlefields of Acheron. Horns, spines, tails, golden eyes, and a faint odor of sulfur or smoke are common physical features of such tieflings, most of whom trace their ancestry to devils.",
+        "description": "Tieflings are either born in the Lower Planes or have fiendish ancestors who originated there. A tiefling (pronounced TEE-fling) is linked by blood to a devil, a demon, or some other Fiend. This connection to the Lower Planes is the tiefling’s fiendish legacy, which comes with the promise of power yet has no effect on the tiefling’s moral outlook. A tiefling chooses whether to embrace or lament their fiendish legacy. The three legacies are described below.",
         "size": "Medium",
         "sizeOptions": [
           "Medium",
@@ -380,6 +388,7 @@
           }
         ],
         "languages": [],
+        "variants": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       }
@@ -2144,8 +2153,7 @@
           "Simple weapons and Martial weapons that have the Light property"
         ],
         "toolProficiencies": [
-          "Choose one type of Artisan’s Tools",
-          "Musical Instrument (see “Equipment”)"
+          "Choose one type of Artisan’s Tools or Musical Instrument (see “Equipment”)"
         ],
         "skillChoices": [
           "Acrobatics",
@@ -3126,8 +3134,7 @@
           "Light armor"
         ],
         "weaponProficiencies": [
-          "Simple weapons and Martial weapons that have the Finesse",
-          "Light property"
+          "Simple weapons and Martial weapons that have the Finesse or Light property"
         ],
         "toolProficiencies": [
           "Thieves’ Tools"
@@ -15937,6 +15944,7 @@
           "unit": "gp"
         },
         "weight": 8,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -16002,6 +16010,7 @@
           "unit": "gp"
         },
         "weight": 6,
+        "toolCategory": "Musical Instruments",
         "properties": []
       },
       {
@@ -16203,6 +16212,7 @@
           "unit": "gp"
         },
         "weight": 9,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -16268,6 +16278,7 @@
           "unit": "gp"
         },
         "weight": 5,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -16307,6 +16318,7 @@
           "unit": "gp"
         },
         "weight": 6,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -16320,6 +16332,7 @@
           "unit": "gp"
         },
         "weight": 6,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -16476,6 +16489,7 @@
           "unit": "gp"
         },
         "weight": 5,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -16502,6 +16516,7 @@
           "unit": "gp"
         },
         "weight": 8,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -16598,6 +16613,7 @@
           "unit": "sp"
         },
         "weight": 0,
+        "toolCategory": "Gaming Sets",
         "properties": []
       },
       {
@@ -16624,6 +16640,7 @@
           "unit": "gp"
         },
         "weight": 3,
+        "toolCategory": "Other Tools",
         "properties": []
       },
       {
@@ -16637,6 +16654,7 @@
           "unit": "gp"
         },
         "weight": 0,
+        "toolCategory": "Gaming Sets",
         "properties": []
       },
       {
@@ -16650,6 +16668,7 @@
           "unit": "gp"
         },
         "weight": 3,
+        "toolCategory": "Musical Instruments",
         "properties": []
       },
       {
@@ -16663,6 +16682,7 @@
           "unit": "gp"
         },
         "weight": 10,
+        "toolCategory": "Musical Instruments",
         "properties": []
       },
       {
@@ -16733,6 +16753,7 @@
           "unit": "gp"
         },
         "weight": 1,
+        "toolCategory": "Musical Instruments",
         "properties": []
       },
       {
@@ -16746,6 +16767,7 @@
           "unit": "gp"
         },
         "weight": 5,
+        "toolCategory": "Other Tools",
         "properties": []
       },
       {
@@ -16781,6 +16803,7 @@
           "unit": "gp"
         },
         "weight": 5,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -16989,6 +17012,7 @@
           "unit": "gp"
         },
         "weight": 3,
+        "toolCategory": "Other Tools",
         "properties": []
       },
       {
@@ -17031,6 +17055,7 @@
           "unit": "gp"
         },
         "weight": 2,
+        "toolCategory": "Musical Instruments",
         "properties": []
       },
       {
@@ -17103,6 +17128,7 @@
           "unit": "gp"
         },
         "weight": 2,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -17218,6 +17244,7 @@
           "unit": "gp"
         },
         "weight": 5,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -17331,6 +17358,7 @@
           "unit": "gp"
         },
         "weight": 2,
+        "toolCategory": "Musical Instruments",
         "properties": []
       },
       {
@@ -17344,6 +17372,7 @@
           "unit": "gp"
         },
         "weight": 2,
+        "toolCategory": "Musical Instruments",
         "properties": []
       },
       {
@@ -17401,6 +17430,7 @@
           "unit": "gp"
         },
         "weight": 8,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -17499,6 +17529,7 @@
           "unit": "gp"
         },
         "weight": 2,
+        "toolCategory": "Other Tools",
         "properties": []
       },
       {
@@ -17580,6 +17611,7 @@
           "unit": "gp"
         },
         "weight": 5,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -17593,6 +17625,7 @@
           "unit": "gp"
         },
         "weight": 2,
+        "toolCategory": "Musical Instruments",
         "properties": []
       },
       {
@@ -17689,6 +17722,7 @@
           "unit": "gp"
         },
         "weight": 2,
+        "toolCategory": "Other Tools",
         "properties": []
       },
       {
@@ -17718,6 +17752,7 @@
           "unit": "sp"
         },
         "weight": 0,
+        "toolCategory": "Gaming Sets",
         "properties": []
       },
       {
@@ -17783,6 +17818,7 @@
           "unit": "gp"
         },
         "weight": 3,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -18033,6 +18069,7 @@
           "unit": "gp"
         },
         "weight": 1,
+        "toolCategory": "Musical Instruments",
         "properties": []
       },
       {
@@ -18171,6 +18208,7 @@
           "unit": "gp"
         },
         "weight": 8,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -18340,6 +18378,7 @@
           "unit": "gp"
         },
         "weight": 2,
+        "toolCategory": "Other Tools",
         "properties": []
       },
       {
@@ -18353,6 +18392,7 @@
           "unit": "gp"
         },
         "weight": 0,
+        "toolCategory": "Gaming Sets",
         "properties": []
       },
       {
@@ -18379,6 +18419,7 @@
           "unit": "gp"
         },
         "weight": 10,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -18439,6 +18480,7 @@
           "unit": "gp"
         },
         "weight": 2,
+        "toolCategory": "Musical Instruments",
         "properties": []
       },
       {
@@ -18518,6 +18560,7 @@
           "unit": "gp"
         },
         "weight": 5,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -18552,6 +18595,7 @@
           "unit": "gp"
         },
         "weight": 5,
+        "toolCategory": "Artisan's Tools",
         "properties": []
       },
       {
@@ -18572,23 +18616,60 @@
       {
         "id": "basic-rules-2024-alert",
         "name": "Alert",
-        "description": "",
-        "features": [],
+        "description": "You gain the following benefits.",
+        "features": [
+          {
+            "id": "alert-feature-1",
+            "name": "Initiative Proficiency",
+            "description": "When you roll Initiative, you can add your Proficiency Bonus to the roll.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "alert-feature-2",
+            "name": "Initiative Swap",
+            "description": "Immediately after you roll Initiative, you can swap your Initiative with the Initiative of one willing ally in the same combat. You can’t make this swap if you or the ally has the Incapacitated condition.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          }
+        ],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
       {
         "id": "basic-rules-2024-magic-initiate",
         "name": "Magic Initiate",
-        "description": "",
-        "features": [],
+        "description": "You gain the following benefits.",
+        "features": [
+          {
+            "id": "magic-initiate-feature-1",
+            "name": "Two Cantrips",
+            "description": "You learn two cantrips of your choice from the Cleric, Druid, or Wizard spell list. Intelligence, Wisdom, or Charisma is your spellcasting ability for this feat's spells (choose when you select this feat).",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "magic-initiate-feature-2",
+            "name": "Level 1 Spell",
+            "description": "Choose a level 1 spell from the same list you selected for this feat's cantrips. You always have that spell prepared. You can cast it once without a spell slot, and you regain the ability to cast it in that way when you finish a Long Rest. You can also cast the spell using any spell slots you have.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "magic-initiate-feature-3",
+            "name": "Spell Change",
+            "description": "Whenever you gain a new level, you can replace one of the spells you chose for this feat with a different spell of the same level from the chosen spell list.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          }
+        ],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
       {
         "id": "basic-rules-2024-savage-attacker",
         "name": "Savage Attacker",
-        "description": "",
+        "description": "You've trained to deal particularly damaging strikes. Once per turn when you hit a target with a weapon, you can roll the weapon's damage dice twice and use either roll against the target.",
         "features": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
@@ -18596,7 +18677,7 @@
       {
         "id": "basic-rules-2024-skilled",
         "name": "Skilled",
-        "description": "",
+        "description": "You gain proficiency in any combination of three skills or tools of your choice.",
         "features": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
@@ -18604,7 +18685,7 @@
       {
         "id": "basic-rules-2024-ability-score-improvement",
         "name": "Ability Score Improvement",
-        "description": "",
+        "description": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can’t increase an ability score above 20.",
         "features": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
@@ -18612,15 +18693,44 @@
       {
         "id": "basic-rules-2024-grappler",
         "name": "Grappler",
-        "description": "",
-        "features": [],
+        "description": "You gain the following benefits.",
+        "features": [
+          {
+            "id": "grappler-feature-1",
+            "name": "Ability Score Increase",
+            "description": "Increase your Strength or Dexterity score by 1, to a maximum of 20.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "grappler-feature-2",
+            "name": "Punch and Grab",
+            "description": "When you hit a creature with an Unarmed Strike as part of the Attack action on your turn, you can use both the Damage and the Grapple option. You can use this benefit only once per turn.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "grappler-feature-3",
+            "name": "Attack Advantage",
+            "description": "You have Advantage on attack rolls against a creature Grappled by you.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "grappler-feature-4",
+            "name": "Fast Wrestler",
+            "description": "You don’t have to spend extra movement to move a creature Grappled by you if the creature is your size or smaller.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          }
+        ],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
       {
         "id": "basic-rules-2024-archery",
         "name": "Archery",
-        "description": "",
+        "description": "You gain a +2 bonus to attack rolls you make with Ranged weapons.",
         "features": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
@@ -18628,7 +18738,7 @@
       {
         "id": "basic-rules-2024-defense",
         "name": "Defense",
-        "description": "",
+        "description": "While you’re wearing Light, Medium, or Heavy armor, you gain a +1 bonus to Armor Class.",
         "features": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
@@ -18636,7 +18746,7 @@
       {
         "id": "basic-rules-2024-great-weapon-fighting",
         "name": "Great Weapon Fighting",
-        "description": "",
+        "description": "When you roll damage for an attack you make with a Melee weapon that you are holding with two hands, you can treat any 1 or 2 on a damage die as a 3. The weapon must have the Two-Handed or Versatile property to gain this benefit.",
         "features": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
@@ -18644,7 +18754,7 @@
       {
         "id": "basic-rules-2024-two-weapon-fighting",
         "name": "Two Weapon Fighting",
-        "description": "",
+        "description": "When you make an extra attack as a result of using a weapon that has the Light property, you can add your ability modifier to the damage of that attack if you aren’t already adding it to the damage.",
         "features": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
@@ -18652,56 +18762,175 @@
       {
         "id": "basic-rules-2024-boon-of-combat-prowess",
         "name": "Boon of Combat Prowess",
-        "description": "",
-        "features": [],
+        "description": "You gain the following benefits.",
+        "features": [
+          {
+            "id": "boon-of-combat-prowess-feature-1",
+            "name": "Ability Score Increase",
+            "description": "Increase one ability score of your choice by 1, to a maximum of 30.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "boon-of-combat-prowess-feature-2",
+            "name": "Peerless Aim",
+            "description": "When you miss with an attack roll, you can hit instead. Once you use this benefit, you can’t use it again until the start of your next turn.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          }
+        ],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
       {
         "id": "basic-rules-2024-boon-of-dimensional-travel",
         "name": "Boon of Dimensional Travel",
-        "description": "",
-        "features": [],
+        "description": "You gain the following benefits.",
+        "features": [
+          {
+            "id": "boon-of-dimensional-travel-feature-1",
+            "name": "Ability Score Increase",
+            "description": "Increase one ability score of your choice by 1, to a maximum of 30.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "boon-of-dimensional-travel-feature-2",
+            "name": "Blink Steps",
+            "description": "Immediately after you take the Attack action or the Magic action, you can teleport up to 30 feet to an unoccupied space you can see.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          }
+        ],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
       {
         "id": "basic-rules-2024-boon-of-fate",
         "name": "Boon of Fate",
-        "description": "",
-        "features": [],
+        "description": "You gain the following benefits.",
+        "features": [
+          {
+            "id": "boon-of-fate-feature-1",
+            "name": "Ability Score Increase",
+            "description": "Increase one ability score of your choice by 1, to a maximum of 30.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "boon-of-fate-feature-2",
+            "name": "Improve Fate",
+            "description": "When you or another creature within 60 feet of you succeeds on or fails a D20 Test, you can roll 2d4 and apply the total rolled as a bonus or penalty to the d20 roll. Once you use this benefit, you can’t use it again until you roll Initiative or finish a Short or Long Rest.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          }
+        ],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
       {
         "id": "basic-rules-2024-boon-of-irresistible-offense",
         "name": "Boon of Irresistible Offense",
-        "description": "",
-        "features": [],
+        "description": "You gain the following benefits.",
+        "features": [
+          {
+            "id": "boon-of-irresistible-offense-feature-1",
+            "name": "Ability Score Increase",
+            "description": "Increase one ability score of your choice by 1, to a maximum of 30.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "boon-of-irresistible-offense-feature-2",
+            "name": "Overcome Defenses",
+            "description": "The Bludgeoning, Piercing, and Slashing damage you deal always ignores Resistance.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "boon-of-irresistible-offense-feature-3",
+            "name": "Overwhelming Strike",
+            "description": "When you roll a 20 on the d20 for an attack roll, you can deal extra damage to the target equal to the ability score increased by this feat. The extra damage’s type is the same as the attack’s type.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          }
+        ],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
       {
         "id": "basic-rules-2024-boon-of-spell-recall",
         "name": "Boon of Spell Recall",
-        "description": "",
-        "features": [],
+        "description": "You gain the following benefits.",
+        "features": [
+          {
+            "id": "boon-of-spell-recall-feature-1",
+            "name": "Ability Score Increase",
+            "description": "Increase one ability score of your choice by 1, to a maximum of 30.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "boon-of-spell-recall-feature-2",
+            "name": "Free Casting",
+            "description": "Whenever you cast a spell with a level 1–4 spell slot, roll 1d4. If the number you roll is the same as the slot’s level, the slot isn’t expended.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          }
+        ],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
       {
         "id": "basic-rules-2024-boon-of-the-night-spirit",
         "name": "Boon of the Night Spirit",
-        "description": "",
-        "features": [],
+        "description": "You gain the following benefits.",
+        "features": [
+          {
+            "id": "boon-of-the-night-spirit-feature-1",
+            "name": "Ability Score Increase",
+            "description": "Increase one ability score of your choice by 1, to a maximum of 30.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "boon-of-the-night-spirit-feature-2",
+            "name": "Merge with Shadows",
+            "description": "While within Dim Light or Darkness, you can give yourself the Invisible condition as a Bonus Action. The condition ends on you immediately after you take an action, a Bonus Action, or a Reaction.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "boon-of-the-night-spirit-feature-3",
+            "name": "Shadowy form",
+            "description": "While within Dim Light or Darkness, you have Resistance to all damage except Psychic and Radiant.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          }
+        ],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       },
       {
         "id": "basic-rules-2024-boon-of-truesight",
         "name": "Boon of Truesight",
-        "description": "",
-        "features": [],
+        "description": "You gain the following benefits.",
+        "features": [
+          {
+            "id": "boon-of-truesight-feature-1",
+            "name": "Ability Score Increase",
+            "description": "Increase one ability score of your choice by 1, to a maximum of 30.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          },
+          {
+            "id": "boon-of-truesight-feature-2",
+            "name": "Truesight",
+            "description": "You have Truesight with a range of 60 feet.",
+            "level": 1,
+            "source": "Basic Rules (2024)"
+          }
+        ],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
       }

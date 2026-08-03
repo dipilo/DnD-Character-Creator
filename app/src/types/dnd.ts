@@ -217,6 +217,9 @@ export interface Equipment {
   // Weapon properties
   weaponCategory?: 'simple' | 'martial';
   weaponType?: 'melee' | 'ranged';
+  // Tool properties: which family a "one type of <x>" proficiency choice draws from,
+  // e.g. "Artisan's Tools", "Gaming Sets", "Musical Instruments".
+  toolCategory?: string;
   damage?: string;
   damageType?: string;
   properties?: string[];
@@ -319,6 +322,9 @@ export interface Character {
   abilityScoreChoiceSelections?: Record<string, (keyof AbilityScores)[]>;
   backgroundLanguageSelections?: string[];
   speciesLanguageSelections?: string[];
+  // Tool proficiencies granted as a choice ("One type of gaming set"), keyed by the choice's
+  // stable slot id so background and class grants stay independent.
+  toolProficiencySelections?: Record<string, string[]>;
   proficiencies: {
     skills: string[];
     tools: string[];
@@ -355,6 +361,11 @@ export interface Character {
   faction?: CharacterFaction;
   portrait?: CharacterPortrait;
   notes?: string;
+  // How the base ability scores were generated, kept so reopening the character in the builder
+  // restores the same entry mode instead of guessing from the numbers.
+  abilityScoreMethod?: AbilityScoreMethod;
+  rolledScores?: number[];
+  rolledScoreAssignments?: Partial<Record<keyof AbilityScores, number>>;
   createdAt: string;
   updatedAt: string;
 }
@@ -386,16 +397,20 @@ export type BuilderStep =
   | 'description'
   | 'review';
 
+export type AbilityScoreMethod = 'standard' | 'point-buy' | 'rolled' | 'manual';
+
 export interface BuilderState {
   currentStep: BuilderStep;
   character: Partial<Character>;
+  // Set while the builder is editing a saved character; saving updates that character in place.
+  editingCharacterId?: string;
   selectedSourceIds: string[];
   selectedSpeciesId?: string;
   selectedVariantId?: string;
   selectedClassId?: string;
   selectedSubclassId?: string;
   selectedBackgroundId?: string;
-  abilityScoreMethod: 'standard' | 'point-buy' | 'rolled' | 'manual';
+  abilityScoreMethod: AbilityScoreMethod;
   rolledScores?: number[];
   rolledScoreAssignments?: Partial<Record<keyof AbilityScores, number>>;
   pointBuyRemaining?: number;

@@ -73,8 +73,11 @@ const replaceTags = (value) => value.replaceAll(tagOrCommentPattern, (match, tag
 
 // Asides (designer commentary boxes), figures (art plus captions), and script/style
 // blocks are page furniture interleaved with the article body; they are never part of
-// an entity's own text.
+// an entity's own text. `compendium-first-line-blockquote` is the novel excerpt that opens
+// a chapter (attributed to an author, e.g. "— Elaine Cunningham, Daughter of the Drow"):
+// evocative, but not the entity's own description.
 const removeNonContentBlocks = (value) => value
+  .replaceAll(/<blockquote\b[^>]*\bclass="[^"]*compendium-first-line-blockquote[^"]*"[^>]*>[\s\S]*?<\/blockquote>/gi, ' ')
   .replaceAll(/<aside\b[\s\S]*?<\/aside>/gi, ' ')
   .replaceAll(/<figure\b[\s\S]*?<\/figure>/gi, ' ')
   .replaceAll(/<script\b[\s\S]*?<\/script>/gi, ' ')
@@ -267,6 +270,16 @@ const collectHeadingBlocks = (raw, level) => {
     ...entry,
     content: raw.slice(entry.contentStart, matches[index + 1]?.start ?? raw.length)
   }));
+};
+
+// A heading block's `content` runs to the next heading *of the same level*, so it can swallow
+// every nested subsection. When only the section's own body is wanted, cut at the next heading
+// of any level.
+const anyHeadingPattern = /<h[1-6]\b[^>]*>/i;
+const sliceSectionBody = (raw, contentStart = 0) => {
+  const body = raw.slice(contentStart);
+  const nextHeading = anyHeadingPattern.exec(body);
+  return nextHeading ? body.slice(0, nextHeading.index) : body;
 };
 
 const extractParagraphTexts = (raw) => {
@@ -473,15 +486,18 @@ const parsePrimaryAbility = (value) => {
 
 const parseSavingThrows = (value) => parseAbilityNames(value);
 
+// "or" separates alternatives, not list members: the Monk's "Choose one type of artisan's tools
+// or one musical instrument" is a single choice across two families. Splitting on it turned that
+// into two separate proficiencies (and lost the "choose one" framing), so only commas and
+// semicolons split entries — "A, B, or C" still splits correctly on its commas.
 const parseSimpleList = (value) => {
   if (!value || /^none$/i.test(value.trim())) {
     return [];
   }
 
   return value
-    .replaceAll(/\s+or\s+/gi, ', ')
-    .split(/,\s*/)
-    .map((entry) => repairMojibake(entry.trim()))
+    .split(/\s*[,;]\s*/)
+    .map((entry) => repairMojibake(entry.trim()).replace(/^or\s+/i, ''))
     .filter(Boolean);
 };
 
@@ -565,13 +581,29 @@ const parseSpeedFromText = (value, fallback = 30) => {
   return match ? Number(match[1]) : fallback;
 };
 
+const languageNamePattern = /common(?: sign language)?|draconic|dwarvish|elvish|giant|gnomish|goblin|halfling|orc|abyssal|celestial|deep speech|druidic|infernal|primordial|sylvan|undercommon/gi;
+// A Languages trait states the grant in its first sentence and then rambles about the culture,
+// name-dropping other tongues ("...Orc curses, Elvish musical expressions, Dwarvish military
+// phrases"). Scanning the whole trait turns that colour text into granted languages, so the scan
+// is scoped to the explicit grant clause.
+const languageGrantClausePattern = /(?:you (?:can|know how to) speak,?\s*read,?\s*and write|your languages? (?:are|is))\s+([^.]*)\./i;
+const languageChoicePattern = /\b(one|two|three|four|\d+)\s+(?:extra|additional|other|more)?\s*languages?\s+of your choice/i;
+export const languageChoicePlaceholder = 'One of your choice';
+
 const parseLanguagesText = (value) => {
   if (!value) {
     return [];
   }
 
-  const matched = value.match(/common(?: sign language)?|draconic|dwarvish|elvish|giant|gnomish|goblin|halfling|orc|abyssal|celestial|deep speech|druidic|infernal|primordial|sylvan|undercommon/gi) ?? [];
-  return Array.from(new Set(matched.map((entry) => repairMojibake(entry.trim()).replaceAll(/\b\w/g, (char) => char.toUpperCase()))));
+  const grantClause = languageGrantClausePattern.exec(value)?.[1] ?? value.split('.')[0] ?? value;
+  const matched = grantClause.match(languageNamePattern) ?? [];
+  const languages = Array.from(new Set(
+    matched.map((entry) => repairMojibake(entry.trim()).replaceAll(/\b\w/g, (char) => char.toUpperCase()))
+  ));
+
+  const choiceMatch = languageChoicePattern.exec(grantClause);
+  const choiceCount = choiceMatch ? parseCountWord(choiceMatch[1], 1) : 0;
+  return [...languages, ...Array.from({ length: choiceCount }, () => languageChoicePlaceholder)];
 };
 
 const parseAbilityScoreIncreaseText = (value) => {
@@ -821,14 +853,17 @@ const extractFeatureNamesFromCell = (featuresCell) => {
   };
 };
 
-const addFeatureLevelsFromRow = (cells, featureLevels, currentSubclassLevel) => {
+const addFeatureLevelsFromRow = (cells, featureLevels, currentSubclassLevel, featuresColumnIndex) => {
   const levelText = stripTags(cells[0]);
   const level = parseOrdinalLevel(levelText, Number.NaN);
   if (!Number.isFinite(level)) {
     return currentSubclassLevel;
   }
 
-  const featuresCell = cells[2];
+  const featuresCell = cells[featuresColumnIndex];
+  if (featuresCell === undefined) {
+    return currentSubclassLevel;
+  }
   const { strippedFeatures, names } = extractFeatureNamesFromCell(featuresCell);
   let subclassLevel = currentSubclassLevel;
 
@@ -851,6 +886,23 @@ const addFeatureLevelsFromRow = (cells, featureLevels, currentSubclassLevel) => 
   return subclassLevel;
 };
 
+// Class tables do not agree on where the Features column sits: the Barbarian's is third, but
+// classes with their own resource columns push it further right (Rogue's Sneak Attack, Monk's
+// Martial Arts/Ki/Unarmored Movement, Sorcerer's Sorcery Points). Reading a fixed index made
+// those tables yield no feature levels at all, which dropped every one of their features.
+const findFeaturesColumnIndex = (table) => {
+  for (const rowMatch of table.matchAll(tableRowRegex)) {
+    const headers = [...rowMatch[1].matchAll(/<th[^>]*>([\s\S]*?)<\/th>/gi)]
+      .map((cellMatch) => normalizeLabel(stripTags(cellMatch[1])));
+    const featuresIndex = headers.indexOf('features');
+    if (featuresIndex !== -1) {
+      return featuresIndex;
+    }
+  }
+
+  return 2;
+};
+
 const extractClassFeatureLevels = (raw) => {
   const featureLevels = new Map();
   let subclassLevel = 3;
@@ -860,13 +912,14 @@ const extractClassFeatureLevels = (raw) => {
       continue;
     }
 
+    const featuresColumnIndex = findFeaturesColumnIndex(table);
     for (const rowMatch of table.matchAll(tableRowRegex)) {
       const cells = [...rowMatch[1].matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)].map((cellMatch) => cellMatch[1]);
-      if (cells.length < 3) {
+      if (cells.length <= featuresColumnIndex) {
         continue;
       }
 
-      subclassLevel = addFeatureLevelsFromRow(cells, featureLevels, subclassLevel);
+      subclassLevel = addFeatureLevelsFromRow(cells, featureLevels, subclassLevel, featuresColumnIndex);
     }
   }
 
@@ -1067,6 +1120,37 @@ const parseClassEquipmentOptions = (equipmentText) => {
   return packageOptions.length > 1 ? [packageOptions] : [];
 };
 
+// 2014 class chapters have no "Starting Equipment" label; they list starting gear as bullets
+// under an Equipment heading, one choice group per bullet ("(a) a greataxe or (b) any martial
+// melee weapon"). Bullets without a marker are fixed grants, so they become single-option groups.
+const equipmentChoiceMarkerPattern = /\(([a-z])\)\s*/gi;
+const capitalizeFirst = (value) => (value ? value[0].toUpperCase() + value.slice(1) : value);
+
+const parseBasicRulesEquipmentBullets = (classBlockContent) => {
+  const equipmentSection = [...collectHeadingBlocks(classBlockContent, 3), ...collectHeadingBlocks(classBlockContent, 4)]
+    .find((entry) => /^equipment$/i.test(entry.title));
+  if (!equipmentSection) {
+    return [];
+  }
+
+  return extractListItems(sliceSectionBody(classBlockContent, equipmentSection.contentStart))
+    .map((item) => {
+      const markers = [...item.matchAll(equipmentChoiceMarkerPattern)];
+      const segments = markers.length > 1
+        ? markers.map((marker, index) => item.slice(
+            (marker.index ?? 0) + marker[0].length,
+            markers[index + 1]?.index ?? item.length
+          ))
+        : [item];
+
+      return segments
+        .map((segment) => capitalizeFirst(segment.replace(/[,;]?\s*\bor\s*$/i, '').trim()))
+        .map((segment) => parseEquipmentOptionText(segment))
+        .filter(Boolean);
+    })
+    .filter((group) => group.length > 0);
+};
+
 const extractBasicRulesSpellcasting = (raw, classId, primaryAbility) => {
   const spellcastingTable = collectTableBlocks(raw)
     .map((table) => ({
@@ -1204,6 +1288,13 @@ const getSubclassSectionForClassBlock = (block, sourceId) => {
   return collectHeadingBlocks(block.content, 2).find((entry) => /(paths|colleges|domains|circles|archetypes|traditions|oaths|origins|patrons)$/i.test(entry.title));
 };
 
+// Subclass features state their level in prose, and 5e uses every phrasing under the sun:
+// "Beginning at 6th level", "Starting at 3rd level", "At 14th level", "By 13th level",
+// "When you reach 17th level", "When you choose this archetype at 3rd level". Missing one of
+// these silently falls the feature back to the subclass's unlock level, so a 17th-level feature
+// shows up as available at 3rd. Keep the alternatives in one place.
+const subclassFeatureLevelPattern = /\b(?:when you (?:choose|select|adopt|join|reach|gain)[^.]{0,60}?\bat|when you reach|beginning at|starting at|by|at)\s+(\d+)(?:st|nd|rd|th)[\s-]level/i;
+
 const parseFeatureLevelFromSubclassText = (title, description, fallbackLevel) => {
   const titleMatch = title.match(/^Level\s+(\d+)/i);
   if (titleMatch) {
@@ -1216,7 +1307,7 @@ const parseFeatureLevelFromSubclassText = (title, description, fallbackLevel) =>
     return Number(boilerplateMatch[1]);
   }
 
-  const descriptionMatch = description.match(/(?:when you choose [^.]*? at|when you select [^.]*? at|beginning at|starting at|at)\s+(\d+)(?:st|nd|rd|th)\s+level/i);
+  const descriptionMatch = subclassFeatureLevelPattern.exec(description);
   if (descriptionMatch) {
     return Number(descriptionMatch[1]);
   }
@@ -1774,8 +1865,26 @@ const extractModernStatBlockMonsters = (raw, label, sourceId) => {
     .filter((entry) => entry?.actions?.length > 0);
 };
 
-const extractBasicRulesClasses = (raw, label, sourceId) => {
+// The 2014 dump splits every class chapter across sibling <h2> sections — the class name
+// ("Barbarian"), then "Class Features", then the subclass section ("Primal Paths") — so a block
+// sliced at the next <h2> stops before the proficiencies, equipment, and feature bodies. Extend
+// each class block to the next class heading (or the next chapter <h1>) so the whole chapter
+// travels with its class.
+const collectBasicRules2014ClassBlocks = (raw) => {
+  const chapterStarts = collectHeadingBlocks(raw, 1).map((entry) => entry.start);
   const classBlocks = collectHeadingBlocks(raw, 2).filter((block) => Boolean(getClassIdFromName(block.title)));
+
+  return classBlocks.map((block, index) => {
+    const nextClassStart = classBlocks[index + 1]?.start ?? raw.length;
+    const nextChapterStart = chapterStarts.find((start) => start > block.start) ?? raw.length;
+    return { ...block, content: raw.slice(block.contentStart, Math.min(nextClassStart, nextChapterStart)) };
+  });
+};
+
+const extractBasicRulesClasses = (raw, label, sourceId) => {
+  const classBlocks = sourceId === 'basic-rules-2014'
+    ? collectBasicRules2014ClassBlocks(raw)
+    : collectHeadingBlocks(raw, 2).filter((block) => Boolean(getClassIdFromName(block.title)));
   const classSummaries = sourceId === 'basic-rules-2014' ? extractBasicRules2014ClassSummaries(raw) : new Map();
 
   return classBlocks
@@ -1809,7 +1918,10 @@ const extractBasicRulesClasses = (raw, label, sourceId) => {
       const toolProficiencies = parseSimpleList(getPairValue([tablePairs, paragraphPairs], 'Tool Proficiencies', 'Tools'));
       const { skillChoices, skillCount } = parseSkillChoices(getPairValue([tablePairs, paragraphPairs], 'Skill Proficiencies', 'Skills'));
       const equipmentText = getPairValue([tablePairs, paragraphPairs], 'Starting Equipment');
-      const equipmentOptions = parseClassEquipmentOptions(equipmentText);
+      const labelledEquipmentOptions = parseClassEquipmentOptions(equipmentText);
+      const equipmentOptions = labelledEquipmentOptions.length > 0
+        ? labelledEquipmentOptions
+        : parseBasicRulesEquipmentBullets(classFeatureContent);
       const startingGold = (() => {
         const goldMatches = [...equipmentText.matchAll(/(\d+)\s*GP/gi)];
         return goldMatches.length > 0 ? Number(goldMatches.at(-1)[1]) : undefined;
@@ -1844,6 +1956,81 @@ const extractBasicRulesClasses = (raw, label, sourceId) => {
     .filter(Boolean);
 };
 
+const speciesMetadataLabels = new Set(['Ability Score Increase', 'Age', 'Size', 'Speed', 'Languages', 'Creature Type', 'Subrace']);
+
+const buildSpeciesTraitFeatures = (traitEntries, ownerTitle, label) => {
+  return traitEntries
+    .filter((entry) => !speciesMetadataLabels.has(entry.label))
+    .map((entry) => ({
+      id: slugify(`${ownerTitle}-${entry.label}`),
+      name: entry.label,
+      description: entry.value,
+      level: 1,
+      source: label
+    }));
+};
+
+// A species chapter ends with its subrace/lineage subsections (Hill Dwarf, High Elf, ...), which
+// are siblings of the traits heading rather than nested under it.
+const extractSpeciesSubraceVariants = (block, traitHeading, headingLevel, label) => {
+  if (!traitHeading) {
+    return [];
+  }
+
+  return collectHeadingBlocks(block.content, headingLevel)
+    .filter((entry) => entry.start > traitHeading.start && !/ traits$/i.test(entry.title) && !isChromeFeatureName(entry.title))
+    .map((entry) => {
+      const traitEntries = extractTraitEntries(entry.content);
+      const description = stripTrailingChrome(extractParagraphTexts(sliceSectionBody(entry.content)).join(' '));
+      if (traitEntries.length === 0) {
+        return null;
+      }
+
+      return {
+        id: slugify(entry.title),
+        name: repairMojibake(entry.title),
+        description,
+        abilityScoreIncreases: parseAbilityScoreIncreaseText(
+          traitEntries.find((trait) => trait.label === 'Ability Score Increase')?.value
+        ) ?? [],
+        features: buildSpeciesTraitFeatures(traitEntries, entry.title, label)
+      };
+    })
+    .filter(Boolean);
+};
+
+// Optional variants ship as a sidebar rather than a subsection, e.g. the "VARIANT HUMAN TRAITS"
+// box that replaces the base Ability Score Increase with two choices, a skill, and a feat.
+const variantTraitsSidebarPattern = /<blockquote\b[^>]*>([\s\S]*?)<\/blockquote>/gi;
+const variantTraitsHeadingPattern = /^VARIANT\s+(.+?)\s+TRAITS$/i;
+
+const extractSpeciesVariantSidebars = (block, label) => {
+  return [...block.content.matchAll(variantTraitsSidebarPattern)]
+    .map((match) => {
+      const paragraphs = extractParagraphTexts(match[1] ?? '');
+      const headingMatch = variantTraitsHeadingPattern.exec(paragraphs[0] ?? '');
+      if (!headingMatch) {
+        return null;
+      }
+
+      const traitEntries = extractTraitEntries(match[1] ?? '');
+      const traitLabels = new Set(traitEntries.map((entry) => entry.label));
+      const name = `Variant ${headingMatch[1].toLowerCase().replaceAll(/\b\w/g, (char) => char.toUpperCase())}`;
+      const description = paragraphs.slice(1).find((text) => !traitLabels.has(text.split(/[.:]/)[0])) ?? '';
+
+      return {
+        id: slugify(name),
+        name,
+        description: stripTrailingChrome(description),
+        abilityScoreIncreases: parseAbilityScoreIncreaseText(
+          traitEntries.find((trait) => trait.label === 'Ability Score Increase')?.value
+        ) ?? [],
+        features: buildSpeciesTraitFeatures(traitEntries, name, label)
+      };
+    })
+    .filter(Boolean);
+};
+
 const extractBasicRulesSpecies = (raw, label, sourceId) => {
   const speciesNames = basicRulesSpeciesNamesBySource.get(sourceId) ?? [];
   const headingLevel = sourceId === 'basic-rules-2024' ? 3 : 2;
@@ -1853,8 +2040,11 @@ const extractBasicRulesSpecies = (raw, label, sourceId) => {
     .map((block) => {
       const traitsHeadingLevel = sourceId === 'basic-rules-2024' ? 4 : 3;
       const traitHeading = collectHeadingBlocks(block.content, traitsHeadingLevel).find((entry) => / traits$/i.test(entry.title));
-      const introRaw = traitHeading ? block.content.slice(0, traitHeading.start) : block.content;
-      const description = stripTrailingChrome(extractParagraphTexts(introRaw).join(' '));
+      // A species chapter is mostly lore subsections (ethnicities, names, sidebars) between the
+      // opening paragraphs and the traits block. Slicing at the traits heading swept all of that
+      // into the description — for Human that was the whole chapter — so keep only the lead
+      // paragraphs that precede the first subsection.
+      const description = stripTrailingChrome(extractParagraphTexts(sliceSectionBody(block.content)).join(' '));
       const traitsRaw = traitHeading?.content ?? block.content;
       const traitEntries = extractTraitEntries(traitsRaw);
       const getTraitValue = (...labels) => traitEntries.find((entry) => labels.includes(entry.label))?.value ?? '';
@@ -1862,16 +2052,11 @@ const extractBasicRulesSpecies = (raw, label, sourceId) => {
       const speedText = getTraitValue('Speed');
       const languagesText = getTraitValue('Languages');
       const abilityScoreText = getTraitValue('Ability Score Increase');
-      const metadataLabels = new Set(['Ability Score Increase', 'Age', 'Size', 'Speed', 'Languages', 'Creature Type', 'Subrace']);
-      const features = traitEntries
-        .filter((entry) => !metadataLabels.has(entry.label))
-        .map((entry) => ({
-          id: slugify(`${block.title}-${entry.label}`),
-          name: entry.label,
-          description: entry.value,
-          level: 1,
-          source: label
-        }));
+      const features = buildSpeciesTraitFeatures(traitEntries, block.title, label);
+      const variants = [
+        ...extractSpeciesSubraceVariants(block, traitHeading, traitsHeadingLevel, label),
+        ...extractSpeciesVariantSidebars(block, label)
+      ];
 
       if (!description || !sizeText || !speedText) {
         return null;
@@ -1887,6 +2072,7 @@ const extractBasicRulesSpecies = (raw, label, sourceId) => {
         abilityScoreIncreases: parseAbilityScoreIncreaseText(abilityScoreText) ?? [],
         features,
         languages: parseLanguagesText(languagesText),
+        variants,
         source: label,
         sourceId
       };
@@ -2176,13 +2362,21 @@ const extractXanatharContent = (raw, label, sourceId) => {
 
       const featureBlocks = collectHeadingBlocks(block.content, 4)
         .filter((feature) => !/ features$/i.test(feature.title) && !isChromeFeatureName(feature.title))
-        .map((feature, index) => ({
-          id: `${slugify(row.subclassName)}-feature-${index + 1}`,
-          name: feature.title,
-          description: stripTrailingChrome(extractStructuredTexts(feature.content).join(' ')),
-          level: featureLevels.get(normalizeFeatureName(feature.title)) ?? row.level,
-          source: label
-        }))
+        .map((feature, index) => {
+          const description = stripTrailingChrome(extractStructuredTexts(feature.content).join(' '));
+          return {
+            id: `${slugify(row.subclassName)}-feature-${index + 1}`,
+            name: feature.title,
+            description,
+            // The subclass table is the authority, but it does not always list every feature
+            // (Consult the Spirits, Vengeful Ancestors). Read the level out of the feature's own
+            // prose before giving up and stamping it with the subclass's unlock level, which
+            // otherwise makes a 14th-level feature look available at 3rd.
+            level: featureLevels.get(normalizeFeatureName(feature.title))
+              ?? parseFeatureLevelFromSubclassText(feature.title, description, row.level),
+            source: label
+          };
+        })
         .filter((feature) => feature.description);
 
       return {
@@ -2190,7 +2384,7 @@ const extractXanatharContent = (raw, label, sourceId) => {
         classId: row.classId,
         name: row.subclassName,
         description: stripTrailingChrome(introParagraphs.join(' ')) || row.summary,
-        features: featureBlocks,
+        features: foldExpandedSpellTables(featureBlocks),
         source: label,
         sourceId
       };
@@ -2288,8 +2482,32 @@ const tashasSubclassSectionClassIds = new Map([
   ['artificerspecialists', 'artificer']
 ]);
 
+// A subclass that expands the spell list prints two headings: the prose "Expanded Spell List" and
+// the table "<Subclass> Expanded Spells". They are one feature, so the table is folded into the
+// prose instead of surfacing as a second, duplicate feature.
+const expandedSpellTablePattern = / expanded spells$/i;
+const expandedSpellListPattern = /^expanded spell list$/i;
+
+const foldExpandedSpellTables = (features) => {
+  const tableFeature = features.find((feature) => expandedSpellTablePattern.test(feature.name));
+  const listFeature = features.find((feature) => expandedSpellListPattern.test(feature.name));
+  if (!tableFeature || !listFeature) {
+    return features;
+  }
+
+  return features
+    .filter((feature) => feature !== tableFeature)
+    .map((feature) => (feature === listFeature
+      ? { ...feature, description: `${feature.description} ${tableFeature.description}`.trim() }
+      : feature));
+};
+
 const buildOptionalFeatureFromBlock = (featureBlock, classKey, label) => {
-  const texts = extractParagraphTexts(featureBlock.content);
+  // Sections that introduce a pool ("Eldritch Invocation Options", "Pact Boon Option") nest each
+  // option under their own heading. The block's content runs to the next *same-level* heading, so
+  // reading all of it glued the option bodies — prerequisites and all — onto the section's own
+  // description. The options are extracted separately into the feature's choice pool.
+  const texts = extractParagraphTexts(sliceSectionBody(featureBlock.content));
   const levelLine = texts.find((entry) => featureLevelBoilerplatePattern.test(entry));
   const description = stripTrailingChrome(
     takeUntilChrome(texts.filter((entry) => !featureLevelBoilerplatePattern.test(entry))).join(' ')
