@@ -2,7 +2,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { generateSourceModuleText, parseMonsterLanguages } from './canonical-content.mjs';
+import { generateSourceModuleText, parseMonsterLanguages, rewriteSourceCrossReferences } from './canonical-content.mjs';
 
 const scriptPath = fileURLToPath(import.meta.url);
 const workspaceRoot = path.resolve(path.dirname(scriptPath), '..');
@@ -924,9 +924,32 @@ export const createPack = async ({ edition, sourceId, label, category, includeCo
   };
 };
 
+// SRD prose carries the same page navigation as the HTML dumps ("a book of spells is a spellbook
+// (described later in this section)") but never passes through the HTML extractor, so the shared
+// rewriter is applied to the finished pack's prose fields instead.
+const crossReferenceTextKeys = new Set(['description', 'text', 'summary', 'feature']);
+
+const rewritePackCrossReferences = (value, key) => {
+  if (typeof value === 'string') {
+    return crossReferenceTextKeys.has(key) ? rewriteSourceCrossReferences(value) : value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((entry) => rewritePackCrossReferences(entry, key));
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([entryKey, entryValue]) => [entryKey, rewritePackCrossReferences(entryValue, entryKey)])
+    );
+  }
+
+  return value;
+};
+
 const writePack = async (pack, targetPath) => {
   const exportName = `${path.basename(targetPath, path.extname(targetPath)).replaceAll(/\W/g, '_')}_source`;
-  await fs.writeFile(targetPath, generateSourceModuleText(pack, exportName), 'utf8');
+  await fs.writeFile(targetPath, generateSourceModuleText(rewritePackCrossReferences(pack, ''), exportName), 'utf8');
 };
 
 const createEmptyBucketContent = () => ({

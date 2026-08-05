@@ -71,13 +71,23 @@ const replaceTags = (value) => value.replaceAll(tagOrCommentPattern, (match, tag
   tagName && inlineTagNames.has(tagName.toLowerCase()) ? '' : ' '
 ));
 
+// Blockquotes carry two very different things: an entity's own boxed rules text, and page
+// furniture. The furniture is the chapter epigraph (`compendium-first-line-blockquote`, e.g.
+// "— Elaine Cunningham, Daughter of the Drow"), the grey sidebar box (whose first paragraph
+// carries a `Sidebar-Styles_` heading, e.g. "YOUR PACT BOON" printed beside Eldritch Master),
+// and the in-character marginalia Xanathar's Guide prints throughout ("Hexblade. What a cool
+// name!"). None of it belongs to the entity whose section happens to contain it.
+const furnitureBlockquoteClassPattern = /compendium-first-line-blockquote|compendium-parchment-blockquote|xanathar-talking-blockquote|adventure-read-aloud-text|compendium-toc-blockquote/i;
+const sidebarHeadingClassPattern = /class="[^"]*Sidebar-Styles_/i;
+const blockquotePattern = /<blockquote\b([^>]*)>([\s\S]*?)<\/blockquote>/gi;
+const removeFurnitureBlockquotes = (value) => value.replaceAll(blockquotePattern, (match, attrs, body) => (
+  furnitureBlockquoteClassPattern.test(attrs) || sidebarHeadingClassPattern.test(body) ? ' ' : match
+));
+
 // Asides (designer commentary boxes), figures (art plus captions), and script/style
 // blocks are page furniture interleaved with the article body; they are never part of
-// an entity's own text. `compendium-first-line-blockquote` is the novel excerpt that opens
-// a chapter (attributed to an author, e.g. "— Elaine Cunningham, Daughter of the Drow"):
-// evocative, but not the entity's own description.
-const removeNonContentBlocks = (value) => value
-  .replaceAll(/<blockquote\b[^>]*\bclass="[^"]*compendium-first-line-blockquote[^"]*"[^>]*>[\s\S]*?<\/blockquote>/gi, ' ')
+// an entity's own text.
+const removeNonContentBlocks = (value) => removeFurnitureBlockquotes(value)
   .replaceAll(/<aside\b[\s\S]*?<\/aside>/gi, ' ')
   .replaceAll(/<figure\b[\s\S]*?<\/figure>/gi, ' ')
   .replaceAll(/<script\b[\s\S]*?<\/script>/gi, ' ')
@@ -97,16 +107,141 @@ const extractedTextNoisePatterns = [
   /\b[A-Z][^.]+ subclass is a specialization that grants you features at certain [^.]+ levels, as specified in the subclass\.[\s\S]*$/i
 ];
 
+// Removing a tag can leave the whitespace that surrounded it stranded in front of the punctuation
+// that followed ("you can't be blinded , deafened , or incapacitated"). Runs after whitespace has
+// been collapsed, so a single literal space is all there is to match.
+const strandedPunctuationPattern = / ([,;.])/g;
+
 const sanitizeExtractedText = (value) => {
   return extractedTextNoisePatterns.reduce((current, pattern) => current.replace(pattern, ' '), value)
     .replaceAll(/\s+/g, ' ')
+    .replaceAll(strandedPunctuationPattern, '$1')
     .trim();
 };
 
+// A printed book navigates by chapter ("see chapter 5, "Equipment""); a builder has none, so a
+// bare chapter number is dead text. The document itself says what its chapters are called, so the
+// titles are indexed from the references that name one and reused for the references that don't.
+// Only chapters that correspond to a builder step survive as a reference — `ContentReferenceText`
+// turns "see Equipment" into a link to it; everything else is dropped rather than left pointing at
+// a page the player cannot open.
+const navigableChapterTitles = new Set(['equipment', 'spells', 'feats', 'backgrounds', 'classes']);
+// The closing quote — or the period that stands in for it when the book drops one — terminates
+// the title, so the title run excludes those instead of repeating the opening class. Adjacent runs
+// that can match the same characters are what make a pattern backtrack super-linearly.
+const chapterTitleReferencePattern = /\bchapters?\s+(\d+)\s*,\s*[“"']([A-Za-z][^”"'.]{1,40})[”"'.]/gi;
+const spellChapterReferencePattern = /\ba spell in chapters?\s+\d+/gi;
+const bareChapterReferencePattern = /\bchapters?\s+(\d+)(?:\s+of\s+the\s+[^,.;)]+)?/gi;
+// Marks a chapter pointer that resolved to nothing a player can open, so the surrounding
+// parenthetical, clause, or navigation-only sentence can be removed around it. Each run leading up
+// to the marker excludes it, so no run can swallow the marker and then have to give it back.
+const deadReferenceMarker = '\uE000';
+const deadParentheticalPattern = new RegExp(String.raw`\s*\([^()${deadReferenceMarker}]*${deadReferenceMarker}[^()]*\)`, 'g');
+const navigationSentencePattern = new RegExp(
+  String.raw`(?:^|(?<=[.!?]\s))(?:See|For more information[^.!?]*see)\b[^.!?${deadReferenceMarker}]*${deadReferenceMarker}[^.!?]*[.!?]\s*`,
+  'g'
+);
+const deadClausePattern = new RegExp(
+  String.raw`[,;]?(?: (?:as )?(?:see|described in|explained in|detailed in|found in|presented in|provided in|from|in|of))? ?${deadReferenceMarker}`,
+  'g'
+);
+
+let documentChapterTitles = new Map();
+let documentSourceLabel = '';
+
+export const setDocumentReferenceContext = (raw, label) => {
+  documentChapterTitles = new Map();
+  documentSourceLabel = label ?? '';
+
+  for (const match of String(raw ?? '').matchAll(chapterTitleReferencePattern)) {
+    const title = decodeHtmlEntities(match[2]).replaceAll('­', '').trim();
+    if (title && !documentChapterTitles.has(match[1])) {
+      documentChapterTitles.set(match[1], title);
+    }
+  }
+};
+
+const resolveChapterReference = (chapterNumber, printedTitle) => {
+  const title = (printedTitle ?? documentChapterTitles.get(chapterNumber) ?? '').trim();
+  return navigableChapterTitles.has(title.toLowerCase()) ? title : deadReferenceMarker;
+};
+
+const rewriteBookReferences = (value) => {
+  if (!value.includes('chapter') && !value.includes('Chapter')) {
+    return value;
+  }
+
+  const resolved = value
+    // A footnote marker pointing at the book's own spell chapter is more useful as the book's name.
+    .replaceAll(spellChapterReferencePattern, documentSourceLabel ? `a ${documentSourceLabel} spell` : 'a spell from this source')
+    .replaceAll(chapterTitleReferencePattern, (match, chapterNumber, printedTitle) => {
+      const replacement = resolveChapterReference(chapterNumber, printedTitle);
+      // The title pattern eats the punctuation that closed the quote; put a period back.
+      return match.endsWith('.') && replacement !== deadReferenceMarker ? `${replacement}.` : replacement;
+    })
+    .replaceAll(bareChapterReferencePattern, (_match, chapterNumber) => resolveChapterReference(chapterNumber));
+
+  if (!resolved.includes(deadReferenceMarker)) {
+    return resolved;
+  }
+
+  return resolved
+    .replace(navigationSentencePattern, '')
+    .replaceAll(deadParentheticalPattern, '')
+    .replaceAll(deadClausePattern, '')
+    .replaceAll(deadReferenceMarker, '');
+};
+
+// "detailed at the end of the class description" is a page-layout instruction; in the builder the
+// options and subclasses it points at render directly beneath the feature.
+const trailingSectionReferencePattern = /\bat the end of the (?:class|subclass|species|race) description\b/gi;
+
+// Sidebars are page furniture and are removed with the rest of it, so a pointer at one — "(see the
+// "Your Spellbook" sidebar)" — would send the player to something that is no longer there.
+const sidebarPointerPattern = /\s*\((?:see|described in|explained in) the [^()]{0,60}sidebar[^()]{0,20}\)/gi;
+
+// Pointers to another part of the printed page. Every one of them carries a locating phrase
+// ("later in this class's description", "earlier in this section", "a class's section"), which is
+// what separates them from the ordinary noun — "a 10-foot section of wall" stays untouched.
+const sectionPointerRewrites = [
+  // "...described in the "Eldritch Invocation Options" section later in this class's description."
+  // "...two Metamagic options of your choice from "Metamagic Options" later in this class's
+  // description." Either way the thing being pointed at renders directly under the feature.
+  [/\s+(?:in|from) (?:the )?[“"'][^”"']{1,60}[”"'](?: section)?(?: (?:later|earlier))? in this (?:class|subclass|species|race)[’']?s? description/gi, ' below'],
+  // "(see the Cleric class's section for a list of Cleric spells)" — that list is the Spells step.
+  [/\s*\([^()]{0,40}class[’']?s? section[^()]{0,40}spells?[^()]{0,20}\)/gi, ' (see Spells)'],
+  [/\s*\([^()]{0,40}(?:later|earlier) in this section[^()]{0,20}\)/gi, '']
+];
+
+const sectionPointerHintPattern = /section|description/i;
+const rewriteSectionPointers = (value) => {
+  return sectionPointerHintPattern.test(value)
+    ? sectionPointerRewrites.reduce((current, [pattern, replacement]) => current.replaceAll(pattern, replacement), value)
+    : value;
+};
+
+// InDesign discretionary hyphens survive the export inside words ("Equip­ment"), which breaks
+// both reading and any match against the word.
+const softHyphenPattern = /\u00AD/g;
+
+// Turns a book's internal navigation into something a builder can honour. Shared with the
+// SRD-derived generator, whose entries never pass through the HTML extractor but carry the same
+// "(described later in this section)" pointers.
+export const rewriteSourceCrossReferences = (value) => {
+  if (typeof value !== 'string' || !value) {
+    return value;
+  }
+
+  const normalized = value
+    .replaceAll(softHyphenPattern, '')
+    .replaceAll(sidebarPointerPattern, '')
+    .replaceAll(trailingSectionReferencePattern, 'below');
+
+  return rewriteBookReferences(sanitizeExtractedText(rewriteSectionPointers(normalized)));
+};
+
 const stripTags = (value) => {
-  return sanitizeExtractedText(
-    repairMojibake(decodeHtmlEntities(replaceTags(value)))
-  );
+  return rewriteSourceCrossReferences(repairMojibake(decodeHtmlEntities(replaceTags(value))));
 };
 
 const slugify = (value, fallback = 'entry') => {
@@ -245,9 +380,29 @@ const tableRowRegex = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
 const tableCellRegex = /<td[^>]*>([\s\S]*?)<\/td>/gi;
 const anchorLinkRegex = /<a[^>]*href="#([^"]+)"[^>]*>([\s\S]*?)<\/a>/i;
 
-const collectHeadingBlocks = (raw, level) => {
+// A section ends where the document outline leaves it: at the next heading of the same level or
+// of any *higher* level. Ending only at the next same-level heading let a section run straight
+// through the chapter boundary that follows it — the Warlock's last class feature (Eldritch
+// Master, an <h3>) swallowed the whole "Eldritch Invocations" <h2> chapter because the next <h3>
+// only came inside it.
+const openingHeadingPattern = /<h([1-6])\b[^>]*>/gi;
+
+const findSectionEnd = (raw, level, contentStart) => {
+  openingHeadingPattern.lastIndex = contentStart;
+  let match;
+
+  while ((match = openingHeadingPattern.exec(raw)) !== null) {
+    if (Number(match[1]) <= level) {
+      return match.index;
+    }
+  }
+
+  return raw.length;
+};
+
+export const collectHeadingBlocks = (raw, level) => {
   const regex = new RegExp(String.raw`<h${level}([^>]*)>([\s\S]*?)<\/h${level}>`, 'gi');
-  const matches = [];
+  const blocks = [];
   let match;
 
   while ((match = regex.exec(raw)) !== null) {
@@ -258,25 +413,24 @@ const collectHeadingBlocks = (raw, level) => {
     }
 
     const idMatch = headingIdRegex.exec(attrs);
-    matches.push({
+    const contentStart = regex.lastIndex;
+    blocks.push({
       id: idMatch?.[1] ?? slugify(title),
       title,
       start: match.index,
-      contentStart: regex.lastIndex
+      contentStart,
+      content: raw.slice(contentStart, findSectionEnd(raw, level, contentStart))
     });
   }
 
-  return matches.map((entry, index) => ({
-    ...entry,
-    content: raw.slice(entry.contentStart, matches[index + 1]?.start ?? raw.length)
-  }));
+  return blocks;
 };
 
 // A heading block's `content` runs to the next heading *of the same level*, so it can swallow
 // every nested subsection. When only the section's own body is wanted, cut at the next heading
 // of any level.
 const anyHeadingPattern = /<h[1-6]\b[^>]*>/i;
-const sliceSectionBody = (raw, contentStart = 0) => {
+export const sliceSectionBody = (raw, contentStart = 0) => {
   const body = raw.slice(contentStart);
   const nextHeading = anyHeadingPattern.exec(body);
   return nextHeading ? body.slice(0, nextHeading.index) : body;
@@ -328,7 +482,7 @@ const formatTableRows = (rows) => {
   return rows.map((row) => row.join(' | '));
 };
 
-const extractStructuredTexts = (raw) => {
+export const extractStructuredTexts = (raw) => {
   return [...removeNonContentBlocks(raw).matchAll(/<(p|ul|ol|table)[^>]*>([\s\S]*?)<\/\1>/gi)]
     .flatMap((match) => {
       const tagName = match[1]?.toLowerCase();
@@ -350,6 +504,51 @@ const extractStructuredTexts = (raw) => {
       return [];
     })
     .filter(Boolean);
+};
+
+// An expanded/additional spell list is laid out as a torn-paper aside: bold level headings
+// ("Cantrip (0 Level)", "3rd Level") each followed by one paragraph per spell link. Asides are
+// page furniture everywhere else, so the list is only read back for features that announce one —
+// otherwise "Additional Warlock Spells" ships the sentence "The spells in the following list..."
+// with no list behind it.
+const spellListLevelPattern = /^(cantrip|\d(?:st|nd|rd|th))\b/i;
+const spellListAnnouncementPattern = /following list|following spells|(?:added to|expand) the [\w' -]{0,30}spell list/i;
+
+const parseSpellListGroups = (body) => {
+  const groups = [];
+  let current = null;
+
+  for (const match of String(body ?? '').matchAll(/<p([^>]*)>([\s\S]*?)<\/p>/gi)) {
+    const inner = match[2] ?? '';
+    const text = stripTags(inner);
+    if (!text) {
+      continue;
+    }
+
+    const boldText = stripTags(/<strong[^>]*>([\s\S]*?)<\/strong>/i.exec(inner)?.[1] ?? '');
+    const levelMatch = boldText === text ? spellListLevelPattern.exec(text) : null;
+    if (levelMatch) {
+      current = { label: levelMatch[1], spells: [] };
+      groups.push(current);
+      continue;
+    }
+
+    if (current) {
+      current.spells.push(text.replaceAll(/\s+\*/g, '*'));
+    }
+  }
+
+  return groups.filter((group) => group.spells.length > 0);
+};
+
+export const extractSpellListLines = (raw, announcementText) => {
+  if (!spellListAnnouncementPattern.test(announcementText ?? '')) {
+    return [];
+  }
+
+  return [...String(raw ?? '').matchAll(/<aside\b[^>]*>([\s\S]*?)<\/aside>/gi)]
+    .flatMap((match) => parseSpellListGroups(match[1] ?? ''))
+    .map((group) => `${group.label}: ${group.spells.join(', ')}`);
 };
 
 const classIdByName = new Map([
@@ -654,13 +853,17 @@ const parseAbilityScoreIncreaseText = (value) => {
 const inlineChoiceLeadPattern = /(?:\b(one|two|three|four|a|an)\s+)?(?:[\w'’-]+\s+){0,4}of your choice(?:\s+from the following(?:\s+list)?)?\s*:\s*([^.:;]+)[.;]/i;
 const inlineChoiceFollowingPattern = /choose\s+(one|two|three|four|\d+)\s+of the following(?:\s+options)?\s*:\s*([^.:;]+)[.;]/i;
 
+// Books close an inline list with a relative clause about the list as a whole ("..., the Fiend, or
+// the Great Old One, each of which is detailed below"). It is commentary, never an option.
+const trailingListClausePattern = /^(?:each|both|all|any|either|one|none|most)\s+of\s+(?:which|them|these)\b/i;
+
 const splitInlineChoiceList = (listText) => {
   return listText
     .replaceAll(/\s+or\s+/gi, ', ')
     .replaceAll(/\s+and\s+/gi, ', ')
     .split(/,\s*/)
     .map((entry) => entry.trim().replace(/^(?:or|and)\s+/i, ''))
-    .filter(Boolean);
+    .filter((entry) => entry && !trailingListClausePattern.test(entry));
 };
 
 const parseInlineChoiceFromDescription = (description) => {
@@ -692,6 +895,13 @@ const parseInlineChoiceFromDescription = (description) => {
 
 export const applyInlineFeatureChoiceOptions = (feature) => {
   if (!feature || typeof feature !== 'object' || feature.options?.length) {
+    return feature;
+  }
+
+  // "Otherworldly Patron" and "Primal Path" name their subclasses inline, but a subclass is not an
+  // inline option: the builder picks it on the Subclasses tab, where the full features live. An
+  // inline selector here would be a second, competing control that records nothing the sheet reads.
+  if (subclassFeaturePattern.test(feature.name ?? '')) {
     return feature;
   }
 
@@ -1262,7 +1472,13 @@ const extractClassFeaturesFromBlock = (raw, label, featureLevels) => {
         return null;
       }
 
-      const description = stripTrailingChrome(extractParagraphTexts(block.content).join(' '));
+      // Rage lists its benefits as bullets and Pact Magic tabulates its slots, so a
+      // paragraphs-only read shipped "you gain the following benefits:" with nothing after it.
+      const texts = takeUntilChrome(extractStructuredTexts(block.content))
+        .filter((entry) => !featureLevelBoilerplatePattern.test(entry));
+      const description = stripTrailingChrome(
+        [...texts, ...extractSpellListLines(block.content, texts.join(' '))].join(' ')
+      );
       if (!description) {
         return null;
       }
@@ -2507,10 +2723,14 @@ const buildOptionalFeatureFromBlock = (featureBlock, classKey, label) => {
   // option under their own heading. The block's content runs to the next *same-level* heading, so
   // reading all of it glued the option bodies — prerequisites and all — onto the section's own
   // description. The options are extracted separately into the feature's choice pool.
-  const texts = extractParagraphTexts(sliceSectionBody(featureBlock.content));
+  const body = sliceSectionBody(featureBlock.content);
+  const texts = extractStructuredTexts(body);
   const levelLine = texts.find((entry) => featureLevelBoilerplatePattern.test(entry));
+  const bodyTexts = takeUntilChrome(texts.filter((entry) => !featureLevelBoilerplatePattern.test(entry)));
+  // "Additional Warlock Spells" announces a list that is printed in a torn-paper aside beside the
+  // paragraph, so the spells have to be read back out of it or the feature is just a promise.
   const description = stripTrailingChrome(
-    takeUntilChrome(texts.filter((entry) => !featureLevelBoilerplatePattern.test(entry))).join(' ')
+    [...bodyTexts, ...extractSpellListLines(body, bodyTexts.join(' '))].join(' ')
   );
   if (!description || isChromeFeatureName(featureBlock.title)) {
     return null;
@@ -2967,6 +3187,8 @@ export const parseDocumentToCanonicalSourcePackage = ({
   parser = 'auto'
 }) => {
   const looksLikeHtml = /<html|<body|<!doctype/i.test(raw);
+  // Chapter titles and the book's own name resolve cross-references while this document is parsed.
+  setDocumentReferenceContext(raw, label);
   const title = extractTitle(raw) || label;
   const headingSections = looksLikeHtml ? extractHeadingSections(raw) : extractTextSections(raw);
   const sections = looksLikeHtml ? extractAnchorSections(raw, headingSections) : headingSections;

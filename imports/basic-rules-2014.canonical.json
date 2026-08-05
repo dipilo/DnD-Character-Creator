@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2014 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-08-03T10:07:20.916Z",
+    "importedAt": "2026-08-05T01:53:06.004Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -36,7 +36,7 @@
           {
             "id": "dwarf-dwarven-resilience",
             "name": "Dwarven Resilience",
-            "description": "You have advantage on saving throws against poison, and you have resistance against poison damage (explained in chapter 9, “Combat”).",
+            "description": "You have advantage on saving throws against poison, and you have resistance against poison damage.",
             "level": 1,
             "source": "Basic Rules (2014)"
           },
@@ -374,7 +374,7 @@
           {
             "id": "variant-human",
             "name": "Variant Human",
-            "description": "If your campaign uses the optional feat rules from chapter 6, your Dungeon Master might allow these variant traits, all of which replace the human’s Ability Score Increase trait.",
+            "description": "If your campaign uses the optional feat rules, your Dungeon Master might allow these variant traits, all of which replace the human’s Ability Score Increase trait.",
             "abilityScoreIncreases": [
               {
                 "ability": "choose",
@@ -727,7 +727,7 @@
           {
             "id": "rage",
             "name": "Rage",
-            "description": "In battle, you fight with primal ferocity. On your turn, you can enter a rage as a bonus action. While raging, you gain the following benefits if you aren’t wearing heavy armor: If you are able to cast spells, you can’t cast them or concentrate on them while raging. Your rage lasts for 1 minute. It ends early if you are knocked unconscious or if your turn ends and you haven’t attacked a hostile creature since your last turn or taken damage since then. You can also end your rage on your turn as a bonus action. Once you have raged the number of times shown for your barbarian level in the Rages column of the Barbarian table, you must finish a long rest before you can rage again.",
+            "description": "In battle, you fight with primal ferocity. On your turn, you can enter a rage as a bonus action. While raging, you gain the following benefits if you aren’t wearing heavy armor: • You have advantage on Strength checks and Strength saving throws. • When you make a melee weapon attack using Strength, you gain a bonus to the damage roll that increases as you gain levels as a barbarian, as shown in the Rage Damage column of the Barbarian table. • You have resistance to bludgeoning, piercing, and slashing damage. If you are able to cast spells, you can’t cast them or concentrate on them while raging. Your rage lasts for 1 minute. It ends early if you are knocked unconscious or if your turn ends and you haven’t attacked a hostile creature since your last turn or taken damage since then. You can also end your rage on your turn as a bonus action. Once you have raged the number of times shown for your barbarian level in the Rages column of the Barbarian table, you must finish a long rest before you can rage again.",
             "level": 1,
             "source": "Basic Rules (2014)"
           },
@@ -748,14 +748,14 @@
           {
             "id": "danger-sense",
             "name": "Danger Sense",
-            "description": "At 2nd level, you gain an uncanny sense of when things nearby aren’t as they should be, giving you an edge when you dodge away from danger. You have advantage on Dexterity saving throws against effects that you can see, such as traps and spells. To gain this benefit, you can’t be blinded , deafened , or incapacitated.",
+            "description": "At 2nd level, you gain an uncanny sense of when things nearby aren’t as they should be, giving you an edge when you dodge away from danger. You have advantage on Dexterity saving throws against effects that you can see, such as traps and spells. To gain this benefit, you can’t be blinded, deafened, or incapacitated.",
             "level": 2,
             "source": "Basic Rules (2014)"
           },
           {
             "id": "primal-path",
             "name": "Primal Path",
-            "description": "At 3rd level, you choose a path that shapes the nature of your rage. Choose the Path of the Berserker or the Path of the Totem Warrior, both detailed at the end of the class description. Your choice grants you features at 3rd level and again at 6th, 10th, and 14th levels.",
+            "description": "At 3rd level, you choose a path that shapes the nature of your rage. Choose the Path of the Berserker or the Path of the Totem Warrior, both detailed below. Your choice grants you features at 3rd level and again at 6th, 10th, and 14th levels.",
             "level": 3,
             "source": "Basic Rules (2014)"
           },
@@ -904,7 +904,7 @@
           {
             "id": "spellcasting",
             "name": "Spellcasting",
-            "description": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music. Your spells are part of your vast repertoire, magic that you can tune to different situations. See chapter 10 for the general rules of spellcasting and chapter 11 for the bard spell list. You know two cantrips of your choice from the bard spell list. You learn additional bard cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Bard table. The Bard table shows how many spell slots you have to cast your bard spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. For example, if you know the 1st-level spell cure wounds and have a 1st-level and a 2nd-level spell slot available, you can cast cure wounds using either slot. You know four 1st-level spells of your choice from the bard spell list. The Spells Known column of the Bard table shows when you learn more bard spells of your choice. Each of these spells must be of a level for which you have spell slots, as shown on the table. For instance, when you reach 3rd level in this class, you can learn one new spell of 1st or 2nd level. Additionally, when you gain a level in this class, you can choose one of the bard spells you know and replace it with another spell from the bard spell list, which also must be of a level for which you have spell slots. Charisma is your spellcasting ability for your bard spells. Your magic comes from the heart and soul you pour into the performance of your music or oration. You use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a bard spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Charisma modifier Spell attack modifier = your proficiency bonus + your Charisma modifier You can cast any bard spell you know as a ritual if that spell has the ritual tag. You can use a musical instrument (see chapter 5, “Equip­ment”) as a spellcasting focus for your bard spells.",
+            "description": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music. Your spells are part of your vast repertoire, magic that you can tune to different situations. You know two cantrips of your choice from the bard spell list. You learn additional bard cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Bard table. The Bard table shows how many spell slots you have to cast your bard spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. For example, if you know the 1st-level spell cure wounds and have a 1st-level and a 2nd-level spell slot available, you can cast cure wounds using either slot. You know four 1st-level spells of your choice from the bard spell list. The Spells Known column of the Bard table shows when you learn more bard spells of your choice. Each of these spells must be of a level for which you have spell slots, as shown on the table. For instance, when you reach 3rd level in this class, you can learn one new spell of 1st or 2nd level. Additionally, when you gain a level in this class, you can choose one of the bard spells you know and replace it with another spell from the bard spell list, which also must be of a level for which you have spell slots. Charisma is your spellcasting ability for your bard spells. Your magic comes from the heart and soul you pour into the performance of your music or oration. You use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a bard spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Charisma modifier Spell attack modifier = your proficiency bonus + your Charisma modifier You can cast any bard spell you know as a ritual if that spell has the ritual tag. You can use a musical instrument (see Equipment) as a spellcasting focus for your bard spells.",
             "level": 1,
             "source": "Basic Rules (2014)"
           },
@@ -932,28 +932,9 @@
           {
             "id": "bard-college",
             "name": "Bard College",
-            "description": "At 3rd level, you delve into the advanced techniques of a bard college of your choice: the College of Lore or the College of Valor, both detailed at the end of the class description. Your choice grants you features at 3rd level and again at 6th and 14th level.",
+            "description": "At 3rd level, you delve into the advanced techniques of a bard college of your choice: the College of Lore or the College of Valor, both detailed below. Your choice grants you features at 3rd level and again at 6th and 14th level.",
             "level": 3,
-            "source": "Basic Rules (2014)",
-            "requiresChoice": true,
-            "chooseCount": 1,
-            "options": [
-              {
-                "id": "the-college-of-lore",
-                "name": "the College of Lore",
-                "description": "the College of Lore option."
-              },
-              {
-                "id": "the-college-of-valor",
-                "name": "the College of Valor",
-                "description": "the College of Valor option."
-              },
-              {
-                "id": "both-detailed-at-the-end-of-the-class-description",
-                "name": "both detailed at the end of the class description",
-                "description": "both detailed at the end of the class description option."
-              }
-            ]
+            "source": "Basic Rules (2014)"
           },
           {
             "id": "expertise",
@@ -1125,14 +1106,14 @@
           {
             "id": "spellcasting",
             "name": "Spellcasting",
-            "description": "As a conduit for divine power, you can cast cleric spells. See chapter 10 for the general rules of spellcasting and chapter 11 for the cleric spell list. At 1st level, you know three cantrips of your choice from the cleric spell list. You learn additional cleric cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Cleric table. The Cleric table shows how many spell slots you have to cast your cleric spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. You prepare the list of cleric spells that are available for you to cast, choosing from the cleric spell list. When you do so, choose a number of cleric spells equal to your Wisdom modifier + your cleric level (minimum of one spell). The spells must be of a level for which you have spell slots. For example, if you are a 3rd-level cleric, you have four 1st-level and two 2nd-level spell slots. With a Wisdom of 16, your list of prepared spells can include six spells of 1st or 2nd level, in any combination. If you prepare the 1st-level spell cure wounds, you can cast it using a 1st-level or 2nd-level slot. Casting the spell doesn’t remove it from your list of prepared spells. You can change your list of prepared spells when you finish a long rest. Preparing a new list of cleric spells requires time spent in prayer and meditation: at least 1 minute per spell level for each spell on your list. Wisdom is your spellcasting ability for your cleric spells. The power of your spells comes from your devotion to your deity. You use your Wisdom whenever a cleric spell refers to your spellcasting ability. In addition, you use your Wisdom modifier when setting the saving throw DC for a cleric spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Wisdom modifier Spell attack modifier = your proficiency bonus + your Wisdom modifier You can cast a cleric spell as a ritual if that spell has the ritual tag and you have the spell prepared. You can use a holy symbol (see chapter 5, “Equipment”) as a spellcasting focus for your cleric spells.",
+            "description": "As a conduit for divine power, you can cast cleric spells. At 1st level, you know three cantrips of your choice from the cleric spell list. You learn additional cleric cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Cleric table. The Cleric table shows how many spell slots you have to cast your cleric spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. You prepare the list of cleric spells that are available for you to cast, choosing from the cleric spell list. When you do so, choose a number of cleric spells equal to your Wisdom modifier + your cleric level (minimum of one spell). The spells must be of a level for which you have spell slots. For example, if you are a 3rd-level cleric, you have four 1st-level and two 2nd-level spell slots. With a Wisdom of 16, your list of prepared spells can include six spells of 1st or 2nd level, in any combination. If you prepare the 1st-level spell cure wounds, you can cast it using a 1st-level or 2nd-level slot. Casting the spell doesn’t remove it from your list of prepared spells. You can change your list of prepared spells when you finish a long rest. Preparing a new list of cleric spells requires time spent in prayer and meditation: at least 1 minute per spell level for each spell on your list. Wisdom is your spellcasting ability for your cleric spells. The power of your spells comes from your devotion to your deity. You use your Wisdom whenever a cleric spell refers to your spellcasting ability. In addition, you use your Wisdom modifier when setting the saving throw DC for a cleric spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Wisdom modifier Spell attack modifier = your proficiency bonus + your Wisdom modifier You can cast a cleric spell as a ritual if that spell has the ritual tag and you have the spell prepared. You can use a holy symbol (see Equipment) as a spellcasting focus for your cleric spells.",
             "level": 1,
             "source": "Basic Rules (2014)"
           },
           {
             "id": "divine-domain",
             "name": "Divine Domain",
-            "description": "Choose one domain related to your deity: Knowledge, Life, Light, Nature, Tempest, Trickery, or War. Each domain is detailed at the end of the class description, and each one provides examples of gods associated with it. Your choice grants you domain spells and other features when you choose it at 1st level. It also grants you additional ways to use Channel Divinity when you gain that feature at 2nd level, and additional benefits at 6th, 8th, and 17th levels. Each domain has a list of spells — its domain spells — that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn’t count against the number of spells you can prepare each day. If you have a domain spell that doesn’t appear on the cleric spell list, the spell is nonetheless a cleric spell for you.",
+            "description": "Choose one domain related to your deity: Knowledge, Life, Light, Nature, Tempest, Trickery, or War. Each domain is detailed below, and each one provides examples of gods associated with it. Your choice grants you domain spells and other features when you choose it at 1st level. It also grants you additional ways to use Channel Divinity when you gain that feature at 2nd level, and additional benefits at 6th, 8th, and 17th levels. Each domain has a list of spells — its domain spells — that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn’t count against the number of spells you can prepare each day. If you have a domain spell that doesn’t appear on the cleric spell list, the spell is nonetheless a cleric spell for you.",
             "level": 1,
             "source": "Basic Rules (2014)"
           },
@@ -1153,7 +1134,7 @@
           {
             "id": "destroy-undead",
             "name": "Destroy Undead",
-            "description": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold, as shown in the Destroy Undead table. Destroy Undead",
+            "description": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold, as shown in the Destroy Undead table. Destroy Undead 5th: 1/2 or lower 8th: 1 or lower 11th: 2 or lower 14th: 3 or lower 17th: 4 or lower",
             "level": 5,
             "source": "Basic Rules (2014)"
           },
@@ -1302,21 +1283,21 @@
           {
             "id": "spellcasting",
             "name": "Spellcasting",
-            "description": "Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will. See chapter 10 for the general rules of spellcasting and chapter 11 for the druid spell list. At 1st level, you know two cantrips of your choice from the druid spell list. You learn additional druid cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Druid table. The Druid table shows how many spell slots you have to cast your spells of 1st level and higher. To cast one of these druid spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. You prepare the list of druid spells that are available for you to cast, choosing from the druid spell list. When you do so, choose a number of druid spells equal to your Wisdom modifier + your druid level (minimum of one spell). The spells must be of a level for which you have spell slots. For example, if you are a 3rd-level druid, you have four 1st-level and two 2nd-level spell slots. With a Wisdom of 16, your list of prepared spells can include six spells of 1st or 2nd level, in any combination. If you prepare the 1st-level spell cure wounds, you can cast it using a 1st-level or 2nd-level slot. Casting the spell doesn’t remove it from your list of prepared spells. You can also change your list of prepared spells when you finish a long rest. Preparing a new list of druid spells requires time spent in prayer and meditation: at least 1 minute per spell level for each spell on your list. Wisdom is your spellcasting ability for your druid spells, since your magic draws upon your devotion and attunement to nature. You use your Wisdom whenever a spell refers to your spellcasting ability. In addition, you use your Wisdom modifier when setting the saving throw DC for a druid spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Wisdom modifier Spell attack modifier = your proficiency bonus + your Wisdom modifier You can cast a druid spell as a ritual if that spell has the ritual tag and you have the spell prepared. You can use a druidic focus (see chapter 5, “Equip­ment”) as a spellcasting focus for your druid spells. SACRED PLANTS AND WOOD A druid holds certain plants to be sacred, particularly alder, ash, birch, elder, hazel, holly, juniper, mistletoe, oak, rowan, willow, and yew. Druids often use such plants as part of a spellcasting focus, incorporating lengths of oak or yew or sprigs of mistletoe. Similarly, a druid uses such woods to make other objects, such as weapons and shields. Yew is associated with death and rebirth, so weapon handles for scimitars or sickles might be fashioned from it. Ash is associated with life and oak with strength. These woods make excellent hafts or whole weapons, such as clubs or quarterstaffs, as well as shields. Alder is associated with air, and it might be used for thrown weapons, such as darts or javelins. Druids from regions that lack the plants described here have chosen other plants to take on similar uses. For instance, a druid of a desert region might value the yucca tree and cactus plants.",
+            "description": "Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will. At 1st level, you know two cantrips of your choice from the druid spell list. You learn additional druid cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Druid table. The Druid table shows how many spell slots you have to cast your spells of 1st level and higher. To cast one of these druid spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. You prepare the list of druid spells that are available for you to cast, choosing from the druid spell list. When you do so, choose a number of druid spells equal to your Wisdom modifier + your druid level (minimum of one spell). The spells must be of a level for which you have spell slots. For example, if you are a 3rd-level druid, you have four 1st-level and two 2nd-level spell slots. With a Wisdom of 16, your list of prepared spells can include six spells of 1st or 2nd level, in any combination. If you prepare the 1st-level spell cure wounds, you can cast it using a 1st-level or 2nd-level slot. Casting the spell doesn’t remove it from your list of prepared spells. You can also change your list of prepared spells when you finish a long rest. Preparing a new list of druid spells requires time spent in prayer and meditation: at least 1 minute per spell level for each spell on your list. Wisdom is your spellcasting ability for your druid spells, since your magic draws upon your devotion and attunement to nature. You use your Wisdom whenever a spell refers to your spellcasting ability. In addition, you use your Wisdom modifier when setting the saving throw DC for a druid spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Wisdom modifier Spell attack modifier = your proficiency bonus + your Wisdom modifier You can cast a druid spell as a ritual if that spell has the ritual tag and you have the spell prepared. You can use a druidic focus (see Equipment) as a spellcasting focus for your druid spells.",
             "level": 1,
             "source": "Basic Rules (2014)"
           },
           {
             "id": "wild-shape",
             "name": "Wild Shape",
-            "description": "Starting at 2nd level, you can use your action to magically assume the shape of a beast that you have seen before. You can use this feature twice. You regain expended uses when you finish a short or long rest. Your druid level determines the beasts you can transform into, as shown in the Beast Shapes table. At 2nd level, for example, you can transform into any beast that has a challenge rating of 1/4 or lower that doesn’t have a flying or swimming speed. Beast Shapes You can stay in a beast shape for a number of hours equal to half your druid level (rounded down). You then revert to your normal form unless you expend another use of this feature. You can revert to your normal form earlier by using a bonus action on your turn. You automatically revert if you fall unconscious, drop to 0 hit points, or die. While you are transformed, the following rules apply:",
+            "description": "Starting at 2nd level, you can use your action to magically assume the shape of a beast that you have seen before. You can use this feature twice. You regain expended uses when you finish a short or long rest. Your druid level determines the beasts you can transform into, as shown in the Beast Shapes table. At 2nd level, for example, you can transform into any beast that has a challenge rating of 1/4 or lower that doesn’t have a flying or swimming speed. Beast Shapes Level | Max. CR | Limitations | Example 2nd | 1/4 | No flying or swimming speed | Wolf 4th | 1/2 | No flying speed | Crocodile 8th | 1 | — | Giant eagle You can stay in a beast shape for a number of hours equal to half your druid level (rounded down). You then revert to your normal form unless you expend another use of this feature. You can revert to your normal form earlier by using a bonus action on your turn. You automatically revert if you fall unconscious, drop to 0 hit points, or die. While you are transformed, the following rules apply: • Your game statistics are replaced by the statistics of the beast, but you retain your alignment, personality, and Intelligence, Wisdom, and Charisma scores. You also retain all of your skill and saving throw proficiencies, in addition to gaining those of the creature. If the creature has the same proficiency as you and the bonus in its stat block is higher than yours, use the creature’s bonus instead of yours. If the creature has any legendary or lair actions, you can’t use them. • When you transform, you assume the beast’s hit points and Hit Dice. When you revert to your normal form, you return to the number of hit points you had before you transformed. However, if you revert as a result of dropping to 0 hit points, any excess damage carries over to your normal form. For example, if you take 10 damage in animal form and have only 1 hit point left, you revert and take 9 damage. As long as the excess damage doesn’t reduce your normal form to 0 hit points, you aren’t knocked unconscious. • You can’t cast spells, and your ability to speak or take any action that requires hands is limited to the capabilities of your beast form. Transforming doesn’t break your concentration on a spell you’ve already cast, however, or prevent you from taking actions that are part of a spell, such as call lightning, that you’ve already cast. • You retain the benefit of any features from your class, race, or other source and can use them if the new form is physically capable of doing so. However, you can’t use any of your special senses, such as darkvision, unless your new form also has that sense. • You choose whether your equipment falls to the ground in your space, merges into your new form, or is worn by it. Worn equipment functions as normal, but the DM decides whether it is practical for the new form to wear a piece of equipment, based on the creature’s shape and size. Your equipment doesn’t change size or shape to match the new form, and any equipment that the new form can’t wear must either fall to the ground or merge with it. Equipment that merges with the form has no effect until you leave the form.",
             "level": 2,
             "source": "Basic Rules (2014)"
           },
           {
             "id": "druid-circle",
             "name": "Druid Circle",
-            "description": "At 2nd level, you choose to identify with a circle of druids: the Circle of the Land or the Circle of the Moon, both detailed at the end of the class description. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level.",
+            "description": "At 2nd level, you choose to identify with a circle of druids: the Circle of the Land or the Circle of the Moon, both detailed below. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level.",
             "level": 2,
             "source": "Basic Rules (2014)"
           },
@@ -1467,7 +1448,7 @@
           {
             "id": "martial-archetype",
             "name": "Martial Archetype",
-            "description": "At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques. Choose Champion, Battle Master, or Eldritch Knight, all detailed at the end of the class description. The archetype you choose grants you features at 3rd level and again at 7th, 10th, 15th, and 18th level.",
+            "description": "At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques. Choose Champion, Battle Master, or Eldritch Knight, all detailed below. The archetype you choose grants you features at 3rd level and again at 7th, 10th, 15th, and 18th level.",
             "level": 3,
             "source": "Basic Rules (2014)"
           },
@@ -1581,7 +1562,7 @@
           {
             "id": "martial-arts",
             "name": "Martial Arts",
-            "description": "At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons, which are shortswords and any simple melee weapons that don’t have the two-handed or heavy property. You gain the following benefits while you are unarmed or wielding only monk weapons and you aren’t wearing armor or wielding a shield: Certain monasteries use specialized forms of the monk weapons. For example, you might use a club that is two lengths of wood connected by a short chain (called a nunchaku) or a sickle with a shorter, straighter blade (called a kama). Whatever name you use for a monk weapon, you can use the game statistics provided for the weapon in chapter 5, “Equipment.”",
+            "description": "At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons, which are shortswords and any simple melee weapons that don’t have the two-handed or heavy property. You gain the following benefits while you are unarmed or wielding only monk weapons and you aren’t wearing armor or wielding a shield: • You can use Dexterity instead of Strength for the attack and damage rolls of your unarmed strikes and monk weapons. • You can roll a d4 in place of the normal damage of your unarmed strike or monk weapon. This die changes as you gain monk levels, as shown in the Martial Arts column of the Monk table. • When you use the Attack action with an unarmed strike or a monk weapon on your turn, you can make one unarmed strike as a bonus action. For example, if you take the Attack action and attack with a quarterstaff, you can also make an unarmed strike as a bonus action, assuming you haven’t already taken a bonus action this turn. Certain monasteries use specialized forms of the monk weapons. For example, you might use a club that is two lengths of wood connected by a short chain (called a nunchaku) or a sickle with a shorter, straighter blade (called a kama). Whatever name you use for a monk weapon, you can use the game statistics provided for the weapon in Equipment.”",
             "level": 1,
             "source": "Basic Rules (2014)"
           },
@@ -1602,7 +1583,7 @@
           {
             "id": "monastic-tradition",
             "name": "Monastic Tradition",
-            "description": "When you reach 3rd level, you commit yourself to a monastic tradition: the Way of the Open Hand, the Way of Shadow, or the Way of the Four Elements, all detailed at the end of the class description. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level.",
+            "description": "When you reach 3rd level, you commit yourself to a monastic tradition: the Way of the Open Hand, the Way of Shadow, or the Way of the Four Elements, all detailed below. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level.",
             "level": 3,
             "source": "Basic Rules (2014)"
           },
@@ -1794,7 +1775,7 @@
           {
             "id": "spellcasting",
             "name": "Spellcasting",
-            "description": "By 2nd level, you have learned to draw on divine magic through meditation and prayer to cast spells as a cleric does. See chapter 10 for the general rules of spellcasting and chapter 11 for the paladin spell list. The Paladin table shows how many spell slots you have to cast your paladin spells. To cast one of your paladin spells of 1st level or higher, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. You prepare the list of paladin spells that are available for you to cast, choosing from the paladin spell list. When you do so, choose a number of paladin spells equal to your Charisma modifier + half your paladin level, rounded down (minimum of one spell). The spells must be of a level for which you have spell slots. For example, if you are a 5th-level paladin, you have four 1st-level and two 2nd-level spell slots. With a Charisma of 14, your list of prepared spells can include four spells of 1st or 2nd level, in any combination. If you prepare the 1st-level spell cure wounds, you can cast it using a 1st-level or a 2nd-level slot. Casting the spell doesn’t remove it from your list of prepared spells. You can change your list of prepared spells when you finish a long rest. Preparing a new list of paladin spells requires time spent in prayer and meditation: at least 1 minute per spell level for each spell on your list. Charisma is your spellcasting ability for your paladin spells, since their power derives from the strength of your convictions. You use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a paladin spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Charisma modifier Spell attack modifier = your proficiency bonus + your Charisma modifier You can use a holy symbol (see chapter 5, “Equipment”) as a spellcasting focus for your paladin spells.",
+            "description": "By 2nd level, you have learned to draw on divine magic through meditation and prayer to cast spells as a cleric does. The Paladin table shows how many spell slots you have to cast your paladin spells. To cast one of your paladin spells of 1st level or higher, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. You prepare the list of paladin spells that are available for you to cast, choosing from the paladin spell list. When you do so, choose a number of paladin spells equal to your Charisma modifier + half your paladin level, rounded down (minimum of one spell). The spells must be of a level for which you have spell slots. For example, if you are a 5th-level paladin, you have four 1st-level and two 2nd-level spell slots. With a Charisma of 14, your list of prepared spells can include four spells of 1st or 2nd level, in any combination. If you prepare the 1st-level spell cure wounds, you can cast it using a 1st-level or a 2nd-level slot. Casting the spell doesn’t remove it from your list of prepared spells. You can change your list of prepared spells when you finish a long rest. Preparing a new list of paladin spells requires time spent in prayer and meditation: at least 1 minute per spell level for each spell on your list. Charisma is your spellcasting ability for your paladin spells, since their power derives from the strength of your convictions. You use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a paladin spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Charisma modifier Spell attack modifier = your proficiency bonus + your Charisma modifier You can use a holy symbol (see Equipment) as a spellcasting focus for your paladin spells.",
             "level": 2,
             "source": "Basic Rules (2014)"
           },
@@ -1815,7 +1796,7 @@
           {
             "id": "sacred-oath",
             "name": "Sacred Oath",
-            "description": "When you reach 3rd level, you swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it. Now you choose the Oath of Devotion, the Oath of the Ancients, or the Oath of Vengeance, all detailed at the end of the class description. Your choice grants you features at 3rd level and again at 7th, 15th, and 20th level. Those features include oath spells and the Channel Divinity feature. Each oath has a list of associated spells. You gain access to these spells at the levels specified in the oath description. Once you gain access to an oath spell, you always have it prepared. Oath spells don’t count against the number of spells you can prepare each day. If you gain an oath spell that doesn’t appear on the paladin spell list, the spell is nonetheless a paladin spell for you. Your oath allows you to channel divine energy to fuel magical effects. Each Channel Divinity option provided by your oath explains how to use it. When you use your Channel Divinity, you choose which option to use. You must then finish a short or long rest to use your Channel Divinity again. Some Channel Divinity effects require saving throws. When you use such an effect from this class, the DC equals your paladin spell save DC.",
+            "description": "When you reach 3rd level, you swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it. Now you choose the Oath of Devotion, the Oath of the Ancients, or the Oath of Vengeance, all detailed below. Your choice grants you features at 3rd level and again at 7th, 15th, and 20th level. Those features include oath spells and the Channel Divinity feature. Each oath has a list of associated spells. You gain access to these spells at the levels specified in the oath description. Once you gain access to an oath spell, you always have it prepared. Oath spells don’t count against the number of spells you can prepare each day. If you gain an oath spell that doesn’t appear on the paladin spell list, the spell is nonetheless a paladin spell for you. Your oath allows you to channel divine energy to fuel magical effects. Each Channel Divinity option provided by your oath explains how to use it. When you use your Channel Divinity, you choose which option to use. You must then finish a short or long rest to use your Channel Divinity again. Some Channel Divinity effects require saving throws. When you use such an effect from this class, the DC equals your paladin spell save DC.",
             "level": 3,
             "source": "Basic Rules (2014)"
           },
@@ -1949,7 +1930,7 @@
           {
             "id": "natural-explorer",
             "name": "Natural Explorer",
-            "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, swamp, or the Underdark. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you’re proficient in. While traveling for an hour or more in your favored terrain, you gain the following benefits: You choose additional favored terrain types at 6th and 10th level.",
+            "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, swamp, or the Underdark. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you’re proficient in. While traveling for an hour or more in your favored terrain, you gain the following benefits: • Difficult terrain doesn’t slow your group’s travel. • Your group can’t become lost except by magical means. • Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger. • If you are traveling alone, you can move stealthily at a normal pace. • When you forage, you find twice as much food as you normally would. • While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area. You choose additional favored terrain types at 6th and 10th level.",
             "level": 1,
             "source": "Basic Rules (2014)"
           },
@@ -1963,14 +1944,14 @@
           {
             "id": "spellcasting",
             "name": "Spellcasting",
-            "description": "By the time you reach 2nd level, you have learned to use the magical essence of nature to cast spells, much as a druid does. See chapter 10 for the general rules of spellcasting and chapter 11 for the ranger spell list. The Ranger table shows how many spell slots you have to cast your ranger spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. For example, if you know the 1st-level spell animal friendship and have a 1st-level and a 2nd-level spell slot available, you can cast animal friendship using either slot. You know two 1st-level spells of your choice from the ranger spell list. The Spells Known column of the Ranger table shows when you learn more ranger spells of your choice. Each of these spells must be of a level for which you have spell slots. For instance, when you reach 5th level in this class, you can learn one new spell of 1st or 2nd level. Additionally, when you gain a level in this class, you can choose one of the ranger spells you know and replace it with another spell from the ranger spell list, which also must be of a level for which you have spell slots. Wisdom is your spellcasting ability for your ranger spells, since your magic draws on your attunement to nature. You use your Wisdom whenever a spell refers to your spellcasting ability. In addition, you use your Wisdom modifier when setting the saving throw DC for a ranger spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Wisdom modifier Spell attack modifier = your proficiency bonus + your Wisdom modifier",
+            "description": "By the time you reach 2nd level, you have learned to use the magical essence of nature to cast spells, much as a druid does. The Ranger table shows how many spell slots you have to cast your ranger spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. For example, if you know the 1st-level spell animal friendship and have a 1st-level and a 2nd-level spell slot available, you can cast animal friendship using either slot. You know two 1st-level spells of your choice from the ranger spell list. The Spells Known column of the Ranger table shows when you learn more ranger spells of your choice. Each of these spells must be of a level for which you have spell slots. For instance, when you reach 5th level in this class, you can learn one new spell of 1st or 2nd level. Additionally, when you gain a level in this class, you can choose one of the ranger spells you know and replace it with another spell from the ranger spell list, which also must be of a level for which you have spell slots. Wisdom is your spellcasting ability for your ranger spells, since your magic draws on your attunement to nature. You use your Wisdom whenever a spell refers to your spellcasting ability. In addition, you use your Wisdom modifier when setting the saving throw DC for a ranger spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Wisdom modifier Spell attack modifier = your proficiency bonus + your Wisdom modifier",
             "level": 2,
             "source": "Basic Rules (2014)"
           },
           {
             "id": "ranger-archetype",
             "name": "Ranger Archetype",
-            "description": "At 3rd level, you choose an archetype that you strive to emulate: Hunter or Beast Master, both detailed at the end of the class description. Your choice grants you features at 3rd level and again at 7th, 11th, and 15th level.",
+            "description": "At 3rd level, you choose an archetype that you strive to emulate: Hunter or Beast Master, both detailed below. Your choice grants you features at 3rd level and again at 7th, 11th, and 15th level.",
             "level": 3,
             "source": "Basic Rules (2014)"
           },
@@ -2308,7 +2289,7 @@
           {
             "id": "spellcasting",
             "name": "Spellcasting",
-            "description": "An event in your past, or in the life of a parent or ancestor, left an indelible mark on you, infusing you with arcane magic. This font of magic, whatever its origin, fuels your spells. See chapter 10 for the general rules of spellcasting and chapter 11 for the sorcerer spell list. At 1st level, you know four cantrips of your choice from the sorcerer spell list. You learn additional sorcerer cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Sorcerer table. The Sorcerer table shows how many spell slots you have to cast your sorcerer spells of 1st level and higher. To cast one of these sorcerer spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. For example, if you know the 1st-level spell burning hands and have a 1st-level and a 2nd-level spell slot available, you can cast burning hands using either slot. You know two 1st-level spells of your choice from the sorcerer spell list. The Spells Known column of the Sorcerer table shows when you learn more sorcerer spells of your choice. Each of these spells must be of a level for which you have spell slots. For instance, when you reach 3rd level in this class, you can learn one new spell of 1st or 2nd level. Additionally, when you gain a level in this class, you can choose one of the sorcerer spells you know and replace it with another spell from the sorcerer spell list, which also must be of a level for which you have spell slots. Charisma is your spellcasting ability for your sorcerer spells, since the power of your magic relies on your ability to project your will into the world. You use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a sorcerer spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Charisma modifier Spell attack modifier = your proficiency bonus + your Charisma modifier You can use an arcane focus (see chapter 5, “Equip­ment”) as a spellcasting focus for your sorcerer spells.",
+            "description": "An event in your past, or in the life of a parent or ancestor, left an indelible mark on you, infusing you with arcane magic. This font of magic, whatever its origin, fuels your spells. At 1st level, you know four cantrips of your choice from the sorcerer spell list. You learn additional sorcerer cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Sorcerer table. The Sorcerer table shows how many spell slots you have to cast your sorcerer spells of 1st level and higher. To cast one of these sorcerer spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. For example, if you know the 1st-level spell burning hands and have a 1st-level and a 2nd-level spell slot available, you can cast burning hands using either slot. You know two 1st-level spells of your choice from the sorcerer spell list. The Spells Known column of the Sorcerer table shows when you learn more sorcerer spells of your choice. Each of these spells must be of a level for which you have spell slots. For instance, when you reach 3rd level in this class, you can learn one new spell of 1st or 2nd level. Additionally, when you gain a level in this class, you can choose one of the sorcerer spells you know and replace it with another spell from the sorcerer spell list, which also must be of a level for which you have spell slots. Charisma is your spellcasting ability for your sorcerer spells, since the power of your magic relies on your ability to project your will into the world. You use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a sorcerer spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Charisma modifier Spell attack modifier = your proficiency bonus + your Charisma modifier You can use an arcane focus (see Equipment) as a spellcasting focus for your sorcerer spells.",
             "level": 1,
             "source": "Basic Rules (2014)"
           },
@@ -2322,14 +2303,14 @@
           {
             "id": "font-of-magic",
             "name": "Font of Magic",
-            "description": "At 2nd level, you tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects. You have 2 sorcery points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer table. You can never have more sorcery points than shown on the table for your level. You regain all spent sorcery points when you finish a long rest. You can use your sorcery points to gain additional spell slots, or sacrifice spell slots to gain additional sorcery points. You learn other ways to use your sorcery points as you reach higher levels. Creating Spell Slots. You can transform unexpended sorcery points into one spell slot as a bonus action on your turn. The Creating Spell Slots table shows the cost of creating a spell slot of a given level. You can create spell slots no higher in level than 5th. Any spell slot you create with this feature vanishes when you finish a long rest. Converting a Spell Slot to Sorcery Points. As a bonus action on your turn, you can expend one spell slot and gain a number of sorcery points equal to the slot’s level.",
+            "description": "At 2nd level, you tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects. You have 2 sorcery points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer table. You can never have more sorcery points than shown on the table for your level. You regain all spent sorcery points when you finish a long rest. You can use your sorcery points to gain additional spell slots, or sacrifice spell slots to gain additional sorcery points. You learn other ways to use your sorcery points as you reach higher levels. Creating Spell Slots. You can transform unexpended sorcery points into one spell slot as a bonus action on your turn. The Creating Spell Slots table shows the cost of creating a spell slot of a given level. You can create spell slots no higher in level than 5th. Any spell slot you create with this feature vanishes when you finish a long rest. 1st: 2 2nd: 3 3rd: 5 4th: 6 5th: 7 Converting a Spell Slot to Sorcery Points. As a bonus action on your turn, you can expend one spell slot and gain a number of sorcery points equal to the slot’s level.",
             "level": 2,
             "source": "Basic Rules (2014)"
           },
           {
             "id": "metamagic",
             "name": "Metamagic",
-            "description": "At 3rd level, you gain the ability to twist your spells to suit your needs. You gain two of the following Metamagic options of your choice. You gain another one at 10th and 17th level. You can use only one Metamagic option on a spell when you cast it, unless otherwise noted. When you cast a spell that forces other creatures to make a saving throw, you can protect some of those creatures from the spell’s full force. To do so, you spend 1 sorcery point and choose a number of those creatures up to your Charisma modifier (minimum of one creature). A chosen creature automatically succeeds on its saving throw against the spell. When you cast a spell that has a range of 5 feet or greater, you can spend 1 sorcery point to double the range of the spell. When you cast a spell that has a range of touch, you can spend 1 sorcery point to make the range of the spell 30 feet. When you roll damage for a spell, you can spend 1 sorcery point to reroll a number of the damage dice up to your Charisma modifier (minimum of one). You must use the new rolls. You can use Empowered Spell even if you have already used a different Metamagic option during the casting of the spell. When you cast a spell that has a duration of 1 minute or longer, you can spend 1 sorcery point to double its duration, to a maximum duration of 24 hours. When you cast a spell that forces a creature to make a saving throw to resist its effects, you can spend 3 sorcery points to give one target of the spell disadvantage on its first saving throw made against the spell. When you cast a spell that has a casting time of 1 action, you can spend 2 sorcery points to change the casting time to 1 bonus action for this casting. When you cast a spell, you can spend 1 sorcery point to cast it without any somatic or verbal components. When you cast a spell that targets only one creature and doesn’t have a range of self, you can spend a number of sorcery points equal to the spell’s level to target a second creature in range with the same spell (1 sorcery point if the spell is a cantrip). To be eligible, a spell must be incapable of targeting more than one creature at the spell’s current level. For example, magic missile and scorching ray aren’t eligible, but ray of frost and chromatic orb are.",
+            "description": "At 3rd level, you gain the ability to twist your spells to suit your needs. You gain two of the following Metamagic options of your choice. You gain another one at 10th and 17th level. You can use only one Metamagic option on a spell when you cast it, unless otherwise noted.",
             "level": 3,
             "source": "Basic Rules (2014)",
             "options": [
@@ -2341,12 +2322,12 @@
               {
                 "id": "distant-spell",
                 "name": "Distant Spell",
-                "description": "When you cast a spell that has a range of 5 feet or greater, you can spend 1 sorcery point to double the range of the spell."
+                "description": "When you cast a spell that has a range of 5 feet or greater, you can spend 1 sorcery point to double the range of the spell. When you cast a spell that has a range of touch, you can spend 1 sorcery point to make the range of the spell 30 feet."
               },
               {
                 "id": "empowered-spell",
                 "name": "Empowered Spell",
-                "description": "When you roll damage for a spell, you can spend 1 sorcery point to reroll a number of the damage dice up to your Charisma modifier (minimum of one). You must use the new rolls."
+                "description": "When you roll damage for a spell, you can spend 1 sorcery point to reroll a number of the damage dice up to your Charisma modifier (minimum of one). You must use the new rolls. You can use Empowered Spell even if you have already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "extended-spell",
@@ -2366,7 +2347,7 @@
               {
                 "id": "seeking-spell",
                 "name": "Seeking Spell",
-                "description": "If you make an attack roll for a spell and miss, you can spend 2 sorcery points to reroll the d20, and you must use the new roll."
+                "description": "If you make an attack roll for a spell and miss, you can spend 2 sorcery points to reroll the d20, and you must use the new roll. You can use Seeking Spell even if you have already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "subtle-spell",
@@ -2381,7 +2362,7 @@
               {
                 "id": "twinned-spell",
                 "name": "Twinned Spell",
-                "description": "When you cast a spell that targets only one creature and doesn't have a range of self, you can spend a number of sorcery points equal to the spell's level to target a second creature in range with the same spell (1 sorcery point if the spell is a cantrip)."
+                "description": "When you cast a spell that targets only one creature and doesn't have a range of self, you can spend a number of sorcery points equal to the spell's level to target a second creature in range with the same spell (1 sorcery point if the spell is a cantrip). To be eligible, a spell must be incapable of targeting more than one creature at the spell's current level. For example, magic missile and scorching ray aren't eligible, but ray of frost and chromatic orb are."
               }
             ],
             "chooseCount": 2,
@@ -2418,12 +2399,12 @@
               {
                 "id": "distant-spell",
                 "name": "Distant Spell",
-                "description": "When you cast a spell that has a range of 5 feet or greater, you can spend 1 sorcery point to double the range of the spell."
+                "description": "When you cast a spell that has a range of 5 feet or greater, you can spend 1 sorcery point to double the range of the spell. When you cast a spell that has a range of touch, you can spend 1 sorcery point to make the range of the spell 30 feet."
               },
               {
                 "id": "empowered-spell",
                 "name": "Empowered Spell",
-                "description": "When you roll damage for a spell, you can spend 1 sorcery point to reroll a number of the damage dice up to your Charisma modifier (minimum of one). You must use the new rolls."
+                "description": "When you roll damage for a spell, you can spend 1 sorcery point to reroll a number of the damage dice up to your Charisma modifier (minimum of one). You must use the new rolls. You can use Empowered Spell even if you have already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "extended-spell",
@@ -2443,7 +2424,7 @@
               {
                 "id": "seeking-spell",
                 "name": "Seeking Spell",
-                "description": "If you make an attack roll for a spell and miss, you can spend 2 sorcery points to reroll the d20, and you must use the new roll."
+                "description": "If you make an attack roll for a spell and miss, you can spend 2 sorcery points to reroll the d20, and you must use the new roll. You can use Seeking Spell even if you have already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "subtle-spell",
@@ -2458,7 +2439,7 @@
               {
                 "id": "twinned-spell",
                 "name": "Twinned Spell",
-                "description": "When you cast a spell that targets only one creature and doesn't have a range of self, you can spend a number of sorcery points equal to the spell's level to target a second creature in range with the same spell (1 sorcery point if the spell is a cantrip)."
+                "description": "When you cast a spell that targets only one creature and doesn't have a range of self, you can spend a number of sorcery points equal to the spell's level to target a second creature in range with the same spell (1 sorcery point if the spell is a cantrip). To be eligible, a spell must be incapable of targeting more than one creature at the spell's current level. For example, magic missile and scorching ray aren't eligible, but ray of frost and chromatic orb are."
               }
             ]
           },
@@ -2479,12 +2460,12 @@
               {
                 "id": "distant-spell",
                 "name": "Distant Spell",
-                "description": "When you cast a spell that has a range of 5 feet or greater, you can spend 1 sorcery point to double the range of the spell."
+                "description": "When you cast a spell that has a range of 5 feet or greater, you can spend 1 sorcery point to double the range of the spell. When you cast a spell that has a range of touch, you can spend 1 sorcery point to make the range of the spell 30 feet."
               },
               {
                 "id": "empowered-spell",
                 "name": "Empowered Spell",
-                "description": "When you roll damage for a spell, you can spend 1 sorcery point to reroll a number of the damage dice up to your Charisma modifier (minimum of one). You must use the new rolls."
+                "description": "When you roll damage for a spell, you can spend 1 sorcery point to reroll a number of the damage dice up to your Charisma modifier (minimum of one). You must use the new rolls. You can use Empowered Spell even if you have already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "extended-spell",
@@ -2504,7 +2485,7 @@
               {
                 "id": "seeking-spell",
                 "name": "Seeking Spell",
-                "description": "If you make an attack roll for a spell and miss, you can spend 2 sorcery points to reroll the d20, and you must use the new roll."
+                "description": "If you make an attack roll for a spell and miss, you can spend 2 sorcery points to reroll the d20, and you must use the new roll. You can use Seeking Spell even if you have already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "subtle-spell",
@@ -2519,7 +2500,7 @@
               {
                 "id": "twinned-spell",
                 "name": "Twinned Spell",
-                "description": "When you cast a spell that targets only one creature and doesn't have a range of self, you can spend a number of sorcery points equal to the spell's level to target a second creature in range with the same spell (1 sorcery point if the spell is a cantrip)."
+                "description": "When you cast a spell that targets only one creature and doesn't have a range of self, you can spend a number of sorcery points equal to the spell's level to target a second creature in range with the same spell (1 sorcery point if the spell is a cantrip). To be eligible, a spell must be incapable of targeting more than one creature at the spell's current level. For example, magic missile and scorching ray aren't eligible, but ray of frost and chromatic orb are."
               }
             ]
           }
@@ -2646,21 +2627,21 @@
           {
             "id": "otherworldly-patron",
             "name": "Otherworldly Patron",
-            "description": "At 1st level, you have struck a bargain with an otherworldly being of your choice: the Archfey, the Fiend, or the Great Old One, each of which is detailed at the end of the class description. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level.",
+            "description": "At 1st level, you have struck a bargain with an otherworldly being of your choice: the Archfey, the Fiend, or the Great Old One, each of which is detailed below. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level.",
             "level": 1,
             "source": "Basic Rules (2014)"
           },
           {
             "id": "pact-magic",
             "name": "Pact Magic",
-            "description": "Your arcane research and the magic bestowed on you by your patron have given you facility with spells. See chapter 10 for the general rules of spellcasting and chapter 11 for the warlock spell list. You know two cantrips of your choice from the warlock spell list. You learn additional warlock cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Warlock table. The Warlock table shows how many spell slots you have to cast your warlock spells of 1st through 5th level. The table also shows what the level of those slots is; all of your spell slots are the same level. To cast one of your warlock spells of 1st level or higher, you must expend a spell slot. You regain all expended Pact Magic spell slots when you finish a short or long rest. For example, when you are 5th level, you have two 3rd-level spell slots. To cast the 1st-level spell witch bolt, you must spend one of those slots, and you cast it as a 3rd-level spell. At 1st level, you know two 1st-level spells of your choice from the warlock spell list. The Spells Known column of the Warlock table shows when you learn more warlock spells of your choice of 1st level and higher. A spell you choose must be of a level no higher than what’s shown in the table’s Slot Level column for your level. When you reach 6th level, for example, you learn a new warlock spell, which can be 1st, 2nd, or 3rd level. Additionally, when you gain a level in this class, you can choose one of the warlock spells you know and replace it with another spell from the warlock spell list, which also must be of a level for which you have spell slots. Charisma is your spellcasting ability for your warlock spells, so you use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a warlock spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Charisma modifier Spell attack modifier = your proficiency bonus + your Charisma modifier You can use an arcane focus (see chapter 5, “Equip­ment”) as a spellcasting focus for your warlock spells.",
+            "description": "Your arcane research and the magic bestowed on you by your patron have given you facility with spells. You know two cantrips of your choice from the warlock spell list. You learn additional warlock cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Warlock table. The Warlock table shows how many spell slots you have to cast your warlock spells of 1st through 5th level. The table also shows what the level of those slots is; all of your spell slots are the same level. To cast one of your warlock spells of 1st level or higher, you must expend a spell slot. You regain all expended Pact Magic spell slots when you finish a short or long rest. For example, when you are 5th level, you have two 3rd-level spell slots. To cast the 1st-level spell witch bolt, you must spend one of those slots, and you cast it as a 3rd-level spell. At 1st level, you know two 1st-level spells of your choice from the warlock spell list. The Spells Known column of the Warlock table shows when you learn more warlock spells of your choice of 1st level and higher. A spell you choose must be of a level no higher than what’s shown in the table’s Slot Level column for your level. When you reach 6th level, for example, you learn a new warlock spell, which can be 1st, 2nd, or 3rd level. Additionally, when you gain a level in this class, you can choose one of the warlock spells you know and replace it with another spell from the warlock spell list, which also must be of a level for which you have spell slots. Charisma is your spellcasting ability for your warlock spells, so you use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a warlock spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Charisma modifier Spell attack modifier = your proficiency bonus + your Charisma modifier You can use an arcane focus (see Equipment) as a spellcasting focus for your warlock spells.",
             "level": 1,
             "source": "Basic Rules (2014)"
           },
           {
             "id": "eldritch-invocations",
             "name": "Eldritch Invocations",
-            "description": "In your study of occult lore, you have unearthed eldritch invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability. At 2nd level, you gain two eldritch invocations of your choice. Your invocation options are detailed at the end of the class description. When you gain certain warlock levels, you gain additional invocations of your choice, as shown in the Invocations Known column of the Warlock table. Additionally, when you gain a level in this class, you can choose one of the invocations you know and replace it with another invocation that you could learn at that level.",
+            "description": "In your study of occult lore, you have unearthed eldritch invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability. At 2nd level, you gain two eldritch invocations of your choice. Your invocation options are detailed below. When you gain certain warlock levels, you gain additional invocations of your choice, as shown in the Invocations Known column of the Warlock table. Additionally, when you gain a level in this class, you can choose one of the invocations you know and replace it with another invocation that you could learn at that level.",
             "level": 2,
             "source": "Basic Rules (2014)",
             "options": [
@@ -2729,7 +2710,7 @@
               {
                 "id": "book-of-ancient-secrets",
                 "name": "Book of Ancient Secrets",
-                "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list (the two needn't be from the same list). The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag.",
+                "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list (the two needn't be from the same list). The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag. On your adventures, you can add other ritual spells to your Book of Shadows. When you find such a spell, you can add it to the book if the spell's level is equal to or less than half your warlock level (rounded up) and if you can spare the time to transcribe the spell. For each level of the spell, the transcription process takes 2 hours and costs 50 gp for the rare inks needed to inscribe it.",
                 "prerequisites": {
                   "text": "Pact of the Tome feature",
                   "requiredOptionIds": [
@@ -2797,7 +2778,7 @@
               {
                 "id": "far-scribe",
                 "name": "Far Scribe",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "5th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 5,
@@ -2820,7 +2801,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. When any creature whose name is on the page is reduced to 0 hit points but not killed outright, the creature magically drops to 1 hit point instead. Once this magic is triggered, no creature can benefit from it until you finish a long rest. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "9th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 9,
@@ -2833,7 +2814,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits:",
+                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits: • The familiar gains either a flying speed or a swimming speed (your choice) of 40 feet. • As a bonus action, you can command the familiar to take the Attack action. • The familiar's weapon attacks are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks. • If the familiar forces a creature to make a saving throw, it uses your spell save DC. • When the familiar takes damage, you can use your reaction to grant it resistance against that damage.",
                 "prerequisites": {
                   "text": "Pact of the Chain feature",
                   "requiredOptionIds": [
@@ -3060,29 +3041,29 @@
           {
             "id": "pact-boon",
             "name": "Pact Boon",
-            "description": "At 3rd level, your otherworldly patron bestows a gift upon you for your loyal service. You gain one of the following features of your choice. You learn the find familiar spell and can cast it as a ritual. The spell doesn’t count against your number of spells known. When you cast the spell, you can choose one of the normal forms for your familiar or one of the following special forms: imp, pseudodragon, quasit, or sprite. Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack of its own with its reaction. You can use your action to create a pact weapon in your empty hand. You can choose the form that this melee weapon takes each time you create it (see chapter 5 for weapon options). You are proficient with it while you wield it. This weapon counts as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage. Your pact weapon disappears if it is more than 5 feet away from you for 1 minute or more. It also disappears if you use this feature again, if you dismiss the weapon (no action required), or if you die. You can transform one magic weapon into your pact weapon by performing a special ritual while you hold the weapon. You perform the ritual over the course of 1 hour, which can be done during a short rest. You can then dismiss the weapon, shunting it into an extradimensional space, and it appears whenever you create your pact weapon thereafter. You can’t affect an artifact or a sentient weapon in this way. The weapon ceases being your pact weapon if you die, if you perform the 1-hour ritual on a different weapon, or if you use a 1-hour ritual to break your bond to it. The weapon appears at your feet if it is in the extradimensional space when the bond breaks. Your patron gives you a grimoire called a Book of Shadows. When you gain this feature, choose three cantrips from any class’s spell list (the three needn’t be from the same list). While the book is on your person, you can cast those cantrips at will. They don’t count against your number of cantrips known. If they don’t appear on the warlock spell list, they are nonetheless warlock spells for you. If you lose your Book of Shadows, you can perform a 1-hour ceremony to receive a replacement from your patron. This ceremony can be performed during a short or long rest, and it destroys the previous book. The book turns to ash when you die.",
+            "description": "At 3rd level, your otherworldly patron bestows a gift upon you for your loyal service. You gain one of the following features of your choice.",
             "level": 3,
             "source": "Basic Rules (2014)",
             "options": [
               {
                 "id": "pact-of-the-blade",
                 "name": "Pact of the Blade",
-                "description": "You can use your action to create a pact weapon in your empty hand. You can choose the form that this melee weapon takes each time you create it (see chapter 5 for weapon options). You are proficient with it while you wield it. This weapon counts as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage."
+                "description": "You can use your action to create a pact weapon in your empty hand. You can choose the form that this melee weapon takes each time you create it. You are proficient with it while you wield it. This weapon counts as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage. Your pact weapon disappears if it is more than 5 feet away from you for 1 minute or more. It also disappears if you use this feature again, if you dismiss the weapon (no action required), or if you die. You can transform one magic weapon into your pact weapon by performing a special ritual while you hold the weapon. You perform the ritual over the course of 1 hour, which can be done during a short rest. You can then dismiss the weapon, shunting it into an extradimensional space, and it appears whenever you create your pact weapon thereafter. You can't affect an artifact or a sentient weapon in this way. The weapon ceases being your pact weapon if you die, if you perform the 1-hour ritual on a different weapon, or if you use a 1-hour ritual to break your bond to it. The weapon appears at your feet if it is in the extradimensional space when the bond breaks."
               },
               {
                 "id": "pact-of-the-chain",
                 "name": "Pact of the Chain",
-                "description": "You learn the find familiar spell and can cast it as a ritual. The spell doesn't count against your number of spells known."
+                "description": "You learn the find familiar spell and can cast it as a ritual. The spell doesn't count against your number of spells known. When you cast the spell, you can choose one of the normal forms for your familiar or one of the following special forms: imp, pseudodragon, quasit, or sprite. Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack of its own with its reaction."
               },
               {
                 "id": "pact-of-the-talisman",
                 "name": "Pact of the Talisman",
-                "description": "Your patron gives you an amulet, a talisman that can aid the wearer when the need is great. When the wearer fails an ability check, they can add a d4 to the roll, potentially turning the roll into a success. This benefit can be used a number of times equal to your proficiency bonus, and all expended uses are restored when you finish a long rest."
+                "description": "Your patron gives you an amulet, a talisman that can aid the wearer when the need is great. When the wearer fails an ability check, they can add a d4 to the roll, potentially turning the roll into a success. This benefit can be used a number of times equal to your proficiency bonus, and all expended uses are restored when you finish a long rest. If you lose the talisman, you can perform a 1-hour ceremony to receive a replacement from your patron. This ceremony can be performed during a short or long rest, and it destroys the previous amulet. The talisman turns to ash when you die."
               },
               {
                 "id": "pact-of-the-tome",
                 "name": "Pact of the Tome",
-                "description": "Your patron gives you a grimoire called a Book of Shadows. When you gain this feature, choose three cantrips from any class's spell list (the three needn't be from the same list). While the book is on your person, you can cast those cantrips at will. They don't count against your number of cantrips known. If they don't appear on the warlock spell list, they are nonetheless warlock spells for you."
+                "description": "Your patron gives you a grimoire called a Book of Shadows. When you gain this feature, choose three cantrips from any class's spell list (the three needn't be from the same list). While the book is on your person, you can cast those cantrips at will. They don't count against your number of cantrips known. If they don't appear on the warlock spell list, they are nonetheless warlock spells for you. If you lose your Book of Shadows, you can perform a 1-hour ceremony to receive a replacement from your patron. This ceremony can be performed during a short or long rest, and it destroys the previous book. The book turns to ash when you die."
               }
             ],
             "chooseCount": 1,
@@ -3105,7 +3086,7 @@
           {
             "id": "eldritch-master",
             "name": "Eldritch Master",
-            "description": "At 20th level, you can draw on your inner reserve of mystical power while entreating your patron to regain expended spell slots. You can spend 1 minute entreating your patron for aid to regain all your expended spell slots from your Pact Magic feature. Once you regain spell slots with this feature, you must finish a long rest before you can do so again. YOUR PACT BOON Each Pact Boon option produces a special creature or an object that reflects your patron’s nature. Pact of the Chain. Your familiar is more cunning than a typical familiar. Its default form can be a reflection of your patron, with sprites and pseudodragons tied to the Archfey and imps and quasits tied to the Fiend. Because the Great Old One’s nature is inscrutable, any familiar form is suitable for it. Pact of the Blade. If your patron is the Archfey, your weapon might be a slender blade wrapped in leafy vines. If you serve the Fiend, your weapon could be an axe made of black metal and adorned with decorative flames. If your patron is the Great Old One, your weapon might be an ancient-looking spear, with a gemstone embedded in its head, carved to look like a terrible unblinking eye. Pact of the Tome. Your Book of Shadows might be a fine, gilt-edged tome with spells of enchantment and illusion, gifted to you by the lordly Archfey. It could be a weighty tome bound in demon hide studded with iron, holding spells of conjuration and a wealth of forbidden lore about the sinister regions of the cosmos, a gift of the Fiend. Or it could be the tattered diary of a lunatic driven mad by contact with the Great Old One, holding scraps of spells that only your own burgeoning insanity allows you to understand and cast. If an eldritch invocation has prerequisites, you must meet them to learn it. You can learn the invocation at the same time that you meet its prerequisites. A level prerequisite refers to your level in this class. Prerequisite: eldritch blast cantrip When you cast eldritch blast, add your Charisma modifier to the damage it deals on a hit. You can cast mage armor on yourself at will, without expending a spell slot or material components. Prerequisite: 9th level You can cast levitate on yourself at will, without expending a spell slot or material components. You can cast speak with animals at will, without expending a spell slot. You gain proficiency in the Deception and Persuasion skills. Prerequisite: 7th level You can cast compulsion once using a warlock spell slot. You can’t do so again until you finish a long rest. Prerequisite: Pact of the Tome feature You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class’s spell list (the two needn’t be from the same list). The spells appear in the book and don’t count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can’t cast the spells except as rituals, unless you’ve learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag. On your adventures, you can add other ritual spells to your Book of Shadows. When you find such a spell, you can add it to the book if the spell’s level is equal to or less than half your warlock level (rounded up) and if you can spare the time to transcribe the spell. For each level of the spell, the transcription process takes 2 hours and costs 50 gp for the rare inks needed to inscribe it. Prerequisite: 15th level, Pact of the Chain feature You can cast hold monster at will — targeting a celestial, fiend, or elemental — without expending a spell slot or material components. You must finish a long rest before you can use this invocation on the same creature again. You can see normally in darkness, both magical and nonmagical, to a distance of 120 feet. Prerequisite: 7th level You can cast confusion once using a warlock spell slot. You can’t do so again until you finish a long rest. You can cast detect magic at will, without expending a spell slot. Prerequisite: eldritch blast cantrip When you cast eldritch blast, its range is 300 feet. You can read all writing. You can cast false life on yourself at will as a 1st-level spell, without expending a spell slot or material components. You can use your action to touch a willing humanoid and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can use your action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. While perceiving through the other creature’s senses, you benefit from any special senses possessed by that creature, and you are blinded and deafened to your own surroundings. Prerequisite: 12th level, Pact of the Blade feature When you hit a creature with your pact weapon, the creature takes extra necrotic damage equal to your Charisma modifier (minimum 1). You can cast disguise self at will, without expending a spell slot. Prerequisite: 15th level You can cast alter self at will, without expending a spell slot. Prerequisite: 9th level You can cast conjure elemental once using a warlock spell slot. You can’t do so again until you finish a long rest. Prerequisite: 5th level You can cast slow once using a warlock spell slot. You can’t do so again until you finish a long rest. You can cast silent image at will, without expending a spell slot or material components. Prerequisite: 5th level When you are in an area of dim light or darkness, you can use your action to become invisible until you move or take an action or a reaction. Prerequisite: 9th level You can cast jump on yourself at will, without expending a spell slot or material components. Prerequisite: eldritch blast cantrip When you hit a creature with eldritch blast, you can push the creature up to 10 feet away from you in a straight line. Prerequisite: 7th level You can cast polymorph once using a warlock spell slot. You can’t do so again until you finish a long rest. Prerequisite: 5th level You can cast bestow curse once using a warlock spell slot. You can’t do so again until you finish a long rest. You can cast bane once using a warlock spell slot. You can’t do so again until you finish a long rest. Prerequisite: 5th level, Pact of the Blade feature You can attack with your pact weapon twice, instead of once, whenever you take the Attack action on your turn. Prerequisite: 15th level You can cast arcane eye at will, without expending a spell slot. Prerequisite: Pact of the Chain feature You can communicate telepathically with your familiar and perceive through your familiar’s senses as long as you are on the same plane of existence. Additionally, while perceiving through your familiar’s senses, you can also speak through your familiar in your own voice, even if your familiar is normally incapable of speech. Prerequisite: 9th level You can cast speak with dead at will, without expending a spell slot. Prerequisite: 15th level You can see the true form of any shapechanger or creature concealed by illusion or transmutation magic while the creature is within 30 feet of you and within line of sight.",
+            "description": "At 20th level, you can draw on your inner reserve of mystical power while entreating your patron to regain expended spell slots. You can spend 1 minute entreating your patron for aid to regain all your expended spell slots from your Pact Magic feature. Once you regain spell slots with this feature, you must finish a long rest before you can do so again.",
             "level": 20,
             "source": "Basic Rules (2014)"
           },
@@ -3183,7 +3164,7 @@
               {
                 "id": "book-of-ancient-secrets",
                 "name": "Book of Ancient Secrets",
-                "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list (the two needn't be from the same list). The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag.",
+                "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list (the two needn't be from the same list). The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag. On your adventures, you can add other ritual spells to your Book of Shadows. When you find such a spell, you can add it to the book if the spell's level is equal to or less than half your warlock level (rounded up) and if you can spare the time to transcribe the spell. For each level of the spell, the transcription process takes 2 hours and costs 50 gp for the rare inks needed to inscribe it.",
                 "prerequisites": {
                   "text": "Pact of the Tome feature",
                   "requiredOptionIds": [
@@ -3251,7 +3232,7 @@
               {
                 "id": "far-scribe",
                 "name": "Far Scribe",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "5th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 5,
@@ -3274,7 +3255,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. When any creature whose name is on the page is reduced to 0 hit points but not killed outright, the creature magically drops to 1 hit point instead. Once this magic is triggered, no creature can benefit from it until you finish a long rest. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "9th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 9,
@@ -3287,7 +3268,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits:",
+                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits: • The familiar gains either a flying speed or a swimming speed (your choice) of 40 feet. • As a bonus action, you can command the familiar to take the Attack action. • The familiar's weapon attacks are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks. • If the familiar forces a creature to make a saving throw, it uses your spell save DC. • When the familiar takes damage, you can use your reaction to grant it resistance against that damage.",
                 "prerequisites": {
                   "text": "Pact of the Chain feature",
                   "requiredOptionIds": [
@@ -3583,7 +3564,7 @@
               {
                 "id": "book-of-ancient-secrets",
                 "name": "Book of Ancient Secrets",
-                "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list (the two needn't be from the same list). The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag.",
+                "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list (the two needn't be from the same list). The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag. On your adventures, you can add other ritual spells to your Book of Shadows. When you find such a spell, you can add it to the book if the spell's level is equal to or less than half your warlock level (rounded up) and if you can spare the time to transcribe the spell. For each level of the spell, the transcription process takes 2 hours and costs 50 gp for the rare inks needed to inscribe it.",
                 "prerequisites": {
                   "text": "Pact of the Tome feature",
                   "requiredOptionIds": [
@@ -3651,7 +3632,7 @@
               {
                 "id": "far-scribe",
                 "name": "Far Scribe",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "5th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 5,
@@ -3674,7 +3655,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. When any creature whose name is on the page is reduced to 0 hit points but not killed outright, the creature magically drops to 1 hit point instead. Once this magic is triggered, no creature can benefit from it until you finish a long rest. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "9th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 9,
@@ -3687,7 +3668,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits:",
+                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits: • The familiar gains either a flying speed or a swimming speed (your choice) of 40 feet. • As a bonus action, you can command the familiar to take the Attack action. • The familiar's weapon attacks are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks. • If the familiar forces a creature to make a saving throw, it uses your spell save DC. • When the familiar takes damage, you can use your reaction to grant it resistance against that damage.",
                 "prerequisites": {
                   "text": "Pact of the Chain feature",
                   "requiredOptionIds": [
@@ -3983,7 +3964,7 @@
               {
                 "id": "book-of-ancient-secrets",
                 "name": "Book of Ancient Secrets",
-                "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list (the two needn't be from the same list). The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag.",
+                "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list (the two needn't be from the same list). The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag. On your adventures, you can add other ritual spells to your Book of Shadows. When you find such a spell, you can add it to the book if the spell's level is equal to or less than half your warlock level (rounded up) and if you can spare the time to transcribe the spell. For each level of the spell, the transcription process takes 2 hours and costs 50 gp for the rare inks needed to inscribe it.",
                 "prerequisites": {
                   "text": "Pact of the Tome feature",
                   "requiredOptionIds": [
@@ -4051,7 +4032,7 @@
               {
                 "id": "far-scribe",
                 "name": "Far Scribe",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "5th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 5,
@@ -4074,7 +4055,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. When any creature whose name is on the page is reduced to 0 hit points but not killed outright, the creature magically drops to 1 hit point instead. Once this magic is triggered, no creature can benefit from it until you finish a long rest. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "9th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 9,
@@ -4087,7 +4068,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits:",
+                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits: • The familiar gains either a flying speed or a swimming speed (your choice) of 40 feet. • As a bonus action, you can command the familiar to take the Attack action. • The familiar's weapon attacks are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks. • If the familiar forces a creature to make a saving throw, it uses your spell save DC. • When the familiar takes damage, you can use your reaction to grant it resistance against that damage.",
                 "prerequisites": {
                   "text": "Pact of the Chain feature",
                   "requiredOptionIds": [
@@ -4383,7 +4364,7 @@
               {
                 "id": "book-of-ancient-secrets",
                 "name": "Book of Ancient Secrets",
-                "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list (the two needn't be from the same list). The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag.",
+                "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list (the two needn't be from the same list). The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag. On your adventures, you can add other ritual spells to your Book of Shadows. When you find such a spell, you can add it to the book if the spell's level is equal to or less than half your warlock level (rounded up) and if you can spare the time to transcribe the spell. For each level of the spell, the transcription process takes 2 hours and costs 50 gp for the rare inks needed to inscribe it.",
                 "prerequisites": {
                   "text": "Pact of the Tome feature",
                   "requiredOptionIds": [
@@ -4451,7 +4432,7 @@
               {
                 "id": "far-scribe",
                 "name": "Far Scribe",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "5th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 5,
@@ -4474,7 +4455,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. When any creature whose name is on the page is reduced to 0 hit points but not killed outright, the creature magically drops to 1 hit point instead. Once this magic is triggered, no creature can benefit from it until you finish a long rest. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "9th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 9,
@@ -4487,7 +4468,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits:",
+                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits: • The familiar gains either a flying speed or a swimming speed (your choice) of 40 feet. • As a bonus action, you can command the familiar to take the Attack action. • The familiar's weapon attacks are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks. • If the familiar forces a creature to make a saving throw, it uses your spell save DC. • When the familiar takes damage, you can use your reaction to grant it resistance against that damage.",
                 "prerequisites": {
                   "text": "Pact of the Chain feature",
                   "requiredOptionIds": [
@@ -4783,7 +4764,7 @@
               {
                 "id": "book-of-ancient-secrets",
                 "name": "Book of Ancient Secrets",
-                "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list (the two needn't be from the same list). The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag.",
+                "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list (the two needn't be from the same list). The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag. On your adventures, you can add other ritual spells to your Book of Shadows. When you find such a spell, you can add it to the book if the spell's level is equal to or less than half your warlock level (rounded up) and if you can spare the time to transcribe the spell. For each level of the spell, the transcription process takes 2 hours and costs 50 gp for the rare inks needed to inscribe it.",
                 "prerequisites": {
                   "text": "Pact of the Tome feature",
                   "requiredOptionIds": [
@@ -4851,7 +4832,7 @@
               {
                 "id": "far-scribe",
                 "name": "Far Scribe",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "5th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 5,
@@ -4874,7 +4855,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. When any creature whose name is on the page is reduced to 0 hit points but not killed outright, the creature magically drops to 1 hit point instead. Once this magic is triggered, no creature can benefit from it until you finish a long rest. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "9th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 9,
@@ -4887,7 +4868,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits:",
+                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits: • The familiar gains either a flying speed or a swimming speed (your choice) of 40 feet. • As a bonus action, you can command the familiar to take the Attack action. • The familiar's weapon attacks are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks. • If the familiar forces a creature to make a saving throw, it uses your spell save DC. • When the familiar takes damage, you can use your reaction to grant it resistance against that damage.",
                 "prerequisites": {
                   "text": "Pact of the Chain feature",
                   "requiredOptionIds": [
@@ -5183,7 +5164,7 @@
               {
                 "id": "book-of-ancient-secrets",
                 "name": "Book of Ancient Secrets",
-                "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list (the two needn't be from the same list). The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag.",
+                "description": "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list (the two needn't be from the same list). The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag. On your adventures, you can add other ritual spells to your Book of Shadows. When you find such a spell, you can add it to the book if the spell's level is equal to or less than half your warlock level (rounded up) and if you can spare the time to transcribe the spell. For each level of the spell, the transcription process takes 2 hours and costs 50 gp for the rare inks needed to inscribe it.",
                 "prerequisites": {
                   "text": "Pact of the Tome feature",
                   "requiredOptionIds": [
@@ -5251,7 +5232,7 @@
               {
                 "id": "far-scribe",
                 "name": "Far Scribe",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "5th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 5,
@@ -5274,7 +5255,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. When any creature whose name is on the page is reduced to 0 hit points but not killed outright, the creature magically drops to 1 hit point instead. Once this magic is triggered, no creature can benefit from it until you finish a long rest. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "9th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 9,
@@ -5287,7 +5268,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits:",
+                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits: • The familiar gains either a flying speed or a swimming speed (your choice) of 40 feet. • As a bonus action, you can command the familiar to take the Attack action. • The familiar's weapon attacks are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks. • If the familiar forces a creature to make a saving throw, it uses your spell save DC. • When the familiar takes damage, you can use your reaction to grant it resistance against that damage.",
                 "prerequisites": {
                   "text": "Pact of the Chain feature",
                   "requiredOptionIds": [
@@ -5754,7 +5735,7 @@
           {
             "id": "spellcasting",
             "name": "Spellcasting",
-            "description": "As a student of arcane magic, you have a spellbook containing spells that show the first glimmerings of your true power. See chapter 10 for the general rules of spellcasting and chapter 11 for the wizard spell list. At 1st level, you know three cantrips of your choice from the wizard spell list. You learn additional wizard cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Wizard table. At 1st level, you have a spellbook containing six 1st-level wizard spells of your choice. Your spellbook is the repository of the wizard spells you know, except your cantrips, which are fixed in your mind. The Wizard table shows how many spell slots you have to cast your wizard spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. You prepare the list of wizard spells that are available for you to cast. To do so, choose a number of wizard spells from your spellbook equal to your Intelligence modifier + your wizard level (minimum of one spell). The spells must be of a level for which you have spell slots. For example, if you’re a 3rd-level wizard, you have four 1st-level and two 2nd-level spell slots. With an Intelligence of 16, your list of prepared spells can include six spells of 1st or 2nd level, in any combination, chosen from your spellbook. If you prepare the 1st-level spell magic missile, you can cast it using a 1st-level or a 2nd-level slot. Casting the spell doesn’t remove it from your list of prepared spells. You can change your list of prepared spells when you finish a long rest. Preparing a new list of wizard spells requires time spent studying your spellbook and memorizing the incantations and gestures you must make to cast the spell: at least 1 minute per spell level for each spell on your list. Intelligence is your spellcasting ability for your wizard spells, since you learn your spells through dedicated study and memorization. You use your Intelligence whenever a spell refers to your spellcasting ability. In addition, you use your Intelligence modifier when setting the saving throw DC for a wizard spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Intelligence modifier Spell attack modifier = your proficiency bonus + your Intelligence modifier You can cast a wizard spell as a ritual if that spell has the ritual tag and you have the spell in your spellbook. You don’t need to have the spell prepared. You can use an arcane focus (see chapter 5, “Equip­ment”) as a spellcasting focus for your wizard spells. Each time you gain a wizard level, you can add two wizard spells of your choice to your spellbook for free. Each of these spells must be of a level for which you have spell slots, as shown on the Wizard table. On your adventures, you might find other spells that you can add to your spellbook (see the “Your Spellbook” sidebar). YOUR SPELLBOOK The spells that you add to your spellbook as you gain levels reflect the arcane research you conduct on your own, as well as intellectual breakthroughs you have had about the nature of the multiverse. You might find other spells during your adventures. You could discover a spell recorded on a scroll in an evil wizard’s chest, for example, or in a dusty tome in an ancient library. Copying a Spell into the Book. When you find a wizard spell of 1st level or higher, you can add it to your spellbook if it is of a spell level you can prepare and if you can spare the time to decipher and copy it. Copying that spell into your spellbook involves reproducing the basic form of the spell, then deciphering the unique system of notation used by the wizard who wrote it. You must practice the spell until you understand the sounds or gestures required, then transcribe it into your spellbook using your own notation. For each level of the spell, the process takes 2 hours and costs 50 gp. The cost represents material components you expend as you experiment with the spell to master it, as well as the fine inks you need to record it. Once you have spent this time and money, you can prepare the spell just like your other spells. Replacing the Book. You can copy a spell from your own spellbook into another book—for example, if you want to make a backup copy of your spellbook. This is just like copying a new spell into your spellbook, but faster and easier, since you understand your own notation and already know how to cast the spell. You need spend only 1 hour and 10 gp for each level of the copied spell. If you lose your spellbook, you can use the same procedure to transcribe the spells that you have prepared into a new spellbook. Filling out the remainder of your spellbook requires you to find new spells to do so, as normal. For this reason, many wizards keep backup spellbooks in a safe place. The Book’s Appearance. Your spellbook is a unique compilation of spells, with its own decorative flourishes and margin notes. It might be a plain, functional leather volume that you received as a gift from your master, a finely bound gilt-edged tome you found in an ancient library, or even a loose collection of notes scrounged together after you lost your previous spellbook in a mishap.",
+            "description": "As a student of arcane magic, you have a spellbook containing spells that show the first glimmerings of your true power. At 1st level, you know three cantrips of your choice from the wizard spell list. You learn additional wizard cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Wizard table. At 1st level, you have a spellbook containing six 1st-level wizard spells of your choice. Your spellbook is the repository of the wizard spells you know, except your cantrips, which are fixed in your mind. The Wizard table shows how many spell slots you have to cast your wizard spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. You prepare the list of wizard spells that are available for you to cast. To do so, choose a number of wizard spells from your spellbook equal to your Intelligence modifier + your wizard level (minimum of one spell). The spells must be of a level for which you have spell slots. For example, if you’re a 3rd-level wizard, you have four 1st-level and two 2nd-level spell slots. With an Intelligence of 16, your list of prepared spells can include six spells of 1st or 2nd level, in any combination, chosen from your spellbook. If you prepare the 1st-level spell magic missile, you can cast it using a 1st-level or a 2nd-level slot. Casting the spell doesn’t remove it from your list of prepared spells. You can change your list of prepared spells when you finish a long rest. Preparing a new list of wizard spells requires time spent studying your spellbook and memorizing the incantations and gestures you must make to cast the spell: at least 1 minute per spell level for each spell on your list. Intelligence is your spellcasting ability for your wizard spells, since you learn your spells through dedicated study and memorization. You use your Intelligence whenever a spell refers to your spellcasting ability. In addition, you use your Intelligence modifier when setting the saving throw DC for a wizard spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Intelligence modifier Spell attack modifier = your proficiency bonus + your Intelligence modifier You can cast a wizard spell as a ritual if that spell has the ritual tag and you have the spell in your spellbook. You don’t need to have the spell prepared. You can use an arcane focus (see Equipment) as a spellcasting focus for your wizard spells. Each time you gain a wizard level, you can add two wizard spells of your choice to your spellbook for free. Each of these spells must be of a level for which you have spell slots, as shown on the Wizard table. On your adventures, you might find other spells that you can add to your spellbook.",
             "level": 1,
             "source": "Basic Rules (2014)"
           },
@@ -5768,7 +5749,7 @@
           {
             "id": "arcane-tradition",
             "name": "Arcane Tradition",
-            "description": "When you reach 2nd level, you choose an arcane tradition, shaping your practice of magic through one of eight schools: Abjuration, Conjuration, Divination, Enchantment, Evocation, Illusion, Necromancy, or Transmutation, all detailed at the end of the class description. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level.",
+            "description": "When you reach 2nd level, you choose an arcane tradition, shaping your practice of magic through one of eight schools: Abjuration, Conjuration, Divination, Enchantment, Evocation, Illusion, Necromancy, or Transmutation, all detailed below. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level.",
             "level": 2,
             "source": "Basic Rules (2014)"
           },
@@ -6046,7 +6027,7 @@
           {
             "id": "circle-of-the-land-nature-s-sanctuary",
             "name": "Nature’s Sanctuary",
-            "description": "When you reach 14th level, creatures of the natural world sense your connection to nature and become hesitant to attack you. When a beast or plant creature attacks you, that creature must make a Wisdom saving throw against your druid spell save DC. On a failed save, the creature must choose a different target, or the attack automatically misses. On a successful save, the creature is immune to this effect for 24 hours. The creature is aware of this effect before it makes its attack against you. DRUIDS AND THE GODS Some druids venerate the forces of nature themselves, but most druids are devoted to one of the many nature deities worshiped in the multiverse (the lists of gods in appendix B include many such deities). The worship of these deities is often considered a more ancient tradition than the faiths of clerics and urbanized peoples. In fact, in the world of Greyhawk, the druidic faith is called the Old Faith, and it claims many adherents among farmers, foresters, fishers, and others who live closely with nature. This tradition includes the worship of Nature as a primal force beyond personification, but also encompasses the worship of Beory, the Oerth Mother, as well as devotees of Obad-Hai, Ehlonna, and Ulaa. In the worlds of Greyhawk and the Forgotten Realms, druidic circles are not usually connected to the faith of a single nature deity. Any given circle in the Forgotten Realms, for example, might include druids who revere Silvanus, Mielikki, Eldath, Chauntea, or even the harsh Gods of Fury: Talos, Malar, Auril, and Umberlee. These nature gods are often called the First Circle, the first among the druids, and most druids count them all (even the violent ones) as worthy of veneration. The druids of Eberron hold animistic beliefs completely unconnected to the Sovereign Host, the Dark Six, or any of the other religions of the world. They believe that every living thing and every natural phenomenon — sun, moon, wind, fire, and the world itself — has a spirit. Their spells, then, are a means to communicate with and command these spirits. Different druidic sects, though, hold different philosophies about the proper relationship of these spirits to each other and to the forces of civilization. The Ashbound, for example, believe that arcane magic is an abomination against nature, the Children of Winter venerate the forces of death, and the Gatekeepers preserve ancient traditions meant to protect the world from the incursion of aberrations.",
+            "description": "When you reach 14th level, creatures of the natural world sense your connection to nature and become hesitant to attack you. When a beast or plant creature attacks you, that creature must make a Wisdom saving throw against your druid spell save DC. On a failed save, the creature must choose a different target, or the attack automatically misses. On a successful save, the creature is immune to this effect for 24 hours. The creature is aware of this effect before it makes its attack against you.",
             "level": 14,
             "source": "Basic Rules (2014)"
           }
@@ -6129,7 +6110,7 @@
           {
             "id": "way-of-the-open-hand-quivering-palm",
             "name": "Quivering Palm",
-            "description": "At 17th level, you gain the ability to set up lethal vibrations in someone’s body. When you hit a creature with an unarmed strike, you can spend 3 ki points to start these imperceptible vibrations, which last for a number of days equal to your monk level. The vibrations are harmless unless you use your action to end them. To do so, you and the target must be on the same plane of existence. When you use this action, the creature must make a Constitution saving throw. If it fails, it is reduced to 0 hit points. If it succeeds, it takes 10d10 necrotic damage. You can have only one creature under the effect of this feature at a time. You can choose to end the vibrations harmlessly without using an action. MONASTIC ORDERS The worlds of D&D contain a multitude of monasteries and monastic traditions. In lands with an Asian cultural flavor, such as Shou Lung far to the east of the Forgotten Realms, these monasteries are associated with philosophical traditions and martial arts practice. The Iron Hand School, the Five Stars School, the Northern Fist School, and the Southern Star School of Shou Lung teach different approaches to the physical, mental, and spiritual disciplines of the monk. Some of these monasteries have spread to the western lands of Faerûn, particularly in places with large Shou immigrant communities, such as Thesk and Westgate. Other monastic traditions are associated with deities who teach the value of physical excellence and mental discipline. In the Forgotten Realms, the order of the Dark Moon is made up of monks dedicated to Shar (goddess of loss), who maintain secret communities in remote hills, back allies, and subterranean hideaways. Monasteries of Ilmater (god of endurance) are named after flowers, and their orders carry the names of great heroes of the faith; the Disciples of Saint Sollars the Twice-Martyred reside in the Monastery of the Yellow Rose near Damara. The monasteries of Eberron combine the study of martial arts with a life of scholarship. Most are devoted to the deities of the Sovereign Host. In the world of Dragonlance, most monks are devoted to Majere, god of meditation and thought. In Greyhawk, many monasteries are dedicated to Xan Yae, the goddess of twilight and the superiority of mind over matter, or to Zuoken, god of mental and physical mastery. The evil monks of the Scarlet Brotherhood in the world of Greyhawk derive their fanatic zeal not from devotion to a god but from dedication to the principles of their nation and their race—the belief that the Suel strand of humanity are meant to rule the world.",
+            "description": "At 17th level, you gain the ability to set up lethal vibrations in someone’s body. When you hit a creature with an unarmed strike, you can spend 3 ki points to start these imperceptible vibrations, which last for a number of days equal to your monk level. The vibrations are harmless unless you use your action to end them. To do so, you and the target must be on the same plane of existence. When you use this action, the creature must make a Constitution saving throw. If it fails, it is reduced to 0 hit points. If it succeeds, it takes 10d10 necrotic damage. You can have only one creature under the effect of this feature at a time. You can choose to end the vibrations harmlessly without using an action.",
             "level": 17,
             "source": "Basic Rules (2014)"
           }
@@ -43556,8 +43537,8 @@
       "level": 1
     },
     {
-      "id": "chapter-1-step-by-step-characters",
-      "title": "Chapter 1: Step-By-Step Characters",
+      "id": "step-by-step-characters",
+      "title": ": Step-By-Step Characters",
       "level": 1
     },
     {
@@ -43671,8 +43652,8 @@
       "level": 1
     },
     {
-      "id": "chapter-2-races",
-      "title": "Chapter 2: Races",
+      "id": "races",
+      "title": ": Races",
       "level": 1
     },
     {
@@ -44081,8 +44062,8 @@
       "level": 1
     },
     {
-      "id": "chapter-3-classes",
-      "title": "Chapter 3: Classes",
+      "id": "classes",
+      "title": ": Classes",
       "level": 1
     },
     {
@@ -45636,8 +45617,8 @@
       "level": 1
     },
     {
-      "id": "chapter-4-personality-and-background",
-      "title": "Chapter 4: Personality and Background",
+      "id": "personality-and-background",
+      "title": ": Personality and Background",
       "level": 1
     },
     {
@@ -45826,8 +45807,8 @@
       "level": 4
     },
     {
-      "id": "chapter-5-equipment",
-      "title": "Chapter 5: Equipment",
+      "id": "equipment",
+      "title": ": Equipment",
       "level": 1
     },
     {
@@ -46101,8 +46082,8 @@
       "level": 1
     },
     {
-      "id": "chapter-6-customization-options",
-      "title": "Chapter 6: Customization Options",
+      "id": "customization-options",
+      "title": ": Customization Options",
       "level": 1
     },
     {
@@ -46141,8 +46122,8 @@
       "level": 1
     },
     {
-      "id": "chapter-7-using-ability-scores",
-      "title": "Chapter 7: Using Ability Scores",
+      "id": "using-ability-scores",
+      "title": ": Using Ability Scores",
       "level": 1
     },
     {
@@ -46406,8 +46387,8 @@
       "level": 1
     },
     {
-      "id": "chapter-8-adventuring",
-      "title": "Chapter 8: Adventuring",
+      "id": "adventuring",
+      "title": ": Adventuring",
       "level": 1
     },
     {
@@ -46601,8 +46582,8 @@
       "level": 1
     },
     {
-      "id": "chapter-9-combat",
-      "title": "Chapter 9: Combat",
+      "id": "combat",
+      "title": ": Combat",
       "level": 1
     },
     {
@@ -46921,8 +46902,8 @@
       "level": 2
     },
     {
-      "id": "chapter-10-spellcasting",
-      "title": "Chapter 10: Spellcasting",
+      "id": "spellcasting",
+      "title": ": Spellcasting",
       "level": 1
     },
     {
@@ -47061,8 +47042,8 @@
       "level": 1
     },
     {
-      "id": "chapter-11-spells",
-      "title": "Chapter 11: Spells",
+      "id": "spells",
+      "title": ": Spells",
       "level": 1
     },
     {
@@ -48761,8 +48742,8 @@
       "level": 1
     },
     {
-      "id": "chapter-12-monsters",
-      "title": "Chapter 12: Monsters",
+      "id": "monsters",
+      "title": ": Monsters",
       "level": 1
     },
     {
@@ -49076,8 +49057,8 @@
       "level": 1
     },
     {
-      "id": "chapter-13-building-combat-encounters",
-      "title": "Chapter 13: Building Combat Encounters",
+      "id": "building-combat-encounters",
+      "title": ": Building Combat Encounters",
       "level": 1
     },
     {
@@ -49141,8 +49122,8 @@
       "level": 2
     },
     {
-      "id": "chapter-14-magic-items",
-      "title": "Chapter 14: Magic Items",
+      "id": "magic-items",
+      "title": ": Magic Items",
       "level": 1
     },
     {
@@ -50441,8 +50422,8 @@
       "level": 1
     },
     {
-      "id": "chapter-15-running-the-game",
-      "title": "Chapter 15: Running the Game",
+      "id": "running-the-game",
+      "title": ": Running the Game",
       "level": 1
     },
     {
@@ -50938,18 +50919,6 @@
       "href": "https://www.dndbeyond.com/sources/basic-rules/appendix-d-the-planes-of-existence"
     },
     {
-      "id": "chapter-1",
-      "title": "chapter 1",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/basic-rules/step-by-step-characters"
-    },
-    {
-      "id": "chapters-10",
-      "title": "chapters 10",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/basic-rules/spellcasting"
-    },
-    {
       "id": "11",
       "title": "11",
       "level": 2,
@@ -50978,12 +50947,6 @@
       "title": "Classes",
       "level": 2,
       "href": "http://www.dndbeyond.com/sources/dnd/basic-rules-2014/classes"
-    },
-    {
-      "id": "chapter-6",
-      "title": "chapter 6",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/basic-rules/customization-options#Multiclassing"
     },
     {
       "id": "barbarian",
@@ -51226,20 +51189,8 @@
       "href": "#SuperiorInspiration"
     },
     {
-      "id": "chapter-10",
-      "title": "chapter 10",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/basic-rules/spellcasting"
-    },
-    {
-      "id": "chapter-11",
-      "title": "chapter 11",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/basic-rules/spells#BardSpells"
-    },
-    {
-      "id": "equip-ment",
-      "title": "Equip­ment",
+      "id": "equipment",
+      "title": "Equipment",
       "level": 2,
       "href": "https://www.dndbeyond.com/sources/basic-rules/equipment#MusicalInstruments"
     },
@@ -51296,12 +51247,6 @@
       "title": "Divine Intervention Improvement",
       "level": 2,
       "href": "#DivineIntervention"
-    },
-    {
-      "id": "chapter-11",
-      "title": "chapter 11",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/basic-rules/spells#ClericSpells"
     },
     {
       "id": "equipment",
@@ -51370,14 +51315,8 @@
       "href": "#Archdruid"
     },
     {
-      "id": "chapter-11",
-      "title": "chapter 11",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/basic-rules/spells#DruidSpells"
-    },
-    {
-      "id": "equip-ment",
-      "title": "Equip­ment",
+      "id": "equipment",
+      "title": "Equipment",
       "level": 2,
       "href": "https://www.dndbeyond.com/sources/basic-rules/equipment#DruidicFocus"
     },
@@ -51646,12 +51585,6 @@
       "href": "#AuraofProtection"
     },
     {
-      "id": "chapter-11",
-      "title": "chapter 11",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/basic-rules/spells#PaladinSpells"
-    },
-    {
       "id": "favored-enemy",
       "title": "Favored Enemy",
       "level": 2,
@@ -51746,12 +51679,6 @@
       "title": "Foe Slayer",
       "level": 2,
       "href": "#FoeSlayer"
-    },
-    {
-      "id": "chapter-11",
-      "title": "chapter 11",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/basic-rules/spells#RangerSpells"
     },
     {
       "id": "expertise",
@@ -51880,14 +51807,8 @@
       "href": "#SorcerousRestoration"
     },
     {
-      "id": "chapter-11",
-      "title": "chapter 11",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/basic-rules/spells#SorcererSpells"
-    },
-    {
-      "id": "equip-ment",
-      "title": "Equip­ment",
+      "id": "equipment",
+      "title": "Equipment",
       "level": 2,
       "href": "https://www.dndbeyond.com/sources/basic-rules/equipment#ArcaneFocus"
     },
@@ -51940,18 +51861,6 @@
       "href": "#EldritchMaster"
     },
     {
-      "id": "chapter-11",
-      "title": "chapter 11",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/basic-rules/spells#WarlockSpells"
-    },
-    {
-      "id": "chapter-5",
-      "title": "chapter 5",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/basic-rules/equipment#Weapons"
-    },
-    {
       "id": "spellcasting",
       "title": "Spellcasting",
       "level": 2,
@@ -51992,12 +51901,6 @@
       "title": "Signature Spells",
       "level": 2,
       "href": "#SignatureSpells"
-    },
-    {
-      "id": "chapter-11",
-      "title": "chapter 11",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/basic-rules/spells#WizardSpells"
     },
     {
       "id": "personality-and-background",
@@ -53980,7 +53883,7 @@
       "title": "Basic Rules for Dungeons and Dragons (D&D) Fifth Edition (5e) - D&D Beyond",
       "path": "C:\\Programs\\DnD Character Creator\\BasicRules(2014).txt",
       "contentExcerpt": "``` <!DOCTYPE html> !function () { window.semaphore = window.semaphore || [], window.ketch = function () { window.semaphore.push(arguments) }; var e =",
-      "sectionCount": 2028
+      "sectionCount": 2015
     }
   ],
   "notes": [

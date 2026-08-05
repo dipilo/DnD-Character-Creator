@@ -1,7 +1,13 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { applyInlineFeatureChoiceOptions } from './canonical-content.mjs';
+import {
+  applyInlineFeatureChoiceOptions,
+  collectHeadingBlocks,
+  extractStructuredTexts,
+  setDocumentReferenceContext,
+  sliceSectionBody
+} from './canonical-content.mjs';
 
 const scriptPath = fileURLToPath(import.meta.url);
 const workspaceRoot = path.resolve(path.dirname(scriptPath), '..');
@@ -46,34 +52,6 @@ const createFeatureOption = (name, description, prerequisites = undefined) => ({
   description: stripTags(description),
   prerequisites
 });
-
-const headingIdRegex = /\sid="([^"]+)"/i;
-
-const collectHeadingBlocks = (raw, level) => {
-  const regex = new RegExp(String.raw`<h${level}([^>]*)>([\s\S]*?)<\/h${level}>`, 'gi');
-  const matches = [];
-  let match;
-
-  while ((match = regex.exec(raw)) !== null) {
-    const attrs = match[1] ?? '';
-    const title = stripTags(match[2] ?? '');
-    if (!title) {
-      continue;
-    }
-
-    matches.push({
-      id: headingIdRegex.exec(attrs)?.[1] ?? toOptionId(title),
-      title,
-      start: match.index,
-      contentStart: regex.lastIndex
-    });
-  }
-
-  return matches.map((entry, index) => ({
-    ...entry,
-    content: raw.slice(entry.contentStart, matches[index + 1]?.start ?? raw.length)
-  }));
-};
 
 const extractParagraphEntries = (raw) => {
   return [...String(raw ?? '').matchAll(/<p([^>]*)>([\s\S]*?)<\/p>/gi)]
@@ -167,12 +145,21 @@ const extractFeatureOptionsFromSection = (raw, config) => {
 
   return collectHeadingBlocks(sectionBlock.content, config.optionLevel)
     .map((block) => {
-      const paragraphs = extractParagraphEntries(block.content);
+      const body = sliceSectionBody(block.content);
+      const paragraphs = extractParagraphEntries(body);
       const prerequisiteEntry = paragraphs.find((entry) => /^prerequisite/i.test(entry.text));
-      const descriptionEntry = paragraphs.find((entry) => entry !== prerequisiteEntry && !/^repeatable\.?/i.test(entry.text));
+      // Only the first paragraph used to survive, which stripped the effect off every option
+      // written in more than one: Gift of the Protectors and Far Scribe both ended up describing
+      // nothing but the blank page they add, and Investment of the Chain Master promised
+      // "the following benefits" with the bullet list that lists them dropped.
+      const description = extractStructuredTexts(body)
+        .filter((entry) => !/^prerequisite\b/i.test(entry) && !/^repeatable\.?$/i.test(entry))
+        .join(' ')
+        .trim();
+
       return createFeatureOption(
         block.title,
-        descriptionEntry?.text ?? `${block.title} option.`,
+        description || `${block.title} option.`,
         parseFeatureOptionPrerequisites(prerequisiteEntry?.raw, prerequisiteEntry?.text)
       );
     })
@@ -222,6 +209,29 @@ const createGrantFeature = (id, name, description, level, source, chooseCount, o
 
 const normalizeFeatureName = (value) => normalizeIdentifier(value).replace(/^level \d+ /, '').trim();
 
+// A choice feature's section nests one heading per option, so its own description runs on into
+// the option bodies — Pact Boon read as its intro sentence followed by all three boons glued
+// together, immediately above the selector that lists the same three. The options are extracted
+// from that very text, so the description can be cut at the first one it repeats.
+const trimRepeatedOptionBodies = (description, options) => {
+  if (!description) {
+    return description;
+  }
+
+  const cutIndex = (options ?? [])
+    .map((option) => option.description?.slice(0, 60))
+    .filter((snippet) => snippet && snippet.length >= 20)
+    .map((snippet) => description.indexOf(snippet))
+    .filter((index) => index > 0)
+    .reduce((lowest, index) => Math.min(lowest, index), Number.POSITIVE_INFINITY);
+
+  if (!Number.isFinite(cutIndex)) {
+    return description;
+  }
+
+  return description.slice(0, cutIndex).replace(/[\s;,]+$/u, '').trim() || description;
+};
+
 const applyFeatureChoice = (features, featureName, supplement) => {
   const targetName = normalizeFeatureName(featureName);
   return (features ?? []).map((feature) => {
@@ -229,9 +239,11 @@ const applyFeatureChoice = (features, featureName, supplement) => {
       return feature;
     }
 
+    const options = mergeFeatureOptions(feature.options ?? [], supplement.options ?? []);
     return {
       ...feature,
-      options: mergeFeatureOptions(feature.options ?? [], supplement.options ?? []),
+      description: trimRepeatedOptionBodies(feature.description, options),
+      options,
       chooseCount: feature.chooseCount ?? supplement.chooseCount,
       requiresChoice: feature.requiresChoice ?? true
     };
@@ -327,11 +339,21 @@ const buildExtractedChoicePools = async (pack, rawDocument) => {
   const localPactBoonOptions = extractFeatureOptionsFromSection(localRaw, localConfig.pactBoons);
 
   let tashasRaw = null;
+  let borrowedTashasDocument = false;
   if (sourceId === 'tashas') {
     tashasRaw = localRaw;
   } else if (edition === '2014') {
     tashasRaw = await readOptionalWorkspaceDocument('TCOE.txt');
+    borrowedTashasDocument = Boolean(tashasRaw);
   }
+
+  // These options are read out of Tasha's even while another pack is being imported, so the
+  // cross-reference context has to follow the document: a "chapter 3" footnote inside a Tasha's
+  // option means a Tasha's spell, not one from whichever book is currently being parsed.
+  if (borrowedTashasDocument) {
+    setDocumentReferenceContext(tashasRaw, "Tasha's Cauldron of Everything");
+  }
+
   const tashasConfig = documentChoicePoolConfigs.tashas;
   const tashasMetamagicOptions = extractFeatureOptionsFromSection(tashasRaw, tashasConfig.metamagic);
   const tashasInvocationOptions = extractFeatureOptionsFromSection(tashasRaw, tashasConfig.eldritchInvocations);
@@ -340,6 +362,10 @@ const buildExtractedChoicePools = async (pack, rawDocument) => {
   const baseBattleMasterNames = extractNamedBattleMasterManeuvers(tashasRaw)
     .filter((name) => !tashasManeuverAdditions.some((option) => normalizeIdentifier(option.name) === normalizeIdentifier(name)))
     .map((name) => createFeatureOption(name, 'Battle Master maneuver option.'));
+
+  if (borrowedTashasDocument) {
+    setDocumentReferenceContext(localRaw, pack?.source?.label);
+  }
 
   return {
     edition,
@@ -554,6 +580,45 @@ const applyInlineChoicesToContent = (content) => ({
   }))
 });
 
+// A supplement's "…Options" section is a heading that introduces a pool ("When you choose eldritch
+// invocations, you have access to these additional options."), not a feature the character gains.
+// Its options are extracted into the pool and merged onto the real feature, so leaving the heading
+// behind as a feature just prints a promise of options next to the feature that actually lists
+// them. Sections that carry their own content, like "Additional Warlock Spells", are not pools and
+// are kept.
+const isPoolAnnouncementFeature = (feature, poolSectionNames) => {
+  return Boolean(feature?.optional)
+    && !(feature.options?.length > 0)
+    && poolSectionNames.has(normalizeIdentifier(feature.name));
+};
+
+const dropPoolAnnouncementFeatures = (content, sourceId) => {
+  const poolSectionNames = new Set(
+    Object.values(documentChoicePoolConfigs[sourceId] ?? {}).map((config) => normalizeIdentifier(config.sectionTitle))
+  );
+  if (poolSectionNames.size === 0) {
+    return content;
+  }
+
+  const filterFeatures = (features) => (features ?? []).filter((feature) => !isPoolAnnouncementFeature(feature, poolSectionNames));
+
+  return {
+    ...content,
+    classes: (content.classes ?? []).map((entry) => ({
+      ...entry,
+      features: filterFeatures(entry.features),
+      subclasses: (entry.subclasses ?? []).map((subclass) => ({
+        ...subclass,
+        features: filterFeatures(subclass.features)
+      }))
+    })),
+    subclasses: (content.subclasses ?? []).map((entry) => ({
+      ...entry,
+      features: filterFeatures(entry.features)
+    }))
+  };
+};
+
 export const enrichCanonicalSourcePackageFeatureChoices = async (pack, { rawDocument } = {}) => {
   if (!pack?.content) {
     return pack;
@@ -562,11 +627,14 @@ export const enrichCanonicalSourcePackageFeatureChoices = async (pack, { rawDocu
   const extractedPools = await buildExtractedChoicePools(pack, rawDocument);
   const enrichedPack = {
     ...pack,
-    content: applyInlineChoicesToContent({
-      ...pack.content,
-      classes: (pack.content.classes ?? []).map((entry) => enrichClassEntry(entry, extractedPools)),
-      subclasses: (pack.content.subclasses ?? []).map((entry) => enrichSubclassEntry(entry, extractedPools))
-    })
+    content: dropPoolAnnouncementFeatures(
+      applyInlineChoicesToContent({
+        ...pack.content,
+        classes: (pack.content.classes ?? []).map((entry) => enrichClassEntry(entry, extractedPools)),
+        subclasses: (pack.content.subclasses ?? []).map((entry) => enrichSubclassEntry(entry, extractedPools))
+      }),
+      pack.source?.sourceId
+    )
   };
 
   return appendTashasSupplements(enrichedPack, extractedPools);

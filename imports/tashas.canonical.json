@@ -6,7 +6,7 @@
     "category": "supplement",
     "aliases": [],
     "origin": "parsed-html",
-    "importedAt": "2026-08-03T10:01:38.207Z",
+    "importedAt": "2026-08-05T01:53:08.114Z",
     "parser": "tcoe-html",
     "visibility": "private"
   },
@@ -50,91 +50,105 @@
           {
             "id": "magical-tinkering",
             "name": "Magical Tinkering",
-            "description": "1st-level artificer feature You’ve learned how to invest a spark of magic into mundane objects. To use this ability, you must have thieves’ tools or artisan’s tools in hand. You then touch a Tiny nonmagical object as an action and give it one of the following magical properties of your choice: The chosen property lasts indefinitely. As an action, you can touch the object and end the property early. You can bestow magic on multiple objects, touching one object each time you use this feature, though a single object can only bear one property at a time. The maximum number of objects you can affect with this feature at one time is equal to your Intelligence modifier (minimum of one object). If you try to exceed your maximum, the oldest property immediately ends, and then the new property applies.",
+            "description": "You’ve learned how to invest a spark of magic into mundane objects. To use this ability, you must have thieves’ tools or artisan’s tools in hand. You then touch a Tiny nonmagical object as an action and give it one of the following magical properties of your choice: • The object sheds bright light in a 5-foot radius and dim light for an additional 5 feet. • Whenever tapped by a creature, the object emits a recorded message that can be heard up to 10 feet away. You utter the message when you bestow this property on the object, and the recording can be no more than 6 seconds long. • The object continuously emits your choice of an odor or a nonverbal sound (wind, waves, chirping, or the like). The chosen phenomenon is perceivable up to 10 feet away. • A static visual effect appears on one of the object’s surfaces. This effect can be a picture, up to 25 words of text, lines and shapes, or a mixture of these elements, as you like. The chosen property lasts indefinitely. As an action, you can touch the object and end the property early. You can bestow magic on multiple objects, touching one object each time you use this feature, though a single object can only bear one property at a time. The maximum number of objects you can affect with this feature at one time is equal to your Intelligence modifier (minimum of one object). If you try to exceed your maximum, the oldest property immediately ends, and then the new property applies.",
             "level": 1,
-            "source": "Tasha's Cauldron of Everything"
+            "source": "Tasha's Cauldron of Everything",
+            "requiresChoice": true,
+            "chooseCount": 1,
+            "options": [
+              {
+                "id": "the-object-sheds-bright-light-in-a-5-foot-radius",
+                "name": "• The object sheds bright light in a 5-foot radius",
+                "description": "• The object sheds bright light in a 5-foot radius option."
+              },
+              {
+                "id": "dim-light-for-an-additional-5-feet",
+                "name": "dim light for an additional 5 feet",
+                "description": "dim light for an additional 5 feet option."
+              }
+            ]
           },
           {
             "id": "spellcasting",
             "name": "Spellcasting",
-            "description": "1st-level artificer feature You’ve studied the workings of magic and how to cast spells, channeling the magic through objects. To observers, you don’t appear to be casting spells in a conventional way; you appear to produce wonders from mundane items and outlandish inventions. You produce your artificer spell effects through your tools. You must have a spellcasting focus—specifically thieves’ tools or some kind of artisan’s tool—in hand when you cast any spell with this Spellcasting feature (meaning the spell has an “M” component when you cast it). You must be proficient with the tool to use it in this way. See the equipment chapter in the Player’s Handbook for descriptions of these tools. After you gain the Infuse Item feature at 2nd level, you can also use any item bearing one of your infusions as a spellcasting focus. You know two cantrips of your choice from the artificer spell list. At higher levels, you learn additional artificer cantrips of your choice, as shown in the Cantrips Known column of the Artificer table. When you gain a level in this class, you can replace one of the artificer cantrips you know with another cantrip from the artificer spell list. The Artificer table shows how many spell slots you have to cast your artificer spells. To cast one of your artificer spells of 1st level or higher, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. You prepare the list of artificer spells that are available for you to cast, choosing from the artificer spell list. When you do so, choose a number of artificer spells equal to your Intelligence modifier + half your artificer level, rounded down (minimum of one spell). The spells must be of a level for which you have spell slots. For example, if you are a 5th-level artificer, you have four 1st-level and two 2nd-level spell slots. With an Intelligence of 14, your list of prepared spells can include four spells of 1st or 2nd level, in any combination. If you prepare the 1st-level spell cure wounds, you can cast it using a 1st-level or a 2nd-level slot. Casting the spell doesn’t remove it from your list of prepared spells. You can change your list of prepared spells when you finish a long rest. Preparing a new list of artificer spells requires time spent tinkering with your spellcasting focuses: at least 1 minute per spell level for each spell on your list. Intelligence is your spellcasting ability for your artificer spells; your understanding of the theory behind magic allows you to wield these spells with superior skill. You use your Intelligence whenever an artificer spell refers to your spellcasting ability. In addition, you use your Intelligence modifier when setting the saving throw DC for an artificer spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Intelligence modifier Spell attack modifier = your proficiency bonus + your Intelligence modifier You can cast an artificer spell as a ritual if that spell has the ritual tag and you have the spell prepared. Here’s the list of spells you consult when you learn an artificer spell. The list is organized by spell level, not character level. If a spell can be cast as a ritual, the ritual tag appears after the spell’s name. Each spell is in the Player’s Handbook, unless it has one asterisk (a spell in chapter 3) or two asterisks (a spell in Xanathar’s Guide to Everything).",
+            "description": "You’ve studied the workings of magic and how to cast spells, channeling the magic through objects. To observers, you don’t appear to be casting spells in a conventional way; you appear to produce wonders from mundane items and outlandish inventions. You produce your artificer spell effects through your tools. You must have a spellcasting focus—specifically thieves’ tools or some kind of artisan’s tool—in hand when you cast any spell with this Spellcasting feature (meaning the spell has an “M” component when you cast it). You must be proficient with the tool to use it in this way. See the equipment chapter in the Player’s Handbook for descriptions of these tools. After you gain the Infuse Item feature at 2nd level, you can also use any item bearing one of your infusions as a spellcasting focus. You know two cantrips of your choice from the artificer spell list. At higher levels, you learn additional artificer cantrips of your choice, as shown in the Cantrips Known column of the Artificer table. When you gain a level in this class, you can replace one of the artificer cantrips you know with another cantrip from the artificer spell list. The Artificer table shows how many spell slots you have to cast your artificer spells. To cast one of your artificer spells of 1st level or higher, you must expend a slot of the spell’s level or higher. You regain all expended spell slots when you finish a long rest. You prepare the list of artificer spells that are available for you to cast, choosing from the artificer spell list. When you do so, choose a number of artificer spells equal to your Intelligence modifier + half your artificer level, rounded down (minimum of one spell). The spells must be of a level for which you have spell slots. For example, if you are a 5th-level artificer, you have four 1st-level and two 2nd-level spell slots. With an Intelligence of 14, your list of prepared spells can include four spells of 1st or 2nd level, in any combination. If you prepare the 1st-level spell cure wounds, you can cast it using a 1st-level or a 2nd-level slot. Casting the spell doesn’t remove it from your list of prepared spells. You can change your list of prepared spells when you finish a long rest. Preparing a new list of artificer spells requires time spent tinkering with your spellcasting focuses: at least 1 minute per spell level for each spell on your list. Intelligence is your spellcasting ability for your artificer spells; your understanding of the theory behind magic allows you to wield these spells with superior skill. You use your Intelligence whenever an artificer spell refers to your spellcasting ability. In addition, you use your Intelligence modifier when setting the saving throw DC for an artificer spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Intelligence modifier Spell attack modifier = your proficiency bonus + your Intelligence modifier You can cast an artificer spell as a ritual if that spell has the ritual tag and you have the spell prepared. Here’s the list of spells you consult when you learn an artificer spell. The list is organized by spell level, not character level. If a spell can be cast as a ritual, the ritual tag appears after the spell’s name. Each spell is in the Player’s Handbook, unless it has one asterisk (a Tasha's Cauldron of Everything spell) or two asterisks (a spell in Xanathar’s Guide to Everything).",
             "level": 1,
             "source": "Tasha's Cauldron of Everything"
           },
           {
             "id": "infuse-item",
             "name": "Infuse Item",
-            "description": "2nd-level artificer feature You’ve gained the ability to imbue mundane items with certain magical infusions, turning those objects into magic items. When you gain this feature, pick four artificer infusions to learn, choosing from the “Artificer Infusions” section at the end of the class’s description. You learn additional infusions of your choice when you reach certain levels in this class, as shown in the Infusions Known column of the Artificer table. Whenever you gain a level in this class, you can replace one of the artificer infusions you learned with a new one. Whenever you finish a long rest, you can touch a nonmagical object and imbue it with one of your artificer infusions, turning it into a magic item. An infusion works on only certain kinds of objects, as specified in the infusion’s description. If the item requires attunement, you can attune yourself to it the instant you infuse the item. If you decide to attune to the item later, you must do so using the normal process for attunement (see the attunement rules in the Dungeon Master’s Guide). Your infusion remains in an item indefinitely, but when you die, the infusion vanishes after a number of days equal to your Intelligence modifier (minimum of 1 day). The infusion also vanishes if you replace your knowledge of the infusion. You can infuse more than one nonmagical object at the end of a long rest; the maximum number of objects appears in the Infused Items column of the Artificer table. You must touch each of the objects, and each of your infusions can be in only one object at a time. Moreover, no object can bear more than one of your infusions at a time. If you try to exceed your maximum number of infusions, the oldest infusion ends, and then the new infusion applies. If an infusion ends on an item that contains other things, like a bag of holding, its contents harmlessly appear in and around its space.",
+            "description": "You’ve gained the ability to imbue mundane items with certain magical infusions, turning those objects into magic items. When you gain this feature, pick four artificer infusions to learn, choosing from the “Artificer Infusions” section at the end of the class’s description. You learn additional infusions of your choice when you reach certain levels in this class, as shown in the Infusions Known column of the Artificer table. Whenever you gain a level in this class, you can replace one of the artificer infusions you learned with a new one. Whenever you finish a long rest, you can touch a nonmagical object and imbue it with one of your artificer infusions, turning it into a magic item. An infusion works on only certain kinds of objects, as specified in the infusion’s description. If the item requires attunement, you can attune yourself to it the instant you infuse the item. If you decide to attune to the item later, you must do so using the normal process for attunement (see the attunement rules in the Dungeon Master’s Guide). Your infusion remains in an item indefinitely, but when you die, the infusion vanishes after a number of days equal to your Intelligence modifier (minimum of 1 day). The infusion also vanishes if you replace your knowledge of the infusion. You can infuse more than one nonmagical object at the end of a long rest; the maximum number of objects appears in the Infused Items column of the Artificer table. You must touch each of the objects, and each of your infusions can be in only one object at a time. Moreover, no object can bear more than one of your infusions at a time. If you try to exceed your maximum number of infusions, the oldest infusion ends, and then the new infusion applies. If an infusion ends on an item that contains other things, like a bag of holding, its contents harmlessly appear in and around its space.",
             "level": 2,
             "source": "Tasha's Cauldron of Everything"
           },
           {
             "id": "artificer-specialist",
             "name": "Artificer Specialist",
-            "description": "3rd-level artificer feature Choose the type of specialist you are: Alchemist, Armorer, Artillerist, or Battle Smith, each of which is detailed after the class’s description. Your choice grants you features at 5th level and again at 9th and 15th level.",
+            "description": "Choose the type of specialist you are: Alchemist, Armorer, Artillerist, or Battle Smith, each of which is detailed after the class’s description. Your choice grants you features at 5th level and again at 9th and 15th level.",
             "level": 3,
             "source": "Tasha's Cauldron of Everything"
           },
           {
             "id": "the-right-tool-for-the-job",
             "name": "The Right Tool for the Job",
-            "description": "3rd-level artificer feature You’ve learned how to produce exactly the tool you need: with thieves’ tools or artisan’s tools in hand, you can magically create one set of artisan’s tools in an unoccupied space within 5 feet of you. This creation requires 1 hour of uninterrupted work, which can coincide with a short or long rest. Though the product of magic, the tools are nonmagical, and they vanish when you use this feature again.",
+            "description": "You’ve learned how to produce exactly the tool you need: with thieves’ tools or artisan’s tools in hand, you can magically create one set of artisan’s tools in an unoccupied space within 5 feet of you. This creation requires 1 hour of uninterrupted work, which can coincide with a short or long rest. Though the product of magic, the tools are nonmagical, and they vanish when you use this feature again.",
             "level": 3,
             "source": "Tasha's Cauldron of Everything"
           },
           {
             "id": "ability-score-improvement",
             "name": "Ability Score Improvement",
-            "description": "4th-level artificer feature When you reach 4th level and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.",
+            "description": "When you reach 4th level and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can’t increase an ability score above 20 using this feature.",
             "level": 4,
             "source": "Tasha's Cauldron of Everything"
           },
           {
             "id": "tool-expertise",
             "name": "Tool Expertise",
-            "description": "6th-level artificer feature Your proficiency bonus is now doubled for any ability check you make that uses your proficiency with a tool.",
+            "description": "Your proficiency bonus is now doubled for any ability check you make that uses your proficiency with a tool.",
             "level": 6,
             "source": "Tasha's Cauldron of Everything"
           },
           {
             "id": "flash-of-genius",
             "name": "Flash of Genius",
-            "description": "7th-level artificer feature You’ve gained the ability to come up with solutions under pressure. When you or another creature you can see within 30 feet of you makes an ability check or a saving throw, you can use your reaction to add your Intelligence modifier to the roll. You can use this feature a number of times equal to your Intelligence modifier (minimum of once). You regain all expended uses when you finish a long rest.",
+            "description": "You’ve gained the ability to come up with solutions under pressure. When you or another creature you can see within 30 feet of you makes an ability check or a saving throw, you can use your reaction to add your Intelligence modifier to the roll. You can use this feature a number of times equal to your Intelligence modifier (minimum of once). You regain all expended uses when you finish a long rest.",
             "level": 7,
             "source": "Tasha's Cauldron of Everything"
           },
           {
             "id": "magic-item-adept",
             "name": "Magic Item Adept",
-            "description": "10th-level artificer feature You’ve achieved a profound understanding of how to use and make magic items:",
+            "description": "You’ve achieved a profound understanding of how to use and make magic items: • You can attune to up to four magic items at once. • If you craft a magic item with a rarity of common or uncommon, it takes you a quarter of the normal time, and it costs you half as much of the usual gold.",
             "level": 10,
             "source": "Tasha's Cauldron of Everything"
           },
           {
             "id": "spell-storing-item",
             "name": "Spell-Storing Item",
-            "description": "11th-level artificer feature You can now store a spell in an object. Whenever you finish a long rest, you can touch one simple or martial weapon or one item that you can use as a spellcasting focus, and you store a spell in it, choosing a 1st- or 2nd-level spell from the artificer spell list that requires 1 action to cast (you needn’t have it prepared). While holding the object, a creature can take an action to produce the spell’s effect from it, using your spellcasting ability modifier. If the spell requires concentration, the creature must concentrate. The spell stays in the object until it’s been used a number of times equal to twice your Intelligence modifier (minimum of twice) or until you use this feature again to store a spell in an object.",
+            "description": "You can now store a spell in an object. Whenever you finish a long rest, you can touch one simple or martial weapon or one item that you can use as a spellcasting focus, and you store a spell in it, choosing a 1st- or 2nd-level spell from the artificer spell list that requires 1 action to cast (you needn’t have it prepared). While holding the object, a creature can take an action to produce the spell’s effect from it, using your spellcasting ability modifier. If the spell requires concentration, the creature must concentrate. The spell stays in the object until it’s been used a number of times equal to twice your Intelligence modifier (minimum of twice) or until you use this feature again to store a spell in an object.",
             "level": 11,
             "source": "Tasha's Cauldron of Everything"
           },
           {
             "id": "magic-item-savant",
             "name": "Magic Item Savant",
-            "description": "14th-level artificer feature Your skill with magic items deepens:",
+            "description": "Your skill with magic items deepens: • You can attune to up to five magic items at once. • You ignore all class, race, spell, and level requirements on attuning to or using a magic item.",
             "level": 14,
             "source": "Tasha's Cauldron of Everything"
           },
           {
             "id": "magic-item-master",
             "name": "Magic Item Master",
-            "description": "18th-level artificer feature You can now attune to up to six magic items at once.",
+            "description": "You can now attune to up to six magic items at once.",
             "level": 18,
             "source": "Tasha's Cauldron of Everything"
           },
           {
             "id": "soul-of-artifice",
             "name": "Soul of Artifice",
-            "description": "20th-level artificer feature You have developed a mystical connection to your magic items, which you can draw on for protection: Artificers pursue many disciplines. Here are specialist options you can choose from at 3rd level.",
+            "description": "You have developed a mystical connection to your magic items, which you can draw on for protection: • You gain a +1 bonus to all saving throws per magic item you are currently attuned to. • If you’re reduced to 0 hit points but not killed outright, you can use your reaction to end one of your artificer infusions, causing you to drop to 1 hit point instead of 0.",
             "level": 20,
             "source": "Tasha's Cauldron of Everything"
           }
@@ -395,7 +409,7 @@
           {
             "id": "tashas-bard-additional-bard-spells",
             "name": "Additional Bard Spells",
-            "description": "The spells in the following list expand the bard spell list in the Player’s Handbook. The list is organized by spell level, not character level. If a spell can be cast as a ritual, the ritual tag appears after the spell’s name. Each spell is in the Player’s Handbook, unless it has an asterisk (a spell in chapter 3). Xanathar’s Guide to Everything also offers more spells.",
+            "description": "The spells in the following list expand the bard spell list in the Player’s Handbook. The list is organized by spell level, not character level. If a spell can be cast as a ritual, the ritual tag appears after the spell’s name. Each spell is in the Player’s Handbook, unless it has an asterisk (a Tasha's Cauldron of Everything spell). Xanathar’s Guide to Everything also offers more spells. 1st: Color spray Command 2nd: Aid Enlarge/reduce Mirror image 3rd: Intellect fortress* Mass healing word Slow 4th: Phantasmal killer 5th: Rary’s telepathic bond (ritual) 6th: Heroes’ feast 7th: Dream of the blue veil* Prismatic spray 8th: Antipathy/sympathy 9th: Prismatic wall",
             "level": 1,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
@@ -411,7 +425,7 @@
           {
             "id": "tashas-bard-bardic-versatility",
             "name": "Bardic Versatility",
-            "description": "Whenever you reach a level in this class that grants the Ability Score Improvement feature, you can do one of the following, representing a change in focus as you use your skills and magic:",
+            "description": "Whenever you reach a level in this class that grants the Ability Score Improvement feature, you can do one of the following, representing a change in focus as you use your skills and magic: • Replace one of the skills you chose for the Expertise feature with one of your other skill proficiencies that isn’t benefiting from Expertise. • Replace one cantrip you learned from this class’s Spellcasting feature with another cantrip from the bard spell list.",
             "level": 4,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
@@ -439,7 +453,7 @@
           {
             "id": "tashas-cleric-additional-cleric-spells",
             "name": "Additional Cleric Spells",
-            "description": "The spells in the following list expand the cleric spell list in the Player’s Handbook. The list is organized by spell level, not character level. If a spell can be cast as a ritual, the ritual tag appears after the spell’s name. Each spell is in the Player’s Handbook, unless it has an asterisk (a spell in chapter 3). Xanathar’s Guide to Everything also offers more spells.",
+            "description": "The spells in the following list expand the cleric spell list in the Player’s Handbook. The list is organized by spell level, not character level. If a spell can be cast as a ritual, the ritual tag appears after the spell’s name. Each spell is in the Player’s Handbook, unless it has an asterisk (a Tasha's Cauldron of Everything spell). Xanathar’s Guide to Everything also offers more spells. 3rd: Aura of vitality, Spirit shroud* 4th: Aura of life, Aura of purity 5th: Summon celestial* 6th: Sunbeam 8th: Sunburst 9th: Power word heal",
             "level": 1,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
@@ -491,7 +505,7 @@
           {
             "id": "tashas-druid-additional-druid-spells",
             "name": "Additional Druid Spells",
-            "description": "The spells in the following list expand the druid spell list in the Player’s Handbook. The list is organized by spell level, not character level. If a spell can be cast as a ritual, the ritual tag appears after the spell’s name. Each spell is in the Player’s Handbook, unless it has an asterisk (a spell in chapter 3). Xanathar’s Guide to Everything also offers more spells.",
+            "description": "The spells in the following list expand the druid spell list in the Player’s Handbook. The list is organized by spell level, not character level. If a spell can be cast as a ritual, the ritual tag appears after the spell’s name. Each spell is in the Player’s Handbook, unless it has an asterisk (a Tasha's Cauldron of Everything spell). Xanathar’s Guide to Everything also offers more spells. 1st: Protection from evil and good 2nd: Augury (ritual), Continual flame, Enlarge/reduce, Summon beast* 3rd: Aura of vitality, Elemental weapon, Revivify, Summon fey* 4th: Divination (ritual), Fire shield, Summon elemental* 5th: Cone of cold 6th: Flesh to stone 7th: Symbol 8th: Incendiary cloud",
             "level": 1,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
@@ -543,7 +557,7 @@
           {
             "id": "tashas-fighter-martial-versatility",
             "name": "Martial Versatility",
-            "description": "Whenever you reach a level in this class that grants the Ability Score Improvement feature, you can do one of the following, as you shift the focus of your martial practice:",
+            "description": "Whenever you reach a level in this class that grants the Ability Score Improvement feature, you can do one of the following, as you shift the focus of your martial practice: • Replace a fighting style you know with another fighting style available to fighters. • If you know any maneuvers from the Battle Master archetype, you can replace one maneuver you know with a different maneuver.",
             "level": 4,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
@@ -571,7 +585,7 @@
           {
             "id": "tashas-monk-dedicated-weapon",
             "name": "Dedicated Weapon",
-            "description": "You train yourself to use a variety of weapons as monk weapons, not just simple melee weapons and shortswords. Whenever you finish a short or long rest, you can touch one weapon, focus your ki on it, and then count that weapon as a monk weapon until you use this feature again. The chosen weapon must meet these criteria:",
+            "description": "You train yourself to use a variety of weapons as monk weapons, not just simple melee weapons and shortswords. Whenever you finish a short or long rest, you can touch one weapon, focus your ki on it, and then count that weapon as a monk weapon until you use this feature again. The chosen weapon must meet these criteria: • The weapon must be a simple or martial weapon. • You must be proficient with it. • It must lack the heavy and special properties.",
             "level": 2,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
@@ -623,7 +637,7 @@
           {
             "id": "tashas-paladin-additional-paladin-spells",
             "name": "Additional Paladin Spells",
-            "description": "The spells in the following list expand the paladin spell list in the Player’s Handbook. The list is organized by spell level, not character level. Each spell is in the Player’s Handbook, unless it has an asterisk (a spell in chapter 3). Xanathar’s Guide to Everything also offers more spells.",
+            "description": "The spells in the following list expand the paladin spell list in the Player’s Handbook. The list is organized by spell level, not character level. Each spell is in the Player’s Handbook, unless it has an asterisk (a Tasha's Cauldron of Everything spell). Xanathar’s Guide to Everything also offers more spells. 2nd: Gentle repose, Prayer of healing, Warding bond 3rd: Spirit shroud* 5th: Summon celestial*",
             "level": 2,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
@@ -691,7 +705,7 @@
           {
             "id": "tashas-ranger-additional-ranger-spells",
             "name": "Additional Ranger Spells",
-            "description": "The spells in the following list expand the ranger spell list in the Player’s Handbook. The list is organized by spell level, not character level. Each spell is in the Player’s Handbook, unless it has an asterisk (a spell in chapter 3). Xanathar’s Guide to Everything also offers more spells.",
+            "description": "The spells in the following list expand the ranger spell list in the Player’s Handbook. The list is organized by spell level, not character level. Each spell is in the Player’s Handbook, unless it has an asterisk (a Tasha's Cauldron of Everything spell). Xanathar’s Guide to Everything also offers more spells. 1st: Entangle, Searing smite 2nd: Aid, Enhance ability, Gust of wind, Magic weapon, Summon beast* 3rd: Elemental weapon, Meld into stone, Revivify, Summon fey* 4th: Dominate beast, Summon elemental* 5th: Greater restoration",
             "level": 2,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
@@ -787,23 +801,15 @@
           {
             "id": "tashas-sorcerer-additional-sorcerer-spells",
             "name": "Additional Sorcerer Spells",
-            "description": "The spells in the following list expand the sorcerer spell list in the Player’s Handbook. The list is organized by spell level, not character level. If a spell can be cast as a ritual, the ritual tag appears after the spell’s name. Each spell is in the Player’s Handbook, unless it has an asterisk (a spell in chapter 3). Xanathar’s Guide to Everything also offers more spells.",
+            "description": "The spells in the following list expand the sorcerer spell list in the Player’s Handbook. The list is organized by spell level, not character level. If a spell can be cast as a ritual, the ritual tag appears after the spell’s name. Each spell is in the Player’s Handbook, unless it has an asterisk (a Tasha's Cauldron of Everything spell). Xanathar’s Guide to Everything also offers more spells. Cantrip: Booming blade*, Green-flame blade*, Lightning lure*, Mind sliver*, Sword burst* 1st: Grease, Tasha’s caustic brew* 2nd: Flame blade, Flaming sphere, Magic weapon, Tasha’s mind whip* 3rd: Intellect fortress*, Vampiric touch 4th: Fire shield 5th: Bigby’s hand 6th: Flesh to stone, Otiluke’s freezing sphere, Tasha’s otherworldly guise* 7th: Dream of the blue veil* 8th: Demiplane 9th: Blade of disaster*",
             "level": 1,
-            "source": "Tasha's Cauldron of Everything",
-            "optional": true
-          },
-          {
-            "id": "tashas-sorcerer-metamagic-options",
-            "name": "Metamagic Options",
-            "description": "When you choose Metamagic options, you have access to the following additional options.",
-            "level": 3,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
           },
           {
             "id": "tashas-sorcerer-sorcerous-versatility",
             "name": "Sorcerous Versatility",
-            "description": "Whenever you reach a level in this class that grants the Ability Score Improvement feature, you can do one of the following, representing the magic within you flowing in new ways:",
+            "description": "Whenever you reach a level in this class that grants the Ability Score Improvement feature, you can do one of the following, representing the magic within you flowing in new ways: • Replace one of the options you chose for the Metamagic feature with a different Metamagic option available to you. • Replace one cantrip you learned from this class’s Spellcasting feature with another cantrip from the sorcerer spell list.",
             "level": 4,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
@@ -828,7 +834,7 @@
               {
                 "id": "seeking-spell",
                 "name": "Seeking Spell",
-                "description": "If you make an attack roll for a spell and miss, you can spend 2 sorcery points to reroll the d20, and you must use the new roll."
+                "description": "If you make an attack roll for a spell and miss, you can spend 2 sorcery points to reroll the d20, and you must use the new roll. You can use Seeking Spell even if you have already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "transmuted-spell",
@@ -849,7 +855,7 @@
               {
                 "id": "seeking-spell",
                 "name": "Seeking Spell",
-                "description": "If you make an attack roll for a spell and miss, you can spend 2 sorcery points to reroll the d20, and you must use the new roll."
+                "description": "If you make an attack roll for a spell and miss, you can spend 2 sorcery points to reroll the d20, and you must use the new roll. You can use Seeking Spell even if you have already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "transmuted-spell",
@@ -870,7 +876,7 @@
               {
                 "id": "seeking-spell",
                 "name": "Seeking Spell",
-                "description": "If you make an attack roll for a spell and miss, you can spend 2 sorcery points to reroll the d20, and you must use the new roll."
+                "description": "If you make an attack roll for a spell and miss, you can spend 2 sorcery points to reroll the d20, and you must use the new roll. You can use Seeking Spell even if you have already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "transmuted-spell",
@@ -902,32 +908,16 @@
           {
             "id": "tashas-warlock-additional-warlock-spells",
             "name": "Additional Warlock Spells",
-            "description": "The spells in the following list expand the warlock spell list in the Player’s Handbook. The list is organized by spell level, not character level. Each spell is in the Player’s Handbook, unless it has an asterisk (a spell in chapter 3). Xanathar’s Guide to Everything also offers more spells.",
+            "description": "The spells in the following list expand the warlock spell list in the Player’s Handbook. The list is organized by spell level, not character level. Each spell is in the Player’s Handbook, unless it has an asterisk (a Tasha's Cauldron of Everything spell). Xanathar’s Guide to Everything also offers more spells. Cantrip: Booming blade*, Green-flame blade*, Lightning lure*, Mind sliver*, Sword burst* 3rd: Intellect fortress*, Spirit shroud*, Summon fey*, Summon shadowspawn*, Summon undead* 4th: Summon aberration* 5th: Mislead, Planar binding, Teleportation circle 6th: Summon fiend*, Tasha’s otherworldly guise* 7th: Dream of the blue veil* 9th: Blade of disaster*, Gate, Weird",
             "level": 1,
-            "source": "Tasha's Cauldron of Everything",
-            "optional": true
-          },
-          {
-            "id": "tashas-warlock-pact-boon-option",
-            "name": "Pact Boon Option",
-            "description": "When you choose your Pact Boon feature, the following option is available to you.",
-            "level": 3,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
           },
           {
             "id": "tashas-warlock-eldritch-versatility",
             "name": "Eldritch Versatility",
-            "description": "Whenever you reach a level in this class that grants the Ability Score Improvement feature, you can do one of the following, representing a change of focus in your occult studies: If this change makes you ineligible for any of your Eldritch Invocations, you must also replace them now, choosing invocations for which you qualify.",
+            "description": "Whenever you reach a level in this class that grants the Ability Score Improvement feature, you can do one of the following, representing a change of focus in your occult studies: • Replace one cantrip you learned from this class’s Pact Magic feature with another cantrip from the warlock spell list. • Replace the option you chose for the Pact Boon feature with one of that feature’s other options. • If you’re 12th level or higher, replace one spell from your Mystic Arcanum feature with another warlock spell of the same level. If this change makes you ineligible for any of your Eldritch Invocations, you must also replace them now, choosing invocations for which you qualify.",
             "level": 4,
-            "source": "Tasha's Cauldron of Everything",
-            "optional": true
-          },
-          {
-            "id": "tashas-warlock-eldritch-invocation-options",
-            "name": "Eldritch Invocation Options",
-            "description": "When you choose eldritch invocations, you have access to these additional options.",
-            "level": 1,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
           },
@@ -961,7 +951,7 @@
               {
                 "id": "far-scribe",
                 "name": "Far Scribe",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "5th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 5,
@@ -974,7 +964,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. When any creature whose name is on the page is reduced to 0 hit points but not killed outright, the creature magically drops to 1 hit point instead. Once this magic is triggered, no creature can benefit from it until you finish a long rest. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "9th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 9,
@@ -987,7 +977,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits:",
+                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits: • The familiar gains either a flying speed or a swimming speed (your choice) of 40 feet. • As a bonus action, you can command the familiar to take the Attack action. • The familiar's weapon attacks are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks. • If the familiar forces a creature to make a saving throw, it uses your spell save DC. • When the familiar takes damage, you can use your reaction to grant it resistance against that damage.",
                 "prerequisites": {
                   "text": "Pact of the Chain feature",
                   "requiredOptionIds": [
@@ -1064,7 +1054,7 @@
               {
                 "id": "far-scribe",
                 "name": "Far Scribe",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "5th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 5,
@@ -1077,7 +1067,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. When any creature whose name is on the page is reduced to 0 hit points but not killed outright, the creature magically drops to 1 hit point instead. Once this magic is triggered, no creature can benefit from it until you finish a long rest. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "9th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 9,
@@ -1090,7 +1080,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits:",
+                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits: • The familiar gains either a flying speed or a swimming speed (your choice) of 40 feet. • As a bonus action, you can command the familiar to take the Attack action. • The familiar's weapon attacks are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks. • If the familiar forces a creature to make a saving throw, it uses your spell save DC. • When the familiar takes damage, you can use your reaction to grant it resistance against that damage.",
                 "prerequisites": {
                   "text": "Pact of the Chain feature",
                   "requiredOptionIds": [
@@ -1167,7 +1157,7 @@
               {
                 "id": "far-scribe",
                 "name": "Far Scribe",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "5th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 5,
@@ -1180,7 +1170,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. When any creature whose name is on the page is reduced to 0 hit points but not killed outright, the creature magically drops to 1 hit point instead. Once this magic is triggered, no creature can benefit from it until you finish a long rest. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "9th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 9,
@@ -1193,7 +1183,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits:",
+                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits: • The familiar gains either a flying speed or a swimming speed (your choice) of 40 feet. • As a bonus action, you can command the familiar to take the Attack action. • The familiar's weapon attacks are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks. • If the familiar forces a creature to make a saving throw, it uses your spell save DC. • When the familiar takes damage, you can use your reaction to grant it resistance against that damage.",
                 "prerequisites": {
                   "text": "Pact of the Chain feature",
                   "requiredOptionIds": [
@@ -1270,7 +1260,7 @@
               {
                 "id": "far-scribe",
                 "name": "Far Scribe",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "5th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 5,
@@ -1283,7 +1273,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. When any creature whose name is on the page is reduced to 0 hit points but not killed outright, the creature magically drops to 1 hit point instead. Once this magic is triggered, no creature can benefit from it until you finish a long rest. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "9th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 9,
@@ -1296,7 +1286,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits:",
+                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits: • The familiar gains either a flying speed or a swimming speed (your choice) of 40 feet. • As a bonus action, you can command the familiar to take the Attack action. • The familiar's weapon attacks are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks. • If the familiar forces a creature to make a saving throw, it uses your spell save DC. • When the familiar takes damage, you can use your reaction to grant it resistance against that damage.",
                 "prerequisites": {
                   "text": "Pact of the Chain feature",
                   "requiredOptionIds": [
@@ -1373,7 +1363,7 @@
               {
                 "id": "far-scribe",
                 "name": "Far Scribe",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "5th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 5,
@@ -1386,7 +1376,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. When any creature whose name is on the page is reduced to 0 hit points but not killed outright, the creature magically drops to 1 hit point instead. Once this magic is triggered, no creature can benefit from it until you finish a long rest. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "9th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 9,
@@ -1399,7 +1389,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits:",
+                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits: • The familiar gains either a flying speed or a swimming speed (your choice) of 40 feet. • As a bonus action, you can command the familiar to take the Attack action. • The familiar's weapon attacks are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks. • If the familiar forces a creature to make a saving throw, it uses your spell save DC. • When the familiar takes damage, you can use your reaction to grant it resistance against that damage.",
                 "prerequisites": {
                   "text": "Pact of the Chain feature",
                   "requiredOptionIds": [
@@ -1476,7 +1466,7 @@
               {
                 "id": "far-scribe",
                 "name": "Far Scribe",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "5th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 5,
@@ -1489,7 +1479,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. When any creature whose name is on the page is reduced to 0 hit points but not killed outright, the creature magically drops to 1 hit point instead. Once this magic is triggered, no creature can benefit from it until you finish a long rest. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "9th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 9,
@@ -1502,7 +1492,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits:",
+                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits: • The familiar gains either a flying speed or a swimming speed (your choice) of 40 feet. • As a bonus action, you can command the familiar to take the Attack action. • The familiar's weapon attacks are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks. • If the familiar forces a creature to make a saving throw, it uses your spell save DC. • When the familiar takes damage, you can use your reaction to grant it resistance against that damage.",
                 "prerequisites": {
                   "text": "Pact of the Chain feature",
                   "requiredOptionIds": [
@@ -1579,7 +1569,7 @@
               {
                 "id": "far-scribe",
                 "name": "Far Scribe",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "5th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 5,
@@ -1592,7 +1582,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus.",
+                "description": "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. When any creature whose name is on the page is reduced to 0 hit points but not killed outright, the creature magically drops to 1 hit point instead. Once this magic is triggered, no creature can benefit from it until you finish a long rest. As an action, you can magically erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "9th-level warlock, Pact of the Tome feature",
                   "minimumLevel": 9,
@@ -1605,7 +1595,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits:",
+                "description": "When you cast find familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits: • The familiar gains either a flying speed or a swimming speed (your choice) of 40 feet. • As a bonus action, you can command the familiar to take the Attack action. • The familiar's weapon attacks are considered magical for the purpose of overcoming immunity and resistance to nonmagical attacks. • If the familiar forces a creature to make a saving throw, it uses your spell save DC. • When the familiar takes damage, you can use your reaction to grant it resistance against that damage.",
                 "prerequisites": {
                   "text": "Pact of the Chain feature",
                   "requiredOptionIds": [
@@ -1664,7 +1654,7 @@
               {
                 "id": "pact-of-the-talisman",
                 "name": "Pact of the Talisman",
-                "description": "Your patron gives you an amulet, a talisman that can aid the wearer when the need is great. When the wearer fails an ability check, they can add a d4 to the roll, potentially turning the roll into a success. This benefit can be used a number of times equal to your proficiency bonus, and all expended uses are restored when you finish a long rest."
+                "description": "Your patron gives you an amulet, a talisman that can aid the wearer when the need is great. When the wearer fails an ability check, they can add a d4 to the roll, potentially turning the roll into a success. This benefit can be used a number of times equal to your proficiency bonus, and all expended uses are restored when you finish a long rest. If you lose the talisman, you can perform a 1-hour ceremony to receive a replacement from your patron. This ceremony can be performed during a short or long rest, and it destroys the previous amulet. The talisman turns to ash when you die."
               }
             ]
           }
@@ -1691,7 +1681,7 @@
           {
             "id": "tashas-wizard-additional-wizard-spells",
             "name": "Additional Wizard Spells",
-            "description": "The spells in the following list expand the wizard spell list in the Player’s Handbook. The list is organized by spell level, not character level. A spell’s school of magic is noted, and if a spell can be cast as a ritual, the ritual tag appears after the spell’s name. Each spell is in the Player’s Handbook, unless it has an asterisk (a spell in chapter 3). Xanathar’s Guide to Everything also offers more spells.",
+            "description": "The spells in the following list expand the wizard spell list in the Player’s Handbook. The list is organized by spell level, not character level. A spell’s school of magic is noted, and if a spell can be cast as a ritual, the ritual tag appears after the spell’s name. Each spell is in the Player’s Handbook, unless it has an asterisk (a Tasha's Cauldron of Everything spell). Xanathar’s Guide to Everything also offers more spells. Cantrip: Booming blade* (evoc.), Green-flame blade* (evoc.), Lightning lure* (evoc.), Mind sliver* (ench.), Sword burst* (conj.) 1st: Tasha’s caustic brew* (evoc.) 2nd: Augury (divin., ritual), Enhance ability (trans.), Tasha’s mind whip* (ench.) 3rd: Intellect fortress* (abjur.), Speak with dead (necro.), Spirit shroud* (necro.), Summon fey* (conj.), Summon shadowspawn* (conj.), Summon undead* (conj.) 4th: Divination (divin., ritual), Summon aberration* (conj.), Summon construct* (conj.), Summon elemental* (conj.) 6th: Summon fiend* (conj.), Tasha’s otherworldly guise* (trans.) 7th: Dream of the blue veil* (conj.) 9th: Blade of disaster* (conj.)",
             "level": 1,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
@@ -2767,7 +2757,7 @@
           {
             "id": "fey-wanderer-fey-reinforcements",
             "name": "Fey Reinforcements",
-            "description": "The royal courts of the Feywild have blessed you with the assistance of fey beings: you know summon fey (a spell in chapter 3). It doesn’t count against the number of ranger spells you know, and you can cast it without a material component. You can also cast it once without a spell slot, and you regain the ability to do so when you finish a long rest. Whenever you start casting the spell, you can modify it so that it doesn’t require concentration. If you do so, the spell’s duration becomes 1 minute for that casting.",
+            "description": "The royal courts of the Feywild have blessed you with the assistance of fey beings: you know summon fey (a Tasha's Cauldron of Everything spell). It doesn’t count against the number of ranger spells you know, and you can cast it without a material component. You can also cast it once without a spell slot, and you regain the ability to do so when you finish a long rest. Whenever you start casting the spell, you can modify it so that it doesn’t require concentration. If you do so, the spell’s duration becomes 1 minute for that casting.",
             "level": 11,
             "source": "Tasha's Cauldron of Everything"
           },
@@ -2926,7 +2916,7 @@
           {
             "id": "aberrant-mind-psionic-spells",
             "name": "Psionic Spells",
-            "description": "You learn additional spells when you reach certain levels in this class, as shown on the Psionic Spells table. Each of these spells counts as a sorcerer spell for you, but it doesn’t count against the number of sorcerer spells you know. Whenever you gain a sorcerer level, you can replace one spell you gained from this feature with another spell of the same level. The new spell must be a divination or an enchantment spell from the sorcerer, warlock, or wizard spell list. 1st: arms of Hadar, dissonant whispers, mind sliver 3rd: calm emotions, detect thoughts 5th: hunger of Hadar, sending 7th: Evard’s black tentacles, summon aberration (a spell in chapter 3) 9th: Rary’s telepathic bond, telekinesis",
+            "description": "You learn additional spells when you reach certain levels in this class, as shown on the Psionic Spells table. Each of these spells counts as a sorcerer spell for you, but it doesn’t count against the number of sorcerer spells you know. Whenever you gain a sorcerer level, you can replace one spell you gained from this feature with another spell of the same level. The new spell must be a divination or an enchantment spell from the sorcerer, warlock, or wizard spell list. 1st: arms of Hadar, dissonant whispers, mind sliver 3rd: calm emotions, detect thoughts 5th: hunger of Hadar, sending 7th: Evard’s black tentacles, summon aberration (a Tasha's Cauldron of Everything spell) 9th: Rary’s telepathic bond, telekinesis",
             "level": 1,
             "source": "Tasha's Cauldron of Everything"
           },
@@ -2978,7 +2968,7 @@
           {
             "id": "clockwork-soul-clockwork-magic",
             "name": "Clockwork Magic",
-            "description": "You learn additional spells when you reach certain levels in this class, as shown on the Clockwork Spells table. Each of these spells counts as a sorcerer spell for you, but it doesn’t count against the number of sorcerer spells you know. Whenever you gain a sorcerer level, you can replace one spell you gained from this feature with another spell of the same level. The new spell must be an abjuration or a transmutation spell from the sorcerer, warlock, or wizard spell list. 1st: alarm, protection from evil and good 3rd: aid, lesser restoration 5th: dispel magic, protection from energy 7th: freedom of movement, summon construct (a spell in chapter 3) 9th: greater restoration, wall of force In addition, consult the Manifestations of Order table and choose or randomly determine a way your connection to order manifests while you are casting any of your sorcerer spells. 1: Spectral cogwheels hover behind you. 2: The hands of a clock spin in your eyes. 3: Your skin glows with a brassy sheen. 4: Floating equations and geometric objects overlay your body. 5: Your spellcasting focus temporarily takes the form of a Tiny clockwork mechanism. 6: The ticking of gears or ringing of a clock can be heard by you and those affected by your magic.",
+            "description": "You learn additional spells when you reach certain levels in this class, as shown on the Clockwork Spells table. Each of these spells counts as a sorcerer spell for you, but it doesn’t count against the number of sorcerer spells you know. Whenever you gain a sorcerer level, you can replace one spell you gained from this feature with another spell of the same level. The new spell must be an abjuration or a transmutation spell from the sorcerer, warlock, or wizard spell list. 1st: alarm, protection from evil and good 3rd: aid, lesser restoration 5th: dispel magic, protection from energy 7th: freedom of movement, summon construct (a Tasha's Cauldron of Everything spell) 9th: greater restoration, wall of force In addition, consult the Manifestations of Order table and choose or randomly determine a way your connection to order manifests while you are casting any of your sorcerer spells. 1: Spectral cogwheels hover behind you. 2: The hands of a clock spin in your eyes. 3: Your skin glows with a brassy sheen. 4: Floating equations and geometric objects overlay your body. 5: Your spellcasting focus temporarily takes the form of a Tiny clockwork mechanism. 6: The ticking of gears or ringing of a clock can be heard by you and those affected by your magic.",
             "level": 1,
             "source": "Tasha's Cauldron of Everything"
           },
@@ -3023,7 +3013,7 @@
           {
             "id": "the-fathomless-expanded-spell-list",
             "name": "Expanded Spell List",
-            "description": "The Fathomless lets you choose from an expanded list of spells when you learn a warlock spell. The following spells are added to the warlock spell list for you. 1st: create or destroy water, thunderwave 2nd: gust of wind, silence 3rd: lightning bolt, sleet storm 4th: control water, summon elemental (water only; a spell in chapter 3) 5th: Bigby’s hand (appears as a tentacle), cone of cold",
+            "description": "The Fathomless lets you choose from an expanded list of spells when you learn a warlock spell. The following spells are added to the warlock spell list for you. 1st: create or destroy water, thunderwave 2nd: gust of wind, silence 3rd: lightning bolt, sleet storm 4th: control water, summon elemental (water only; a Tasha's Cauldron of Everything spell) 5th: Bigby’s hand (appears as a tentacle), cone of cold",
             "level": 1,
             "source": "Tasha's Cauldron of Everything"
           },
@@ -3231,7 +3221,7 @@
               {
                 "id": "bait-and-switch",
                 "name": "Bait and Switch",
-                "description": "When you're within 5 feet of a creature on your turn, you can expend one superiority die and switch places with that creature, provided you spend at least 5 feet of movement and the creature is willing and isn't incapacitated. This movement doesn't provoke opportunity attacks."
+                "description": "When you're within 5 feet of a creature on your turn, you can expend one superiority die and switch places with that creature, provided you spend at least 5 feet of movement and the creature is willing and isn't incapacitated. This movement doesn't provoke opportunity attacks. Roll the superiority die. Until the start of your next turn, you or the other creature (your choice) gains a bonus to AC equal to the number rolled."
               },
               {
                 "id": "brace",
@@ -3357,7 +3347,7 @@
               {
                 "id": "bait-and-switch",
                 "name": "Bait and Switch",
-                "description": "When you're within 5 feet of a creature on your turn, you can expend one superiority die and switch places with that creature, provided you spend at least 5 feet of movement and the creature is willing and isn't incapacitated. This movement doesn't provoke opportunity attacks."
+                "description": "When you're within 5 feet of a creature on your turn, you can expend one superiority die and switch places with that creature, provided you spend at least 5 feet of movement and the creature is willing and isn't incapacitated. This movement doesn't provoke opportunity attacks. Roll the superiority die. Until the start of your next turn, you or the other creature (your choice) gains a bonus to AC equal to the number rolled."
               },
               {
                 "id": "brace",
@@ -3483,7 +3473,7 @@
               {
                 "id": "bait-and-switch",
                 "name": "Bait and Switch",
-                "description": "When you're within 5 feet of a creature on your turn, you can expend one superiority die and switch places with that creature, provided you spend at least 5 feet of movement and the creature is willing and isn't incapacitated. This movement doesn't provoke opportunity attacks."
+                "description": "When you're within 5 feet of a creature on your turn, you can expend one superiority die and switch places with that creature, provided you spend at least 5 feet of movement and the creature is willing and isn't incapacitated. This movement doesn't provoke opportunity attacks. Roll the superiority die. Until the start of your next turn, you or the other creature (your choice) gains a bonus to AC equal to the number rolled."
               },
               {
                 "id": "brace",
@@ -3609,7 +3599,7 @@
               {
                 "id": "bait-and-switch",
                 "name": "Bait and Switch",
-                "description": "When you're within 5 feet of a creature on your turn, you can expend one superiority die and switch places with that creature, provided you spend at least 5 feet of movement and the creature is willing and isn't incapacitated. This movement doesn't provoke opportunity attacks."
+                "description": "When you're within 5 feet of a creature on your turn, you can expend one superiority die and switch places with that creature, provided you spend at least 5 feet of movement and the creature is willing and isn't incapacitated. This movement doesn't provoke opportunity attacks. Roll the superiority die. Until the start of your next turn, you or the other creature (your choice) gains a bonus to AC equal to the number rolled."
               },
               {
                 "id": "brace",
@@ -4224,7 +4214,7 @@
           "worth at least 500 gp)"
         ],
         "duration": "Concentration, up to 1 minute",
-        "description": "Uttering an incantation, you draw on the magic of the Lower Planes or Upper Planes (your choice) to transform yourself. You gain the following benefits until the spell ends: Just as every performer lends their art a personal flair and every warrior asserts their fighting styles through the lens of their own training, so too can a spellcaster use magic to express their individuality. Regardless of what type of spellcaster you’re playing, you can customize the cosmetic effects of your character’s spells. Perhaps you wish the effects of your caster’s spells to appear in their favorite color, to suggest the training they received from a celestial mentor, or to exhibit their connection to a season of the year. The possibilities for how you might cosmetically customize your character’s spells are endless. However, such alterations can’t change the effects of a spell. They also can’t make one spell seem like another—you can’t, for example, make a magic missile look like a fireball. When customizing your spellcaster’s magic, consider developing a theme—often, the broader and more versatile the better. You may describe your caster’s magic whenever you wish, particularly when it makes an interesting addition to a story. You may also use it to reinforce other choices you’ve made for your character, like making a bard’s spells tied more closely to their favored art form or a cleric’s spells themed around their deity. For example, the fireball of a wizard with a fondness for storms might erupt to look like burning clouds or a burst of red lightning (without affecting the spell’s damage type), while the same wizard’s haste spell might limn the target in faint thunderheads. Alternatively, a cleric who serves a moon god might radiate faint moonlight around their hands when they cast cure wounds, or their shield of faith might surround the target with glimmering crescent moons. Further still, a druid could choose a cherry blossom theme for their magic, causing delicate branches and pink leaves to grow when they cast entangle or shillelagh, and their faerie fire spell could appear more like wind-tossed petals than flames. The Magic Themes table offers just a few suggestions that might inspire you while personalizing your character’s spells.",
+        "description": "Uttering an incantation, you draw on the magic of the Lower Planes or Upper Planes (your choice) to transform yourself. You gain the following benefits until the spell ends:",
         "ritual": false,
         "concentration": true,
         "classes": [
@@ -9670,34 +9660,10 @@
       "href": "http://www.dndbeyond.com/sources/dnd/tcoe/using-this-book"
     },
     {
-      "id": "chapter-1",
-      "title": "Chapter 1",
-      "level": 2,
-      "href": "/sources/tcoe/character-options"
-    },
-    {
       "id": "player-s-handbook",
       "title": "Player’s Handbook",
       "level": 2,
       "href": "https://www.dndbeyond.com/sources/phb"
-    },
-    {
-      "id": "chapter-2",
-      "title": "Chapter 2",
-      "level": 2,
-      "href": "/sources/TCoE/group-patrons"
-    },
-    {
-      "id": "chapter-3",
-      "title": "Chapter 3",
-      "level": 2,
-      "href": "/sources/TCoE/magical-miscellany"
-    },
-    {
-      "id": "chapter-4",
-      "title": "Chapter 4",
-      "level": 2,
-      "href": "/sources/TCoE/dungeon-masters-tools"
     },
     {
       "id": "monster-manual",
@@ -9752,12 +9718,6 @@
       "title": "multiclassing",
       "level": 2,
       "href": "https://www.dndbeyond.com/sources/phb/customization-options#Multiclassing"
-    },
-    {
-      "id": "chapter-3",
-      "title": "chapter 3",
-      "level": 2,
-      "href": "/sources/tcoe/magical-miscellany#Spells"
     },
     {
       "id": "artificer-infusions",
@@ -9922,22 +9882,10 @@
       "href": "http://www.dndbeyond.com/sources/dnd/tcoe/ranger"
     },
     {
-      "id": "chapter-3",
-      "title": "chapter 3",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/tcoe/magical-miscellany#Spells"
-    },
-    {
       "id": "personalizing-spells",
       "title": "Personalizing Spells",
       "level": 2,
       "href": "https://www.dndbeyond.com/sources/tcoe/magical-miscellany#PersonalizingSpells"
-    },
-    {
-      "id": "chapter-3",
-      "title": "chapter 3",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/tcoe/magical-miscellany"
     },
     {
       "id": "beast-master",
@@ -9988,18 +9936,6 @@
       "href": "#ClockworkSoul"
     },
     {
-      "id": "chapter-3",
-      "title": "chapter 3",
-      "level": 2,
-      "href": "/sources/tcoe/magical-miscellany#SummonAberration"
-    },
-    {
-      "id": "chapter-3",
-      "title": "chapter 3",
-      "level": 2,
-      "href": "/sources/tcoe/magical-miscellany#SummonConstruct"
-    },
-    {
       "id": "warlock",
       "title": "Warlock",
       "level": 2,
@@ -10016,12 +9952,6 @@
       "title": "the Genie",
       "level": 2,
       "href": "#TheGenie"
-    },
-    {
-      "id": "chapter-3",
-      "title": "chapter 3",
-      "level": 2,
-      "href": "/sources/tcoe/magical-miscellany#SummonElemental"
     },
     {
       "id": "wizard",
@@ -10198,12 +10128,6 @@
       "href": "https://www.dndbeyond.com/sources/dmg/introduction#KnowYourPlayers"
     },
     {
-      "id": "chapter-9",
-      "title": "chapter 9",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/dmg/dungeon-masters-workshop"
-    },
-    {
       "id": "expert",
       "title": "Expert",
       "level": 2,
@@ -10330,12 +10254,6 @@
       "href": "#PuzzleHandout4"
     },
     {
-      "id": "chapter-3",
-      "title": "chapter 3",
-      "level": 2,
-      "href": "/sources/TCoE/magical-miscellany#Spells"
-    },
-    {
       "id": "puzzle-handout-5",
       "title": "puzzle handout 5",
       "level": 2,
@@ -10390,7 +10308,7 @@
       "title": "Tasha’s Cauldron of Everything - Tasha’s Cauldron of Everything - Dungeons & Dragons - Sources - D&D Beyond",
       "path": "C:\\Programs\\DnD Character Creator\\TCOE.txt",
       "contentExcerpt": "``` <!DOCTYPE html> !function () { window.semaphore = window.semaphore || [], window.ketch = function () { window.semaphore.push(arguments) }; var e =",
-      "sectionCount": 954
+      "sectionCount": 942
     }
   ],
   "notes": [

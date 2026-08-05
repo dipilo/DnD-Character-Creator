@@ -547,7 +547,7 @@ export const baseSpecies: Species[] = [
       {
         id: 'variant-human',
         name: 'Variant Human',
-        description: 'If your campaign uses the optional feat rules from Chapter 6 of the Player\'s Handbook, your Dungeon Master might allow this variant.',
+        description: 'If your campaign uses the optional feat rules, your Dungeon Master might allow this variant.',
         abilityScoreIncreases: [
           { ability: 'choose', amount: 1, chooseFrom: ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'], chooseCount: 2 }
         ],

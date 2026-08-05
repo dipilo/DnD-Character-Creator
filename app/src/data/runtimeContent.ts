@@ -92,6 +92,9 @@ const sanitizeImportedText = (value?: string) => {
     .replaceAll(/[“"]\s+/g, (match) => match.trimEnd())
     .replaceAll(/\s+[”"]/g, (match) => match.trimStart())
     .replaceAll(/\s+/g, ' ')
+    // Joining separately extracted paragraphs can strand the joining space in front of the
+    // punctuation that opened the next one ("back into its true form . Its statistics are...").
+    .replaceAll(/\s+([,;.])/g, '$1')
     .trim();
 };
 
@@ -585,7 +588,7 @@ const speciesSupplements: Partial<Record<string, Partial<Species>>> = {
       {
         id: 'variant-human',
         name: 'Variant Human',
-        description: 'If your campaign uses the optional feat rules from Chapter 6 of the Player\'s Handbook, your Dungeon Master might allow this variant.',
+        description: 'If your campaign uses the optional feat rules, your Dungeon Master might allow this variant.',
         features: [
           {
             id: 'skills',
@@ -859,6 +862,60 @@ const applyOptionalFeatureSupplements = (cls: Class): Class => {
   };
 };
 
+// "You gain proficiency in one skill of your choice" is a pending choice, not a proficiency, and it
+// has no inline list for the importer to turn into options — the list is the class's own. Features
+// that name the class's list ("from the list of skills available to barbarians at 1st level", as
+// Primal Knowledge does) resolve against `skillChoices`; an unrestricted choice resolves against
+// every skill. Deriving both from the class the feature is merged onto keeps this out of a
+// per-feature lookup table.
+const openSkillChoicePattern = /\bproficienc(?:y|ies)\s+(?:in|with)\s+(one|two|three|four|another|an additional)\s+(?:other\s+|additional\s+)?skills?\s+of your choice\b(?!\s*(?:from the following|:))/i;
+const classSkillListPattern = /\b(?:list of skills|skill list) available to\b/i;
+const skillChoiceCountWords: Record<string, number> = {
+  one: 1,
+  two: 2,
+  three: 3,
+  four: 4,
+  another: 1,
+  'an additional': 1
+};
+
+const resolveOpenSkillChoices = (features: Feature[], classSkillChoices: string[]) => {
+  return features.map((feature) => {
+    if (feature.options?.length) {
+      return feature;
+    }
+
+    const match = openSkillChoicePattern.exec(feature.description ?? '');
+    if (!match) {
+      return feature;
+    }
+
+    const restrictToClassList = classSkillListPattern.test(feature.description ?? '') && classSkillChoices.length > 0;
+    const options = restrictToClassList
+      ? getNamedFeatureOptions(allSkillFeatureOptions, classSkillChoices)
+      : allSkillFeatureOptions;
+    if (options.length === 0) {
+      return feature;
+    }
+
+    return {
+      ...feature,
+      requiresChoice: true,
+      chooseCount: feature.chooseCount ?? skillChoiceCountWords[match[1].toLowerCase()] ?? 1,
+      options
+    };
+  });
+};
+
+const applyClassSkillChoices = (cls: Class): Class => ({
+  ...cls,
+  features: resolveOpenSkillChoices(cls.features, cls.skillChoices),
+  subclasses: cls.subclasses.map((subclass) => ({
+    ...subclass,
+    features: resolveOpenSkillChoices(subclass.features, cls.skillChoices)
+  }))
+});
+
 const applyFeatureChoiceSupplements = (features: Feature[], supplements?: Record<string, FeatureChoiceSupplement>) => {
   if (!supplements) {
     return features;
@@ -930,7 +987,7 @@ const enrichClass = (primary: Class, fallback?: Class): Class => {
     startingGold: choosePreferredNumber(primary.startingGold, fallback?.startingGold)
   } satisfies Class;
 
-  return sanitizeClass(applyClassFeatureChoiceSupplements(applyOptionalFeatureSupplements(enriched)));
+  return sanitizeClass(applyClassSkillChoices(applyClassFeatureChoiceSupplements(applyOptionalFeatureSupplements(enriched))));
 };
 
 // Which candidate wins `primary` depends on how much a source pack happened to parse, so letting

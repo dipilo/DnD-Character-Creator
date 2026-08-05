@@ -6,7 +6,7 @@
     "category": "supplement",
     "aliases": [],
     "origin": "parsed-html",
-    "importedAt": "2026-08-03T09:53:36.599Z",
+    "importedAt": "2026-08-05T01:53:13.076Z",
     "parser": "html-statblock",
     "visibility": "private"
   },
@@ -6128,7 +6128,7 @@
           {
             "id": "motm-kraken-priest-actions-1",
             "name": "Multiattack",
-            "description": "The priest makes two Thunderous Touch or Thunder­bolt attacks."
+            "description": "The priest makes two Thunderous Touch or Thunderbolt attacks."
           },
           {
             "id": "motm-kraken-priest-actions-2",
@@ -13475,8 +13475,8 @@
       "level": 2
     },
     {
-      "id": "chapter-1-fantastical-races",
-      "title": "Chapter 1: Fantastical Races",
+      "id": "fantastical-races",
+      "title": ": Fantastical Races",
       "level": 1
     },
     {
@@ -13850,8 +13850,8 @@
       "level": 3
     },
     {
-      "id": "chapter-2-bestiary",
-      "title": "Chapter 2: Bestiary",
+      "id": "bestiary",
+      "title": ": Bestiary",
       "level": 1
     },
     {
@@ -18363,8 +18363,8 @@
       "href": "https://www.dndbeyond.com/sources/mm"
     },
     {
-      "id": "chapter-1-fantastical-races",
-      "title": "Chapter 1, “Fantastical Races",
+      "id": "fantastical-races",
+      "title": ", “Fantastical Races",
       "level": 2,
       "href": "https://www.dndbeyond.com/sources/motm/fantastical-races"
     },
@@ -18375,8 +18375,8 @@
       "href": "https://www.dndbeyond.com/sources/phb"
     },
     {
-      "id": "chapter-2-bestiary",
-      "title": "Chapter 2, “Bestiary",
+      "id": "bestiary",
+      "title": ", “Bestiary",
       "level": 2,
       "href": "https://www.dndbeyond.com/sources/motm/bestiary"
     },
@@ -18751,12 +18751,6 @@
       "title": "abyssal corruption",
       "level": 2,
       "href": "https://www.dndbeyond.com/sources/dmg/creating-a-multiverse#OptionalRuleAbyssalCorruption"
-    },
-    {
-      "id": "chapter-2",
-      "title": "chapter 2",
-      "level": 2,
-      "href": "https://www.dndbeyond.com/sources/dmg/creating-a-multiverse"
     },
     {
       "id": "myconids",
@@ -20373,7 +20367,7 @@
       "title": "Mordenkainen Presents: Monsters of the Multiverse - Monsters of the Multiverse - Dungeons & Dragons - Sources - D&D Beyond",
       "path": "C:\\Programs\\DnD Character Creator\\MOTM.txt",
       "contentExcerpt": "``` <!DOCTYPE html> !function () { window.semaphore = window.semaphore || [], window.ketch = function () { window.semaphore.push(arguments) }; var e =",
-      "sectionCount": 1277
+      "sectionCount": 1276
     }
   ],
   "notes": [

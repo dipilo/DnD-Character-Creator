@@ -6,7 +6,7 @@
     "category": "supplement",
     "aliases": [],
     "origin": "parsed-html",
-    "importedAt": "2026-08-03T10:10:22.905Z",
+    "importedAt": "2026-08-05T01:53:08.867Z",
     "parser": "xgte-html",
     "visibility": "private"
   },
@@ -18,7 +18,7 @@
         "id": "path-of-the-ancestral-guardian",
         "classId": "barbarian",
         "name": "Path of the Ancestral Guardian",
-        "description": "Some barbarians hail from cultures that revere their ancestors. These tribes teach that the warriors of the past linger in the world as mighty spirits, who can guide and protect the living. When a barbarian who follows this path rages, the barbarian contacts the spirit world and calls on these guardian spirits for aid. Barbarians who draw on their ancestral guardians can better fight to protect their tribes and their allies. In order to cement ties to their ancestral guardians, barbarians who follow this path cover themselves in elaborate tattoos that celebrate their ancestors’ deeds. These tattoos tell sagas of victories against terrible monsters and other fearsome rivals. So ancestors are people who did the procreation thing to make more people before you were born? Like how many people? That’s a lot of the procreation thing. Ew. You’re disgusting.",
+        "description": "Some barbarians hail from cultures that revere their ancestors. These tribes teach that the warriors of the past linger in the world as mighty spirits, who can guide and protect the living. When a barbarian who follows this path rages, the barbarian contacts the spirit world and calls on these guardian spirits for aid. Barbarians who draw on their ancestral guardians can better fight to protect their tribes and their allies. In order to cement ties to their ancestral guardians, barbarians who follow this path cover themselves in elaborate tattoos that celebrate their ancestors’ deeds. These tattoos tell sagas of victories against terrible monsters and other fearsome rivals.",
         "features": [
           {
             "id": "path-of-the-ancestral-guardian-feature-1",
@@ -56,7 +56,7 @@
         "id": "path-of-the-storm-herald",
         "classId": "barbarian",
         "name": "Path of the Storm Herald",
-        "description": "All barbarians harbor a fury within. Their rage grants them superior strength, durability, and speed. Barbarians who follow the Path of the Storm Herald learn to transform that rage into a mantle of primal magic, which swirls around them. When in a fury, a barbarian of this path taps into the forces of nature to create powerful magical effects. Storm heralds are typically elite champions who train alongside druids, rangers, and others sworn to protect nature. Other storm heralds hone their craft in lodges in regions wracked by storms, in the frozen reaches at the world’s end, or deep in the hottest deserts. You know one of the great benefits of living underground? No weather. Don’t mess this up for me.",
+        "description": "All barbarians harbor a fury within. Their rage grants them superior strength, durability, and speed. Barbarians who follow the Path of the Storm Herald learn to transform that rage into a mantle of primal magic, which swirls around them. When in a fury, a barbarian of this path taps into the forces of nature to create powerful magical effects. Storm heralds are typically elite champions who train alongside druids, rangers, and others sworn to protect nature. Other storm heralds hone their craft in lodges in regions wracked by storms, in the frozen reaches at the world’s end, or deep in the hottest deserts.",
         "features": [
           {
             "id": "path-of-the-storm-herald-feature-1",
@@ -139,7 +139,7 @@
         "id": "college-of-glamour",
         "classId": "bard",
         "name": "College of Glamour",
-        "description": "The College of Glamour is the home of bards who mastered their craft in the vibrant realm of the Feywild or under the tutelage of someone who dwelled there. Tutored by satyrs, eladrin, and other fey, these bards learn to use their magic to delight and captivate others. The bards of this college are regarded with a mixture of awe and fear. Their performances are the stuff of legend. These bards are so eloquent that a speech or song that one of them performs can cause captors to release the bard unharmed and can lull a furious dragon into complacency. The same magic that allows them to quell beasts can also bend minds. Villainous bards of this college can leech off a community for weeks, misusing their magic to turn their hosts into thralls. Heroic bards of this college instead use this power to gladden the downtrodden and undermine oppressors. Illusions? How quaint. Before I destroy you, make one that looks like a really big goldfish — like as big as me! Hmm. That’s too big. Goodbye!",
+        "description": "The College of Glamour is the home of bards who mastered their craft in the vibrant realm of the Feywild or under the tutelage of someone who dwelled there. Tutored by satyrs, eladrin, and other fey, these bards learn to use their magic to delight and captivate others. The bards of this college are regarded with a mixture of awe and fear. Their performances are the stuff of legend. These bards are so eloquent that a speech or song that one of them performs can cause captors to release the bard unharmed and can lull a furious dragon into complacency. The same magic that allows them to quell beasts can also bend minds. Villainous bards of this college can leech off a community for weeks, misusing their magic to turn their hosts into thralls. Heroic bards of this college instead use this power to gladden the downtrodden and undermine oppressors.",
         "features": [
           {
             "id": "college-of-glamour-feature-1",
@@ -222,7 +222,7 @@
         "id": "college-of-whispers",
         "classId": "bard",
         "name": "College of Whispers",
-        "description": "Most folk are happy to welcome a bard into their midst. Bards of the College of Whispers use this to their advantage. They appear to be like other bards, sharing news, singing songs, and telling tales to the audiences they gather. In truth, the College of Whispers teaches its students that they are wolves among sheep. These bards use their knowledge and magic to uncover secrets and turn them against others through extortion and threats. Many other bards hate the College of Whispers, viewing it as a parasite that uses a bard’s reputation to acquire wealth and power. For this reason, members of this college rarely reveal their true nature. They typically claim to follow some other college, or they keep their actual calling secret in order to infiltrate and exploit royal courts and other settings of power. Speak up! It’s really hard to hear you over the screaming. Nope. It’s no use. I’ll have to stop the screaming. Disintegrations all around, then.",
+        "description": "Most folk are happy to welcome a bard into their midst. Bards of the College of Whispers use this to their advantage. They appear to be like other bards, sharing news, singing songs, and telling tales to the audiences they gather. In truth, the College of Whispers teaches its students that they are wolves among sheep. These bards use their knowledge and magic to uncover secrets and turn them against others through extortion and threats. Many other bards hate the College of Whispers, viewing it as a parasite that uses a bard’s reputation to acquire wealth and power. For this reason, members of this college rarely reveal their true nature. They typically claim to follow some other college, or they keep their actual calling secret in order to infiltrate and exploit royal courts and other settings of power.",
         "features": [
           {
             "id": "college-of-whispers-feature-1",
@@ -260,7 +260,7 @@
         "id": "forge-domain",
         "classId": "cleric",
         "name": "Forge Domain",
-        "description": "The gods of the forge are patrons of artisans who work with metal, from a humble blacksmith who keeps a village in horseshoes and plow blades to the mighty elf artisan whose diamond-tipped arrows of mithral have felled demon lords. The gods of the forge teach that, with patience and hard work, even the most intractable metal can be transformed from a lump of ore to a beautifully wrought object. Clerics of these deities search for objects lost to the forces of darkness, liberate mines overrun by orcs, and uncover rare and wondrous materials necessary to create potent magic items. Followers of these gods take great pride in their work, and they are willing to craft and use heavy armor and powerful weapons to protect them. Deities of this domain include Gond, Reorx, Onatar, Moradin, Hephaestus, and Goibhniu. I’ve got a minion that forges things. An ink-stained little twerp with excellent penmanship. So how do the hammers and fire help the process? Wouldn’t the paper get burned? Oh, the fire must be for the wax seals!",
+        "description": "The gods of the forge are patrons of artisans who work with metal, from a humble blacksmith who keeps a village in horseshoes and plow blades to the mighty elf artisan whose diamond-tipped arrows of mithral have felled demon lords. The gods of the forge teach that, with patience and hard work, even the most intractable metal can be transformed from a lump of ore to a beautifully wrought object. Clerics of these deities search for objects lost to the forces of darkness, liberate mines overrun by orcs, and uncover rare and wondrous materials necessary to create potent magic items. Followers of these gods take great pride in their work, and they are willing to craft and use heavy armor and powerful weapons to protect them. Deities of this domain include Gond, Reorx, Onatar, Moradin, Hephaestus, and Goibhniu.",
         "features": [
           {
             "id": "forge-domain-feature-1",
@@ -293,7 +293,7 @@
           {
             "id": "forge-domain-feature-5",
             "name": "Channel Divinity: Artisan’s Blessing",
-            "description": "Starting at 2nd level, you can use your Channel Divinity to create simple items. You conduct an hour-long ritual that crafts a nonmagical item that must include some metal: a simple or martial weapon, a suit of armor, ten pieces of ammunition, a set of tools, or another metal object (see chapter 5, “Equipment,” in the Player’s Handbook for examples of these items). The creation is completed at the end of the hour, coalescing in an unoccupied space of your choice on a surface within 5 feet of you. The thing you create can be something that is worth no more than 100 gp. As part of this ritual, you must lay out metal, which can include coins, with a value equal to the creation. The metal irretrievably coalesces and transforms into the creation at the ritual’s end, magically forming even nonmetal parts of the creation. The ritual can create a duplicate of a nonmagical item that contains metal, such as a key, if you possess the original during the ritual.",
+            "description": "Starting at 2nd level, you can use your Channel Divinity to create simple items. You conduct an hour-long ritual that crafts a nonmagical item that must include some metal: a simple or martial weapon, a suit of armor, ten pieces of ammunition, a set of tools, or another metal object. The creation is completed at the end of the hour, coalescing in an unoccupied space of your choice on a surface within 5 feet of you. The thing you create can be something that is worth no more than 100 gp. As part of this ritual, you must lay out metal, which can include coins, with a value equal to the creation. The metal irretrievably coalesces and transforms into the creation at the ritual’s end, magically forming even nonmetal parts of the creation. The ritual can create a duplicate of a nonmagical item that contains metal, such as a key, if you possess the original during the ritual.",
             "level": 2,
             "source": "Xanathar's Guide to Everything"
           },
@@ -326,7 +326,7 @@
         "id": "grave-domain",
         "classId": "cleric",
         "name": "Grave Domain",
-        "description": "Gods of the grave watch over the line between life and death. To these deities, death and the afterlife are a foundational part of the multiverse. To desecrate the peace of the dead is an abomination. Deities of the grave include Kelemvor, Wee Jas, the ancestral spirits of the Undying Court, Hades, Anubis, and Osiris. Followers of these deities seek to put wandering spirits to rest, destroy the undead, and ease the suffering of the dying. Their magic also allows them to stave off death for a time, particularly for a person who still has some great work to accomplish in the world. This is a delay of death, not a denial of it, for death will eventually get its due. I guess if you can’t disintegrate them or eat them, burying dead bodies makes as much sense as anything else.",
+        "description": "Gods of the grave watch over the line between life and death. To these deities, death and the afterlife are a foundational part of the multiverse. To desecrate the peace of the dead is an abomination. Deities of the grave include Kelemvor, Wee Jas, the ancestral spirits of the Undying Court, Hades, Anubis, and Osiris. Followers of these deities seek to put wandering spirits to rest, destroy the undead, and ease the suffering of the dying. Their magic also allows them to stave off death for a time, particularly for a person who still has some great work to accomplish in the world. This is a delay of death, not a denial of it, for death will eventually get its due.",
         "features": [
           {
             "id": "grave-domain-feature-1",
@@ -392,7 +392,7 @@
         "id": "circle-of-dreams",
         "classId": "druid",
         "name": "Circle of Dreams",
-        "description": "Druids who are members of the Circle of Dreams hail from regions that have strong ties to the Feywild and its dreamlike realms. The druids’ guardianship of the natural world makes for a natural alliance between them and good-aligned fey. These druids seek to fill the world with dreamy wonder. Their magic mends wounds and brings joy to downcast hearts, and the realms they protect are gleaming, fruitful places, where dream and reality blur together and where the weary can find rest. I don’t dream because I don’t sleep. I’m always awake so no one can ever sneak up on me. If I dreamed, they would be bigger dreams than yours, though, because my head is bigger.",
+        "description": "Druids who are members of the Circle of Dreams hail from regions that have strong ties to the Feywild and its dreamlike realms. The druids’ guardianship of the natural world makes for a natural alliance between them and good-aligned fey. These druids seek to fill the world with dreamy wonder. Their magic mends wounds and brings joy to downcast hearts, and the realms they protect are gleaming, fruitful places, where dream and reality blur together and where the weary can find rest.",
         "features": [
           {
             "id": "circle-of-dreams-feature-1",
@@ -475,7 +475,7 @@
         "id": "arcane-archer",
         "classId": "fighter",
         "name": "Arcane Archer",
-        "description": "An Arcane Archer studies a unique elven method of archery that weaves magic into attacks to produce supernatural effects. Arcane Archers are some of the most elite warriors among the elves. They stand watch over the fringes of elven domains, keeping a keen eye out for trespassers and using magic-infused arrows to defeat monsters and invaders before they can reach elven settlements. Over the centuries, the methods of these elf archers have been learned by members of other races who can also balance arcane aptitude with archery. Arrows are the worst. They go much farther than eye rays. That’s why I stay indoors all the time. Besides, the sky is totally overrated.",
+        "description": "An Arcane Archer studies a unique elven method of archery that weaves magic into attacks to produce supernatural effects. Arcane Archers are some of the most elite warriors among the elves. They stand watch over the fringes of elven domains, keeping a keen eye out for trespassers and using magic-infused arrows to defeat monsters and invaders before they can reach elven settlements. Over the centuries, the methods of these elf archers have been learned by members of other races who can also balance arcane aptitude with archery.",
         "features": [
           {
             "id": "arcane-archer-feature-1",
@@ -515,7 +515,7 @@
           {
             "id": "arcane-archer-feature-6",
             "name": "Arcane Shot Options",
-            "description": "The Arcane Shot feature lets you choose options for it at certain levels. The options are presented here in alphabetical order. They are all magical effects, and each one is associated with one of the schools of magic. If an option requires a saving throw, your Arcane Shot save DC equals 8 + your proficiency bonus + your Intelligence modifier. Banishing Arrow. You use abjuration magic to try to temporarily banish your target to a harmless location in the Feywild. The creature hit by the arrow must also succeed on a Charisma saving throw or be banished. While banished in this way, the target’s speed is 0, and it is incapacitated. At the end of its next turn, the target reappears in the space it vacated or in the nearest unoccupied space if that space is occupied. After you reach 18th level in this class, a target also takes 2d6 force damage when the arrow hits it. Beguiling Arrow. Your enchantment magic causes this arrow to temporarily beguile its target. The creature hit by the arrow takes an extra 2d6 psychic damage, and choose one of your allies within 30 feet of the target. The target must succeed on a Wisdom saving throw, or it is charmed by the chosen ally until the start of your next turn. This effect ends early if the chosen ally attacks the charmed target, deals damage to it, or forces it to make a saving throw. The psychic damage increases to 4d6 when you reach 18th level in this class. Bursting Arrow. You imbue your arrow with force energy drawn from the school of evocation. The energy detonates after your attack. Immediately after the arrow hits the creature, the target and all other creatures within 10 feet of it take 2d6 force damage each. The force damage increases to 4d6 when you reach 18th level in this class. Enfeebling Arrow. You weave necromantic magic into your arrow. The creature hit by the arrow takes an extra 2d6 necrotic damage. The target must also succeed on a Constitution saving throw, or the damage dealt by its weapon attacks is halved until the start of your next turn. The necrotic damage increases to 4d6 when you reach 18th level in this class. Grasping Arrow. When this arrow strikes its target, conjuration magic creates grasping, poisonous brambles, which wrap around the target. The creature hit by the arrow takes an extra 2d6 poison damage, its speed is reduced by 10 feet, and it takes 2d6 slashing damage the first time on each turn it moves 1 foot or more without teleporting. The target or any creature that can reach it can use its action to remove the brambles with a successful Strength (Athletics) check against your Arcane Shot save DC. Otherwise, the brambles last for 1 minute or until you use this option again. The poison damage and slashing damage both increase to 4d6 when you reach 18th level in this class. Piercing Arrow. You use transmutation magic to give your arrow an ethereal quality. When you use this option, you don’t make an attack roll for the attack. Instead, the arrow shoots forward in a line, which is 1 foot wide and 30 feet long, before disappearing. The arrow passes harmlessly through objects, ignoring cover. Each creature in that line must make a Dexterity saving throw. On a failed save, a creature takes damage as if it were hit by the arrow, plus an extra 1d6 piercing damage. On a successful save, a target takes half as much damage. The piercing damage increases to 2d6 when you reach 18th level in this class. Seeking Arrow. Using divination magic, you grant your arrow the ability to seek out a target. When you use this option, you don’t make an attack roll for the attack. Instead, choose one creature you have seen in the past minute. The arrow flies toward that creature, moving around corners if necessary and ignoring three-quarters cover and half cover. If the target is within the weapon’s range and there is a path large enough for the arrow to travel to the target, the target must make a Dexterity saving throw. Otherwise, the arrow disappears after traveling as far as it can. On a failed save, the target takes damage as if it were hit by the arrow, plus an extra 1d6 force damage, and you learn the target’s current location. On a successful save, the target takes half as much damage, and you don’t learn its location. The force damage increases to 2d6 when you reach 18th level in this class. Shadow Arrow. You weave illusion magic into your arrow, causing it to occlude your foe’s vision with shadows. The creature hit by the arrow takes an extra 2d6 psychic damage, and it must succeed on a Wisdom saving throw or be unable to see anything farther than 5 feet away until the start of your next turn. The psychic damage increases to 4d6 when you reach 18th level in this class. So there are different names for different sorts of people who swing swords? Why? Let me try: big sword swinger and tiny sword swinger. No, that sounds like it’s the size of the sword that matters. How about: big meat bag with a sword and little meat bag with a sword!",
+            "description": "The Arcane Shot feature lets you choose options for it at certain levels. The options are presented here in alphabetical order. They are all magical effects, and each one is associated with one of the schools of magic. If an option requires a saving throw, your Arcane Shot save DC equals 8 + your proficiency bonus + your Intelligence modifier. Banishing Arrow. You use abjuration magic to try to temporarily banish your target to a harmless location in the Feywild. The creature hit by the arrow must also succeed on a Charisma saving throw or be banished. While banished in this way, the target’s speed is 0, and it is incapacitated. At the end of its next turn, the target reappears in the space it vacated or in the nearest unoccupied space if that space is occupied. After you reach 18th level in this class, a target also takes 2d6 force damage when the arrow hits it. Beguiling Arrow. Your enchantment magic causes this arrow to temporarily beguile its target. The creature hit by the arrow takes an extra 2d6 psychic damage, and choose one of your allies within 30 feet of the target. The target must succeed on a Wisdom saving throw, or it is charmed by the chosen ally until the start of your next turn. This effect ends early if the chosen ally attacks the charmed target, deals damage to it, or forces it to make a saving throw. The psychic damage increases to 4d6 when you reach 18th level in this class. Bursting Arrow. You imbue your arrow with force energy drawn from the school of evocation. The energy detonates after your attack. Immediately after the arrow hits the creature, the target and all other creatures within 10 feet of it take 2d6 force damage each. The force damage increases to 4d6 when you reach 18th level in this class. Enfeebling Arrow. You weave necromantic magic into your arrow. The creature hit by the arrow takes an extra 2d6 necrotic damage. The target must also succeed on a Constitution saving throw, or the damage dealt by its weapon attacks is halved until the start of your next turn. The necrotic damage increases to 4d6 when you reach 18th level in this class. Grasping Arrow. When this arrow strikes its target, conjuration magic creates grasping, poisonous brambles, which wrap around the target. The creature hit by the arrow takes an extra 2d6 poison damage, its speed is reduced by 10 feet, and it takes 2d6 slashing damage the first time on each turn it moves 1 foot or more without teleporting. The target or any creature that can reach it can use its action to remove the brambles with a successful Strength (Athletics) check against your Arcane Shot save DC. Otherwise, the brambles last for 1 minute or until you use this option again. The poison damage and slashing damage both increase to 4d6 when you reach 18th level in this class. Piercing Arrow. You use transmutation magic to give your arrow an ethereal quality. When you use this option, you don’t make an attack roll for the attack. Instead, the arrow shoots forward in a line, which is 1 foot wide and 30 feet long, before disappearing. The arrow passes harmlessly through objects, ignoring cover. Each creature in that line must make a Dexterity saving throw. On a failed save, a creature takes damage as if it were hit by the arrow, plus an extra 1d6 piercing damage. On a successful save, a target takes half as much damage. The piercing damage increases to 2d6 when you reach 18th level in this class. Seeking Arrow. Using divination magic, you grant your arrow the ability to seek out a target. When you use this option, you don’t make an attack roll for the attack. Instead, choose one creature you have seen in the past minute. The arrow flies toward that creature, moving around corners if necessary and ignoring three-quarters cover and half cover. If the target is within the weapon’s range and there is a path large enough for the arrow to travel to the target, the target must make a Dexterity saving throw. Otherwise, the arrow disappears after traveling as far as it can. On a failed save, the target takes damage as if it were hit by the arrow, plus an extra 1d6 force damage, and you learn the target’s current location. On a successful save, the target takes half as much damage, and you don’t learn its location. The force damage increases to 2d6 when you reach 18th level in this class. Shadow Arrow. You weave illusion magic into your arrow, causing it to occlude your foe’s vision with shadows. The creature hit by the arrow takes an extra 2d6 psychic damage, and it must succeed on a Wisdom saving throw or be unable to see anything farther than 5 feet away until the start of your next turn. The psychic damage increases to 4d6 when you reach 18th level in this class.",
             "level": 18,
             "source": "Xanathar's Guide to Everything"
           }
@@ -736,7 +736,7 @@
         "id": "way-of-the-kensei",
         "classId": "monk",
         "name": "Way of the Kensei",
-        "description": "Monks of the Way of the Kensei train relentlessly with their weapons, to the point where the weapon becomes an extension of the body. Founded on a mastery of sword fighting, the tradition has expanded to include many different weapons. A kensei sees a weapon in much the same way a calligrapher or painter regards a pen or brush. Whatever the weapon, the kensei views it as a tool used to express the beauty and precision of the martial arts. That such mastery makes a kensei a peerless warrior is but a side effect of intense devotion, practice, and study. Why did the samurai cross the road? … Now you say “Why?” … Okay, here’s the joke part: I kensei. Get it? What? Why aren’t you laughing? The joke is solid gold, and my delivery was perfect. Maybe you didn’t get it because you’re stupid.",
+        "description": "Monks of the Way of the Kensei train relentlessly with their weapons, to the point where the weapon becomes an extension of the body. Founded on a mastery of sword fighting, the tradition has expanded to include many different weapons. A kensei sees a weapon in much the same way a calligrapher or painter regards a pen or brush. Whatever the weapon, the kensei views it as a tool used to express the beauty and precision of the martial arts. That such mastery makes a kensei a peerless warrior is but a side effect of intense devotion, practice, and study.",
         "features": [
           {
             "id": "way-of-the-kensei-feature-1",
@@ -774,7 +774,7 @@
         "id": "way-of-the-sun-soul",
         "classId": "monk",
         "name": "Way of the Sun Soul",
-        "description": "Monks of the Way of the Sun Soul learn to channel their life energy into searing bolts of light. They teach that meditation can unlock the ability to unleash the indomitable light shed by the soul of every living creature. So you have this soul, but you can’t see it or touch it. And when you die, this invisible thing leaves your body and goes to a place you can’t see. And you people think I’m crazy?",
+        "description": "Monks of the Way of the Sun Soul learn to channel their life energy into searing bolts of light. They teach that meditation can unlock the ability to unleash the indomitable light shed by the soul of every living creature.",
         "features": [
           {
             "id": "way-of-the-sun-soul-feature-1",
@@ -817,7 +817,7 @@
           {
             "id": "oath-of-conquest-feature-1",
             "name": "Tenets of Conquest",
-            "description": "A paladin who takes this oath has the tenets of conquest seared on the upper arm. Douse the Flame of Hope. It is not enough to merely defeat an enemy in battle. Your victory must be so overwhelming that your enemies’ will to fight is shattered forever. A blade can end a life. Fear can end an empire. Rule with an Iron Fist. Once you have conquered, tolerate no dissent. Your word is law. Those who obey it shall be favored. Those who defy it shall be punished as an example to all who might follow. Strength Above All. You shall rule until a stronger one arises. Then you must grow mightier and meet the challenge, or fall to your own ruin. Conquest sounds cool. Do you have to leave your house for that? Because I’ve got a fish named Sylgar, and I can’t be away for too long or he gets sad.",
+            "description": "A paladin who takes this oath has the tenets of conquest seared on the upper arm. Douse the Flame of Hope. It is not enough to merely defeat an enemy in battle. Your victory must be so overwhelming that your enemies’ will to fight is shattered forever. A blade can end a life. Fear can end an empire. Rule with an Iron Fist. Once you have conquered, tolerate no dissent. Your word is law. Those who obey it shall be favored. Those who defy it shall be punished as an example to all who might follow. Strength Above All. You shall rule until a stronger one arises. Then you must grow mightier and meet the challenge, or fall to your own ruin.",
             "level": 3,
             "source": "Xanathar's Guide to Everything"
           },
@@ -876,7 +876,7 @@
           {
             "id": "oath-of-redemption-feature-1",
             "name": "Tenets of Redemption",
-            "description": "The tenets of the Oath of Redemption hold a paladin to a high standard of peace and justice. Peace. Violence is a weapon of last resort. Diplomacy and understanding are the paths to long-lasting peace. Innocence. All people begin life in an innocent state, and it is their environment or the influence of dark forces that drives them to evil. By setting the proper example, and working to heal the wounds of a deeply flawed world, you can set anyone on a righteous path. Patience. Change takes time. Those who have walked the path of the wicked must be given reminders to keep them honest and true. Once you have planted the seed of righteousness in a creature, you must work day after day to allow that seed to survive and flourish. Wisdom. Your heart and mind must stay clear, for eventually you will be forced to admit defeat. While every creature can be redeemed, some are so far along the path of evil that you have no choice but to end their lives for the greater good. Any such action must be carefully weighed and the consequences fully understood, but once you have made the decision, follow through with it knowing your path is just. Redemption. So you feel bad about having done something, and then you have to do something to feel better? Why don’t you just kill and eat someone? That always makes me feel better.",
+            "description": "The tenets of the Oath of Redemption hold a paladin to a high standard of peace and justice. Peace. Violence is a weapon of last resort. Diplomacy and understanding are the paths to long-lasting peace. Innocence. All people begin life in an innocent state, and it is their environment or the influence of dark forces that drives them to evil. By setting the proper example, and working to heal the wounds of a deeply flawed world, you can set anyone on a righteous path. Patience. Change takes time. Those who have walked the path of the wicked must be given reminders to keep them honest and true. Once you have planted the seed of righteousness in a creature, you must work day after day to allow that seed to survive and flourish. Wisdom. Your heart and mind must stay clear, for eventually you will be forced to admit defeat. While every creature can be redeemed, some are so far along the path of evil that you have no choice but to end their lives for the greater good. Any such action must be carefully weighed and the consequences fully understood, but once you have made the decision, follow through with it knowing your path is just.",
             "level": 3,
             "source": "Xanathar's Guide to Everything"
           },
@@ -930,7 +930,7 @@
         "id": "gloom-stalker",
         "classId": "ranger",
         "name": "Gloom Stalker",
-        "description": "Gloom Stalkers are at home in the darkest places: deep under the earth, in gloomy alleyways, in primeval forests, and wherever else the light dims. Most folk enter such places with trepidation, but a Gloom Stalker ventures boldly into the darkness, seeking to ambush threats before they can reach the broader world. Such rangers are often found in the Underdark, but they will go any place where evil lurks in the shadows. So you sneak around in the dark? You know most everything but humans can see in the dark, right? We all see you. Tiptoeing doesn’t turn you invisible.",
+        "description": "Gloom Stalkers are at home in the darkest places: deep under the earth, in gloomy alleyways, in primeval forests, and wherever else the light dims. Most folk enter such places with trepidation, but a Gloom Stalker ventures boldly into the darkness, seeking to ambush threats before they can reach the broader world. Such rangers are often found in the Underdark, but they will go any place where evil lurks in the shadows.",
         "features": [
           {
             "id": "gloom-stalker-feature-1",
@@ -989,7 +989,7 @@
         "id": "horizon-walker",
         "classId": "ranger",
         "name": "Horizon Walker",
-        "description": "Horizon Walkers guard the world against threats that originate from other planes or that seek to ravage the mortal realm with otherworldly magic. They seek out planar portals and keep watch over them, venturing to the Inner Planes and the Outer Planes as needed to pursue their foes. These rangers are also friends to any forces in the multiverse — especially benevolent dragons, fey, and elementals — that work to preserve life and the order of the planes. You can’t walk to the horizon, because it keeps on getting farther away. Boom! Did I just blow your mind? I did, didn’t I?",
+        "description": "Horizon Walkers guard the world against threats that originate from other planes or that seek to ravage the mortal realm with otherworldly magic. They seek out planar portals and keep watch over them, venturing to the Inner Planes and the Outer Planes as needed to pursue their foes. These rangers are also friends to any forces in the multiverse — especially benevolent dragons, fey, and elementals — that work to preserve life and the order of the planes.",
         "features": [
           {
             "id": "horizon-walker-feature-1",
@@ -1008,7 +1008,7 @@
           {
             "id": "horizon-walker-feature-3",
             "name": "Detect Portal",
-            "description": "At 3rd level, you gain the ability to magically sense the presence of a planar portal. As an action, you detect the distance and direction to the closest planar portal within 1 mile of you. Once you use this feature, you can’t use it again until you finish a short or long rest. See the “Planar Travel” section in chapter 2 of the Dungeon Master’s Guide for examples of planar portals.",
+            "description": "At 3rd level, you gain the ability to magically sense the presence of a planar portal. As an action, you detect the distance and direction to the closest planar portal within 1 mile of you. Once you use this feature, you can’t use it again until you finish a short or long rest.",
             "level": 3,
             "source": "Xanathar's Guide to Everything"
           },
@@ -1159,7 +1159,7 @@
         "id": "mastermind",
         "classId": "rogue",
         "name": "Mastermind",
-        "description": "Your focus is on people and on the influence and secrets they have. Many spies, courtiers, and schemers follow this archetype, leading lives of intrigue. Words are your weapons as often as knives or poison, and secrets and favors are some of your favorite treasures. Oh, please. If anyone is a mastermind around here, it’s me. You’re like a master doofus or a master dummy. No, you are!",
+        "description": "Your focus is on people and on the influence and secrets they have. Many spies, courtiers, and schemers follow this archetype, leading lives of intrigue. Words are your weapons as often as knives or poison, and secrets and favors are some of your favorite treasures.",
         "features": [
           {
             "id": "mastermind-feature-1",
@@ -1249,7 +1249,7 @@
         "id": "swashbuckler",
         "classId": "rogue",
         "name": "Swashbuckler",
-        "description": "You focus your training on the art of the blade, relying on speed, elegance, and charm in equal parts. While some warriors are brutes clad in heavy armor, your method of fighting looks almost like a performance. Duelists and pirates typically belong to this archetype. A Swashbuckler excels in single combat, and can fight with two weapons while safely darting away from an opponent. What’s a swashbuckler? Do you swash buckles or buckle swashes? You can’t tell me you don’t think that word is funny.",
+        "description": "You focus your training on the art of the blade, relying on speed, elegance, and charm in equal parts. While some warriors are brutes clad in heavy armor, your method of fighting looks almost like a performance. Duelists and pirates typically belong to this archetype. A Swashbuckler excels in single combat, and can fight with two weapons while safely darting away from an opponent.",
         "features": [
           {
             "id": "swashbuckler-feature-1",
@@ -1294,7 +1294,7 @@
         "id": "divine-soul",
         "classId": "sorcerer",
         "name": "Divine Soul",
-        "description": "Sometimes the spark of magic that fuels a sorcerer comes from a divine source that glimmers within the soul. Having such a blessed soul is a sign that your innate magic might come from a distant but powerful familial connection to a divine being. Perhaps your ancestor was an angel, transformed into a mortal and sent to fight in a god’s name. Or your birth might align with an ancient prophecy, marking you as a servant of the gods or a chosen vessel of divine magic. A Divine Soul, with a natural magnetism, is seen as a threat by some religious hierarchies. As an outsider who commands sacred power, a Divine Soul can undermine an existing order by claiming a direct tie to the divine. In some cultures, only those who can claim the power of a Divine Soul may command religious power. In these lands, ecclesiastical positions are dominated by a few bloodlines and preserved over generations. Why do so many celestial things have bird wings and infernal things have bat wings? It seems arbitrary. There should be a bat angel!",
+        "description": "Sometimes the spark of magic that fuels a sorcerer comes from a divine source that glimmers within the soul. Having such a blessed soul is a sign that your innate magic might come from a distant but powerful familial connection to a divine being. Perhaps your ancestor was an angel, transformed into a mortal and sent to fight in a god’s name. Or your birth might align with an ancient prophecy, marking you as a servant of the gods or a chosen vessel of divine magic. A Divine Soul, with a natural magnetism, is seen as a threat by some religious hierarchies. As an outsider who commands sacred power, a Divine Soul can undermine an existing order by claiming a direct tie to the divine. In some cultures, only those who can claim the power of a Divine Soul may command religious power. In these lands, ecclesiastical positions are dominated by a few bloodlines and preserved over generations.",
         "features": [
           {
             "id": "divine-soul-feature-1",
@@ -1339,7 +1339,7 @@
         "id": "shadow-magic",
         "classId": "sorcerer",
         "name": "Shadow Magic",
-        "description": "You are a creature of shadow, for your innate magic comes from the Shadowfell itself. You might trace your lineage to an entity from that place, or perhaps you were exposed to its fell energy and transformed by it. The power of shadow magic casts a strange pall over your physical presence. The spark of life that sustains you is muffled, as if it struggles to remain viable against the dark energy that imbues your soul. At your option, you can pick from or roll on the Shadow Sorcerer Quirks table to create a quirk for your character. Sometimes I disintegrate my shadow when I see it, because I think it’s a different beholder.",
+        "description": "You are a creature of shadow, for your innate magic comes from the Shadowfell itself. You might trace your lineage to an entity from that place, or perhaps you were exposed to its fell energy and transformed by it. The power of shadow magic casts a strange pall over your physical presence. The spark of life that sustains you is muffled, as if it struggles to remain viable against the dark energy that imbues your soul. At your option, you can pick from or roll on the Shadow Sorcerer Quirks table to create a quirk for your character.",
         "features": [
           {
             "id": "shadow-magic-feature-1",
@@ -1391,7 +1391,7 @@
         "id": "storm-sorcery",
         "classId": "sorcerer",
         "name": "Storm Sorcery",
-        "description": "Your innate magic comes from the power of elemental air. Many with this power can trace their magic back to a near-death experience caused by the Great Rain, but perhaps you were born during a howling gale so powerful that folk still tell stories of it, or your lineage might include the influence of potent air creatures such as djinn. Whatever the case, the magic of the storm permeates your being. Storm sorcerers are invaluable members of a ship’s crew. Their magic allows them to exert control over wind and weather in their immediate area. Their abilities also prove useful in repelling attacks by sahuagin, pirates, and other waterborne threats. What is it with people and the weather? It’s just the sky weeping and shouting because it’s so far away from me.",
+        "description": "Your innate magic comes from the power of elemental air. Many with this power can trace their magic back to a near-death experience caused by the Great Rain, but perhaps you were born during a howling gale so powerful that folk still tell stories of it, or your lineage might include the influence of potent air creatures such as djinn. Whatever the case, the magic of the storm permeates your being. Storm sorcerers are invaluable members of a ship’s crew. Their magic allows them to exert control over wind and weather in their immediate area. Their abilities also prove useful in repelling attacks by sahuagin, pirates, and other waterborne threats.",
         "features": [
           {
             "id": "storm-sorcery-feature-1",
@@ -1547,7 +1547,7 @@
         "id": "war-magic",
         "classId": "wizard",
         "name": "War Magic",
-        "description": "A variety of arcane colleges specialize in training wizards for war. The tradition of War Magic blends principles of evocation and abjuration, rather than specializing in either of those schools. It teaches techniques that empower a caster’s spells, while also providing methods for wizards to bolster their own defenses. Followers of this tradition are known as war mages. They see their magic as both a weapon and armor, a resource superior to any piece of steel. War mages act fast in battle, using their spells to seize tactical control of a situation. Their spells strike hard, while their defensive skills foil their opponents’ attempts to counterattack. War mages are also adept at turning other spellcasters’ magical energy against them. In great battles, a war mage often works with evokers, abjurers, and other types of wizards. Evokers, in particular, sometimes tease war mages for splitting their attention between offense and defense. A war mage’s typical response: “What good is being able to throw a mighty fireball if I die before I can cast it?” War magic? Does that make you a War Wizard? I’ve heard about them. They dress in purple, I think. But you’re not dressed in purple. That’s disappointing. Go change.",
+        "description": "A variety of arcane colleges specialize in training wizards for war. The tradition of War Magic blends principles of evocation and abjuration, rather than specializing in either of those schools. It teaches techniques that empower a caster’s spells, while also providing methods for wizards to bolster their own defenses. Followers of this tradition are known as war mages. They see their magic as both a weapon and armor, a resource superior to any piece of steel. War mages act fast in battle, using their spells to seize tactical control of a situation. Their spells strike hard, while their defensive skills foil their opponents’ attempts to counterattack. War mages are also adept at turning other spellcasters’ magical energy against them. In great battles, a war mage often works with evokers, abjurers, and other types of wizards. Evokers, in particular, sometimes tease war mages for splitting their attention between offense and defense. A war mage’s typical response: “What good is being able to throw a mighty fireball if I die before I can cast it?”",
         "features": [
           {
             "id": "war-magic-feature-1",
@@ -4526,8 +4526,8 @@
       "level": 1
     },
     {
-      "id": "chapter-1-subclasses",
-      "title": "Chapter 1: Subclasses",
+      "id": "subclasses",
+      "title": ": Subclasses",
       "level": 1
     },
     {
@@ -6311,8 +6311,8 @@
       "level": 1
     },
     {
-      "id": "chapter-1-this-is-your-life",
-      "title": "Chapter 1: This Is Your Life",
+      "id": "this-is-your-life",
+      "title": ": This Is Your Life",
       "level": 1
     },
     {
@@ -6596,8 +6596,8 @@
       "level": 1
     },
     {
-      "id": "chapter-1-racial-feats",
-      "title": "Chapter 1: Racial Feats",
+      "id": "racial-feats",
+      "title": ": Racial Feats",
       "level": 1
     },
     {
@@ -6691,8 +6691,8 @@
       "level": 1
     },
     {
-      "id": "chapter-2-dungeon-master-s-tools",
-      "title": "Chapter 2: Dungeon Master's Tools",
+      "id": "dungeon-master-s-tools",
+      "title": ": Dungeon Master's Tools",
       "level": 1
     },
     {
@@ -7046,8 +7046,8 @@
       "level": 3
     },
     {
-      "id": "chapter-2-random-encounter-tables",
-      "title": "Chapter 2: Random Encounter Tables",
+      "id": "random-encounter-tables",
+      "title": ": Random Encounter Tables",
       "level": 1
     },
     {
@@ -7321,8 +7321,8 @@
       "level": 1
     },
     {
-      "id": "chapter-2-traps-revisited",
-      "title": "Chapter 2: Traps Revisited",
+      "id": "traps-revisited",
+      "title": ": Traps Revisited",
       "level": 1
     },
     {
@@ -7531,8 +7531,8 @@
       "level": 1
     },
     {
-      "id": "chapter-2-downtime-revisited",
-      "title": "Chapter 2: Downtime Revisited",
+      "id": "downtime-revisited",
+      "title": ": Downtime Revisited",
       "level": 1
     },
     {
@@ -7791,8 +7791,8 @@
       "level": 1
     },
     {
-      "id": "chapter-2-awarding-magic-items",
-      "title": "Chapter 2: Awarding Magic Items",
+      "id": "awarding-magic-items",
+      "title": ": Awarding Magic Items",
       "level": 1
     },
     {
@@ -7831,8 +7831,8 @@
       "level": 1
     },
     {
-      "id": "chapter-2-common-magic-items",
-      "title": "Chapter 2: Common Magic Items",
+      "id": "common-magic-items",
+      "title": ": Common Magic Items",
       "level": 1
     },
     {
@@ -8111,8 +8111,8 @@
       "level": 1
     },
     {
-      "id": "chapter-2-magic-item-tables",
-      "title": "Chapter 2: Magic Item Tables",
+      "id": "magic-item-tables",
+      "title": ": Magic Item Tables",
       "level": 1
     },
     {
@@ -8166,8 +8166,8 @@
       "level": 1
     },
     {
-      "id": "chapter-3-spells",
-      "title": "Chapter 3: Spells",
+      "id": "spells",
+      "title": ": Spells",
       "level": 1
     },
     {

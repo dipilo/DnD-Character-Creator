@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2024 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-08-03T10:07:27.925Z",
+    "importedAt": "2026-08-05T01:53:07.273Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -422,7 +422,7 @@
           {
             "id": "level-1-rage",
             "name": "Rage",
-            "description": "You can imbue yourself with a primal power called Rage, a force that grants you extraordinary might and resilience. You can enter it as a Bonus Action if you aren’t wearing Heavy armor. You can enter your Rage the number of times shown for your Barbarian level in the Rages column of the Barbarian Features table. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. While active, your Rage follows the rules below. Damage Resistance. You have Resistance to Bludgeoning, Piercing, and Slashing damage. Rage Damage. When you make an attack using Strength—with either a weapon or an Unarmed Strike—and deal damage to the target, you gain a bonus to the damage that increases as you gain levels as a Barbarian, as shown in the Rage Damage column of the Barbarian Features table. Strength Advantage. You have Advantage on Strength checks and Strength saving throws. No Concentration or Spells. You can’t maintain Concentration, and you can’t cast spells. Duration. The Rage lasts until the end of your next turn, and it ends early if you don Heavy armor or have the Incapacitated condition. If your Rage is still active on your next turn, you can extend the Rage for another round by doing one of the following: Each time the Rage is extended, it lasts until the end of your next turn. You can maintain a Rage for up to 10 minutes.",
+            "description": "You can imbue yourself with a primal power called Rage, a force that grants you extraordinary might and resilience. You can enter it as a Bonus Action if you aren’t wearing Heavy armor. You can enter your Rage the number of times shown for your Barbarian level in the Rages column of the Barbarian Features table. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. While active, your Rage follows the rules below. Damage Resistance. You have Resistance to Bludgeoning, Piercing, and Slashing damage. Rage Damage. When you make an attack using Strength—with either a weapon or an Unarmed Strike—and deal damage to the target, you gain a bonus to the damage that increases as you gain levels as a Barbarian, as shown in the Rage Damage column of the Barbarian Features table. Strength Advantage. You have Advantage on Strength checks and Strength saving throws. No Concentration or Spells. You can’t maintain Concentration, and you can’t cast spells. Duration. The Rage lasts until the end of your next turn, and it ends early if you don Heavy armor or have the Incapacitated condition. If your Rage is still active on your next turn, you can extend the Rage for another round by doing one of the following: • Make an attack roll against an enemy. • Force an enemy to make a saving throw. • Take a Bonus Action to extend your Rage. Each time the Rage is extended, it lasts until the end of your next turn. You can maintain a Rage for up to 10 minutes.",
             "level": 1,
             "source": "Basic Rules (2024)"
           },
@@ -1515,7 +1515,7 @@
           {
             "id": "level-2-wild-shape",
             "name": "Wild Shape",
-            "description": "The power of nature allows you to assume the form of an animal. As a Bonus Action, you shape-shift into a Beast form that you have learned for this feature (see “Known Forms” below). You stay in that form for a number of hours equal to half your Druid level or until you use Wild Shape again, have the Incapacitated condition, or die. You can also leave the form early as a Bonus Action. Number of Uses. You can use Wild Shape twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain additional uses when you reach certain Druid levels, as shown in the Wild Shape column of the Druid Features table. Known Forms. You know four Beast forms for this feature, chosen from among Beast stat blocks that have a maximum Challenge Rating of 1/4 and that lack a Fly Speed (see appendix B for stat block options). The Rat, Riding Horse, Spider, and Wolf are recommended. Whenever you finish a Long Rest, you can replace one of your known forms with another eligible form. When you reach certain Druid levels, your number of known forms and the maximum Challenge Rating for those forms increases, as shown in the Beast Shapes table. In addition, starting at level 8, you can adopt a form that has a Fly Speed. When choosing known forms, you may look in the Monster Manual or elsewhere for eligible Beasts if the Dungeon Master permits you to do so. Rules While Shape-Shifted. While in a form, you retain your personality, memories, and ability to speak, and the following rules apply: Temporary Hit Points. When you assume a Wild Shape form, you gain a number of Temporary Hit Points equal to your Druid level. Game Statistics. Your game statistics are replaced by the Beast’s stat block, but you retain your creature type; Hit Points; Hit Point Dice; Intelligence, Wisdom, and Charisma scores; class features; languages; and feats. You also retain your skill and saving throw proficiencies and use your Proficiency Bonus for them, in addition to gaining the proficiencies of the creature. If a skill or saving throw modifier in the Beast’s stat block is higher than yours, use the one in the stat block. No Spellcasting. You can’t cast spells, but shape-shifting doesn’t break your Concentration or otherwise interfere with a spell you’ve already cast. Objects. Your ability to handle objects is determined by the form’s limbs rather than your own. In addition, you choose whether your equipment falls in your space, merges into your new form, or is worn by it. Worn equipment functions as normal, but the DM decides whether it’s practical for the new form to wear a piece of equipment based on the creature’s size and shape. Your equipment doesn’t change size or shape to match the new form, and any equipment that the new form can’t wear must either fall to the ground or merge with the form. Equipment that merges with the form has no effect while you’re in that form.",
+            "description": "The power of nature allows you to assume the form of an animal. As a Bonus Action, you shape-shift into a Beast form that you have learned for this feature (see “Known Forms” below). You stay in that form for a number of hours equal to half your Druid level or until you use Wild Shape again, have the Incapacitated condition, or die. You can also leave the form early as a Bonus Action. Number of Uses. You can use Wild Shape twice. You regain one expended use when you finish a Short Rest, and you regain all expended uses when you finish a Long Rest. You gain additional uses when you reach certain Druid levels, as shown in the Wild Shape column of the Druid Features table. Known Forms. You know four Beast forms for this feature, chosen from among Beast stat blocks that have a maximum Challenge Rating of 1/4 and that lack a Fly Speed (see appendix B for stat block options). The Rat, Riding Horse, Spider, and Wolf are recommended. Whenever you finish a Long Rest, you can replace one of your known forms with another eligible form. When you reach certain Druid levels, your number of known forms and the maximum Challenge Rating for those forms increases, as shown in the Beast Shapes table. In addition, starting at level 8, you can adopt a form that has a Fly Speed. When choosing known forms, you may look in the Monster Manual or elsewhere for eligible Beasts if the Dungeon Master permits you to do so. Druid Level | Known Forms | Max CR | Fly Speed 2 | 4 | 1/4 | No 4 | 6 | 1/2 | No 8 | 8 | 1 | Yes Rules While Shape-Shifted. While in a form, you retain your personality, memories, and ability to speak, and the following rules apply: Temporary Hit Points. When you assume a Wild Shape form, you gain a number of Temporary Hit Points equal to your Druid level. Game Statistics. Your game statistics are replaced by the Beast’s stat block, but you retain your creature type; Hit Points; Hit Point Dice; Intelligence, Wisdom, and Charisma scores; class features; languages; and feats. You also retain your skill and saving throw proficiencies and use your Proficiency Bonus for them, in addition to gaining the proficiencies of the creature. If a skill or saving throw modifier in the Beast’s stat block is higher than yours, use the one in the stat block. No Spellcasting. You can’t cast spells, but shape-shifting doesn’t break your Concentration or otherwise interfere with a spell you’ve already cast. Objects. Your ability to handle objects is determined by the form’s limbs rather than your own. In addition, you choose whether your equipment falls in your space, merges into your new form, or is worn by it. Worn equipment functions as normal, but the DM decides whether it’s practical for the new form to wear a piece of equipment based on the creature’s size and shape. Your equipment doesn’t change size or shape to match the new form, and any equipment that the new form can’t wear must either fall to the ground or merge with the form. Equipment that merges with the form has no effect while you’re in that form.",
             "level": 2,
             "source": "Basic Rules (2024)"
           },
@@ -2168,7 +2168,7 @@
           {
             "id": "level-1-martial-arts",
             "name": "Martial Arts",
-            "description": "Your practice of martial arts gives you mastery of combat styles that use your Unarmed Strike and Monk weapons, which are the following: You gain the following benefits while you are unarmed or wielding only Monk weapons and you aren’t wearing armor or wielding a Shield. Bonus Unarmed Strike. You can make an Unarmed Strike as a Bonus Action. Martial Arts Die. You can roll 1d6 in place of the normal damage of your Unarmed Strike or Monk weapons. This die changes as you gain Monk levels, as shown in the Martial Arts column of the Monk Features table. Dexterous Attacks. You can use your Dexterity modifier instead of your Strength modifier for the attack and damage rolls of your Unarmed Strikes and Monk weapons. In addition, when you use the Grapple or Shove option of your Unarmed Strike, you can use your Dexterity modifier instead of your Strength modifier to determine the save DC.",
+            "description": "Your practice of martial arts gives you mastery of combat styles that use your Unarmed Strike and Monk weapons, which are the following: • Simple Melee weapons • Martial Melee weapons that have the Light property You gain the following benefits while you are unarmed or wielding only Monk weapons and you aren’t wearing armor or wielding a Shield. Bonus Unarmed Strike. You can make an Unarmed Strike as a Bonus Action. Martial Arts Die. You can roll 1d6 in place of the normal damage of your Unarmed Strike or Monk weapons. This die changes as you gain Monk levels, as shown in the Martial Arts column of the Monk Features table. Dexterous Attacks. You can use your Dexterity modifier instead of your Strength modifier for the attack and damage rolls of your Unarmed Strikes and Monk weapons. In addition, when you use the Grapple or Shove option of your Unarmed Strike, you can use your Dexterity modifier instead of your Strength modifier to determine the save DC.",
             "level": 1,
             "source": "Basic Rules (2024)"
           },
@@ -3377,14 +3377,14 @@
           {
             "id": "level-1-innate-sorcery",
             "name": "Innate Sorcery",
-            "description": "An event in your past left an indelible mark on you, infusing you with simmering magic. As a Bonus Action, you can unleash that magic for 1 minute, during which you gain the following benefits: You can use this feature twice, and you regain all expended uses of it when you finish a Long Rest.",
+            "description": "An event in your past left an indelible mark on you, infusing you with simmering magic. As a Bonus Action, you can unleash that magic for 1 minute, during which you gain the following benefits: • The spell save DC of your Sorcerer spells increases by 1. • You have Advantage on the attack rolls of Sorcerer spells you cast. You can use this feature twice, and you regain all expended uses of it when you finish a Long Rest.",
             "level": 1,
             "source": "Basic Rules (2024)"
           },
           {
             "id": "level-2-font-of-magic",
             "name": "Font of Magic",
-            "description": "You can tap into the wellspring of magic within yourself. This wellspring is represented by Sorcery Points, which allow you to create a variety of magical effects. You have 2 Sorcery Points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer Features table. You can’t have more Sorcery Points than the number shown in the table for your level. You regain all expended Sorcery Points when you finish a Long Rest. You can use your Sorcery Points to fuel the options below, along with other features, such as Metamagic, that use those points. Converting Spell Slots to Sorcery Points. You can expend a spell slot to gain a number of Sorcery Points equal to the slot’s level (no action required). Creating Spell Slots. As a Bonus Action, you can transform unexpended Sorcery Points into one spell slot. The Creating Spell Slots table shows the cost of creating a spell slot of a given level, and it lists the minimum Sorcerer level you must be to create a slot. You can create a spell slot no higher than level 5. Any spell slot you create with this feature vanishes when you finish a Long Rest.",
+            "description": "You can tap into the wellspring of magic within yourself. This wellspring is represented by Sorcery Points, which allow you to create a variety of magical effects. You have 2 Sorcery Points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer Features table. You can’t have more Sorcery Points than the number shown in the table for your level. You regain all expended Sorcery Points when you finish a Long Rest. You can use your Sorcery Points to fuel the options below, along with other features, such as Metamagic, that use those points. Converting Spell Slots to Sorcery Points. You can expend a spell slot to gain a number of Sorcery Points equal to the slot’s level (no action required). Creating Spell Slots. As a Bonus Action, you can transform unexpended Sorcery Points into one spell slot. The Creating Spell Slots table shows the cost of creating a spell slot of a given level, and it lists the minimum Sorcerer level you must be to create a slot. You can create a spell slot no higher than level 5. Any spell slot you create with this feature vanishes when you finish a Long Rest. Spell Slot Level | Sorcery Point Cost | Min. Sorcerer Level 1 | 2 | 2 2 | 3 | 3 3 | 5 | 5 4 | 6 | 7 5 | 7 | 9",
             "level": 2,
             "source": "Basic Rules (2024)"
           },
@@ -3398,52 +3398,52 @@
               {
                 "id": "careful-spell",
                 "name": "Careful Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell that forces other creatures to make a saving throw, you can protect some of those creatures from the spell's full force. To do so, spend 1 Sorcery Point and choose a number of those creatures up to your Charisma modifier (minimum of one creature). A chosen creature automatically succeeds on its saving throw against the spell, and it takes no damage if it would normally take half damage on a successful save."
               },
               {
                 "id": "distant-spell",
                 "name": "Distant Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell that has a range of at least 5 feet, you can spend 1 Sorcery Point to double the spell's range. Or when you cast a spell that has a range of Touch, you can spend 1 Sorcery Point to make the spell's range 30 feet."
               },
               {
                 "id": "empowered-spell",
                 "name": "Empowered Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you roll damage for a spell, you can spend 1 Sorcery Point to reroll a number of the damage dice up to your Charisma modifier (minimum of one), and you must use the new rolls. You can use Empowered Spell even if you've already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "extended-spell",
                 "name": "Extended Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell that has a duration of 1 minute or longer, you can spend 1 Sorcery Point to double its duration to a maximum duration of 24 hours. If the affected spell requires Concentration, you have Advantage on any saving throw you make to maintain that Concentration."
               },
               {
                 "id": "heightened-spell",
                 "name": "Heightened Spell",
-                "description": "Cost: 2 Sorcery Points"
+                "description": "Cost: 2 Sorcery Points When you cast a spell that forces a creature to make a saving throw, you can spend 2 Sorcery Points to give one target of the spell Disadvantage on saves against the spell."
               },
               {
                 "id": "quickened-spell",
                 "name": "Quickened Spell",
-                "description": "Cost: 2 Sorcery Points"
+                "description": "Cost: 2 Sorcery Points When you cast a spell that has a casting time of an action, you can spend 2 Sorcery Points to change the casting time to a Bonus Action for this casting. You can't modify a spell in this way if you've already cast a level 1+ spell on the current turn, nor can you cast a level 1+ spell on this turn after modifying a spell in this way."
               },
               {
                 "id": "seeking-spell",
                 "name": "Seeking Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point If you make an attack roll for a spell and miss, you can spend 1 Sorcery Point to reroll the d20, and you must use the new roll. You can use Seeking Spell even if you've already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "subtle-spell",
                 "name": "Subtle Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell, you can spend 1 Sorcery Point to cast it without any Verbal, Somatic, or Material components, except Material components that are consumed by the spell or that have a cost specified in the spell."
               },
               {
                 "id": "transmuted-spell",
                 "name": "Transmuted Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell that deals a type of damage from the following list, you can spend 1 Sorcery Point to change that damage type to one of the other listed types: Acid, Cold, Fire, Lightning, Poison, Thunder."
               },
               {
                 "id": "twinned-spell",
                 "name": "Twinned Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell, such as Charm Person, that can be cast with a higher-level spell slot to target an additional creature, you can spend 1 Sorcery Point to increase the spell's effective level by 1."
               }
             ],
             "chooseCount": 2,
@@ -3496,52 +3496,52 @@
               {
                 "id": "careful-spell",
                 "name": "Careful Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell that forces other creatures to make a saving throw, you can protect some of those creatures from the spell's full force. To do so, spend 1 Sorcery Point and choose a number of those creatures up to your Charisma modifier (minimum of one creature). A chosen creature automatically succeeds on its saving throw against the spell, and it takes no damage if it would normally take half damage on a successful save."
               },
               {
                 "id": "distant-spell",
                 "name": "Distant Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell that has a range of at least 5 feet, you can spend 1 Sorcery Point to double the spell's range. Or when you cast a spell that has a range of Touch, you can spend 1 Sorcery Point to make the spell's range 30 feet."
               },
               {
                 "id": "empowered-spell",
                 "name": "Empowered Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you roll damage for a spell, you can spend 1 Sorcery Point to reroll a number of the damage dice up to your Charisma modifier (minimum of one), and you must use the new rolls. You can use Empowered Spell even if you've already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "extended-spell",
                 "name": "Extended Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell that has a duration of 1 minute or longer, you can spend 1 Sorcery Point to double its duration to a maximum duration of 24 hours. If the affected spell requires Concentration, you have Advantage on any saving throw you make to maintain that Concentration."
               },
               {
                 "id": "heightened-spell",
                 "name": "Heightened Spell",
-                "description": "Cost: 2 Sorcery Points"
+                "description": "Cost: 2 Sorcery Points When you cast a spell that forces a creature to make a saving throw, you can spend 2 Sorcery Points to give one target of the spell Disadvantage on saves against the spell."
               },
               {
                 "id": "quickened-spell",
                 "name": "Quickened Spell",
-                "description": "Cost: 2 Sorcery Points"
+                "description": "Cost: 2 Sorcery Points When you cast a spell that has a casting time of an action, you can spend 2 Sorcery Points to change the casting time to a Bonus Action for this casting. You can't modify a spell in this way if you've already cast a level 1+ spell on the current turn, nor can you cast a level 1+ spell on this turn after modifying a spell in this way."
               },
               {
                 "id": "seeking-spell",
                 "name": "Seeking Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point If you make an attack roll for a spell and miss, you can spend 1 Sorcery Point to reroll the d20, and you must use the new roll. You can use Seeking Spell even if you've already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "subtle-spell",
                 "name": "Subtle Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell, you can spend 1 Sorcery Point to cast it without any Verbal, Somatic, or Material components, except Material components that are consumed by the spell or that have a cost specified in the spell."
               },
               {
                 "id": "transmuted-spell",
                 "name": "Transmuted Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell that deals a type of damage from the following list, you can spend 1 Sorcery Point to change that damage type to one of the other listed types: Acid, Cold, Fire, Lightning, Poison, Thunder."
               },
               {
                 "id": "twinned-spell",
                 "name": "Twinned Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell, such as Charm Person, that can be cast with a higher-level spell slot to target an additional creature, you can spend 1 Sorcery Point to increase the spell's effective level by 1."
               }
             ]
           },
@@ -3557,52 +3557,52 @@
               {
                 "id": "careful-spell",
                 "name": "Careful Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell that forces other creatures to make a saving throw, you can protect some of those creatures from the spell's full force. To do so, spend 1 Sorcery Point and choose a number of those creatures up to your Charisma modifier (minimum of one creature). A chosen creature automatically succeeds on its saving throw against the spell, and it takes no damage if it would normally take half damage on a successful save."
               },
               {
                 "id": "distant-spell",
                 "name": "Distant Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell that has a range of at least 5 feet, you can spend 1 Sorcery Point to double the spell's range. Or when you cast a spell that has a range of Touch, you can spend 1 Sorcery Point to make the spell's range 30 feet."
               },
               {
                 "id": "empowered-spell",
                 "name": "Empowered Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you roll damage for a spell, you can spend 1 Sorcery Point to reroll a number of the damage dice up to your Charisma modifier (minimum of one), and you must use the new rolls. You can use Empowered Spell even if you've already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "extended-spell",
                 "name": "Extended Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell that has a duration of 1 minute or longer, you can spend 1 Sorcery Point to double its duration to a maximum duration of 24 hours. If the affected spell requires Concentration, you have Advantage on any saving throw you make to maintain that Concentration."
               },
               {
                 "id": "heightened-spell",
                 "name": "Heightened Spell",
-                "description": "Cost: 2 Sorcery Points"
+                "description": "Cost: 2 Sorcery Points When you cast a spell that forces a creature to make a saving throw, you can spend 2 Sorcery Points to give one target of the spell Disadvantage on saves against the spell."
               },
               {
                 "id": "quickened-spell",
                 "name": "Quickened Spell",
-                "description": "Cost: 2 Sorcery Points"
+                "description": "Cost: 2 Sorcery Points When you cast a spell that has a casting time of an action, you can spend 2 Sorcery Points to change the casting time to a Bonus Action for this casting. You can't modify a spell in this way if you've already cast a level 1+ spell on the current turn, nor can you cast a level 1+ spell on this turn after modifying a spell in this way."
               },
               {
                 "id": "seeking-spell",
                 "name": "Seeking Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point If you make an attack roll for a spell and miss, you can spend 1 Sorcery Point to reroll the d20, and you must use the new roll. You can use Seeking Spell even if you've already used a different Metamagic option during the casting of the spell."
               },
               {
                 "id": "subtle-spell",
                 "name": "Subtle Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell, you can spend 1 Sorcery Point to cast it without any Verbal, Somatic, or Material components, except Material components that are consumed by the spell or that have a cost specified in the spell."
               },
               {
                 "id": "transmuted-spell",
                 "name": "Transmuted Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell that deals a type of damage from the following list, you can spend 1 Sorcery Point to change that damage type to one of the other listed types: Acid, Cold, Fire, Lightning, Poison, Thunder."
               },
               {
                 "id": "twinned-spell",
                 "name": "Twinned Spell",
-                "description": "Cost: 1 Sorcery Point"
+                "description": "Cost: 1 Sorcery Point When you cast a spell, such as Charm Person, that can be cast with a higher-level spell slot to target an additional creature, you can spend 1 Sorcery Point to increase the spell's effective level by 1."
               }
             ]
           }
@@ -3960,7 +3960,7 @@
               {
                 "id": "agonizing-blast",
                 "name": "Agonizing Blast",
-                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls.",
+                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -4029,7 +4029,7 @@
               {
                 "id": "eldritch-spear",
                 "name": "Eldritch Spear",
-                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level.",
+                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -4051,7 +4051,7 @@
               {
                 "id": "gaze-of-two-minds",
                 "name": "Gaze of Two Minds",
-                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way.",
+                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way. While perceiving through the other creature's senses, you benefit from any special senses possessed by that creature, and you can cast spells as if you were in your space or the other creature's space if the two of you are within 60 feet of each other.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -4062,7 +4062,7 @@
               {
                 "id": "gift-of-the-depths",
                 "name": "Gift of the Depths",
-                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed.",
+                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed. You can also cast Water Breathing once without expending a spell slot. You regain the ability to cast it in this way again when you finish a Long Rest.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -4073,7 +4073,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name).",
+                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name). When any creature whose name is on the page is reduced to 0 Hit Points but not killed outright, the creature magically drops to 1 Hit Point instead. Once this magic is triggered, no creature can benefit from it until you finish a Long Rest. As a Magic action, you can erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "Level 9+ Warlock, Pact of the Tome Invocation",
                   "minimumLevel": 9,
@@ -4086,7 +4086,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits.",
+                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits. Aerial or Aquatic. The familiar gains either a Fly Speed or a Swim Speed (your choice) of 40 feet. Quick Attack. As a Bonus Action, you can command the familiar to take the Attack action. Necrotic or Radiant Damage. Whenever the familiar deals Bludgeoning, Piercing, or Slashing damage, you can make it deal Necrotic or Radiant damage instead. Your Save DC. If the familiar forces a creature to make a saving throw, it uses your spell save DC. Resistance. When the familiar takes damage, you can take a Reaction to grant it Resistance against that damage.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock, Pact of the Chain Invocation",
                   "minimumLevel": 5,
@@ -4099,7 +4099,7 @@
               {
                 "id": "lessons-of-the-first-ones",
                 "name": "Lessons of the First Ones",
-                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\").",
+                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\"). Repeatable. You can gain this invocation more than once. Each time you do so, choose a different Origin feat.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock",
                   "minimumLevel": 2,
@@ -4178,22 +4178,22 @@
               {
                 "id": "pact-of-the-blade",
                 "name": "Pact of the Blade",
-                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus."
+                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus. Whenever you attack with the bonded weapon, you can use your Charisma modifier for the attack and damage rolls instead of using Strength or Dexterity; and you can cause the weapon to deal Necrotic, Psychic, or Radiant damage or its normal damage type. Your bond with the weapon ends if you use this feature's Bonus Action again, if the weapon is more than 5 feet away from you for 1 minute or more, or if you die. A conjured weapon disappears when the bond ends."
               },
               {
                 "id": "pact-of-the-chain",
                 "name": "Pact of the Chain",
-                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot."
+                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot. When you cast the spell, you choose one of the normal forms for your familiar or one of the following special forms: Imp, Pseudodragon, Quasit, Skeleton, Slaad Tadpole, Sphinx of Wonder, Sprite, or Venomous Snake (see appendix B for the familiar's stat block). Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack of its own with its Reaction."
               },
               {
                 "id": "pact-of-the-tome",
                 "name": "Pact of the Tome",
-                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die."
+                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die. Cantrips and Rituals. When the book appears, choose three cantrips, and choose two level 1 spells that have the Ritual tag. The spells can be from any class's spell list, and they must be spells you don't already have prepared. While the book is on your person, you have the chosen spells prepared, and they function as Warlock spells for you. Spellcasting Focus. You can use the book as a Spellcasting Focus."
               },
               {
                 "id": "repelling-blast",
                 "name": "Repelling Blast",
-                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you.",
+                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage via an Attack Roll",
                   "minimumLevel": 2,
@@ -4303,7 +4303,7 @@
           {
             "id": "level-20-eldritch-master",
             "name": "Eldritch Master",
-            "description": "When you use your Magical Cunning feature, you regain all your expended Pact Magic spell slots. Eldritch Invocation options appear in alphabetical order.",
+            "description": "When you use your Magical Cunning feature, you regain all your expended Pact Magic spell slots.",
             "level": 20,
             "source": "Basic Rules (2024)"
           },
@@ -4319,7 +4319,7 @@
               {
                 "id": "agonizing-blast",
                 "name": "Agonizing Blast",
-                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls.",
+                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -4388,7 +4388,7 @@
               {
                 "id": "eldritch-spear",
                 "name": "Eldritch Spear",
-                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level.",
+                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -4410,7 +4410,7 @@
               {
                 "id": "gaze-of-two-minds",
                 "name": "Gaze of Two Minds",
-                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way.",
+                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way. While perceiving through the other creature's senses, you benefit from any special senses possessed by that creature, and you can cast spells as if you were in your space or the other creature's space if the two of you are within 60 feet of each other.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -4421,7 +4421,7 @@
               {
                 "id": "gift-of-the-depths",
                 "name": "Gift of the Depths",
-                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed.",
+                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed. You can also cast Water Breathing once without expending a spell slot. You regain the ability to cast it in this way again when you finish a Long Rest.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -4432,7 +4432,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name).",
+                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name). When any creature whose name is on the page is reduced to 0 Hit Points but not killed outright, the creature magically drops to 1 Hit Point instead. Once this magic is triggered, no creature can benefit from it until you finish a Long Rest. As a Magic action, you can erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "Level 9+ Warlock, Pact of the Tome Invocation",
                   "minimumLevel": 9,
@@ -4445,7 +4445,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits.",
+                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits. Aerial or Aquatic. The familiar gains either a Fly Speed or a Swim Speed (your choice) of 40 feet. Quick Attack. As a Bonus Action, you can command the familiar to take the Attack action. Necrotic or Radiant Damage. Whenever the familiar deals Bludgeoning, Piercing, or Slashing damage, you can make it deal Necrotic or Radiant damage instead. Your Save DC. If the familiar forces a creature to make a saving throw, it uses your spell save DC. Resistance. When the familiar takes damage, you can take a Reaction to grant it Resistance against that damage.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock, Pact of the Chain Invocation",
                   "minimumLevel": 5,
@@ -4458,7 +4458,7 @@
               {
                 "id": "lessons-of-the-first-ones",
                 "name": "Lessons of the First Ones",
-                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\").",
+                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\"). Repeatable. You can gain this invocation more than once. Each time you do so, choose a different Origin feat.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock",
                   "minimumLevel": 2,
@@ -4537,22 +4537,22 @@
               {
                 "id": "pact-of-the-blade",
                 "name": "Pact of the Blade",
-                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus."
+                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus. Whenever you attack with the bonded weapon, you can use your Charisma modifier for the attack and damage rolls instead of using Strength or Dexterity; and you can cause the weapon to deal Necrotic, Psychic, or Radiant damage or its normal damage type. Your bond with the weapon ends if you use this feature's Bonus Action again, if the weapon is more than 5 feet away from you for 1 minute or more, or if you die. A conjured weapon disappears when the bond ends."
               },
               {
                 "id": "pact-of-the-chain",
                 "name": "Pact of the Chain",
-                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot."
+                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot. When you cast the spell, you choose one of the normal forms for your familiar or one of the following special forms: Imp, Pseudodragon, Quasit, Skeleton, Slaad Tadpole, Sphinx of Wonder, Sprite, or Venomous Snake (see appendix B for the familiar's stat block). Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack of its own with its Reaction."
               },
               {
                 "id": "pact-of-the-tome",
                 "name": "Pact of the Tome",
-                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die."
+                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die. Cantrips and Rituals. When the book appears, choose three cantrips, and choose two level 1 spells that have the Ritual tag. The spells can be from any class's spell list, and they must be spells you don't already have prepared. While the book is on your person, you have the chosen spells prepared, and they function as Warlock spells for you. Spellcasting Focus. You can use the book as a Spellcasting Focus."
               },
               {
                 "id": "repelling-blast",
                 "name": "Repelling Blast",
-                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you.",
+                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage via an Attack Roll",
                   "minimumLevel": 2,
@@ -4620,7 +4620,7 @@
               {
                 "id": "agonizing-blast",
                 "name": "Agonizing Blast",
-                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls.",
+                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -4689,7 +4689,7 @@
               {
                 "id": "eldritch-spear",
                 "name": "Eldritch Spear",
-                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level.",
+                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -4711,7 +4711,7 @@
               {
                 "id": "gaze-of-two-minds",
                 "name": "Gaze of Two Minds",
-                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way.",
+                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way. While perceiving through the other creature's senses, you benefit from any special senses possessed by that creature, and you can cast spells as if you were in your space or the other creature's space if the two of you are within 60 feet of each other.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -4722,7 +4722,7 @@
               {
                 "id": "gift-of-the-depths",
                 "name": "Gift of the Depths",
-                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed.",
+                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed. You can also cast Water Breathing once without expending a spell slot. You regain the ability to cast it in this way again when you finish a Long Rest.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -4733,7 +4733,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name).",
+                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name). When any creature whose name is on the page is reduced to 0 Hit Points but not killed outright, the creature magically drops to 1 Hit Point instead. Once this magic is triggered, no creature can benefit from it until you finish a Long Rest. As a Magic action, you can erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "Level 9+ Warlock, Pact of the Tome Invocation",
                   "minimumLevel": 9,
@@ -4746,7 +4746,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits.",
+                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits. Aerial or Aquatic. The familiar gains either a Fly Speed or a Swim Speed (your choice) of 40 feet. Quick Attack. As a Bonus Action, you can command the familiar to take the Attack action. Necrotic or Radiant Damage. Whenever the familiar deals Bludgeoning, Piercing, or Slashing damage, you can make it deal Necrotic or Radiant damage instead. Your Save DC. If the familiar forces a creature to make a saving throw, it uses your spell save DC. Resistance. When the familiar takes damage, you can take a Reaction to grant it Resistance against that damage.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock, Pact of the Chain Invocation",
                   "minimumLevel": 5,
@@ -4759,7 +4759,7 @@
               {
                 "id": "lessons-of-the-first-ones",
                 "name": "Lessons of the First Ones",
-                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\").",
+                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\"). Repeatable. You can gain this invocation more than once. Each time you do so, choose a different Origin feat.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock",
                   "minimumLevel": 2,
@@ -4838,22 +4838,22 @@
               {
                 "id": "pact-of-the-blade",
                 "name": "Pact of the Blade",
-                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus."
+                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus. Whenever you attack with the bonded weapon, you can use your Charisma modifier for the attack and damage rolls instead of using Strength or Dexterity; and you can cause the weapon to deal Necrotic, Psychic, or Radiant damage or its normal damage type. Your bond with the weapon ends if you use this feature's Bonus Action again, if the weapon is more than 5 feet away from you for 1 minute or more, or if you die. A conjured weapon disappears when the bond ends."
               },
               {
                 "id": "pact-of-the-chain",
                 "name": "Pact of the Chain",
-                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot."
+                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot. When you cast the spell, you choose one of the normal forms for your familiar or one of the following special forms: Imp, Pseudodragon, Quasit, Skeleton, Slaad Tadpole, Sphinx of Wonder, Sprite, or Venomous Snake (see appendix B for the familiar's stat block). Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack of its own with its Reaction."
               },
               {
                 "id": "pact-of-the-tome",
                 "name": "Pact of the Tome",
-                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die."
+                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die. Cantrips and Rituals. When the book appears, choose three cantrips, and choose two level 1 spells that have the Ritual tag. The spells can be from any class's spell list, and they must be spells you don't already have prepared. While the book is on your person, you have the chosen spells prepared, and they function as Warlock spells for you. Spellcasting Focus. You can use the book as a Spellcasting Focus."
               },
               {
                 "id": "repelling-blast",
                 "name": "Repelling Blast",
-                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you.",
+                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage via an Attack Roll",
                   "minimumLevel": 2,
@@ -4921,7 +4921,7 @@
               {
                 "id": "agonizing-blast",
                 "name": "Agonizing Blast",
-                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls.",
+                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -4990,7 +4990,7 @@
               {
                 "id": "eldritch-spear",
                 "name": "Eldritch Spear",
-                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level.",
+                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -5012,7 +5012,7 @@
               {
                 "id": "gaze-of-two-minds",
                 "name": "Gaze of Two Minds",
-                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way.",
+                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way. While perceiving through the other creature's senses, you benefit from any special senses possessed by that creature, and you can cast spells as if you were in your space or the other creature's space if the two of you are within 60 feet of each other.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -5023,7 +5023,7 @@
               {
                 "id": "gift-of-the-depths",
                 "name": "Gift of the Depths",
-                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed.",
+                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed. You can also cast Water Breathing once without expending a spell slot. You regain the ability to cast it in this way again when you finish a Long Rest.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -5034,7 +5034,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name).",
+                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name). When any creature whose name is on the page is reduced to 0 Hit Points but not killed outright, the creature magically drops to 1 Hit Point instead. Once this magic is triggered, no creature can benefit from it until you finish a Long Rest. As a Magic action, you can erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "Level 9+ Warlock, Pact of the Tome Invocation",
                   "minimumLevel": 9,
@@ -5047,7 +5047,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits.",
+                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits. Aerial or Aquatic. The familiar gains either a Fly Speed or a Swim Speed (your choice) of 40 feet. Quick Attack. As a Bonus Action, you can command the familiar to take the Attack action. Necrotic or Radiant Damage. Whenever the familiar deals Bludgeoning, Piercing, or Slashing damage, you can make it deal Necrotic or Radiant damage instead. Your Save DC. If the familiar forces a creature to make a saving throw, it uses your spell save DC. Resistance. When the familiar takes damage, you can take a Reaction to grant it Resistance against that damage.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock, Pact of the Chain Invocation",
                   "minimumLevel": 5,
@@ -5060,7 +5060,7 @@
               {
                 "id": "lessons-of-the-first-ones",
                 "name": "Lessons of the First Ones",
-                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\").",
+                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\"). Repeatable. You can gain this invocation more than once. Each time you do so, choose a different Origin feat.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock",
                   "minimumLevel": 2,
@@ -5139,22 +5139,22 @@
               {
                 "id": "pact-of-the-blade",
                 "name": "Pact of the Blade",
-                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus."
+                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus. Whenever you attack with the bonded weapon, you can use your Charisma modifier for the attack and damage rolls instead of using Strength or Dexterity; and you can cause the weapon to deal Necrotic, Psychic, or Radiant damage or its normal damage type. Your bond with the weapon ends if you use this feature's Bonus Action again, if the weapon is more than 5 feet away from you for 1 minute or more, or if you die. A conjured weapon disappears when the bond ends."
               },
               {
                 "id": "pact-of-the-chain",
                 "name": "Pact of the Chain",
-                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot."
+                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot. When you cast the spell, you choose one of the normal forms for your familiar or one of the following special forms: Imp, Pseudodragon, Quasit, Skeleton, Slaad Tadpole, Sphinx of Wonder, Sprite, or Venomous Snake (see appendix B for the familiar's stat block). Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack of its own with its Reaction."
               },
               {
                 "id": "pact-of-the-tome",
                 "name": "Pact of the Tome",
-                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die."
+                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die. Cantrips and Rituals. When the book appears, choose three cantrips, and choose two level 1 spells that have the Ritual tag. The spells can be from any class's spell list, and they must be spells you don't already have prepared. While the book is on your person, you have the chosen spells prepared, and they function as Warlock spells for you. Spellcasting Focus. You can use the book as a Spellcasting Focus."
               },
               {
                 "id": "repelling-blast",
                 "name": "Repelling Blast",
-                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you.",
+                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage via an Attack Roll",
                   "minimumLevel": 2,
@@ -5222,7 +5222,7 @@
               {
                 "id": "agonizing-blast",
                 "name": "Agonizing Blast",
-                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls.",
+                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -5291,7 +5291,7 @@
               {
                 "id": "eldritch-spear",
                 "name": "Eldritch Spear",
-                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level.",
+                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -5313,7 +5313,7 @@
               {
                 "id": "gaze-of-two-minds",
                 "name": "Gaze of Two Minds",
-                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way.",
+                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way. While perceiving through the other creature's senses, you benefit from any special senses possessed by that creature, and you can cast spells as if you were in your space or the other creature's space if the two of you are within 60 feet of each other.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -5324,7 +5324,7 @@
               {
                 "id": "gift-of-the-depths",
                 "name": "Gift of the Depths",
-                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed.",
+                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed. You can also cast Water Breathing once without expending a spell slot. You regain the ability to cast it in this way again when you finish a Long Rest.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -5335,7 +5335,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name).",
+                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name). When any creature whose name is on the page is reduced to 0 Hit Points but not killed outright, the creature magically drops to 1 Hit Point instead. Once this magic is triggered, no creature can benefit from it until you finish a Long Rest. As a Magic action, you can erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "Level 9+ Warlock, Pact of the Tome Invocation",
                   "minimumLevel": 9,
@@ -5348,7 +5348,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits.",
+                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits. Aerial or Aquatic. The familiar gains either a Fly Speed or a Swim Speed (your choice) of 40 feet. Quick Attack. As a Bonus Action, you can command the familiar to take the Attack action. Necrotic or Radiant Damage. Whenever the familiar deals Bludgeoning, Piercing, or Slashing damage, you can make it deal Necrotic or Radiant damage instead. Your Save DC. If the familiar forces a creature to make a saving throw, it uses your spell save DC. Resistance. When the familiar takes damage, you can take a Reaction to grant it Resistance against that damage.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock, Pact of the Chain Invocation",
                   "minimumLevel": 5,
@@ -5361,7 +5361,7 @@
               {
                 "id": "lessons-of-the-first-ones",
                 "name": "Lessons of the First Ones",
-                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\").",
+                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\"). Repeatable. You can gain this invocation more than once. Each time you do so, choose a different Origin feat.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock",
                   "minimumLevel": 2,
@@ -5440,22 +5440,22 @@
               {
                 "id": "pact-of-the-blade",
                 "name": "Pact of the Blade",
-                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus."
+                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus. Whenever you attack with the bonded weapon, you can use your Charisma modifier for the attack and damage rolls instead of using Strength or Dexterity; and you can cause the weapon to deal Necrotic, Psychic, or Radiant damage or its normal damage type. Your bond with the weapon ends if you use this feature's Bonus Action again, if the weapon is more than 5 feet away from you for 1 minute or more, or if you die. A conjured weapon disappears when the bond ends."
               },
               {
                 "id": "pact-of-the-chain",
                 "name": "Pact of the Chain",
-                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot."
+                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot. When you cast the spell, you choose one of the normal forms for your familiar or one of the following special forms: Imp, Pseudodragon, Quasit, Skeleton, Slaad Tadpole, Sphinx of Wonder, Sprite, or Venomous Snake (see appendix B for the familiar's stat block). Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack of its own with its Reaction."
               },
               {
                 "id": "pact-of-the-tome",
                 "name": "Pact of the Tome",
-                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die."
+                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die. Cantrips and Rituals. When the book appears, choose three cantrips, and choose two level 1 spells that have the Ritual tag. The spells can be from any class's spell list, and they must be spells you don't already have prepared. While the book is on your person, you have the chosen spells prepared, and they function as Warlock spells for you. Spellcasting Focus. You can use the book as a Spellcasting Focus."
               },
               {
                 "id": "repelling-blast",
                 "name": "Repelling Blast",
-                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you.",
+                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage via an Attack Roll",
                   "minimumLevel": 2,
@@ -5523,7 +5523,7 @@
               {
                 "id": "agonizing-blast",
                 "name": "Agonizing Blast",
-                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls.",
+                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -5592,7 +5592,7 @@
               {
                 "id": "eldritch-spear",
                 "name": "Eldritch Spear",
-                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level.",
+                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -5614,7 +5614,7 @@
               {
                 "id": "gaze-of-two-minds",
                 "name": "Gaze of Two Minds",
-                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way.",
+                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way. While perceiving through the other creature's senses, you benefit from any special senses possessed by that creature, and you can cast spells as if you were in your space or the other creature's space if the two of you are within 60 feet of each other.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -5625,7 +5625,7 @@
               {
                 "id": "gift-of-the-depths",
                 "name": "Gift of the Depths",
-                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed.",
+                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed. You can also cast Water Breathing once without expending a spell slot. You regain the ability to cast it in this way again when you finish a Long Rest.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -5636,7 +5636,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name).",
+                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name). When any creature whose name is on the page is reduced to 0 Hit Points but not killed outright, the creature magically drops to 1 Hit Point instead. Once this magic is triggered, no creature can benefit from it until you finish a Long Rest. As a Magic action, you can erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "Level 9+ Warlock, Pact of the Tome Invocation",
                   "minimumLevel": 9,
@@ -5649,7 +5649,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits.",
+                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits. Aerial or Aquatic. The familiar gains either a Fly Speed or a Swim Speed (your choice) of 40 feet. Quick Attack. As a Bonus Action, you can command the familiar to take the Attack action. Necrotic or Radiant Damage. Whenever the familiar deals Bludgeoning, Piercing, or Slashing damage, you can make it deal Necrotic or Radiant damage instead. Your Save DC. If the familiar forces a creature to make a saving throw, it uses your spell save DC. Resistance. When the familiar takes damage, you can take a Reaction to grant it Resistance against that damage.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock, Pact of the Chain Invocation",
                   "minimumLevel": 5,
@@ -5662,7 +5662,7 @@
               {
                 "id": "lessons-of-the-first-ones",
                 "name": "Lessons of the First Ones",
-                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\").",
+                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\"). Repeatable. You can gain this invocation more than once. Each time you do so, choose a different Origin feat.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock",
                   "minimumLevel": 2,
@@ -5741,22 +5741,22 @@
               {
                 "id": "pact-of-the-blade",
                 "name": "Pact of the Blade",
-                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus."
+                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus. Whenever you attack with the bonded weapon, you can use your Charisma modifier for the attack and damage rolls instead of using Strength or Dexterity; and you can cause the weapon to deal Necrotic, Psychic, or Radiant damage or its normal damage type. Your bond with the weapon ends if you use this feature's Bonus Action again, if the weapon is more than 5 feet away from you for 1 minute or more, or if you die. A conjured weapon disappears when the bond ends."
               },
               {
                 "id": "pact-of-the-chain",
                 "name": "Pact of the Chain",
-                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot."
+                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot. When you cast the spell, you choose one of the normal forms for your familiar or one of the following special forms: Imp, Pseudodragon, Quasit, Skeleton, Slaad Tadpole, Sphinx of Wonder, Sprite, or Venomous Snake (see appendix B for the familiar's stat block). Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack of its own with its Reaction."
               },
               {
                 "id": "pact-of-the-tome",
                 "name": "Pact of the Tome",
-                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die."
+                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die. Cantrips and Rituals. When the book appears, choose three cantrips, and choose two level 1 spells that have the Ritual tag. The spells can be from any class's spell list, and they must be spells you don't already have prepared. While the book is on your person, you have the chosen spells prepared, and they function as Warlock spells for you. Spellcasting Focus. You can use the book as a Spellcasting Focus."
               },
               {
                 "id": "repelling-blast",
                 "name": "Repelling Blast",
-                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you.",
+                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage via an Attack Roll",
                   "minimumLevel": 2,
@@ -5824,7 +5824,7 @@
               {
                 "id": "agonizing-blast",
                 "name": "Agonizing Blast",
-                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls.",
+                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -5893,7 +5893,7 @@
               {
                 "id": "eldritch-spear",
                 "name": "Eldritch Spear",
-                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level.",
+                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -5915,7 +5915,7 @@
               {
                 "id": "gaze-of-two-minds",
                 "name": "Gaze of Two Minds",
-                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way.",
+                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way. While perceiving through the other creature's senses, you benefit from any special senses possessed by that creature, and you can cast spells as if you were in your space or the other creature's space if the two of you are within 60 feet of each other.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -5926,7 +5926,7 @@
               {
                 "id": "gift-of-the-depths",
                 "name": "Gift of the Depths",
-                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed.",
+                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed. You can also cast Water Breathing once without expending a spell slot. You regain the ability to cast it in this way again when you finish a Long Rest.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -5937,7 +5937,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name).",
+                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name). When any creature whose name is on the page is reduced to 0 Hit Points but not killed outright, the creature magically drops to 1 Hit Point instead. Once this magic is triggered, no creature can benefit from it until you finish a Long Rest. As a Magic action, you can erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "Level 9+ Warlock, Pact of the Tome Invocation",
                   "minimumLevel": 9,
@@ -5950,7 +5950,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits.",
+                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits. Aerial or Aquatic. The familiar gains either a Fly Speed or a Swim Speed (your choice) of 40 feet. Quick Attack. As a Bonus Action, you can command the familiar to take the Attack action. Necrotic or Radiant Damage. Whenever the familiar deals Bludgeoning, Piercing, or Slashing damage, you can make it deal Necrotic or Radiant damage instead. Your Save DC. If the familiar forces a creature to make a saving throw, it uses your spell save DC. Resistance. When the familiar takes damage, you can take a Reaction to grant it Resistance against that damage.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock, Pact of the Chain Invocation",
                   "minimumLevel": 5,
@@ -5963,7 +5963,7 @@
               {
                 "id": "lessons-of-the-first-ones",
                 "name": "Lessons of the First Ones",
-                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\").",
+                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\"). Repeatable. You can gain this invocation more than once. Each time you do so, choose a different Origin feat.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock",
                   "minimumLevel": 2,
@@ -6042,22 +6042,22 @@
               {
                 "id": "pact-of-the-blade",
                 "name": "Pact of the Blade",
-                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus."
+                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus. Whenever you attack with the bonded weapon, you can use your Charisma modifier for the attack and damage rolls instead of using Strength or Dexterity; and you can cause the weapon to deal Necrotic, Psychic, or Radiant damage or its normal damage type. Your bond with the weapon ends if you use this feature's Bonus Action again, if the weapon is more than 5 feet away from you for 1 minute or more, or if you die. A conjured weapon disappears when the bond ends."
               },
               {
                 "id": "pact-of-the-chain",
                 "name": "Pact of the Chain",
-                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot."
+                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot. When you cast the spell, you choose one of the normal forms for your familiar or one of the following special forms: Imp, Pseudodragon, Quasit, Skeleton, Slaad Tadpole, Sphinx of Wonder, Sprite, or Venomous Snake (see appendix B for the familiar's stat block). Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack of its own with its Reaction."
               },
               {
                 "id": "pact-of-the-tome",
                 "name": "Pact of the Tome",
-                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die."
+                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die. Cantrips and Rituals. When the book appears, choose three cantrips, and choose two level 1 spells that have the Ritual tag. The spells can be from any class's spell list, and they must be spells you don't already have prepared. While the book is on your person, you have the chosen spells prepared, and they function as Warlock spells for you. Spellcasting Focus. You can use the book as a Spellcasting Focus."
               },
               {
                 "id": "repelling-blast",
                 "name": "Repelling Blast",
-                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you.",
+                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage via an Attack Roll",
                   "minimumLevel": 2,
@@ -6125,7 +6125,7 @@
               {
                 "id": "agonizing-blast",
                 "name": "Agonizing Blast",
-                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls.",
+                "description": "Choose one of your known Warlock cantrips that deals damage. You can add your Charisma modifier to that spell's damage rolls. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -6194,7 +6194,7 @@
               {
                 "id": "eldritch-spear",
                 "name": "Eldritch Spear",
-                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level.",
+                "description": "Choose one of your known Warlock cantrips that deals damage and has a range of 10+ feet. When you cast that spell, its range increases by a number of feet equal to 30 times your Warlock level. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage",
                   "minimumLevel": 2,
@@ -6216,7 +6216,7 @@
               {
                 "id": "gaze-of-two-minds",
                 "name": "Gaze of Two Minds",
-                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way.",
+                "description": "You can use a Bonus Action to touch a willing creature and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can take a Bonus Action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. The connection ends if you don't maintain it in this way. While perceiving through the other creature's senses, you benefit from any special senses possessed by that creature, and you can cast spells as if you were in your space or the other creature's space if the two of you are within 60 feet of each other.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -6227,7 +6227,7 @@
               {
                 "id": "gift-of-the-depths",
                 "name": "Gift of the Depths",
-                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed.",
+                "description": "You can breathe underwater, and you gain a Swim Speed equal to your Speed. You can also cast Water Breathing once without expending a spell slot. You regain the ability to cast it in this way again when you finish a Long Rest.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock",
                   "minimumLevel": 5,
@@ -6238,7 +6238,7 @@
               {
                 "id": "gift-of-the-protectors",
                 "name": "Gift of the Protectors",
-                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name).",
+                "description": "A new page appears in your Book of Shadows when you conjure it. With your permission, a creature can take an action to write its name on that page, which can contain a number of names equal to your Charisma modifier (minimum of one name). When any creature whose name is on the page is reduced to 0 Hit Points but not killed outright, the creature magically drops to 1 Hit Point instead. Once this magic is triggered, no creature can benefit from it until you finish a Long Rest. As a Magic action, you can erase a name on the page by touching it.",
                 "prerequisites": {
                   "text": "Level 9+ Warlock, Pact of the Tome Invocation",
                   "minimumLevel": 9,
@@ -6251,7 +6251,7 @@
               {
                 "id": "investment-of-the-chain-master",
                 "name": "Investment of the Chain Master",
-                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits.",
+                "description": "When you cast Find Familiar, you infuse the summoned familiar with a measure of your eldritch power, granting the creature the following benefits. Aerial or Aquatic. The familiar gains either a Fly Speed or a Swim Speed (your choice) of 40 feet. Quick Attack. As a Bonus Action, you can command the familiar to take the Attack action. Necrotic or Radiant Damage. Whenever the familiar deals Bludgeoning, Piercing, or Slashing damage, you can make it deal Necrotic or Radiant damage instead. Your Save DC. If the familiar forces a creature to make a saving throw, it uses your spell save DC. Resistance. When the familiar takes damage, you can take a Reaction to grant it Resistance against that damage.",
                 "prerequisites": {
                   "text": "Level 5+ Warlock, Pact of the Chain Invocation",
                   "minimumLevel": 5,
@@ -6264,7 +6264,7 @@
               {
                 "id": "lessons-of-the-first-ones",
                 "name": "Lessons of the First Ones",
-                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\").",
+                "description": "You have received knowledge from an elder entity of the multiverse, allowing you to gain one Origin feat of your choice (see \"Feats\"). Repeatable. You can gain this invocation more than once. Each time you do so, choose a different Origin feat.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock",
                   "minimumLevel": 2,
@@ -6343,22 +6343,22 @@
               {
                 "id": "pact-of-the-blade",
                 "name": "Pact of the Blade",
-                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus."
+                "description": "As a Bonus Action, you can conjure a pact weapon in your hand—a Simple or Martial Melee weapon of your choice with which you bond—or create a bond with a magic weapon you touch; you can't bond with a magic weapon if someone else is attuned to it or another Warlock is bonded with it. Until the bond ends, you have proficiency with the weapon, and you can use it as a Spellcasting Focus. Whenever you attack with the bonded weapon, you can use your Charisma modifier for the attack and damage rolls instead of using Strength or Dexterity; and you can cause the weapon to deal Necrotic, Psychic, or Radiant damage or its normal damage type. Your bond with the weapon ends if you use this feature's Bonus Action again, if the weapon is more than 5 feet away from you for 1 minute or more, or if you die. A conjured weapon disappears when the bond ends."
               },
               {
                 "id": "pact-of-the-chain",
                 "name": "Pact of the Chain",
-                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot."
+                "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot. When you cast the spell, you choose one of the normal forms for your familiar or one of the following special forms: Imp, Pseudodragon, Quasit, Skeleton, Slaad Tadpole, Sphinx of Wonder, Sprite, or Venomous Snake (see appendix B for the familiar's stat block). Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack of its own with its Reaction."
               },
               {
                 "id": "pact-of-the-tome",
                 "name": "Pact of the Tome",
-                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die."
+                "description": "Stitching together strands of shadow, you conjure forth a book in your hand at the end of a Short or Long Rest. This Book of Shadows (you determine its appearance) contains eldritch magic that only you can access, granting you the benefits below. The book disappears if you conjure another book with this feature or if you die. Cantrips and Rituals. When the book appears, choose three cantrips, and choose two level 1 spells that have the Ritual tag. The spells can be from any class's spell list, and they must be spells you don't already have prepared. While the book is on your person, you have the chosen spells prepared, and they function as Warlock spells for you. Spellcasting Focus. You can use the book as a Spellcasting Focus."
               },
               {
                 "id": "repelling-blast",
                 "name": "Repelling Blast",
-                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you.",
+                "description": "Choose one of your known Warlock cantrips that requires an attack roll. When you hit a Large or smaller creature with that cantrip, you can push the creature up to 10 feet straight away from you. Repeatable. You can gain this invocation more than once. Each time you do so, choose a different eligible cantrip.",
                 "prerequisites": {
                   "text": "Level 2+ Warlock, a Warlock Cantrip That Deals Damage via an Attack Roll",
                   "minimumLevel": 2,
@@ -57727,22 +57727,10 @@
       "href": "/sources/dnd/br-2024/rules-glossary#UnarmedStrike"
     },
     {
-      "id": "chapter-7",
-      "title": "chapter 7",
-      "level": 2,
-      "href": "/sources/dnd/br-2024/spells"
-    },
-    {
       "id": "equipment",
       "title": "Equipment",
       "level": 2,
       "href": "/sources/dnd/br-2024/equipment#Properties"
-    },
-    {
-      "id": "chapter-2",
-      "title": "chapter 2",
-      "level": 2,
-      "href": "/sources/dnd/br-2024/creating-a-character"
     },
     {
       "id": "rules-glossary",
@@ -61699,12 +61687,6 @@
       "href": "#Void"
     },
     {
-      "id": "chapter-8",
-      "title": "chapter 8",
-      "level": 2,
-      "href": "/sources/dnd/dmg-2024/bastions"
-    },
-    {
       "id": "random-properties",
       "title": "random properties",
       "level": 2,
@@ -61831,7 +61813,7 @@
       "title": "D&D Beyond Basic Rules - D&D Beyond Basic Rules - Dungeons & Dragons - Sources - D&D Beyond",
       "path": "C:\\Programs\\DnD Character Creator\\BasicRules(2024).txt",
       "contentExcerpt": "``` <!DOCTYPE html> !function () { window.semaphore = window.semaphore || [], window.ketch = function () { window.semaphore.push(arguments) }; var e =",
-      "sectionCount": 3654
+      "sectionCount": 3651
     }
   ],
   "notes": [
