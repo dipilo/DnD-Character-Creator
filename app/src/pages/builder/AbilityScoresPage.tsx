@@ -794,7 +794,7 @@ export function AbilityScoresPage() {
           <CardTitle>Ability Score Summary</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4 xl:grid-cols-6">
             {ABILITY_NAMES.map((ability) => (
               <div key={ability} className="text-center">
                 <p className="text-xs uppercase text-muted-foreground">{ability.slice(0, 3)}</p>

@@ -6,6 +6,12 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      // A landscape phone is wide but only ~390px tall, so every width breakpoint reads it as a
+      // tablet while the viewport has no vertical room at all. `short:` is how chrome (page
+      // titles, header height, hero padding) gets out of the way there.
+      screens: {
+        short: { raw: '(max-height: 500px)' },
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

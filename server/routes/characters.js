@@ -27,6 +27,25 @@ async function findOwnedCharacter(userId, id) {
 }
 
 /**
+ * Fetch a row the caller may *read* (MERGE_PLAN.md Phase 5).
+ *
+ * Attaching a character to a campaign is the act of sharing it: the campaign's members can read it
+ * from then on, which is what makes a party view and a roster of real sheets possible. Nothing else
+ * widens — an unattached character stays invisible, and invisible here means **404 rather than
+ * 403**, because a 403 would confirm the id exists. Writes are unaffected; they still go through
+ * `findOwnedCharacter`.
+ */
+async function findReadableCharacter(user, id) {
+  if (!isValidId(id)) return null;
+  const row = await db.get('SELECT * FROM characters WHERE id = ?', id);
+  if (!row || row.deleted_at) return null;
+  if (Number(row.user_id) === Number(user.id)) return row;
+  if (row.campaign_id == null) return null;
+  const membership = await getCampaignMembership(user.id, row.campaign_id);
+  return membership ? row : null;
+}
+
+/**
  * Resolve the campaign seat a character is attached to. Both columns are nullable — a character
  * built signed-in but outside any campaign is the common case — but a non-null value has to be
  * one the caller may actually use, or this becomes a way to write into someone else's campaign.
@@ -81,8 +100,8 @@ router.get('/api/characters', requireAuth, async (req, res) => {
 
 router.get('/api/characters/:id', requireAuth, async (req, res) => {
   try {
-    const row = await findOwnedCharacter(req.user.id, req.params.id);
-    if (!row || row.deleted_at) return res.status(404).json({ error: 'character_not_found' });
+    const row = await findReadableCharacter(req.user, req.params.id);
+    if (!row) return res.status(404).json({ error: 'character_not_found' });
     res.json({ ok: true, character: publicCharacter(row) });
   } catch (e) {
     console.error('GET /api/characters/:id', e);
@@ -96,7 +115,7 @@ router.post('/api/characters', requireAuth, async (req, res) => {
     const id = body.id === undefined || body.id === null ? crypto.randomUUID() : body.id;
     if (!isValidId(id)) return res.status(400).json({ error: 'invalid_id' });
 
-    const doc = serializeDocument(body.data, body.name);
+    const doc = serializeDocument(body.data, body.name, body.summary);
     if (doc.error) return res.status(doc.error === 'data_too_large' ? 413 : 400).json({ error: doc.error });
 
     // A soft-deleted row still occupies the id. Resurrecting it silently would undo a deletion the
@@ -111,9 +130,9 @@ router.post('/api/characters', requireAuth, async (req, res) => {
 
     const now = new Date().toISOString();
     await db.run(
-      `INSERT INTO characters(id, user_id, campaign_id, player_id, name, data, schema_version, version, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`,
-      id, req.user.id, scope.campaignId, scope.playerId, doc.name, doc.text, normaliseSchemaVersion(body.schema_version), now, now,
+      `INSERT INTO characters(id, user_id, campaign_id, player_id, name, summary, data, schema_version, version, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`,
+      id, req.user.id, scope.campaignId, scope.playerId, doc.name, doc.summary, doc.text, normaliseSchemaVersion(body.schema_version), now, now,
     );
     const created = await db.get('SELECT * FROM characters WHERE id = ?', id);
     res.status(201).json({ ok: true, character: publicCharacter(created) });
@@ -138,16 +157,16 @@ router.put('/api/characters/:id', requireAuth, async (req, res) => {
       return res.status(409).json({ error: 'version_conflict', character: publicCharacter(row) });
     }
 
-    const doc = serializeDocument(body.data, body.name);
+    const doc = serializeDocument(body.data, body.name, body.summary);
     if (doc.error) return res.status(doc.error === 'data_too_large' ? 413 : 400).json({ error: doc.error });
 
     const scope = await resolveScope(req.user, body, row);
     if (scope.error) return res.status(scope.status).json({ error: scope.error });
 
     await db.run(
-      `UPDATE characters SET campaign_id = ?, player_id = ?, name = ?, data = ?, schema_version = ?, version = version + 1, updated_at = ?
+      `UPDATE characters SET campaign_id = ?, player_id = ?, name = ?, summary = ?, data = ?, schema_version = ?, version = version + 1, updated_at = ?
         WHERE id = ? AND user_id = ? AND version = ?`,
-      scope.campaignId, scope.playerId, doc.name, doc.text,
+      scope.campaignId, scope.playerId, doc.name, doc.summary, doc.text,
       normaliseSchemaVersion(body.schema_version ?? row.schema_version),
       new Date().toISOString(), row.id, req.user.id, expected,
     );
@@ -155,6 +174,46 @@ router.put('/api/characters/:id', requireAuth, async (req, res) => {
     res.json({ ok: true, character: publicCharacter(updated) });
   } catch (e) {
     console.error('PUT /api/characters/:id', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+/**
+ * Seat a character at a campaign table, or take it off one (MERGE_PLAN.md Phase 5).
+ *
+ * The seat is row metadata, not part of the document, so this is deliberately *not* the document
+ * write: it carries no `version` and bumps none. A player seating their character has not edited
+ * the sheet, and making them send the whole document to do it would mean a device that only knows
+ * the summary could not seat anything. `updated_at` is left alone for the same reason — nothing
+ * about the character changed.
+ *
+ * Attaching shares the sheet with the campaign's members (see `findReadableCharacter`), so the
+ * write is the owner's alone; `resolveScope` then checks that they may actually use that campaign
+ * and that seat.
+ */
+router.put('/api/characters/:id/seat', requireAuth, async (req, res) => {
+  try {
+    const body = req.body || {};
+    if (!Object.hasOwn(body, 'campaign_id')) return res.status(400).json({ error: 'campaign_id_required' });
+
+    const row = await findOwnedCharacter(req.user.id, req.params.id);
+    if (!row || row.deleted_at) return res.status(404).json({ error: 'character_not_found' });
+
+    // A seat only exists inside a campaign: taking the character off the campaign takes it out of
+    // the seat too, rather than leaving a player_id pointing into a campaign it no longer belongs to.
+    const campaignId = normaliseId(body.campaign_id);
+    const playerId = campaignId === null ? null : normaliseId(body.player_id);
+    const scope = await resolveScope(req.user, { campaign_id: campaignId, player_id: playerId }, row);
+    if (scope.error) return res.status(scope.status).json({ error: scope.error });
+
+    await db.run(
+      'UPDATE characters SET campaign_id = ?, player_id = ? WHERE id = ? AND user_id = ?',
+      scope.campaignId, scope.playerId, row.id, req.user.id,
+    );
+    const updated = await db.get('SELECT * FROM characters WHERE id = ?', row.id);
+    res.json({ ok: true, character: characterSummary(updated) });
+  } catch (e) {
+    console.error('PUT /api/characters/:id/seat', e);
     res.status(500).json({ error: e.message });
   }
 });
@@ -204,7 +263,7 @@ async function importOne(user, entry) {
   const id = entry?.id;
   if (!isValidId(id)) return { ok: false, id: null, reason: 'invalid_id' };
 
-  const doc = serializeDocument(entry.data, entry.name);
+  const doc = serializeDocument(entry.data, entry.name, entry.summary);
   if (doc.error) return { ok: false, id, reason: doc.error };
 
   const existing = await db.get('SELECT id FROM characters WHERE id = ?', id);
@@ -215,9 +274,9 @@ async function importOne(user, entry) {
 
   const now = new Date().toISOString();
   await db.run(
-    `INSERT INTO characters(id, user_id, campaign_id, player_id, name, data, schema_version, version, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`,
-    id, user.id, scope.campaignId, scope.playerId, doc.name, doc.text, normaliseSchemaVersion(entry.schema_version), now, now,
+    `INSERT INTO characters(id, user_id, campaign_id, player_id, name, summary, data, schema_version, version, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`,
+    id, user.id, scope.campaignId, scope.playerId, doc.name, doc.summary, doc.text, normaliseSchemaVersion(entry.schema_version), now, now,
   );
   return { ok: true, id };
 }

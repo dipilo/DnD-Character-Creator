@@ -1,0 +1,79 @@
+/*
+ * FullCalendar 7 stopped shipping its stylesheet implicitly: a v7 calendar renders unstyled until
+ * a skeleton and a theme are imported (MERGE_PLAN.md §5.1 — the upgrade is larger than the peer
+ * bump it was recorded as). `classic` is the theme closest to the look the scheduler had on v6.
+ *
+ * `palette.css` supplies the non-colour values (dot widths, background-event opacities) and acts
+ * as a fallback; every colour below is remapped onto the app's own shadcn tokens, so the calendar
+ * follows light/dark with the rest of the app. The theme's own dark palette keys off
+ * `[data-color-scheme=dark]`, which this app never sets — mapping to tokens that already flip
+ * under `.dark` means there is no second dark block here to keep in sync.
+ */
+@import '@fullcalendar/react/skeleton.css';
+@import '@fullcalendar/react/themes/classic/theme.css';
+@import '@fullcalendar/react/themes/classic/palette.css';
+
+:root {
+  --fc-classic-background: hsl(var(--background));
+  --fc-classic-foreground: hsl(var(--foreground));
+  --fc-classic-faint: hsl(var(--muted) / 0.4);
+  --fc-classic-muted: hsl(var(--muted));
+  --fc-classic-strong: hsl(var(--muted) / 1);
+  --fc-classic-faint-foreground: hsl(var(--muted-foreground) / 0.6);
+  --fc-classic-muted-foreground: hsl(var(--muted-foreground));
+  --fc-classic-border: hsl(var(--border));
+  --fc-classic-strong-border: hsl(var(--border));
+
+  --fc-classic-button: hsl(var(--secondary));
+  --fc-classic-button-border: hsl(var(--border));
+  --fc-classic-button-foreground: hsl(var(--secondary-foreground));
+  --fc-classic-button-strong: hsl(var(--accent));
+  --fc-classic-button-strong-border: hsl(var(--border));
+  --fc-classic-button-outline: hsl(var(--ring) / 0.5);
+  --fc-classic-ring-color: hsl(var(--ring));
+
+  --fc-classic-primary: hsl(var(--primary));
+  --fc-classic-primary-foreground: hsl(var(--primary-foreground));
+  --fc-classic-highlight: hsl(var(--primary) / 0.18);
+  --fc-classic-today: hsl(var(--accent) / 0.6);
+  --fc-classic-now: hsl(var(--destructive));
+}
+
+/*
+ * The toolbar is sized for a desktop header: the title alone is 1.75rem and the three groups sit
+ * on one row. On a phone that wraps to three rows of chrome above a calendar that already has to
+ * share the viewport, so it is scaled down rather than hidden — the date is the one label a day
+ * view cannot do without.
+ */
+@media (max-width: 640px) {
+  .fc .fc-toolbar-title {
+    font-size: 1.05rem;
+    line-height: 1.3;
+  }
+
+  .fc .fc-toolbar.fc-header-toolbar {
+    margin-bottom: 0.5rem;
+    gap: 0.25rem;
+  }
+
+  .fc .fc-button {
+    padding: 0.35rem 0.55rem;
+    font-size: 0.8125rem;
+  }
+
+  /* Half-hour slots at the desktop height make a day view three screens tall. */
+  .fc .fc-timegrid-slot {
+    height: 1.75em;
+  }
+}
+
+/* A landscape phone has the width for a week grid but no vertical room for padding. */
+@media (max-height: 500px) {
+  .fc .fc-toolbar-title {
+    font-size: 1rem;
+  }
+
+  .fc .fc-toolbar.fc-header-toolbar {
+    margin-bottom: 0.4rem;
+  }
+}

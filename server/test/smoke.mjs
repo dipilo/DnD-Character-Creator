@@ -212,7 +212,10 @@ const steps = [
   // id space stays unwalkable.
   { name: 'characters-unauthenticated', method: 'GET', path: '/api/characters' },
   { name: 'characters-empty', method: 'GET', path: '/api/characters', headers: () => asUser('alice') },
-  { name: 'create-character', method: 'POST', path: '/api/characters', headers: () => asUser('alice'), body: { id: 'char-miri', data: { id: 'char-miri', name: 'Miri', speciesId: 'elf', classes: [{ classId: 'wizard', level: 3 }] } } },
+  // `summary` is the denormalised display line a party view lists by. The client computes it —
+  // resolving ids to names needs the content library — and the server stores it without looking at it.
+  { name: 'create-character', method: 'POST', path: '/api/characters', headers: () => asUser('alice'), body: { id: 'char-miri', summary: 'Level 3 Elf Wizard 3', data: { id: 'char-miri', name: 'Miri', speciesId: 'elf', classes: [{ classId: 'wizard', level: 3 }] } } },
+  { name: 'create-character-overlong-summary', method: 'POST', path: '/api/characters', headers: () => asUser('alice'), body: { id: 'char-verbose', summary: 'x'.repeat(400), data: { name: 'Verbose' } } },
   { name: 'create-character-unauthenticated', method: 'POST', path: '/api/characters', body: { id: 'char-forged', data: { name: 'Forged' } } },
   { name: 'create-character-duplicate-id', method: 'POST', path: '/api/characters', headers: () => asUser('alice'), body: { id: 'char-miri', data: { name: 'Miri again' } } },
   { name: 'create-character-invalid-id', method: 'POST', path: '/api/characters', headers: () => asUser('alice'), body: { id: 'not a valid id', data: { name: 'Nope' } } },
@@ -238,6 +241,40 @@ const steps = [
   { name: 'get-character-after-delete', method: 'GET', path: '/api/characters/char-miri', headers: () => asUser('alice') },
   { name: 'recreate-deleted-character', method: 'POST', path: '/api/characters', headers: () => asUser('alice'), body: { id: 'char-miri', data: { name: 'Resurrected' } } },
   { name: 'characters-after-delete', method: 'GET', path: '/api/characters', headers: () => asUser('alice') },
+
+  // Phase 5: the seat link and the party view. Attaching a character to a campaign is what shares
+  // it with that campaign's members, so these steps are the read boundary in both directions —
+  // `ellis` is a member (they claimed a seat anonymously above), `bob` is not.
+  { name: 'campaign-characters-unauthenticated', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/characters` },
+  { name: 'campaign-characters-as-non-member', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/characters`, headers: () => asUser('bob') },
+  { name: 'campaign-characters', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/characters`, headers: () => asUser('alice') },
+  { name: 'campaign-characters-as-member', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/characters`, headers: () => asUser('ellis') },
+  // The widened read: a seated character is readable by a campaign-mate, an unattached one is not —
+  // and "is not" stays 404, because a 403 would confirm the id exists.
+  { name: 'get-seated-character-as-campaign-mate', method: 'GET', path: '/api/characters/char-dane', headers: () => asUser('ellis') },
+  { name: 'get-unattached-character-as-campaign-mate', method: 'GET', path: '/api/characters/char-imported', headers: () => asUser('ellis') },
+  // A campaign-mate may read a seated sheet but never write it.
+  { name: 'update-seated-character-as-campaign-mate', method: 'PUT', path: '/api/characters/char-dane', headers: () => asUser('ellis'), body: { version: 1, data: { name: 'Not yours' } } },
+
+  { name: 'seat-character-without-campaign-id', method: 'PUT', path: '/api/characters/char-imported/seat', headers: () => asUser('alice'), body: {} },
+  // Someone else's character is 404 to seat, exactly as it is to read.
+  { name: 'seat-character-not-owned', method: 'PUT', path: '/api/characters/char-imported/seat', headers: () => asUser('bob'), body: () => ({ campaign_id: ctx.camp }) },
+  // Owning the character is not enough: seating it into a campaign still needs membership of it.
+  { name: 'create-character-for-bob', method: 'POST', path: '/api/characters', headers: () => asUser('bob'), body: { id: 'char-bobs-own', data: { name: "Bob's own" } } },
+  { name: 'seat-character-foreign-campaign', method: 'PUT', path: '/api/characters/char-bobs-own/seat', headers: () => asUser('bob'), body: () => ({ campaign_id: ctx.camp }) },
+  { name: 'seat-character', method: 'PUT', path: '/api/characters/char-imported/seat', headers: () => asUser('alice'), body: () => ({ campaign_id: ctx.camp, player_id: ctx.dane }) },
+  { name: 'campaign-characters-after-seating', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/characters`, headers: () => asUser('ellis') },
+  // Taking a character off the campaign takes it out of the seat too: a seat only exists inside one.
+  { name: 'unseat-character', method: 'PUT', path: '/api/characters/char-imported/seat', headers: () => asUser('alice'), body: { campaign_id: null } },
+  { name: 'get-unseated-character-as-campaign-mate', method: 'GET', path: '/api/characters/char-imported', headers: () => asUser('ellis') },
+
+  // The campaign's content agreement. Owner-only, and the ids are stored without interpretation.
+  { name: 'set-campaign-sources', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice'), body: { allowed_source_ids: ['phb-2024', 'basic-rules-2024', 'phb-2024'] } },
+  { name: 'set-campaign-sources-invalid', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice'), body: { allowed_source_ids: ['Not A Source Id'] } },
+  { name: 'set-campaign-sources-not-an-array', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice'), body: { allowed_source_ids: 'phb-2024' } },
+  { name: 'update-campaign-nothing-to-update', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice'), body: {} },
+  { name: 'set-campaign-sources-as-member', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('ellis'), body: { allowed_source_ids: [] } },
+  { name: 'campaigns-carry-allowed-sources', method: 'GET', path: '/api/campaigns', headers: () => asUser('alice') },
 
   { name: 'delete-player', method: 'DELETE', path: () => `/api/players/${ctx.cora}`, headers: () => asUser('alice') },
   { name: 'delete-campaign', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice') },

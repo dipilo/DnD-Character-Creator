@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useCharacterStore } from '@/store/characterStore';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Layout } from '@/components/Layout';
+import { RequireAuth } from '@/components/auth/RequireAuth';
 import { HomePage } from '@/pages/HomePage';
 import { Toaster } from '@/components/ui/sonner';
 
@@ -25,6 +26,18 @@ const FeatsSelectionPage = lazy(() => import('@/pages/builder/FeatsSelectionPage
 const EquipmentSelectionPage = lazy(() => import('@/pages/builder/EquipmentSelectionPage').then((module) => ({ default: module.EquipmentSelectionPage })));
 const ReviewPage = lazy(() => import('@/pages/builder/ReviewPage').then((module) => ({ default: module.ReviewPage })));
 const DiceRollerPage = lazy(() => import('@/pages/DiceRollerPage').then((module) => ({ default: module.DiceRollerPage })));
+// Scheduler screens (MERGE_PLAN.md Phase 4). Lazy like the rest, which also keeps FullCalendar
+// out of the builder's bundle — nothing in the character builder needs a calendar.
+const CampaignsPage = lazy(() => import('@/pages/campaign/CampaignsPage').then((module) => ({ default: module.CampaignsPage })));
+const CampaignLayout = lazy(() => import('@/pages/campaign/CampaignLayout').then((module) => ({ default: module.CampaignLayout })));
+const SchedulePage = lazy(() => import('@/pages/campaign/SchedulePage').then((module) => ({ default: module.SchedulePage })));
+const RosterPage = lazy(() => import('@/pages/campaign/RosterPage').then((module) => ({ default: module.RosterPage })));
+const GroupsPage = lazy(() => import('@/pages/campaign/GroupsPage').then((module) => ({ default: module.GroupsPage })));
+const MembersPage = lazy(() => import('@/pages/campaign/MembersPage').then((module) => ({ default: module.MembersPage })));
+const InviteLandingPage = lazy(() => import('@/pages/campaign/InviteLandingPage').then((module) => ({ default: module.InviteLandingPage })));
+// Phase 5: the join between the two halves — real builder characters seated at campaign tables.
+const PartyPage = lazy(() => import('@/pages/campaign/PartyPage').then((module) => ({ default: module.PartyPage })));
+const CampaignCharacterPage = lazy(() => import('@/pages/campaign/CampaignCharacterPage').then((module) => ({ default: module.CampaignCharacterPage })));
 
 function RouteFallback() {
   return (
@@ -74,6 +87,35 @@ function App() {
                 <Route path="review" element={<ReviewPage />} />
               </Route>
               <Route path="/character/:id" element={<CharacterSheetPage />} />
+
+              {/* Campaign-scoped routes are the ones Phase 3's guard was written for. The invite
+                  landing page is deliberately outside it: an invite reaches someone who has no
+                  account yet. */}
+              <Route path="/invite/:token" element={<InviteLandingPage />} />
+              <Route
+                path="/campaigns"
+                element={
+                  <RequireAuth>
+                    <CampaignsPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/campaign/:campaignId"
+                element={
+                  <RequireAuth>
+                    <CampaignLayout />
+                  </RequireAuth>
+                }
+              >
+                <Route index element={<Navigate to="schedule" replace />} />
+                <Route path="schedule" element={<SchedulePage />} />
+                <Route path="roster" element={<RosterPage />} />
+                <Route path="party" element={<PartyPage />} />
+                <Route path="party/:characterId" element={<CampaignCharacterPage />} />
+                <Route path="groups" element={<GroupsPage />} />
+                <Route path="members" element={<MembersPage />} />
+              </Route>
             </Routes>
           </Suspense>
         </Layout>

@@ -1,5 +1,5 @@
 {
-  "requests": 128,
+  "requests": 150,
   "results": [
     {
       "name": "root",
@@ -207,6 +207,7 @@
       "status": 200,
       "body": {
         "campaign": {
+          "allowed_source_ids": null,
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
           "id": 1,
@@ -225,6 +226,7 @@
       "body": {
         "campaigns": [
           {
+            "allowed_source_ids": null,
             "campaign_code": "<volatile>",
             "created_at": "<volatile>",
             "id": 1,
@@ -250,6 +252,7 @@
       "status": 200,
       "body": {
         "campaign": {
+          "allowed_source_ids": null,
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
           "id": 1,
@@ -266,6 +269,7 @@
       "status": 200,
       "body": {
         "campaign": {
+          "allowed_source_ids": null,
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
           "id": 1,
@@ -281,7 +285,7 @@
       "request": "PUT /api/campaigns/1",
       "status": 400,
       "body": {
-        "error": "name required"
+        "error": "nothing_to_update"
       }
     },
     {
@@ -664,7 +668,7 @@
         "availability": "<clock-dependent>",
         "ok": true,
         "preview": {
-          "count": 1,
+          "count": 2,
           "daysAhead": 14,
           "timezone": "America/New_York"
         }
@@ -1610,6 +1614,30 @@
           "name": "Miri",
           "player_id": null,
           "schema_version": 1,
+          "summary": "Level 3 Elf Wizard 3",
+          "updated_at": "<volatile>",
+          "user_id": 1,
+          "version": 1
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "create-character-overlong-summary",
+      "request": "POST /api/characters",
+      "status": 201,
+      "body": {
+        "character": {
+          "campaign_id": null,
+          "created_at": "<volatile>",
+          "data": {
+            "name": "Verbose"
+          },
+          "id": "char-verbose",
+          "name": "Verbose",
+          "player_id": null,
+          "schema_version": 1,
+          "summary": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
           "updated_at": "<volatile>",
           "user_id": 1,
           "version": 1
@@ -1664,6 +1692,7 @@
           "name": "Dane's Paladin",
           "player_id": 4,
           "schema_version": 1,
+          "summary": null,
           "updated_at": "<volatile>",
           "user_id": 1,
           "version": 1
@@ -1700,6 +1729,19 @@
             "name": "Dane's Paladin",
             "player_id": 4,
             "schema_version": 1,
+            "summary": null,
+            "updated_at": "<volatile>",
+            "user_id": 1,
+            "version": 1
+          },
+          {
+            "campaign_id": null,
+            "created_at": "<volatile>",
+            "id": "char-verbose",
+            "name": "Verbose",
+            "player_id": null,
+            "schema_version": 1,
+            "summary": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
             "updated_at": "<volatile>",
             "user_id": 1,
             "version": 1
@@ -1711,6 +1753,7 @@
             "name": "Miri",
             "player_id": null,
             "schema_version": 1,
+            "summary": "Level 3 Elf Wizard 3",
             "updated_at": "<volatile>",
             "user_id": 1,
             "version": 1
@@ -1732,6 +1775,7 @@
             "name": "Dane's Paladin",
             "player_id": 4,
             "schema_version": 1,
+            "summary": null,
             "updated_at": "<volatile>",
             "user_id": 1,
             "version": 1
@@ -1763,6 +1807,7 @@
           "name": "Miri",
           "player_id": null,
           "schema_version": 1,
+          "summary": "Level 3 Elf Wizard 3",
           "updated_at": "<volatile>",
           "user_id": 1,
           "version": 1
@@ -1817,6 +1862,7 @@
           "name": "Miri Brightwood",
           "player_id": null,
           "schema_version": 1,
+          "summary": null,
           "updated_at": "<volatile>",
           "user_id": 1,
           "version": 2
@@ -1847,6 +1893,7 @@
           "name": "Miri Brightwood",
           "player_id": null,
           "schema_version": 1,
+          "summary": null,
           "updated_at": "<volatile>",
           "user_id": 1,
           "version": 2
@@ -1937,6 +1984,7 @@
             "name": "Imported",
             "player_id": null,
             "schema_version": 1,
+            "summary": null,
             "updated_at": "<volatile>",
             "user_id": 1,
             "version": 1
@@ -1948,9 +1996,326 @@
             "name": "Dane's Paladin",
             "player_id": 4,
             "schema_version": 1,
+            "summary": null,
             "updated_at": "<volatile>",
             "user_id": 1,
             "version": 1
+          },
+          {
+            "campaign_id": null,
+            "created_at": "<volatile>",
+            "id": "char-verbose",
+            "name": "Verbose",
+            "player_id": null,
+            "schema_version": 1,
+            "summary": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "updated_at": "<volatile>",
+            "user_id": 1,
+            "version": 1
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "campaign-characters-unauthenticated",
+      "request": "GET /api/campaigns/1/characters",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
+      }
+    },
+    {
+      "name": "campaign-characters-as-non-member",
+      "request": "GET /api/campaigns/1/characters",
+      "status": 403,
+      "body": {
+        "error": "not_a_member"
+      }
+    },
+    {
+      "name": "campaign-characters",
+      "request": "GET /api/campaigns/1/characters",
+      "status": 200,
+      "body": {
+        "characters": [
+          {
+            "campaign_id": 1,
+            "created_at": "<volatile>",
+            "id": "char-dane",
+            "name": "Dane's Paladin",
+            "owner_name": "alice",
+            "player_id": 4,
+            "player_name": "Dane",
+            "schema_version": 1,
+            "summary": null,
+            "updated_at": "<volatile>",
+            "user_id": 1,
+            "version": 1
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "campaign-characters-as-member",
+      "request": "GET /api/campaigns/1/characters",
+      "status": 200,
+      "body": {
+        "characters": [
+          {
+            "campaign_id": 1,
+            "created_at": "<volatile>",
+            "id": "char-dane",
+            "name": "Dane's Paladin",
+            "owner_name": "alice",
+            "player_id": 4,
+            "player_name": "Dane",
+            "schema_version": 1,
+            "summary": null,
+            "updated_at": "<volatile>",
+            "user_id": 1,
+            "version": 1
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "get-seated-character-as-campaign-mate",
+      "request": "GET /api/characters/char-dane",
+      "status": 200,
+      "body": {
+        "character": {
+          "campaign_id": 1,
+          "created_at": "<volatile>",
+          "data": {
+            "name": "Dane's Paladin"
+          },
+          "id": "char-dane",
+          "name": "Dane's Paladin",
+          "player_id": 4,
+          "schema_version": 1,
+          "summary": null,
+          "updated_at": "<volatile>",
+          "user_id": 1,
+          "version": 1
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "get-unattached-character-as-campaign-mate",
+      "request": "GET /api/characters/char-imported",
+      "status": 404,
+      "body": {
+        "error": "character_not_found"
+      }
+    },
+    {
+      "name": "update-seated-character-as-campaign-mate",
+      "request": "PUT /api/characters/char-dane",
+      "status": 404,
+      "body": {
+        "error": "character_not_found"
+      }
+    },
+    {
+      "name": "seat-character-without-campaign-id",
+      "request": "PUT /api/characters/char-imported/seat",
+      "status": 400,
+      "body": {
+        "error": "campaign_id_required"
+      }
+    },
+    {
+      "name": "seat-character-not-owned",
+      "request": "PUT /api/characters/char-imported/seat",
+      "status": 404,
+      "body": {
+        "error": "character_not_found"
+      }
+    },
+    {
+      "name": "create-character-for-bob",
+      "request": "POST /api/characters",
+      "status": 201,
+      "body": {
+        "character": {
+          "campaign_id": null,
+          "created_at": "<volatile>",
+          "data": {
+            "name": "Bob's own"
+          },
+          "id": "char-bobs-own",
+          "name": "Bob's own",
+          "player_id": null,
+          "schema_version": 1,
+          "summary": null,
+          "updated_at": "<volatile>",
+          "user_id": 2,
+          "version": 1
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "seat-character-foreign-campaign",
+      "request": "PUT /api/characters/char-bobs-own/seat",
+      "status": 403,
+      "body": {
+        "error": "not_a_member"
+      }
+    },
+    {
+      "name": "seat-character",
+      "request": "PUT /api/characters/char-imported/seat",
+      "status": 200,
+      "body": {
+        "character": {
+          "campaign_id": 1,
+          "created_at": "<volatile>",
+          "id": "char-imported",
+          "name": "Imported",
+          "player_id": 4,
+          "schema_version": 1,
+          "summary": null,
+          "updated_at": "<volatile>",
+          "user_id": 1,
+          "version": 1
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "campaign-characters-after-seating",
+      "request": "GET /api/campaigns/1/characters",
+      "status": 200,
+      "body": {
+        "characters": [
+          {
+            "campaign_id": 1,
+            "created_at": "<volatile>",
+            "id": "char-imported",
+            "name": "Imported",
+            "owner_name": "alice",
+            "player_id": 4,
+            "player_name": "Dane",
+            "schema_version": 1,
+            "summary": null,
+            "updated_at": "<volatile>",
+            "user_id": 1,
+            "version": 1
+          },
+          {
+            "campaign_id": 1,
+            "created_at": "<volatile>",
+            "id": "char-dane",
+            "name": "Dane's Paladin",
+            "owner_name": "alice",
+            "player_id": 4,
+            "player_name": "Dane",
+            "schema_version": 1,
+            "summary": null,
+            "updated_at": "<volatile>",
+            "user_id": 1,
+            "version": 1
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "unseat-character",
+      "request": "PUT /api/characters/char-imported/seat",
+      "status": 200,
+      "body": {
+        "character": {
+          "campaign_id": null,
+          "created_at": "<volatile>",
+          "id": "char-imported",
+          "name": "Imported",
+          "player_id": null,
+          "schema_version": 1,
+          "summary": null,
+          "updated_at": "<volatile>",
+          "user_id": 1,
+          "version": 1
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "get-unseated-character-as-campaign-mate",
+      "request": "GET /api/characters/char-imported",
+      "status": 404,
+      "body": {
+        "error": "character_not_found"
+      }
+    },
+    {
+      "name": "set-campaign-sources",
+      "request": "PUT /api/campaigns/1",
+      "status": 200,
+      "body": {
+        "campaign": {
+          "allowed_source_ids": "[\"phb-2024\",\"basic-rules-2024\"]",
+          "campaign_code": "<volatile>",
+          "created_at": "<volatile>",
+          "id": 1,
+          "name": "Renamed Camp",
+          "owner_user_id": 1,
+          "sort_index": 0
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "set-campaign-sources-invalid",
+      "request": "PUT /api/campaigns/1",
+      "status": 400,
+      "body": {
+        "error": "invalid_source_id"
+      }
+    },
+    {
+      "name": "set-campaign-sources-not-an-array",
+      "request": "PUT /api/campaigns/1",
+      "status": 400,
+      "body": {
+        "error": "allowed_source_ids_must_be_an_array"
+      }
+    },
+    {
+      "name": "update-campaign-nothing-to-update",
+      "request": "PUT /api/campaigns/1",
+      "status": 400,
+      "body": {
+        "error": "nothing_to_update"
+      }
+    },
+    {
+      "name": "set-campaign-sources-as-member",
+      "request": "PUT /api/campaigns/1",
+      "status": 403,
+      "body": {
+        "error": "owner_required"
+      }
+    },
+    {
+      "name": "campaigns-carry-allowed-sources",
+      "request": "GET /api/campaigns",
+      "status": 200,
+      "body": {
+        "campaigns": [
+          {
+            "allowed_source_ids": "[\"phb-2024\",\"basic-rules-2024\"]",
+            "campaign_code": "<volatile>",
+            "created_at": "<volatile>",
+            "id": 1,
+            "name": "Renamed Camp",
+            "owner_user_id": 1,
+            "sort_index": 0
           }
         ],
         "ok": true
@@ -1994,6 +2359,7 @@
             "name": "Imported",
             "player_id": null,
             "schema_version": 1,
+            "summary": null,
             "updated_at": "<volatile>",
             "user_id": 1,
             "version": 1
@@ -2005,6 +2371,19 @@
             "name": "Dane's Paladin",
             "player_id": null,
             "schema_version": 1,
+            "summary": null,
+            "updated_at": "<volatile>",
+            "user_id": 1,
+            "version": 1
+          },
+          {
+            "campaign_id": null,
+            "created_at": "<volatile>",
+            "id": "char-verbose",
+            "name": "Verbose",
+            "player_id": null,
+            "schema_version": 1,
+            "summary": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
             "updated_at": "<volatile>",
             "user_id": 1,
             "version": 1

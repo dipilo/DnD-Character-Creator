@@ -30,77 +30,295 @@ function extractTzFromText(text) {
   return null;
 }
 
-function extractRangesWithChrono(text, tz) {
+/**
+ * chrono resolves a wall-clock reading against the *system* zone, so "7pm" on a server in UTC
+ * became 7pm UTC no matter which zone the player wrote it in. Re-stamp the components it read
+ * into the target zone instead of converting the instant it produced.
+ */
+function reanchorToZone(jsDate, zone) {
+  const local = DateTime.fromJSDate(jsDate);
+  return DateTime.fromObject(
+    {
+      year: local.year,
+      month: local.month,
+      day: local.day,
+      hour: local.hour,
+      minute: local.minute,
+      second: local.second
+    },
+    { zone }
+  );
+}
+
+function extractRangesWithChrono(text, tz = 'Etc/UTC') {
   if (!text) return [];
-  const zone = tz || 'Etc/UTC';
+  const zone = tz ?? 'Etc/UTC';
   const nowInZone = DateTime.now().setZone(zone).toJSDate(); // reference date anchored to zone
   const results = chrono.parse(text, nowInZone, { forwardDate: true });
 
   const ranges = [];
 
   for (const r of results) {
-    // chrono returns JS Date objects; they represent absolute instants based on the reference
-    if (r.start && r.end) {
-      const sIso = DateTime.fromJSDate(r.start.date()).toUTC().toISO();
-      const eIso = DateTime.fromJSDate(r.end.date()).toUTC().toISO();
-      ranges.push({ start_iso: sIso, end_iso: eIso });
-    } else if (r.start && !r.end) {
-      // single time or expression like "after 8pm" - create a sensible block (to +6h)
-      const sdt = DateTime.fromJSDate(r.start.date()).toUTC();
-      const edt = sdt.plus({ hours: 6 });
-      ranges.push({ start_iso: sdt.toISO(), end_iso: edt.toISO() });
-    }
+    if (!r.start) continue;
+    const sdt = reanchorToZone(r.start.date(), zone);
+    // A single time ("after 8pm") has no end; give it a block rather than dropping it.
+    const edt = r.end ? reanchorToZone(r.end.date(), zone) : sdt.plus({ hours: 6 });
+    if (!sdt.isValid || !edt.isValid || edt <= sdt) continue;
+    ranges.push({ start_iso: sdt.toUTC().toISO(), end_iso: edt.toUTC().toISO() });
   }
   return ranges;
 }
 
-// These were nested inside extractRangesWithChrono, below its return statement. Their callers
-// are all at module scope, so every call threw ReferenceError before this was fixed.
-function hasAvailabilityTimeCue(text) {
-  return /\b(\d{1,2}(?::\d{2})?\s*(?:am|pm)?|after|before|between|from|until|morning|afternoon|evening|night|late|anytime|any time)\b/i.test(text || '');
+/* ---------- free-text availability heuristics ----------
+ *
+ * A player writes availability the way they would say it: the days once, the hours once, and the
+ * two halves in whichever order came out. "Mon, Wed, Fri 8pm-midnight" states the hours only on
+ * the last fragment; "every Monday and Wednesday 7pm-11pm" only on the second. Parsing each
+ * fragment in isolation is what produced a correct Wednesday block beside a Monday block of
+ * 12pm-6pm (MERGE_PLAN.md §13) — so the fragments are parsed first and *associated* second.
+ */
+
+const ALL_WEEKDAYS = [1, 2, 3, 4, 5, 6, 7];
+
+// The day words that actually turn up in player notes. A full-name-only regex missed every
+// abbreviation, which is how "Mon, Wed, Fri 8pm-midnight" lost two of its three days.
+const DAY_TOKEN_GROUPS = [
+  { days: [1], tokens: ['monday', 'mondays', 'mon', 'mons'] },
+  { days: [2], tokens: ['tuesday', 'tuesdays', 'tue', 'tues', 'tuc'] },
+  { days: [3], tokens: ['wednesday', 'wednesdays', 'wed', 'weds', 'wedn'] },
+  { days: [4], tokens: ['thursday', 'thursdays', 'thu', 'thur', 'thurs'] },
+  { days: [5], tokens: ['friday', 'fridays', 'fri', 'fris'] },
+  { days: [6], tokens: ['saturday', 'saturdays', 'sat', 'sats'] },
+  { days: [7], tokens: ['sunday', 'sundays', 'sun', 'suns'] },
+  { days: [1, 2, 3, 4, 5], tokens: ['weekday', 'weekdays', 'weeknight', 'weeknights'] },
+  { days: [6, 7], tokens: ['weekend', 'weekends'] },
+  { days: ALL_WEEKDAYS, tokens: ['daily', 'everyday'] }
+];
+
+const DAY_TOKENS = new Map();
+for (const group of DAY_TOKEN_GROUPS) {
+  for (const token of group.tokens) DAY_TOKENS.set(token, group.days);
 }
 
-function hasAvailabilityDayCue(text) {
-  return /\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday|weekday|weekdays|weekend|weekends|daily|every day|everyday)\b/i.test(text || '');
+// Vague times, resolved once here rather than at four call sites. These are defaults for text
+// that names no clock time at all; anything explicit wins.
+const DAY_PART_RANGES = new Map([
+  ['morning', { start: '8:00 am', end: '12:00 pm' }],
+  ['mornings', { start: '8:00 am', end: '12:00 pm' }],
+  ['afternoon', { start: '12:00 pm', end: '5:00 pm' }],
+  ['afternoons', { start: '12:00 pm', end: '5:00 pm' }],
+  ['evening', { start: '6:00 pm', end: '11:00 pm' }],
+  ['evenings', { start: '6:00 pm', end: '11:00 pm' }],
+  ['night', { start: '8:00 pm', end: '12:00 am' }],
+  ['nights', { start: '8:00 pm', end: '12:00 am' }],
+  ['tonight', { start: '8:00 pm', end: '12:00 am' }],
+  ['late', { start: '9:00 pm', end: '2:00 am' }]
+]);
+
+const TZ_TOKEN = '(?:EST|EDT|CST|CDT|MST|MDT|PST|PDT|BST|GMT|UTC|CET|CEST)';
+const CLOCK_TOKEN = '(?:\\d{1,2}(?::\\d{2})?\\s*(?:am|pm)?|noon|midnight)';
+const DASH = '(?:to|through|thru|till|til|until|-|–|—)';
+
+const timeRangePattern = new RegExp(
+  `(${CLOCK_TOKEN})\\s*(?:${TZ_TOKEN})?\\s*${DASH}\\s*(${CLOCK_TOKEN})\\s*(?:${TZ_TOKEN})?`,
+  'gi'
+);
+const afterPattern = new RegExp(`\\b(?:any\\s?time\\s+)?after\\s+(${CLOCK_TOKEN})`, 'i');
+const beforePattern = new RegExp(`\\b(?:any\\s?time\\s+)?before\\s+(${CLOCK_TOKEN})`, 'i');
+// A lone clock time ("Mondays 8pm") reads as a start, not an instant. The am/pm or the colon is
+// required so a date fragment ("Aug 21") is not mistaken for one.
+const bareTimePattern = /\b(\d{1,2}(?::\d{2})?\s*(?:am|pm)|\d{1,2}:\d{2})\b/i;
+// "between 5pm and 9pm" is one range whose separator is the same word that separates clauses,
+// so it is rewritten to a dash before anything splits on "and".
+const betweenPattern = new RegExp(`\\bbetween\\s+(${CLOCK_TOKEN})\\s+and\\s+(${CLOCK_TOKEN})`, 'gi');
+
+const dayCuePattern = /\b(mon|mons|monday|mondays|tue|tues|tuesday|tuesdays|wed|weds|wednesday|wednesdays|thu|thur|thurs|thursday|thursdays|fri|fris|friday|fridays|sat|sats|saturday|saturdays|sun|suns|sunday|sundays|weekday|weekdays|weeknight|weeknights|weekend|weekends|daily|everyday|every\s+day)\b/i;
+const dayPartCuePattern = /\b(morning|mornings|afternoon|afternoons|evening|evenings|night|nights|late|anytime|any\s?time)\b/i;
+// Text naming one specific occasion is chrono's job — the heuristics would spread "next Friday"
+// across every Friday in the window.
+const specificDateCuePattern = /\b(today|tomorrow|tonight|next|this\s+(?:coming|week|weekend)|jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december|\d{1,2}\/\d{1,2}|\d{1,2}(?:st|nd|rd|th))\b/i;
+
+function hasRecurringCue(text) {
+  const value = String(text || '');
+  return dayCuePattern.test(value) || dayPartCuePattern.test(value);
 }
 
-function shouldPreferRecurringHeuristics(text) {
-  return /\b(weekday|weekdays|weekend|weekends|usually|typically|generally|anytime|any time|every day|daily|free between|after|between|morning|afternoon|evening|night)\b/i.test(text || '');
+/** "between 5pm and 9pm" -> "5pm - 9pm", so the clause splitter cannot cut a range in half. */
+function normalizeAvailabilityText(text) {
+  return String(text || '')
+    .replace(/\s+/g, ' ')
+    .replace(betweenPattern, '$1 - $2')
+    .trim();
 }
 
 function splitAvailabilityClauses(text) {
-  const normalized = String(text || '').replace(/\s+/g, ' ').trim();
+  const normalized = normalizeAvailabilityText(text);
   if (!normalized) return [];
-
-  const rawParts = normalized
-    .split(/\s*(?:;|\n|,|\band\b)\s*/i)
-    .map(part => part.trim())
+  return normalized
+    .split(/\s*(?:[;,\n/]|\band\b|\bplus\b|&)\s*/i)
+    .map((part) => part.trim())
     .filter(Boolean);
+}
 
-  const combined = [];
-  for (let i = 0; i < rawParts.length; i++) {
-    const current = rawParts[i];
-    const next = rawParts[i + 1];
-    if (!next) {
-      combined.push(current);
-      continue;
-    }
+function parseDayTokens(clause) {
+  const days = new Set();
+  if (/\bevery\s+day\b/i.test(clause)) {
+    for (const day of ALL_WEEKDAYS) days.add(day);
+  }
+  for (const word of String(clause).toLowerCase().match(/[a-z]+/g) || []) {
+    const mapped = DAY_TOKENS.get(word);
+    if (mapped) for (const day of mapped) days.add(day);
+  }
+  return [...days].sort((a, b) => a - b);
+}
 
-    const currentHasTime = hasAvailabilityTimeCue(current);
-    const currentHasDay = hasAvailabilityDayCue(current);
-    const nextHasTime = hasAvailabilityTimeCue(next);
-    const nextHasDay = hasAvailabilityDayCue(next);
+/** A wall-clock reading, keeping the hour as written so a missing am/pm can be inferred later. */
+function parseClockTime(text) {
+  const value = String(text || '').trim().toLowerCase();
+  if (value === 'noon') return { hour: 12, minute: 0, rawHour: 12, meridiem: 'pm' };
+  if (value === 'midnight') return { hour: 0, minute: 0, rawHour: 12, meridiem: 'am' };
 
-    if ((currentHasDay && !currentHasTime && nextHasTime) || (currentHasTime && !currentHasDay && nextHasDay)) {
-      combined.push(`${current} ${next}`.trim());
-      i += 1;
-      continue;
-    }
+  const match = /^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/.exec(value);
+  if (!match) return null;
 
-    combined.push(current);
+  const rawHour = Number.parseInt(match[1], 10);
+  const minute = match[2] ? Number.parseInt(match[2], 10) : 0;
+  const meridiem = match[3] ? match[3].toLowerCase() : null;
+  if (rawHour > 23 || minute > 59) return null;
+
+  let hour = rawHour;
+  if (meridiem === 'pm' && rawHour < 12) hour = rawHour + 12;
+  if (meridiem === 'am' && rawHour === 12) hour = 0;
+  return { hour, minute, rawHour, meridiem };
+}
+
+function minutesOfDay(time) {
+  return time.hour * 60 + time.minute;
+}
+
+/**
+ * "7-10pm" and "7pm-11" each state the half of the day once. Push the bare side onto the stated
+ * one, then let a still-inverted range mean it runs past midnight.
+ */
+function resolveTimeRange(startText, endText) {
+  const start = parseClockTime(startText);
+  const end = parseClockTime(endText);
+  if (!start || !end) return null;
+
+  if (!start.meridiem && end.meridiem === 'pm' && start.rawHour < 12 && start.rawHour <= end.rawHour) {
+    start.hour += 12;
+  }
+  if (!end.meridiem && start.meridiem === 'pm' && end.rawHour < 12 && minutesOfDay(end) <= minutesOfDay(start)) {
+    end.hour += 12;
+  }
+  if (minutesOfDay(end) === minutesOfDay(start)) return null;
+  return { start, end };
+}
+
+function collectExplicitRanges(clause) {
+  const ranges = [];
+  timeRangePattern.lastIndex = 0;
+  let match = timeRangePattern.exec(clause);
+  while (match) {
+    const resolved = resolveTimeRange(match[1], match[2]);
+    if (resolved) ranges.push(resolved);
+    match = timeRangePattern.exec(clause);
+  }
+  return ranges;
+}
+
+function allDayRange() {
+  return { start: { hour: 0, minute: 0 }, end: { hour: 23, minute: 59 } };
+}
+
+function collectImpliedRange(clause) {
+  const lower = String(clause).toLowerCase();
+  const after = afterPattern.exec(clause);
+  if (after) return resolveTimeRange(after[1], '11:59 pm');
+
+  const before = beforePattern.exec(clause);
+  if (before) return resolveTimeRange('12:00 am', before[1]);
+
+  if (/\bany\s?time\b/.test(lower) || /\ball\s+day\b/.test(lower)) {
+    return allDayRange();
   }
 
-  return combined;
+  const bare = bareTimePattern.exec(clause);
+  if (bare) return resolveTimeRange(bare[1], '11:59 pm');
+
+  for (const word of lower.match(/[a-z]+/g) || []) {
+    const part = DAY_PART_RANGES.get(word);
+    if (part) return resolveTimeRange(part.start, part.end);
+  }
+  return null;
+}
+
+function parseTimeRanges(clause) {
+  const explicit = collectExplicitRanges(clause);
+  if (explicit.length > 0) return explicit;
+  const implied = collectImpliedRange(clause);
+  return implied ? [implied] : [];
+}
+
+/**
+ * The nearest clause that supplies the half this one is missing. Days read backwards ("Monday,
+ * Wednesday 7pm-11pm" names the day first) and times read forwards ("Mon, Wed, Fri 8pm-midnight"
+ * names them last), so the preferred direction differs per half.
+ */
+function nearestNonEmpty(clauses, index, pick, preferForward) {
+  for (let offset = 1; offset < clauses.length; offset++) {
+    const preferred = preferForward ? clauses[index + offset] : clauses[index - offset];
+    if (preferred && pick(preferred).length > 0) return pick(preferred);
+    const other = preferForward ? clauses[index - offset] : clauses[index + offset];
+    if (other && pick(other).length > 0) return pick(other);
+  }
+  return [];
+}
+
+function associateDaysAndTimes(clauses) {
+  return clauses.map((clause, index) => ({
+    days: clause.days.length > 0 ? clause.days : nearestNonEmpty(clauses, index, (c) => c.days, false),
+    times: clause.times.length > 0 ? clause.times : nearestNonEmpty(clauses, index, (c) => c.times, true)
+  }));
+}
+
+function buildRangeOnDay(day, range) {
+  const start = day.set({ hour: range.start.hour, minute: range.start.minute, second: 0, millisecond: 0 });
+  let end = day.set({ hour: range.end.hour, minute: range.end.minute, second: 0, millisecond: 0 });
+  if (end <= start) end = end.plus({ days: 1 });
+  if (!start.isValid || !end.isValid) return null;
+  return { start_iso: start.toUTC().toISO(), end_iso: end.toUTC().toISO() };
+}
+
+function buildHeuristicRanges(text, fallbackZone, daysAhead = 14) {
+  const zone = extractTzFromText(text) || fallbackZone || 'Etc/UTC';
+  const parsed = splitAvailabilityClauses(text)
+    .map((clause) => ({ days: parseDayTokens(clause), times: parseTimeRanges(clause) }))
+    .filter((clause) => clause.days.length > 0 || clause.times.length > 0);
+
+  // "Sundays" names days and no hours at all. Dropping it loses the only thing the player said;
+  // read it as the whole day rather than nothing.
+  const associated = parsed.some((clause) => clause.times.length > 0)
+    ? associateDaysAndTimes(parsed)
+    : parsed.map((clause) => ({ days: clause.days, times: [allDayRange()] }));
+
+  const clauses = associated.filter((clause) => clause.times.length > 0);
+  if (clauses.length === 0) return [];
+
+  const out = [];
+  const today = DateTime.now().setZone(zone).startOf('day');
+  for (let offset = 0; offset < daysAhead; offset++) {
+    const day = today.plus({ days: offset });
+    for (const clause of clauses) {
+      const allowed = clause.days.length > 0 ? clause.days : ALL_WEEKDAYS;
+      if (!allowed.includes(day.weekday)) continue;
+      for (const range of clause.times) {
+        const built = buildRangeOnDay(day, range);
+        if (built) out.push(built);
+      }
+    }
+  }
+  return out;
 }
 
 function dedupeAvailabilityRanges(ranges = []) {
@@ -131,131 +349,26 @@ function normalizePreviewBlocks(blocks = []) {
   return dedupeAvailabilityRanges(normalized);
 }
 
-function buildHeuristicRangesFromClause(text, fallbackZone, daysAhead = 14) {
-  if (!text || String(text).trim() === '') return [];
-
-  const explicitZone = extractTzFromText(text);
-  const zone = explicitZone || fallbackZone || 'Etc/UTC';
-  const lower = String(text).toLowerCase();
-  const dayNames = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
-  let allowedDays = new Set();
-
-  dayNames.forEach((dn, i) => {
-    if (new RegExp(`\\b${dn}s?\\b`).test(lower)) allowedDays.add(i + 1);
-  });
-  if (/\bweekend(s)?\b/.test(lower)) {
-    allowedDays.add(6);
-    allowedDays.add(7);
-  }
-  if (/\bweekday(s)?\b/.test(lower)) {
-    [1, 2, 3, 4, 5].forEach(day => allowedDays.add(day));
-  }
-  if (/\b(every day|daily|everyday)\b/.test(lower)) {
-    allowedDays = new Set([1, 2, 3, 4, 5, 6, 7]);
-  }
-
-  const tzToken = '(?:EST|EDT|CST|CDT|MST|MDT|PST|PDT|BST|GMT|UTC|CET|CEST)';
-  const rangeRegex = new RegExp(`(?:between\\s+|from\\s+)?([0-9]{1,2}(?::[0-9]{2})?\\s*(?:am|pm)?)(?:\\s*${tzToken})?\\s*(?:to|-|until)\\s*([0-9]{1,2}(?::[0-9]{2})?\\s*(?:am|pm)?)(?:\\s*${tzToken})?`, 'i');
-  const afterRegex = new RegExp(`\\bafter\\s+([0-9]{1,2}(?::[0-9]{2})?\\s*(?:am|pm)?)(?:\\s*${tzToken})?`, 'i');
-  const beforeRegex = new RegExp(`\\bbefore\\s+([0-9]{1,2}(?::[0-9]{2})?\\s*(?:am|pm)?)(?:\\s*${tzToken})?`, 'i');
-  const anyTimeAfterRegex = new RegExp(`\\b(?:anytime|any time)\\s+after\\s+([0-9]{1,2}(?::[0-9]{2})?\\s*(?:am|pm)?)(?:\\s*${tzToken})?`, 'i');
-  const mRange = text.match(rangeRegex);
-  const mAnyTimeAfter = text.match(anyTimeAfterRegex);
-  const mAfter = text.match(afterRegex);
-  const mBefore = text.match(beforeRegex);
-
-  const rangesOfDay = [];
-  if (mRange) rangesOfDay.push({ startText: mRange[1], endText: mRange[2] });
-  else if (mAnyTimeAfter) rangesOfDay.push({ startText: mAnyTimeAfter[1], endText: '11:59 pm' });
-  else if (mAfter) rangesOfDay.push({ startText: mAfter[1], endText: '11:59 pm' });
-  else if (mBefore) rangesOfDay.push({ startText: '12:00 am', endText: mBefore[1] });
-  else if (/\b(anytime|any time)\b/.test(lower)) rangesOfDay.push({ startText: '12:00 am', endText: '11:59 pm' });
-  else if (/\bevening\b|\bnight\b|\blate\b/.test(lower)) rangesOfDay.push({ startText: '8:00 pm', endText: '3:00 am' });
-  else if (/\bafternoon\b/.test(lower)) rangesOfDay.push({ startText: '1:00 pm', endText: '11:00 pm' });
-  else if (/\bmorning\b/.test(lower)) rangesOfDay.push({ startText: '8:00 am', endText: '12:00 pm' });
-
-  if (rangesOfDay.length === 0) return [];
-  if (allowedDays.size === 0) {
-    allowedDays = new Set([1, 2, 3, 4, 5, 6, 7]);
-  }
-
-  const parseTime = (tText, baseDate) => {
-    const ref = baseDate.toJSDate();
-    const parsed = chrono.parse(tText, ref);
-    if (parsed && parsed.length > 0 && parsed[0].start) {
-      const jsDate = parsed[0].start.date();
-      return DateTime.fromObject(
-        {
-          year: baseDate.year,
-          month: baseDate.month,
-          day: baseDate.day,
-          hour: jsDate.getHours(),
-          minute: jsDate.getMinutes(),
-          second: jsDate.getSeconds(),
-          millisecond: jsDate.getMilliseconds()
-        },
-        { zone }
-      );
-    }
-
-    const m = String(tText).match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
-    if (!m) return null;
-    let hour = parseInt(m[1], 10);
-    const minute = m[2] ? parseInt(m[2], 10) : 0;
-    const ampm = m[3];
-    if (ampm) {
-      if (ampm.toLowerCase() === 'pm' && hour < 12) hour += 12;
-      if (ampm.toLowerCase() === 'am' && hour === 12) hour = 0;
-    }
-    return baseDate.set({ hour, minute, second: 0, millisecond: 0 });
-  };
-
-  const out = [];
-  const today = DateTime.now().setZone(zone).startOf('day');
-  for (let i = 0; i < daysAhead; i++) {
-    const dt = today.plus({ days: i });
-    if (!allowedDays.has(dt.weekday)) continue;
-
-    for (const r of rangesOfDay) {
-      const startDT = parseTime(r.startText, dt);
-      let endDT = parseTime(r.endText, dt);
-      if (!startDT || !endDT) continue;
-      if (endDT <= startDT) endDT = endDT.plus({ days: 1 });
-      out.push({ start_iso: startDT.toUTC().toISO(), end_iso: endDT.toUTC().toISO() });
-    }
-  }
-
-  return out;
-}
-
 function buildRangesFromText(text, tzRaw, daysAhead = 14) {
   if (!text || String(text).trim() === '') return [];
 
-  // prefer timezone mention in text
-  const explicitZone = extractTzFromText(text);
-  const zone = explicitZone || (tzFromAbbrev(tzRaw) || 'Etc/UTC');
-  const clauses = splitAvailabilityClauses(text);
+  // A timezone written into the note itself beats the seat's configured one.
+  const zone = extractTzFromText(text) || tzFromAbbrev(tzRaw) || 'Etc/UTC';
+  const chronoFirst = specificDateCuePattern.test(text) && !hasRecurringCue(text);
 
-  const heuristicRanges = () => dedupeAvailabilityRanges(
-    clauses.flatMap(clause => buildHeuristicRangesFromClause(clause, zone, daysAhead))
-  );
-
-  // Recurring phrasing ("every Monday", "weekends") is what the heuristics are for; chrono
-  // reads those as a single upcoming date.
-  if (shouldPreferRecurringHeuristics(text)) {
-    const recurring = heuristicRanges();
-    if (recurring.length > 0) return recurring;
+  if (chronoFirst) {
+    const dated = extractRangesWithChrono(text, zone);
+    if (dated.length > 0) return dedupeAvailabilityRanges(dated);
   }
 
-  // 1) try chrono anchored to 'zone'
-  const chronoRanges = extractRangesWithChrono(text, zone);
-  if (chronoRanges && chronoRanges.length > 0) {
-    return dedupeAvailabilityRanges(chronoRanges);
-  }
+  // Recurring phrasing ("every Monday", "weekends", "evenings") is what the heuristics exist for;
+  // chrono reads each day name as one upcoming date and drops the repetition.
+  const recurring = dedupeAvailabilityRanges(buildHeuristicRanges(text, zone, daysAhead));
+  if (recurring.length > 0) return recurring;
 
-  // 2) fall back to the day/time heuristics
-  return heuristicRanges();
+  return dedupeAvailabilityRanges(extractRangesWithChrono(text, zone));
 }
+
 
 /* ---------- DB helpers & merge logic ---------- */
 async function insertAvailabilityRow(player_id, start_iso, end_iso, source='manual', campaign_id = null, cx = db) {

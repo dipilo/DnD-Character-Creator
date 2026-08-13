@@ -75,7 +75,7 @@ export function DiceRollerPage() {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-7rem)] overflow-hidden bg-[#09070a] text-slate-50">
+    <div className="relative min-h-[calc(100dvh-7rem)] overflow-hidden bg-[#09070a] text-slate-50">
       <DiceScene
         ref={diceSceneRef}
         soundEnabled={soundEnabled}
@@ -92,7 +92,7 @@ export function DiceRollerPage() {
       />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,_rgba(8,6,7,0.08)_0%,_rgba(8,6,7,0.28)_32%,_rgba(8,6,7,0.56)_100%)]" />
 
-      <div className="relative z-10 flex min-h-[calc(100vh-7rem)] flex-col justify-between p-4 sm:p-6 lg:p-8">
+      <div className="relative z-10 flex min-h-[calc(100dvh-7rem)] flex-col justify-between p-4 sm:p-6 lg:p-8">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
           <div className="max-w-2xl space-y-3">
             <div className="flex flex-wrap gap-2">

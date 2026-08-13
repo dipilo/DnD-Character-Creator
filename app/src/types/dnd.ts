@@ -404,6 +404,14 @@ export interface BuilderState {
   character: Partial<Character>;
   // Set while the builder is editing a saved character; saving updates that character in place.
   editingCharacterId?: string;
+  /**
+   * The campaign this character is being built for (MERGE_PLAN.md Phase 5). Set by "new character
+   * for this campaign", which also seeds `selectedSourceIds` from that campaign's allowed sources.
+   * Saving records the seat as pending; the sync layer takes it once the server has the character.
+   */
+  forCampaignId?: number;
+  forPlayerId?: number;
+  forCampaignName?: string;
   selectedSourceIds: string[];
   selectedSpeciesId?: string;
   selectedVariantId?: string;

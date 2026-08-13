@@ -9,6 +9,22 @@
 // is a portrait data URL. Rejecting it here beats storing a row nothing can load.
 const MAX_DOCUMENT_BYTES = 4 * 1024 * 1024;
 
+// `summary` is a display line, not data: it is denormalised so a party view can list a campaign's
+// characters without parsing everyone's document, and it is bounded because nothing reads it except
+// a card subtitle.
+const MAX_SUMMARY_LENGTH = 200;
+
+/**
+ * The client's one-line description of a character ("Level 5 Elf Wizard 5"). Stored verbatim and
+ * never interpreted here — resolving species and class ids to names needs the content library,
+ * which is the client's, so this column is the client's to write.
+ */
+function normaliseSummary(value) {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim().slice(0, MAX_SUMMARY_LENGTH);
+  return trimmed || null;
+}
+
 /** Row metadata, without the document. What list endpoints return. */
 function characterSummary(row) {
   if (!row || typeof row !== 'object') return null;
@@ -18,11 +34,24 @@ function characterSummary(row) {
     campaign_id: row.campaign_id ?? null,
     player_id: row.player_id ?? null,
     name: row.name ?? null,
+    summary: row.summary ?? null,
     schema_version: row.schema_version ?? 1,
     version: row.version ?? 1,
     created_at: row.created_at ?? null,
     updated_at: row.updated_at ?? null,
   };
+}
+
+/**
+ * The party view's row (MERGE_PLAN.md Phase 5): a summary plus the two names a member needs to
+ * read it — whose character it is and which seat it sits in. Both come from joins, so they are the
+ * only fields here that are not the character's own; `username` is the one column of `users` that
+ * is safe to hand a campaign-mate.
+ */
+function campaignCharacterSummary(row) {
+  const summary = characterSummary(row);
+  if (!summary) return null;
+  return { ...summary, owner_name: row.owner_name ?? null, player_name: row.player_name ?? null };
 }
 
 /** The summary plus the parsed document. A row whose JSON is unreadable reports `data: null`. */
@@ -47,7 +76,7 @@ function parseDocument(row) {
  * Validate an incoming document and serialise it once. Returns `{ error }` for anything a client
  * should be told about, `{ text, name }` otherwise.
  */
-function serializeDocument(data, fallbackName) {
+function serializeDocument(data, fallbackName, summary) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) {
     return { error: 'data_must_be_an_object' };
   }
@@ -61,10 +90,21 @@ function serializeDocument(data, fallbackName) {
   if (Buffer.byteLength(text, 'utf8') > MAX_DOCUMENT_BYTES) {
     return { error: 'data_too_large' };
   }
-  const name = typeof data.name === 'string' && data.name.trim()
-    ? data.name.trim()
-    : (typeof fallbackName === 'string' ? fallbackName.trim() : '');
-  return { text, name: name || null };
+  return { text, name: pickName(data.name, fallbackName), summary: normaliseSummary(summary) };
 }
 
-module.exports = { MAX_DOCUMENT_BYTES, characterSummary, publicCharacter, serializeDocument };
+/** The document's own name wins; the payload's is the fallback. Neither present reads as null. */
+function pickName(documentName, fallbackName) {
+  for (const candidate of [documentName, fallbackName]) {
+    if (typeof candidate === 'string' && candidate.trim()) return candidate.trim();
+  }
+  return null;
+}
+
+module.exports = {
+  MAX_DOCUMENT_BYTES,
+  campaignCharacterSummary,
+  characterSummary,
+  publicCharacter,
+  serializeDocument,
+};

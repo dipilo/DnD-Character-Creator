@@ -105,9 +105,9 @@ export function MyCharactersPage() {
   return (
     <div className="space-y-6">
       <CharacterUploadOffer />
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">My Characters</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold sm:text-3xl">My Characters</h1>
           <p className="text-muted-foreground">
             {characters.length} character{characters.length === 1 ? '' : 's'}
           </p>
@@ -120,7 +120,7 @@ export function MyCharactersPage() {
         </Link>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {characters.map((character) => (
           <Card key={character.id} className="group">
             <CardHeader className="pb-3">

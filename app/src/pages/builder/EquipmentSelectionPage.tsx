@@ -522,7 +522,7 @@ function StartingEquipmentGroup({
           }
 
           return (
-            <div key={optionId} className={`min-w-[16rem] rounded-lg border p-3 ${active ? 'border-primary bg-primary/5' : 'border-border'}`}>
+            <div key={optionId} className={`w-full rounded-lg border p-3 sm:w-auto sm:min-w-[16rem] ${active ? 'border-primary bg-primary/5' : 'border-border'}`}>
               {optionContent}
             </div>
           );

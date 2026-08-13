@@ -34,6 +34,13 @@ interface CharacterState {
   syncMeta: Record<string, CharacterSyncMeta>;
   /** Characters deleted locally whose tombstone the server has not been told about yet. */
   pendingDeletes: string[];
+  /**
+   * Seats a character should take once the server has it (MERGE_PLAN.md Phase 5). Starting a
+   * character "for this campaign" records the intent here, because the character does not exist
+   * server-side yet — sync applies it after the create lands, and keeps it until then, so the
+   * builder still works offline and signed out.
+   */
+  pendingSeats: Record<string, { campaignId: number; playerId: number | null }>;
   /** When the "upload your local characters" offer was last declined, so it is asked once. */
   uploadPromptDismissedAt: string | null;
 
@@ -49,6 +56,7 @@ interface CharacterState {
   applyRemoteCharacter: (character: Character, version: number) => void;
   forgetCharacter: (id: string) => void;
   clearPendingDelete: (id: string) => void;
+  setPendingSeat: (id: string, seat: { campaignId: number; playerId: number | null } | null) => void;
   dismissUploadPrompt: () => void;
 
   // Builder state
@@ -110,6 +118,7 @@ export const useCharacterStore = create<CharacterState>()(
       darkMode: false,
       syncMeta: {},
       pendingDeletes: [],
+      pendingSeats: {},
       uploadPromptDismissedAt: null,
 
       addCharacter: (character) => {
@@ -206,6 +215,15 @@ export const useCharacterStore = create<CharacterState>()(
 
       clearPendingDelete: (id) => {
         set((state) => ({ pendingDeletes: state.pendingDeletes.filter((pending) => pending !== id) }));
+      },
+
+      setPendingSeat: (id, seat) => {
+        set((state) => {
+          const pendingSeats = { ...state.pendingSeats };
+          if (seat) pendingSeats[id] = seat;
+          else delete pendingSeats[id];
+          return { pendingSeats };
+        });
       },
 
       dismissUploadPrompt: () => {
@@ -329,6 +347,7 @@ export const useCharacterStore = create<CharacterState>()(
         darkMode: state.darkMode,
         syncMeta: state.syncMeta,
         pendingDeletes: state.pendingDeletes,
+        pendingSeats: state.pendingSeats,
         uploadPromptDismissedAt: state.uploadPromptDismissedAt
       })
     }

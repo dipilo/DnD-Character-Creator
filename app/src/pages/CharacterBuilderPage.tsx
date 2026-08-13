@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useCharacterStore } from '@/store/characterStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Swords } from 'lucide-react';
 import { toast } from 'sonner';
 import { getRuntimeClassById } from '@/data';
 
@@ -29,9 +29,10 @@ const builderSteps = [
 export function CharacterBuilderPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { resetBuilder, builderState, getCharacter, updateBuilderCharacter } = useCharacterStore();
+  const { resetBuilder, builderState, getCharacter, updateBuilderCharacter, updateBuilderState } = useCharacterStore();
   const editedCharacter = builderState.editingCharacterId ? getCharacter(builderState.editingCharacterId) : undefined;
   const [classLevelDrafts, setClassLevelDrafts] = useState<Record<string, string>>({});
+  const stepRailRef = useRef<HTMLDivElement>(null);
   const isAbilityScoresRoute = location.pathname.startsWith('/builder/ability-scores');
   const isSubclassRoute = location.pathname.startsWith('/builder/subclass');
   const subclassRouteParts = isSubclassRoute ? location.pathname.split('/') : [];
@@ -140,6 +141,14 @@ export function CharacterBuilderPage() {
     }
   };
 
+  // Eight steps do not fit a phone, so the rail scrolls — and a scrolled rail that never follows
+  // the wizard leaves the current step off-screen. Scrolling an element is a DOM effect, not
+  // component state mirrored from props, so it belongs in an effect.
+  useEffect(() => {
+    const active = stepRailRef.current?.querySelector('[data-active]');
+    active?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+  }, [currentStepIndex]);
+
   const isFirstStep = currentStepIndex <= 0;
   const isLastStep = currentStepIndex === builderSteps.length - 1;
   const nextButtonLabel = classDetailTabs && currentDetailTabIndex >= 0 && currentDetailTabIndex < classDetailTabs.length - 1
@@ -157,22 +166,48 @@ export function CharacterBuilderPage() {
   return (
     <div className={isAbilityScoresRoute ? 'flex w-full flex-col space-y-6 py-6' : 'mx-auto flex w-full max-w-6xl flex-col space-y-6'}>
       <div className={shellClassName}>
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Character Builder</h1>
-            <p className="text-muted-foreground">
+        <div className="flex flex-col gap-3 short:flex-row short:items-center short:justify-between lg:flex-row lg:items-center lg:justify-between">
+          {/* On a landscape phone the title, subtitle and step rail together fill the whole
+              viewport, so the step rail — which says the same thing — is the one that stays. */}
+          <div className="min-w-0 short:hidden">
+            <h1 className="text-2xl font-bold sm:text-3xl">Character Builder</h1>
+            <p className="text-sm text-muted-foreground sm:text-base">
               {builderSubtitle}
             </p>
           </div>
-          <Button variant="outline" onClick={handleResetBuilder} className="w-fit">
+          <h1 className="hidden text-lg font-bold short:block">Character Builder</h1>
+          <Button variant="outline" size="sm" onClick={handleResetBuilder} className="w-fit">
             {resetButtonLabel}
           </Button>
         </div>
+
+        {/* Building for a campaign is a whole different intent from building for yourself, and the
+            source filter is already seeded from that campaign — say so rather than let the narrowed
+            lists look like missing content (MERGE_PLAN.md Phase 5). */}
+        {builderState.forCampaignId ? (
+          <div className="mt-4 flex flex-wrap items-center gap-2 rounded-lg border bg-muted/30 px-3 py-2 text-sm">
+            <Swords className="h-4 w-4 text-muted-foreground" />
+            <span>
+              Building for <strong>{builderState.forCampaignName ?? 'a campaign'}</strong>
+              {builderState.selectedSourceIds.length > 0
+                ? `, filtered to its ${builderState.selectedSourceIds.length} allowed sources`
+                : ''}
+              . It joins the party once you save.
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => updateBuilderState({ forCampaignId: undefined, forPlayerId: undefined, forCampaignName: undefined })}
+            >
+              Build it for myself instead
+            </Button>
+          </div>
+        ) : null}
       </div>
 
       <div className={shellClassName}>
-        <div className="tabs-scrollbar overflow-x-auto pb-2">
-          <div className="flex min-w-max gap-3">
+        <div ref={stepRailRef} className="tabs-scrollbar scroll-strip pb-2">
+          <div className="flex min-w-max gap-2 sm:gap-3">
             {builderSteps.map((step, index) => {
               const isActive = index === currentStepIndex;
               const isCompleted = index < currentStepIndex;
@@ -187,11 +222,12 @@ export function CharacterBuilderPage() {
               return (
                 <Button
                   key={step.id}
+                  data-active={isActive || undefined}
                   variant={isActive ? 'default' : 'outline'}
                   onClick={() => navigate(step.path)}
-                  className="h-auto min-h-20 min-w-36 shrink-0 items-start justify-start gap-3 p-3 text-left"
+                  className="h-auto min-h-12 shrink-0 items-center justify-start gap-2 p-2 text-left short:min-h-11 short:p-2 sm:min-h-20 sm:min-w-36 sm:items-start sm:gap-3 sm:p-3"
                 >
-                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-medium ${stepCircleClasses}`}>
+                  <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-medium sm:h-8 sm:w-8 ${stepCircleClasses}`}>
                     {isCompleted ? '✓' : index + 1}
                   </div>
                   <span className="min-w-0 whitespace-nowrap text-sm font-medium leading-tight">{step.name}</span>
@@ -251,32 +287,36 @@ export function CharacterBuilderPage() {
         <Outlet />
       ) : (
         <Card className="mx-auto w-full max-w-6xl">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <Outlet />
           </CardContent>
         </Card>
       )}
 
-      <div className={shellClassName}>
-        <div className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={handleBack}
-            disabled={isFirstStep}
-            className="gap-2"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            {backButtonLabel}
-          </Button>
-
-          {isLastStep ? (
-            <div />
-          ) : (
-            <Button onClick={handleNext} className="gap-2">
-              {nextButtonLabel}
-              <ChevronRight className="h-4 w-4" />
+      {/* Sticky on a phone: the equipment and spell steps are long enough that Next was several
+          screens below the fold, and the step rail at the top is the only other way forward. */}
+      <div className="pb-safe sticky bottom-0 z-30 border-t bg-background/95 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:static sm:border-0 sm:bg-transparent sm:py-0 sm:backdrop-blur-none">
+        <div className={shellClassName || 'px-4 sm:px-0'}>
+          <div className="flex justify-between gap-2">
+            <Button
+              variant="outline"
+              onClick={handleBack}
+              disabled={isFirstStep}
+              className="min-h-11 gap-2"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              <span className="truncate">{backButtonLabel}</span>
             </Button>
-          )}
+
+            {isLastStep ? (
+              <div />
+            ) : (
+              <Button onClick={handleNext} className="min-h-11 gap-2">
+                <span className="truncate">{nextButtonLabel}</span>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>

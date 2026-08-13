@@ -19,8 +19,10 @@ import {
   isOffline,
   isUnauthorized,
   listCharacters,
+  setCharacterSeat,
   updateCharacter as updateRemoteCharacter,
 } from '@/lib/api';
+import { describeCharacter } from '@/lib/characterSummary';
 import { useCharacterStore } from '@/store/characterStore';
 import type { Character } from '@/types/dnd';
 import { toast } from 'sonner';
@@ -154,6 +156,30 @@ async function resolveConflict(id: string): Promise<void> {
   }
 }
 
+/**
+ * Take the seat a character was started for (MERGE_PLAN.md Phase 5). "New character for this
+ * campaign" records the intent before the character exists server-side, so this runs once the
+ * server has a copy — and only then, because the seat is row metadata on a row that has to exist.
+ *
+ * A refusal is not retried: the campaign or the seat is gone, or the player was never entitled to
+ * it. Keeping the intent would re-attempt it on every pass forever. Going offline and losing the
+ * session are the two exceptions — both are "not now" rather than "no", so the intent survives them
+ * and the next pass tries again.
+ */
+async function applyPendingSeat(id: string): Promise<void> {
+  const pending = store().pendingSeats[id];
+  if (!pending) return;
+  try {
+    await setCharacterSeat(id, { campaign_id: pending.campaignId, player_id: pending.playerId });
+    store().setPendingSeat(id, null);
+  } catch (e) {
+    if (isOffline(e)) return;
+    if (isUnauthorized(e)) throw e;
+    console.warn('could not seat character', id, describe(e));
+    store().setPendingSeat(id, null);
+  }
+}
+
 /** Send one local character to the server. Returns false when the request never landed. */
 export async function pushCharacter(id: string): Promise<boolean> {
   const state = store();
@@ -162,13 +188,17 @@ export async function pushCharacter(id: string): Promise<boolean> {
   const meta = state.syncMeta[id];
 
   try {
+    // `summary` is the denormalised display line the party view lists by; it has to ride along on
+    // every write or a campaign-mate sees a stale level after a level-up.
+    const payload = { name: character.name, summary: describeCharacter(character), data: character };
     if (meta?.version == null) {
-      const created = await createCharacter({ id, name: character.name, data: character });
+      const created = await createCharacter({ id, ...payload });
       store().markCharacterSynced(id, created.version, !unchangedSince(id, character));
     } else {
-      const updated = await updateRemoteCharacter(id, meta.version, { name: character.name, data: character });
+      const updated = await updateRemoteCharacter(id, meta.version, payload);
       store().markCharacterSynced(id, updated.version, !unchangedSince(id, character));
     }
+    await applyPendingSeat(id);
     return true;
   } catch (e) {
     if (isOffline(e)) return false;
@@ -246,6 +276,10 @@ async function reconcile(): Promise<string[]> {
     }
     if (meta?.dirty) await attempt(character.id, () => pushCharacter(character.id), failures);
     else if (meta?.version !== record.version) await attempt(character.id, () => pullCharacter(character.id), failures);
+    // A seat recorded while offline, or against a character that was already in step with the
+    // server, has no push to ride along with. `pushCharacter` clears it, so this finds nothing when
+    // one of the branches above already ran.
+    if (store().pendingSeats[character.id]) await attempt(character.id, () => applyPendingSeat(character.id), failures);
   }
 
   const localIds = new Set(store().characters.map((c) => c.id));

@@ -1,18 +1,113 @@
 // server/init_schema.js
 // Ensure the database schema exists and reconcile legacy tables by adding missing columns.
 
+// Columns added to these tables after their first release. A deployment that predates one gets it
+// back by ALTER; a fresh database already has it from the CREATE above and skips.
+//
+// This is a table rather than one `if (!cols.has(...))` block per column for the reason CLAUDE.md
+// gives for the same shape in the route handlers: the branches were the whole of this function's
+// cognitive complexity, and a list of columns is what the code actually is.
+const LEGACY_COLUMNS = {
+  users: [
+    ['discord_id', 'TEXT'],
+    ['username', 'TEXT'],
+    ['created_at', "TEXT DEFAULT (datetime('now'))"],
+    ['password_hash', 'TEXT'],
+  ],
+  campaigns: [
+    ['name', 'TEXT'],
+    ['owner_user_id', 'INTEGER'],
+    ['created_at', "TEXT DEFAULT (datetime('now'))"],
+    ['campaign_code', 'TEXT'],
+    ['sort_index', 'INTEGER DEFAULT 0'],
+    ['allowed_source_ids', 'TEXT'],
+  ],
+  players: [
+    ['discord', 'TEXT'],
+    ['timezone', 'TEXT'],
+    ['notes', 'TEXT'],
+    ['age', 'TEXT'],
+    ['computer_access', 'TEXT'],
+    ['pref_party_size', 'TEXT'],
+    ['pref_session_length', 'TEXT'],
+    ['pref_vtt', 'TEXT'],
+    ['pref_play_with', 'TEXT'],
+    ['pref_play_not_with', 'TEXT'],
+    ['campaign_id', 'INTEGER'],
+    ['discord_id', 'TEXT'],
+    ['password_hash', 'TEXT'],
+    ['unclaimed_at', 'TEXT'],
+    ['sort_index', 'INTEGER DEFAULT 0'],
+    ['pref_play_with_ids', "TEXT DEFAULT '[]'"],
+    ['pref_play_not_with_ids', "TEXT DEFAULT '[]'"],
+    ['ddb_url', 'TEXT'],
+    ['ddb_json', 'TEXT'],
+    ['ddb_avatar_url', 'TEXT'],
+  ],
+  availability: [
+    ['player_id', 'INTEGER'],
+    ['start_iso', 'TEXT'],
+    ['end_iso', 'TEXT'],
+    ['source', "TEXT DEFAULT 'manual'"],
+    ['campaign_id', 'INTEGER'],
+  ],
+  campaign_members: [
+    ['campaign_id', 'INTEGER'],
+    ['user_id', 'INTEGER'],
+    ['player_id', 'INTEGER'],
+    ['role', "TEXT DEFAULT 'player'"],
+    ['permissions', 'TEXT'],
+    ['created_at', "TEXT DEFAULT (datetime('now'))"],
+  ],
+  invites: [
+    ['token', 'TEXT'],
+    ['campaign_id', 'INTEGER'],
+    ['created_by_user_id', 'INTEGER'],
+    ['expires_at', 'TEXT'],
+    ['max_uses', 'INTEGER DEFAULT 1'],
+    ['challenge_enabled', 'INTEGER DEFAULT 0'],
+    ['challenge_min_score', 'INTEGER DEFAULT 200'],
+    ['used_count', 'INTEGER DEFAULT 0'],
+    ['created_at', "TEXT DEFAULT (datetime('now'))"],
+  ],
+  feedback: [
+    ['user_id', 'INTEGER'],
+    ['message', 'TEXT'],
+    ['url', 'TEXT'],
+    ['created_at', "TEXT DEFAULT (datetime('now'))"],
+  ],
+  groups: [
+    ['name', 'TEXT'],
+    ['notes', 'TEXT'],
+    ['created_at', "TEXT DEFAULT (datetime('now'))"],
+    ['sort_index', 'INTEGER DEFAULT 0'],
+    ['campaign_id', 'INTEGER'],
+  ],
+  group_members: [
+    ['group_id', 'INTEGER'],
+    ['player_id', 'INTEGER'],
+    ['role', 'TEXT'],
+    ['created_at', "TEXT DEFAULT (datetime('now'))"],
+  ],
+  group_suggestions: [
+    ['created_at', "TEXT DEFAULT (datetime('now'))"],
+    ['params_json', 'TEXT'],
+    ['result_json', 'TEXT'],
+  ],
+  // Phase 5 added `summary` to a table Phase 2 had already shipped.
+  characters: [
+    ['summary', 'TEXT'],
+  ],
+};
+
 async function ensureSchema(db) {
-  // Helper to check if a table exists
-  const tableExists = async (name) => {
-    const row = await db.get("SELECT name FROM sqlite_master WHERE type='table' AND name = ?", name);
-    return !!row;
-  };
   // Helper to get existing columns for a table
   const getColumns = async (name) => {
     try {
       const cols = await db.all(`PRAGMA table_info('${name}')`);
       return new Set(cols.map(c => c.name));
-    } catch (_) {
+    } catch (e) {
+      console.warn('Could not read columns for', name, e?.message);
       return new Set();
     }
   };
@@ -52,6 +147,10 @@ async function ensureSchema(db) {
     FOREIGN KEY(user_id) REFERENCES users(id)
   )`);
 
+  // `allowed_source_ids` is a JSON array of content-source ids (MERGE_PLAN.md Phase 5). It is the
+  // table's content agreement — what the builder offers when a character is started for this
+  // campaign — and the server keeps it opaque: the source manifest is the client's, not the API's.
+  // Empty or null means "no restriction", which is also what the builder's own filter means.
   await db.run(`CREATE TABLE IF NOT EXISTS campaigns (
     id INTEGER PRIMARY KEY,
     name TEXT,
@@ -59,6 +158,7 @@ async function ensureSchema(db) {
     created_at TEXT DEFAULT (datetime('now')),
     campaign_code TEXT,
     sort_index INTEGER DEFAULT 0,
+    allowed_source_ids TEXT,
     FOREIGN KEY(owner_user_id) REFERENCES users(id)
   )`);
 
@@ -75,7 +175,10 @@ async function ensureSchema(db) {
   // enforced, which is exactly the kind of difference between two deployments worth not having.
   //
   // The id is the uuid the builder already mints client-side, so a character keeps one identity
-  // across localStorage and the server. `data` is the whole `Character` object as JSON,
+  // across localStorage and the server. `name` and `summary` ("Level 5 Elf Wizard 5") are
+  // denormalised out of the document so a list needs no parsing — `summary` is written by the
+  // client because resolving species and class ids to names needs the content library, which is
+  // the client's. `data` is the whole `Character` object as JSON,
   // deliberately not mapped to columns: CLAUDE.md requires a saved character to read back into the
   // builder, and that needs every choice-mode and selection field intact. `version` is bumped on
   // each write so a stale client gets a 409 rather than clobbering a sheet edited elsewhere.
@@ -85,6 +188,7 @@ async function ensureSchema(db) {
     campaign_id INTEGER,
     player_id INTEGER,
     name TEXT,
+    summary TEXT,
     data TEXT NOT NULL,
     schema_version INTEGER DEFAULT 1,
     version INTEGER DEFAULT 1,
@@ -170,138 +274,19 @@ async function ensureSchema(db) {
     result_json TEXT
   )`);
 
-  // 2) Reconcile columns for legacy tables by adding missing columns
-  // users: add discord_id unique via index later
-  {
-    const cols = await getColumns('users');
-    const add = async (sql) => { try { await db.run(sql); } catch(_){} };
-    if (!cols.has('discord_id')) await add("ALTER TABLE users ADD COLUMN discord_id TEXT");
-    if (!cols.has('username')) await add("ALTER TABLE users ADD COLUMN username TEXT");
-    if (!cols.has('created_at')) await add("ALTER TABLE users ADD COLUMN created_at TEXT DEFAULT (datetime('now'))");
-    if (!cols.has('password_hash')) await add("ALTER TABLE users ADD COLUMN password_hash TEXT");
-  }
-
-  // campaigns
-  {
-    const cols = await getColumns('campaigns');
-    const add = async (sql) => { try { await db.run(sql); } catch(_){} };
-    if (!cols.has('name')) await add("ALTER TABLE campaigns ADD COLUMN name TEXT");
-    if (!cols.has('owner_user_id')) await add("ALTER TABLE campaigns ADD COLUMN owner_user_id INTEGER");
-    if (!cols.has('created_at')) await add("ALTER TABLE campaigns ADD COLUMN created_at TEXT DEFAULT (datetime('now'))");
-    if (!cols.has('campaign_code')) await add("ALTER TABLE campaigns ADD COLUMN campaign_code TEXT");
-    if (!cols.has('sort_index')) await add("ALTER TABLE campaigns ADD COLUMN sort_index INTEGER DEFAULT 0");
-  }
-
-  // players
-  {
-    const cols = await getColumns('players');
-    const add = async (sql) => { try { await db.run(sql); } catch(_){} };
-    const defs = [
-      ['discord', "TEXT"],
-      ['timezone', "TEXT"],
-      ['notes', "TEXT"],
-      ['age', "TEXT"],
-      ['computer_access', "TEXT"],
-      ['pref_party_size', "TEXT"],
-      ['pref_session_length', "TEXT"],
-      ['pref_vtt', "TEXT"],
-      ['pref_play_with', "TEXT"],
-      ['pref_play_not_with', "TEXT"],
-      ['campaign_id', "INTEGER"],
-      ['discord_id', "TEXT"],
-      ['password_hash', "TEXT"],
-      ['unclaimed_at', "TEXT"],
-      ['sort_index', "INTEGER DEFAULT 0"],
-      ['pref_play_with_ids', "TEXT DEFAULT '[]'"],
-      ['pref_play_not_with_ids', "TEXT DEFAULT '[]'"],
-      ['ddb_url', "TEXT"],
-      ['ddb_json', "TEXT"],
-      ['ddb_avatar_url', "TEXT"],
-    ];
-    for (const [name, type] of defs) {
-      if (!cols.has(name)) await add(`ALTER TABLE players ADD COLUMN ${name} ${type}`);
+  // 2) Reconcile columns for legacy tables by adding missing columns.
+  // An ALTER that fails has already been applied by another process racing this boot, which is the
+  // only way it fails here — the column list is static and every entry is nullable.
+  for (const [table, columns] of Object.entries(LEGACY_COLUMNS)) {
+    const cols = await getColumns(table);
+    for (const [name, type] of columns) {
+      if (cols.has(name)) continue;
+      try {
+        await db.run(`ALTER TABLE ${table} ADD COLUMN ${name} ${type}`);
+      } catch (e) {
+        console.warn('Column add skipped:', table, name, e?.message);
+      }
     }
-  }
-
-  // availability
-  {
-    const cols = await getColumns('availability');
-    const add = async (sql) => { try { await db.run(sql); } catch(_){} };
-    if (!cols.has('player_id')) await add("ALTER TABLE availability ADD COLUMN player_id INTEGER");
-    if (!cols.has('start_iso')) await add("ALTER TABLE availability ADD COLUMN start_iso TEXT");
-    if (!cols.has('end_iso')) await add("ALTER TABLE availability ADD COLUMN end_iso TEXT");
-    if (!cols.has('source')) await add("ALTER TABLE availability ADD COLUMN source TEXT DEFAULT 'manual'");
-    if (!cols.has('campaign_id')) await add("ALTER TABLE availability ADD COLUMN campaign_id INTEGER");
-  }
-
-  // campaign_members
-  {
-    const exists = await tableExists('campaign_members');
-    if (exists) {
-      const cols = await getColumns('campaign_members');
-      const add = async (sql) => { try { await db.run(sql); } catch(_){} };
-      if (!cols.has('campaign_id')) await add("ALTER TABLE campaign_members ADD COLUMN campaign_id INTEGER");
-      if (!cols.has('user_id')) await add("ALTER TABLE campaign_members ADD COLUMN user_id INTEGER");
-      if (!cols.has('player_id')) await add("ALTER TABLE campaign_members ADD COLUMN player_id INTEGER");
-      if (!cols.has('role')) await add("ALTER TABLE campaign_members ADD COLUMN role TEXT DEFAULT 'player'");
-      if (!cols.has('permissions')) await add("ALTER TABLE campaign_members ADD COLUMN permissions TEXT");
-      if (!cols.has('created_at')) await add("ALTER TABLE campaign_members ADD COLUMN created_at TEXT DEFAULT (datetime('now'))");
-    }
-  }
-
-  // invites
-  {
-    const cols = await getColumns('invites');
-    const add = async (sql) => { try { await db.run(sql); } catch(_){} };
-    if (!cols.has('token')) await add("ALTER TABLE invites ADD COLUMN token TEXT");
-    if (!cols.has('campaign_id')) await add("ALTER TABLE invites ADD COLUMN campaign_id INTEGER");
-    if (!cols.has('created_by_user_id')) await add("ALTER TABLE invites ADD COLUMN created_by_user_id INTEGER");
-    if (!cols.has('expires_at')) await add("ALTER TABLE invites ADD COLUMN expires_at TEXT");
-    if (!cols.has('max_uses')) await add("ALTER TABLE invites ADD COLUMN max_uses INTEGER DEFAULT 1");
-    if (!cols.has('challenge_enabled')) await add("ALTER TABLE invites ADD COLUMN challenge_enabled INTEGER DEFAULT 0");
-    if (!cols.has('challenge_min_score')) await add("ALTER TABLE invites ADD COLUMN challenge_min_score INTEGER DEFAULT 200");
-    if (!cols.has('used_count')) await add("ALTER TABLE invites ADD COLUMN used_count INTEGER DEFAULT 0");
-    if (!cols.has('created_at')) await add("ALTER TABLE invites ADD COLUMN created_at TEXT DEFAULT (datetime('now'))");
-  }
-
-  // feedback
-  {
-    const cols = await getColumns('feedback');
-    const add = async (sql) => { try { await db.run(sql); } catch(_){} };
-    if (!cols.has('user_id')) await add("ALTER TABLE feedback ADD COLUMN user_id INTEGER");
-    if (!cols.has('message')) await add("ALTER TABLE feedback ADD COLUMN message TEXT");
-    if (!cols.has('url')) await add("ALTER TABLE feedback ADD COLUMN url TEXT");
-    if (!cols.has('created_at')) await add("ALTER TABLE feedback ADD COLUMN created_at TEXT DEFAULT (datetime('now'))");
-  }
-
-  // groups
-  {
-    const cols = await getColumns('groups');
-    const add = async (sql) => { try { await db.run(sql); } catch(_){} };
-    if (!cols.has('name')) await add("ALTER TABLE groups ADD COLUMN name TEXT");
-    if (!cols.has('notes')) await add("ALTER TABLE groups ADD COLUMN notes TEXT");
-    if (!cols.has('created_at')) await add("ALTER TABLE groups ADD COLUMN created_at TEXT DEFAULT (datetime('now'))");
-    if (!cols.has('sort_index')) await add("ALTER TABLE groups ADD COLUMN sort_index INTEGER DEFAULT 0");
-    if (!cols.has('campaign_id')) await add("ALTER TABLE groups ADD COLUMN campaign_id INTEGER");
-  }
-
-  // group_members
-  {
-    const cols = await getColumns('group_members');
-    const add = async (sql) => { try { await db.run(sql); } catch(_){} };
-    if (!cols.has('group_id')) await add("ALTER TABLE group_members ADD COLUMN group_id INTEGER");
-    if (!cols.has('player_id')) await add("ALTER TABLE group_members ADD COLUMN player_id INTEGER");
-    if (!cols.has('role')) await add("ALTER TABLE group_members ADD COLUMN role TEXT");
-    if (!cols.has('created_at')) await add("ALTER TABLE group_members ADD COLUMN created_at TEXT DEFAULT (datetime('now'))");
-  }
-
-  // group_suggestions
-  {
-    const cols = await getColumns('group_suggestions');
-    const add = async (sql) => { try { await db.run(sql); } catch(_){} };
-    if (!cols.has('created_at')) await add("ALTER TABLE group_suggestions ADD COLUMN created_at TEXT DEFAULT (datetime('now'))");
-    if (!cols.has('params_json')) await add("ALTER TABLE group_suggestions ADD COLUMN params_json TEXT");
-    if (!cols.has('result_json')) await add("ALTER TABLE group_suggestions ADD COLUMN result_json TEXT");
   }
 
   // 3) Indexes (only if relevant columns exist)

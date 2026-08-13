@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const db = require('../db');
 const { getCachedQueryAsync, setCache } = require('../lib/cache');
+const { campaignCharacterSummary } = require('../lib/characters');
 const { publicPlayer } = require('../lib/players');
 const { createSession, publicUser } = require('../lib/sessions');
 const { genToken } = require('../lib/tokens');
@@ -28,9 +29,9 @@ router.post('/api/campaigns', requireAuth, async (req, res) => {
         await db.run('UPDATE campaigns SET campaign_code = ? WHERE id = ?', candidate, created.id);
         // confirm uniqueness by selecting
         const row = await db.get('SELECT id FROM campaigns WHERE campaign_code = ?', candidate);
-        if (row && row.id === created.id) { shortToken = candidate; break; }
+        if (row?.id === created.id) { shortToken = candidate; break; }
       } catch (e) {
-        // on collision, try again
+        console.warn('campaign code collision, retrying', e?.message);
       }
     }
     // fallback: if still null, leave campaign_code null
@@ -59,7 +60,7 @@ router.get('/api/campaigns/code/:code', async (req, res) => {
 router.post('/api/campaigns/:campaignId/add-self', requireAuth, async (req, res) => {
   try {
     const user = req.user;
-    const campaignId = parseInt(req.params.campaignId, 10);
+    const campaignId = Number.parseInt(req.params.campaignId, 10);
     if (!campaignId) return res.status(400).json({ error: 'invalid_campaign_id' });
     const camp = await db.get('SELECT * FROM campaigns WHERE id = ?', campaignId);
     if (!camp) return res.status(404).json({ error: 'campaign_not_found' });
@@ -93,12 +94,54 @@ router.get('/api/campaigns', requireAuth, async (req, res) => {
   }
 });
 
-// Rename a campaign (owner only)
+/**
+ * A campaign's allowed content sources (MERGE_PLAN.md Phase 5). The ids belong to the client's
+ * source manifest, so the server stores them without interpreting them — it only bounds the shape,
+ * because this string is read back by every member's builder. An empty list means no restriction,
+ * which is the same thing the builder's own source filter means when nothing is selected.
+ */
+function normaliseAllowedSourceIds(value) {
+  if (value === null || value === undefined || value === '') return { value: null };
+  if (!Array.isArray(value)) return { error: 'allowed_source_ids_must_be_an_array' };
+  if (value.length > 64) return { error: 'too_many_sources' };
+  const ids = [];
+  for (const entry of value) {
+    if (typeof entry !== 'string' || !/^[a-z0-9][a-z0-9-]{0,63}$/.test(entry)) {
+      return { error: 'invalid_source_id' };
+    }
+    if (!ids.includes(entry)) ids.push(entry);
+  }
+  return { value: ids.length > 0 ? JSON.stringify(ids) : null };
+}
+
+const CAMPAIGN_UPDATABLE_COLUMNS = [
+  ['name', (value) => {
+    const name = typeof value === 'string' ? value.trim() : '';
+    return name ? { value: name } : { error: 'name required' };
+  }],
+  ['allowed_source_ids', normaliseAllowedSourceIds],
+];
+
+// Update a campaign (owner only): rename it, or set the sources its table plays with. One table of
+// columns rather than an `if (Object.hasOwn(...))` block each, per CLAUDE.md.
 router.put('/api/campaigns/:campaignId', requireCampaignAccess('owner'), async (req, res) => {
   try {
-    const name = req.body && req.body.name ? String(req.body.name).trim() : null;
-    if (!name) return res.status(400).json({ error: 'name required' });
-    await db.run('UPDATE campaigns SET name = ? WHERE id = ?', name, req.campaign.id);
+    const body = req.body || {};
+    const updates = [];
+    for (const [column, normalise] of CAMPAIGN_UPDATABLE_COLUMNS) {
+      if (!Object.hasOwn(body, column)) continue;
+      const result = normalise(body[column]);
+      if (result.error) return res.status(400).json({ error: result.error });
+      updates.push([column, result.value]);
+    }
+    if (updates.length === 0) return res.status(400).json({ error: 'nothing_to_update' });
+
+    const assignments = updates.map(([column]) => `${column} = ?`).join(', ');
+    await db.run(
+      `UPDATE campaigns SET ${assignments} WHERE id = ?`,
+      ...updates.map(([, value]) => value),
+      req.campaign.id,
+    );
     const updated = await db.get('SELECT * FROM campaigns WHERE id = ?', req.campaign.id);
     res.json({ ok: true, campaign: updated });
   } catch (e) {
@@ -133,6 +176,19 @@ router.delete('/api/campaigns/:campaignId', requireCampaignAccess('owner'), asyn
   }
 });
 
+/**
+ * A character is attached to a campaign only while its owner is a member of it — attaching is how
+ * a sheet becomes readable by the table (see `findReadableCharacter`), so losing the membership has
+ * to take that back. The sheet itself belongs to its user and survives (MERGE_PLAN.md §9).
+ */
+async function detachUserCharacters(campaignId, userId) {
+  if (!campaignId || !userId) return;
+  await db.run(
+    'UPDATE characters SET campaign_id = NULL, player_id = NULL WHERE campaign_id = ? AND user_id = ?',
+    campaignId, userId,
+  );
+}
+
 // Leave a campaign (remove user from campaign_members)
 router.post('/api/campaigns/:campaignId/leave', requireCampaignAccess(), async (req, res) => {
   try {
@@ -146,7 +202,8 @@ router.post('/api/campaigns/:campaignId/leave', requireCampaignAccess(), async (
 
     // Remove user from campaign_members
     await db.run('DELETE FROM campaign_members WHERE campaign_id = ? AND user_id = ?', campaignId, user.id);
-    
+    await detachUserCharacters(campaignId, user.id);
+
     // Clean up any orphaned campaign-scoped users
     await cleanupOrphanedUser(user.id);
     
@@ -172,7 +229,7 @@ router.post('/api/campaigns/reorder', requireAuth, async (req, res) => {
 
     await db.transaction(async (trx) => {
       for (let i=0;i<ids.length;i++) {
-        const iid = parseInt(ids[i],10);
+        const iid = Number.parseInt(ids[i], 10);
         if (!Number.isNaN(iid)) await trx.run('UPDATE campaigns SET sort_index = ? WHERE id = ?', i, iid);
       }
     });
@@ -216,6 +273,31 @@ router.get('/api/campaigns/:campaignId/members', requireCampaignAccess(), async 
     res.json({ ok: true, members });
   } catch (e) {
     console.error('GET /api/campaigns/:campaignId/members', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+/**
+ * The party view (MERGE_PLAN.md Phase 5): every character seated at this campaign, whoever owns it.
+ *
+ * This is the one place a member reads other people's characters, and the permission story is the
+ * one attaching already implies — a character carries a `campaign_id` because its owner put it
+ * there. Summaries only, as everywhere else: a document can carry two data-URL images, and a
+ * member opens the ones they actually want by id (`GET /api/characters/:id` allows the same read).
+ */
+router.get('/api/campaigns/:campaignId/characters', requireCampaignAccess(), async (req, res) => {
+  try {
+    const rows = await db.all(`
+      SELECT ch.*, u.username AS owner_name, p.name AS player_name
+      FROM characters ch
+      LEFT JOIN users u ON u.id = ch.user_id
+      LEFT JOIN players p ON p.id = ch.player_id
+      WHERE ch.campaign_id = ? AND ch.deleted_at IS NULL
+      ORDER BY ch.updated_at DESC, ch.id ASC
+    `, req.campaign.id);
+    res.json({ ok: true, characters: rows.map((row) => campaignCharacterSummary(row)) });
+  } catch (e) {
+    console.error('GET /api/campaigns/:campaignId/characters', e);
     res.status(500).json({ error: e.message });
   }
 });
@@ -434,7 +516,10 @@ router.post('/api/campaigns/:campaignId/unclaim-player', requireAuth, async (req
     const linkedUsers = (await db.all('SELECT DISTINCT user_id FROM campaign_members WHERE campaign_id = ? AND player_id = ?', campaignId, playerId)).map(r => r.user_id).filter(Boolean);
     await db.run('UPDATE players SET password_hash = NULL, discord_id = NULL, unclaimed_at = CURRENT_TIMESTAMP WHERE id = ?', playerId);
     await db.run('DELETE FROM campaign_members WHERE campaign_id = ? AND player_id = ?', campaignId, playerId);
-    
+    // Releasing a seat also drops the membership it was linked through, so the characters that were
+    // shared with this campaign on the strength of it come back out.
+    for (const uid of linkedUsers) await detachUserCharacters(campaignId, uid);
+
     // cleanup any orphaned campaign-scoped users
     for (const uid of linkedUsers) await cleanupOrphanedUser(uid);
     
@@ -448,7 +533,7 @@ router.post('/api/campaigns/:campaignId/unclaim-player', requireAuth, async (req
 // PATCH campaign member to update permissions (owner only)
 router.patch('/api/campaigns/:campaignId/members/:memberId/permissions', requireCampaignAccess('owner'), async (req, res) => {
   try {
-    const memberId = parseInt(req.params.memberId, 10);
+    const memberId = Number.parseInt(req.params.memberId, 10);
     if (!memberId) return res.status(400).json({ error: 'invalid_member_id' });
     const body = req.body || {};
     const perms = body.permissions || null; // expects an object
