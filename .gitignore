@@ -20,6 +20,8 @@ dist-ssr/
 .idea
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
 
 # Logs
 npm-debug.log*
@@ -27,8 +29,26 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 *.log
+logs/
+
+# Server runtime state
+server/data.db
+server/data.db-*
+server/backups/
+server/config.json
+!server/config.example.json
+*.pid
+*.seed
+*.pid.lock
+
+# @3d-dice/dice-box's postinstall copied assets
+# (tracked); this one is a duplicate.
+/public/
+
+# Scaffolding leftover from the app generator
+app/info.md
 
 # Large raw source dumps (not needed at runtime; imported via scripts/import-source.mjs)
 *.md
 *.txt
-!README.md
+/!README.md

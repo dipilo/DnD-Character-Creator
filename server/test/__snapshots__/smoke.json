@@ -1,0 +1,1503 @@
+{
+  "requests": 83,
+  "results": [
+    {
+      "name": "root",
+      "request": "GET /",
+      "status": 200,
+      "body": "DnD backend is running. See /health for status."
+    },
+    {
+      "name": "health",
+      "request": "GET /health",
+      "status": 200,
+      "body": {
+        "environment": "test",
+        "status": "healthy",
+        "timestamp": "<volatile>",
+        "uptime": "<volatile>"
+      }
+    },
+    {
+      "name": "diag-db",
+      "request": "GET /diag/db",
+      "status": 200,
+      "body": {
+        "db_url": "<volatile>",
+        "environment": "test",
+        "ok": true,
+        "tables": {
+          "availability": {
+            "count": 0,
+            "exists": true,
+            "sql": "<volatile>"
+          },
+          "campaign_members": {
+            "count": 0,
+            "exists": true,
+            "sql": "<volatile>"
+          },
+          "campaigns": {
+            "count": 0,
+            "exists": true,
+            "sql": "<volatile>"
+          },
+          "feedback": {
+            "count": 0,
+            "exists": true,
+            "sql": "<volatile>"
+          },
+          "group_members": {
+            "count": 0,
+            "exists": true,
+            "sql": "<volatile>"
+          },
+          "group_suggestions": {
+            "count": 0,
+            "exists": true,
+            "sql": "<volatile>"
+          },
+          "groups": {
+            "count": 0,
+            "exists": true,
+            "sql": "<volatile>"
+          },
+          "invites": {
+            "count": 0,
+            "exists": true,
+            "sql": "<volatile>"
+          },
+          "players": {
+            "count": 0,
+            "exists": true,
+            "sql": "<volatile>"
+          },
+          "users": {
+            "count": 0,
+            "exists": true,
+            "sql": "<volatile>"
+          }
+        }
+      }
+    },
+    {
+      "name": "discord-authorize-unconfigured",
+      "request": "GET /auth/discord",
+      "status": 500,
+      "body": "discord client id not configured"
+    },
+    {
+      "name": "signup-passwordless-without-campaign",
+      "request": "POST /auth/signup",
+      "status": 400,
+      "body": {
+        "error": "campaign_required_for_passwordless"
+      }
+    },
+    {
+      "name": "signup-alice",
+      "request": "POST /auth/signup",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "user": {
+          "created_at": "<volatile>",
+          "discord_id": null,
+          "id": 1,
+          "password_hash": "<volatile>",
+          "username": "alice"
+        }
+      }
+    },
+    {
+      "name": "signup-alice-again",
+      "request": "POST /auth/signup",
+      "status": 400,
+      "body": {
+        "error": "username_taken"
+      }
+    },
+    {
+      "name": "login-alice",
+      "request": "POST /auth/login",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "user_id": 1
+      }
+    },
+    {
+      "name": "login-alice-wrong-password",
+      "request": "POST /auth/login",
+      "status": 401,
+      "body": {
+        "error": "invalid_credentials"
+      }
+    },
+    {
+      "name": "login-alice-no-password",
+      "request": "POST /auth/login",
+      "status": 400,
+      "body": {
+        "error": "password_or_campaign_required"
+      }
+    },
+    {
+      "name": "signup-bob",
+      "request": "POST /auth/signup",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "user": {
+          "created_at": "<volatile>",
+          "discord_id": null,
+          "id": 2,
+          "password_hash": "<volatile>",
+          "username": "bob"
+        }
+      }
+    },
+    {
+      "name": "get-user",
+      "request": "GET /api/users/1",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "user": {
+          "created_at": "<volatile>",
+          "discord_id": null,
+          "id": 1,
+          "username": "alice"
+        }
+      }
+    },
+    {
+      "name": "get-user-missing",
+      "request": "GET /api/users/9999",
+      "status": 404,
+      "body": {
+        "error": "user_not_found"
+      }
+    },
+    {
+      "name": "create-campaign-unauthenticated",
+      "request": "POST /api/campaigns",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
+      }
+    },
+    {
+      "name": "create-campaign",
+      "request": "POST /api/campaigns",
+      "status": 200,
+      "body": {
+        "campaign": {
+          "campaign_code": "<volatile>",
+          "created_at": "<volatile>",
+          "id": 1,
+          "name": "Test Camp",
+          "owner_user_id": 1,
+          "sort_index": 0
+        },
+        "campaign_code": "<volatile>",
+        "ok": true
+      }
+    },
+    {
+      "name": "list-campaigns",
+      "request": "GET /api/campaigns",
+      "status": 200,
+      "body": {
+        "campaigns": [
+          {
+            "campaign_code": "<volatile>",
+            "created_at": "<volatile>",
+            "id": 1,
+            "name": "Test Camp",
+            "owner_user_id": 1,
+            "sort_index": 0
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "campaign-by-unknown-code",
+      "request": "GET /api/campaigns/code/not-a-code",
+      "status": 404,
+      "body": {
+        "error": "campaign_not_found"
+      }
+    },
+    {
+      "name": "regenerate-code",
+      "request": "POST /api/campaigns/1/regenerate-code",
+      "status": 200,
+      "body": {
+        "campaign": {
+          "campaign_code": "<volatile>",
+          "created_at": "<volatile>",
+          "id": 1,
+          "name": "Test Camp",
+          "owner_user_id": 1,
+          "sort_index": 0
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "rename-campaign",
+      "request": "PUT /api/campaigns/1",
+      "status": 200,
+      "body": {
+        "campaign": {
+          "campaign_code": "<volatile>",
+          "created_at": "<volatile>",
+          "id": 1,
+          "name": "Renamed Camp",
+          "owner_user_id": 1,
+          "sort_index": 0
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "rename-campaign-no-name",
+      "request": "PUT /api/campaigns/1",
+      "status": 400,
+      "body": {
+        "error": "name required"
+      }
+    },
+    {
+      "name": "rename-campaign-forged-user",
+      "request": "PUT /api/campaigns/1",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
+      }
+    },
+    {
+      "name": "campaign-members",
+      "request": "GET /api/campaigns/1/members",
+      "status": 200,
+      "body": {
+        "members": [
+          {
+            "campaign_id": 1,
+            "created_at": "<volatile>",
+            "id": 1,
+            "permissions": null,
+            "player_id": null,
+            "player_name": null,
+            "role": "owner",
+            "user_discord": null,
+            "user_id": 1,
+            "user_name": "alice"
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "players-empty",
+      "request": "GET /api/players?campaign_id=1",
+      "status": 200,
+      "body": []
+    },
+    {
+      "name": "players-without-campaign",
+      "request": "GET /api/players",
+      "status": 400,
+      "body": {
+        "error": "campaign_id required"
+      }
+    },
+    {
+      "name": "create-player-bran",
+      "request": "POST /api/players",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "player": {
+          "age": "",
+          "campaign_id": 1,
+          "claimed_user_id": null,
+          "computer_access": "",
+          "ddb_avatar_url": null,
+          "ddb_json": null,
+          "ddb_url": null,
+          "discord": "",
+          "discord_id": null,
+          "id": 1,
+          "is_claimed": false,
+          "name": "Bran",
+          "notes": "",
+          "password_hash": "<volatile>",
+          "pref_party_size": "",
+          "pref_play_not_with": "",
+          "pref_play_not_with_ids": "[]",
+          "pref_play_with": "",
+          "pref_play_with_ids": "[]",
+          "pref_session_length": "",
+          "pref_vtt": "",
+          "sort_index": 0,
+          "timezone": "EST",
+          "unclaimed_at": null
+        }
+      }
+    },
+    {
+      "name": "create-player-cora",
+      "request": "POST /api/players",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "player": {
+          "age": "",
+          "campaign_id": 1,
+          "claimed_user_id": null,
+          "computer_access": "",
+          "ddb_avatar_url": null,
+          "ddb_json": null,
+          "ddb_url": null,
+          "discord": "",
+          "discord_id": null,
+          "id": 2,
+          "is_claimed": false,
+          "name": "Cora",
+          "notes": "",
+          "password_hash": "<volatile>",
+          "pref_party_size": "",
+          "pref_play_not_with": "",
+          "pref_play_not_with_ids": "[]",
+          "pref_play_with": "",
+          "pref_play_with_ids": "[]",
+          "pref_session_length": "",
+          "pref_vtt": "",
+          "sort_index": 1,
+          "timezone": "PST",
+          "unclaimed_at": null
+        }
+      }
+    },
+    {
+      "name": "list-players",
+      "request": "GET /api/players?campaign_id=1",
+      "status": 200,
+      "body": [
+        {
+          "age": "",
+          "campaign_id": 1,
+          "claimed_user_id": null,
+          "computer_access": "",
+          "ddb_avatar_url": null,
+          "ddb_json": null,
+          "ddb_url": null,
+          "discord": "",
+          "discord_id": null,
+          "id": 1,
+          "is_claimed": false,
+          "name": "Bran",
+          "notes": "",
+          "password_hash": "<volatile>",
+          "pref_party_size": "",
+          "pref_play_not_with": "",
+          "pref_play_not_with_ids": "[]",
+          "pref_play_with": "",
+          "pref_play_with_ids": "[]",
+          "pref_session_length": "",
+          "pref_vtt": "",
+          "sort_index": 0,
+          "timezone": "EST",
+          "unclaimed_at": null
+        },
+        {
+          "age": "",
+          "campaign_id": 1,
+          "claimed_user_id": null,
+          "computer_access": "",
+          "ddb_avatar_url": null,
+          "ddb_json": null,
+          "ddb_url": null,
+          "discord": "",
+          "discord_id": null,
+          "id": 2,
+          "is_claimed": false,
+          "name": "Cora",
+          "notes": "",
+          "password_hash": "<volatile>",
+          "pref_party_size": "",
+          "pref_play_not_with": "",
+          "pref_play_not_with_ids": "[]",
+          "pref_play_with": "",
+          "pref_play_with_ids": "[]",
+          "pref_session_length": "",
+          "pref_vtt": "",
+          "sort_index": 1,
+          "timezone": "PST",
+          "unclaimed_at": null
+        }
+      ]
+    },
+    {
+      "name": "update-player",
+      "request": "PUT /api/players/1",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "player": {
+          "age": "",
+          "campaign_id": 1,
+          "computer_access": "",
+          "ddb_avatar_url": null,
+          "ddb_json": null,
+          "ddb_url": null,
+          "discord": "",
+          "discord_id": null,
+          "id": 1,
+          "name": "Bran the Bold",
+          "notes": "",
+          "password_hash": "<volatile>",
+          "pref_party_size": "",
+          "pref_play_not_with": "",
+          "pref_play_not_with_ids": "[]",
+          "pref_play_with": "",
+          "pref_play_with_ids": "[]",
+          "pref_session_length": "",
+          "pref_vtt": "",
+          "sort_index": 0,
+          "timezone": "EST",
+          "unclaimed_at": null
+        }
+      }
+    },
+    {
+      "name": "update-player-missing",
+      "request": "PUT /api/players/9999",
+      "status": 404,
+      "body": {
+        "error": "player_not_found"
+      }
+    },
+    {
+      "name": "update-player-unauthenticated",
+      "request": "PUT /api/players/1",
+      "status": 403,
+      "body": {
+        "error": "forbidden"
+      }
+    },
+    {
+      "name": "reorder-players",
+      "request": "POST /api/players/reorder",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "name": "unclaimed-players",
+      "request": "GET /api/campaigns/1/unclaimed-players",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "players": [
+          {
+            "discord": "",
+            "id": 2,
+            "name": "Cora",
+            "notes": "",
+            "sort_index": 0
+          },
+          {
+            "discord": "",
+            "id": 1,
+            "name": "Bran the Bold",
+            "notes": "",
+            "sort_index": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "availability-create",
+      "request": "POST /api/availability",
+      "status": 200,
+      "body": {
+        "end_iso": "2026-09-01T22:00:00.000Z",
+        "id": 1,
+        "ok": true,
+        "start_iso": "2026-09-01T18:00:00.000Z"
+      }
+    },
+    {
+      "name": "availability-create-overlapping",
+      "request": "POST /api/availability",
+      "status": 200,
+      "body": {
+        "end_iso": "2026-09-02T01:00:00.000Z",
+        "id": 1,
+        "ok": true,
+        "start_iso": "2026-09-01T18:00:00.000Z"
+      }
+    },
+    {
+      "name": "availability-create-missing-fields",
+      "request": "POST /api/availability",
+      "status": 400,
+      "body": {
+        "error": "missing_fields"
+      }
+    },
+    {
+      "name": "availability-list",
+      "request": "GET /api/availability?player_id=1&campaign_id=1",
+      "status": 200,
+      "body": [
+        {
+          "campaign_id": 1,
+          "end_iso": "2026-09-02T01:00:00.000Z",
+          "id": 1,
+          "player_id": 1,
+          "source": "manual",
+          "start_iso": "2026-09-01T18:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "name": "availability-update",
+      "request": "PUT /api/availability/1",
+      "status": 200,
+      "body": {
+        "campaign_id": 1,
+        "end_iso": "2026-09-02T02:00:00.000Z",
+        "id": 1,
+        "player_id": 1,
+        "source": "manual",
+        "start_iso": "2026-09-01T17:00:00.000Z"
+      }
+    },
+    {
+      "name": "availability-batch",
+      "request": "POST /api/availability/batch",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "processed": 3,
+        "results": [
+          {
+            "end_iso": "2026-09-03T23:00:00.000Z",
+            "id": 2,
+            "ok": true,
+            "start_iso": "2026-09-03T18:00:00.000Z"
+          },
+          {
+            "error": "availability_wrong_campaign",
+            "ok": false
+          },
+          {
+            "error": "unknown_op",
+            "ok": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "availability-aggregate",
+      "request": "GET /api/availability/aggregate?start=2026-09-01T00:00:00.000Z&end=2026-09-08T00:00:00.000Z&campaign_id=1",
+      "status": 200,
+      "body": {
+        "intervals": [
+          {
+            "count": 0,
+            "end": "2026-09-01T17:00:00.000Z",
+            "player_ids": [],
+            "start": "2026-09-01T00:00:00.000Z"
+          },
+          {
+            "count": 1,
+            "end": "2026-09-02T02:00:00.000Z",
+            "player_ids": [
+              1
+            ],
+            "start": "2026-09-01T17:00:00.000Z"
+          },
+          {
+            "count": 0,
+            "end": "2026-09-03T18:00:00.000Z",
+            "player_ids": [],
+            "start": "2026-09-02T02:00:00.000Z"
+          },
+          {
+            "count": 1,
+            "end": "2026-09-03T23:00:00.000Z",
+            "player_ids": [
+              2
+            ],
+            "start": "2026-09-03T18:00:00.000Z"
+          },
+          {
+            "count": 0,
+            "end": "2026-09-08T00:00:00.000Z",
+            "player_ids": [],
+            "start": "2026-09-03T23:00:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "name": "availability-preview",
+      "request": "POST /api/availability/preview",
+      "status": 200,
+      "body": {
+        "availability": "<clock-dependent>",
+        "ok": true,
+        "preview": {
+          "count": 1,
+          "daysAhead": 14,
+          "timezone": "America/New_York"
+        }
+      }
+    },
+    {
+      "name": "availability-delete",
+      "request": "DELETE /api/availability/1",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "name": "groups-empty",
+      "request": "GET /api/groups?campaign_id=1",
+      "status": 200,
+      "body": []
+    },
+    {
+      "name": "create-group",
+      "request": "POST /api/groups",
+      "status": 200,
+      "body": {
+        "group": {
+          "campaign_id": 1,
+          "created_at": "<volatile>",
+          "id": 1,
+          "members": [
+            {
+              "age": "",
+              "campaign_id": 1,
+              "computer_access": "",
+              "ddb_avatar_url": null,
+              "ddb_json": null,
+              "ddb_url": null,
+              "discord": "",
+              "discord_id": null,
+              "id": 1,
+              "name": "Bran the Bold",
+              "notes": "",
+              "password_hash": "<volatile>",
+              "pref_party_size": "",
+              "pref_play_not_with": "",
+              "pref_play_not_with_ids": "[]",
+              "pref_play_with": "",
+              "pref_play_with_ids": "[]",
+              "pref_session_length": "",
+              "pref_vtt": "",
+              "sort_index": 1,
+              "timezone": "EST",
+              "unclaimed_at": null
+            },
+            {
+              "age": "",
+              "campaign_id": 1,
+              "computer_access": "",
+              "ddb_avatar_url": null,
+              "ddb_json": null,
+              "ddb_url": null,
+              "discord": "",
+              "discord_id": null,
+              "id": 2,
+              "name": "Cora",
+              "notes": "",
+              "password_hash": "<volatile>",
+              "pref_party_size": "",
+              "pref_play_not_with": "",
+              "pref_play_not_with_ids": "[]",
+              "pref_play_with": "",
+              "pref_play_with_ids": "[]",
+              "pref_session_length": "",
+              "pref_vtt": "",
+              "sort_index": 0,
+              "timezone": "PST",
+              "unclaimed_at": null
+            }
+          ],
+          "name": "Table A",
+          "notes": null,
+          "sort_index": 0
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "create-group-not-owner",
+      "request": "POST /api/groups",
+      "status": 403,
+      "body": {
+        "error": "owner_required"
+      }
+    },
+    {
+      "name": "update-group",
+      "request": "PUT /api/groups/1",
+      "status": 200,
+      "body": {
+        "group": {
+          "campaign_id": 1,
+          "created_at": "<volatile>",
+          "id": 1,
+          "members": [
+            {
+              "age": "",
+              "campaign_id": 1,
+              "computer_access": "",
+              "ddb_avatar_url": null,
+              "ddb_json": null,
+              "ddb_url": null,
+              "discord": "",
+              "discord_id": null,
+              "id": 1,
+              "name": "Bran the Bold",
+              "notes": "",
+              "password_hash": "<volatile>",
+              "pref_party_size": "",
+              "pref_play_not_with": "",
+              "pref_play_not_with_ids": "[]",
+              "pref_play_with": "",
+              "pref_play_with_ids": "[]",
+              "pref_session_length": "",
+              "pref_vtt": "",
+              "sort_index": 1,
+              "timezone": "EST",
+              "unclaimed_at": null
+            }
+          ],
+          "name": "Table A prime",
+          "notes": null,
+          "sort_index": 0
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "group-add-member",
+      "request": "POST /api/groups/1/members",
+      "status": 200,
+      "body": {
+        "group": {
+          "campaign_id": 1,
+          "created_at": "<volatile>",
+          "id": 1,
+          "members": [
+            {
+              "age": "",
+              "campaign_id": 1,
+              "computer_access": "",
+              "ddb_avatar_url": null,
+              "ddb_json": null,
+              "ddb_url": null,
+              "discord": "",
+              "discord_id": null,
+              "id": 1,
+              "name": "Bran the Bold",
+              "notes": "",
+              "password_hash": "<volatile>",
+              "pref_party_size": "",
+              "pref_play_not_with": "",
+              "pref_play_not_with_ids": "[]",
+              "pref_play_with": "",
+              "pref_play_with_ids": "[]",
+              "pref_session_length": "",
+              "pref_vtt": "",
+              "sort_index": 1,
+              "timezone": "EST",
+              "unclaimed_at": null
+            },
+            {
+              "age": "",
+              "campaign_id": 1,
+              "computer_access": "",
+              "ddb_avatar_url": null,
+              "ddb_json": null,
+              "ddb_url": null,
+              "discord": "",
+              "discord_id": null,
+              "id": 2,
+              "name": "Cora",
+              "notes": "",
+              "password_hash": "<volatile>",
+              "pref_party_size": "",
+              "pref_play_not_with": "",
+              "pref_play_not_with_ids": "[]",
+              "pref_play_with": "",
+              "pref_play_with_ids": "[]",
+              "pref_session_length": "",
+              "pref_vtt": "",
+              "sort_index": 0,
+              "timezone": "PST",
+              "unclaimed_at": null
+            }
+          ],
+          "name": "Table A prime",
+          "notes": null,
+          "sort_index": 0
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "group-remove-member",
+      "request": "DELETE /api/groups/1/members/2",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "name": "reorder-groups",
+      "request": "POST /api/groups/reorder",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "name": "suggest-groups",
+      "request": "POST /api/groups/suggest",
+      "status": 200,
+      "body": {
+        "groups": [
+          {
+            "members": [
+              {
+                "discord": "",
+                "id": 1,
+                "name": "Bran the Bold",
+                "zero_availability": true
+              }
+            ],
+            "score": 0
+          },
+          {
+            "members": [
+              {
+                "discord": "",
+                "id": 2,
+                "name": "Cora",
+                "zero_availability": true
+              }
+            ],
+            "score": 0
+          }
+        ],
+        "leftover": [],
+        "meta": {
+          "algo": "greedy-by-availability",
+          "counts": {
+            "1": 0,
+            "2": 0
+          }
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "save-suggestion",
+      "request": "POST /api/groups/save-suggestion",
+      "status": 200,
+      "body": {
+        "created": [
+          2
+        ],
+        "groups": [
+          {
+            "campaign_id": 1,
+            "created_at": "<volatile>",
+            "id": 1,
+            "members": [
+              {
+                "age": "",
+                "campaign_id": 1,
+                "computer_access": "",
+                "ddb_avatar_url": null,
+                "ddb_json": null,
+                "ddb_url": null,
+                "discord": "",
+                "discord_id": null,
+                "id": 1,
+                "name": "Bran the Bold",
+                "notes": "",
+                "password_hash": "<volatile>",
+                "pref_party_size": "",
+                "pref_play_not_with": "",
+                "pref_play_not_with_ids": "[]",
+                "pref_play_with": "",
+                "pref_play_with_ids": "[]",
+                "pref_session_length": "",
+                "pref_vtt": "",
+                "sort_index": 1,
+                "timezone": "EST",
+                "unclaimed_at": null
+              }
+            ],
+            "name": "Table A prime",
+            "notes": null,
+            "sort_index": 0
+          },
+          {
+            "campaign_id": 1,
+            "created_at": "<volatile>",
+            "id": 2,
+            "members": [
+              {
+                "age": "",
+                "campaign_id": 1,
+                "computer_access": "",
+                "ddb_avatar_url": null,
+                "ddb_json": null,
+                "ddb_url": null,
+                "discord": "",
+                "discord_id": null,
+                "id": 1,
+                "name": "Bran the Bold",
+                "notes": "",
+                "password_hash": "<volatile>",
+                "pref_party_size": "",
+                "pref_play_not_with": "",
+                "pref_play_not_with_ids": "[]",
+                "pref_play_with": "",
+                "pref_play_with_ids": "[]",
+                "pref_session_length": "",
+                "pref_vtt": "",
+                "sort_index": 1,
+                "timezone": "EST",
+                "unclaimed_at": null
+              }
+            ],
+            "name": "Suggested 1",
+            "notes": null,
+            "sort_index": 1
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "groups-listed",
+      "request": "GET /api/groups?campaign_id=1",
+      "status": 200,
+      "body": [
+        {
+          "campaign_id": 1,
+          "created_at": "<volatile>",
+          "id": 1,
+          "members": [
+            {
+              "age": "",
+              "campaign_id": 1,
+              "computer_access": "",
+              "ddb_avatar_url": null,
+              "ddb_json": null,
+              "ddb_url": null,
+              "discord": "",
+              "discord_id": null,
+              "id": 1,
+              "name": "Bran the Bold",
+              "notes": "",
+              "password_hash": "<volatile>",
+              "pref_party_size": "",
+              "pref_play_not_with": "",
+              "pref_play_not_with_ids": "[]",
+              "pref_play_with": "",
+              "pref_play_with_ids": "[]",
+              "pref_session_length": "",
+              "pref_vtt": "",
+              "sort_index": 1,
+              "timezone": "EST",
+              "unclaimed_at": null
+            }
+          ],
+          "name": "Table A prime",
+          "notes": null,
+          "sort_index": 0
+        },
+        {
+          "campaign_id": 1,
+          "created_at": "<volatile>",
+          "id": 2,
+          "members": [
+            {
+              "age": "",
+              "campaign_id": 1,
+              "computer_access": "",
+              "ddb_avatar_url": null,
+              "ddb_json": null,
+              "ddb_url": null,
+              "discord": "",
+              "discord_id": null,
+              "id": 1,
+              "name": "Bran the Bold",
+              "notes": "",
+              "password_hash": "<volatile>",
+              "pref_party_size": "",
+              "pref_play_not_with": "",
+              "pref_play_not_with_ids": "[]",
+              "pref_play_with": "",
+              "pref_play_with_ids": "[]",
+              "pref_session_length": "",
+              "pref_vtt": "",
+              "sort_index": 1,
+              "timezone": "EST",
+              "unclaimed_at": null
+            }
+          ],
+          "name": "Suggested 1",
+          "notes": null,
+          "sort_index": 1
+        }
+      ]
+    },
+    {
+      "name": "delete-group",
+      "request": "DELETE /api/groups/1",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "name": "create-invite",
+      "request": "POST /api/campaigns/1/invites",
+      "status": 200,
+      "body": {
+        "invite": {
+          "campaign_id": 1,
+          "challenge_enabled": 0,
+          "challenge_min_score": 200,
+          "created_at": "<volatile>",
+          "created_by_user_id": 1,
+          "expires_at": null,
+          "id": 1,
+          "max_uses": 3,
+          "token": "<volatile>",
+          "used_count": 0
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "invite-preview",
+      "request": "GET /api/invites/<generated>",
+      "status": 200,
+      "body": {
+        "campaign": {
+          "id": 1,
+          "name": "Renamed Camp"
+        },
+        "invite": {
+          "campaign_id": 1,
+          "challenge_enabled": 0,
+          "challenge_min_score": 200,
+          "created_at": "<volatile>",
+          "created_by_user_id": 1,
+          "expires_at": null,
+          "id": 1,
+          "max_uses": 3,
+          "token": "<volatile>",
+          "used_count": 0
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "invite-preview-unknown",
+      "request": "GET /api/invites/no-such-token",
+      "status": 404,
+      "body": {
+        "error": "invite_not_found"
+      }
+    },
+    {
+      "name": "invite-challenge",
+      "request": "GET /api/invites/<generated>/challenge",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "required": false
+      }
+    },
+    {
+      "name": "invite-challenge-complete",
+      "request": "POST /api/invites/<generated>/challenge/complete",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "pass_token": "<volatile>",
+        "required": false
+      }
+    },
+    {
+      "name": "list-invites",
+      "request": "GET /api/campaigns/1/invites",
+      "status": 200,
+      "body": {
+        "invites": [
+          {
+            "campaign_id": 1,
+            "challenge_enabled": 0,
+            "challenge_min_score": 200,
+            "created_at": "<volatile>",
+            "created_by_user_id": 1,
+            "expires_at": null,
+            "id": 1,
+            "max_uses": 3,
+            "token": "<volatile>",
+            "used_count": 0
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "patch-invite",
+      "request": "PATCH /api/invites/1",
+      "status": 200,
+      "body": {
+        "invite": {
+          "campaign_id": 1,
+          "challenge_enabled": 1,
+          "challenge_min_score": 200,
+          "created_at": "<volatile>",
+          "created_by_user_id": 1,
+          "expires_at": null,
+          "id": 1,
+          "max_uses": 5,
+          "token": "<volatile>",
+          "used_count": 0
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "patch-invite-not-a-member",
+      "request": "PATCH /api/invites/1",
+      "status": 403,
+      "body": {
+        "error": "forbidden"
+      }
+    },
+    {
+      "name": "invite-join",
+      "request": "POST /api/invites/join",
+      "status": 200,
+      "body": {
+        "campaign_id": 1,
+        "campaign_name": "Renamed Camp",
+        "ok": true
+      }
+    },
+    {
+      "name": "invite-join-unknown-token",
+      "request": "POST /api/invites/join",
+      "status": 404,
+      "body": {
+        "error": "invite_not_found"
+      }
+    },
+    {
+      "name": "members-after-join",
+      "request": "GET /api/campaigns/1/members",
+      "status": 200,
+      "body": {
+        "members": [
+          {
+            "campaign_id": 1,
+            "created_at": "<volatile>",
+            "id": 1,
+            "permissions": null,
+            "player_id": null,
+            "player_name": null,
+            "role": "owner",
+            "user_discord": null,
+            "user_id": 1,
+            "user_name": "alice"
+          },
+          {
+            "campaign_id": 1,
+            "created_at": "<volatile>",
+            "id": 2,
+            "permissions": null,
+            "player_id": null,
+            "player_name": null,
+            "role": "player",
+            "user_discord": null,
+            "user_id": 2,
+            "user_name": "bob"
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "add-member-already-joined",
+      "request": "POST /api/campaigns/1/members",
+      "status": 400,
+      "body": {
+        "error": "already_member"
+      }
+    },
+    {
+      "name": "add-self-as-player",
+      "request": "POST /api/campaigns/1/add-self",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "player": {
+          "age": null,
+          "campaign_id": 1,
+          "computer_access": null,
+          "ddb_avatar_url": null,
+          "ddb_json": null,
+          "ddb_url": null,
+          "discord": "",
+          "discord_id": null,
+          "id": 3,
+          "name": "bob",
+          "notes": "",
+          "password_hash": "<volatile>",
+          "pref_party_size": null,
+          "pref_play_not_with": null,
+          "pref_play_not_with_ids": "[]",
+          "pref_play_with": null,
+          "pref_play_with_ids": "[]",
+          "pref_session_length": null,
+          "pref_vtt": null,
+          "sort_index": 0,
+          "timezone": "",
+          "unclaimed_at": null
+        }
+      }
+    },
+    {
+      "name": "reorder-campaigns",
+      "request": "POST /api/campaigns/reorder",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "name": "claim-player",
+      "request": "POST /api/campaigns/1/claim-player",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "player": {
+          "age": "",
+          "campaign_id": 1,
+          "claimed_user_id": 2,
+          "computer_access": "",
+          "ddb_avatar_url": null,
+          "ddb_json": null,
+          "ddb_url": null,
+          "discord": "",
+          "discord_id": null,
+          "id": 2,
+          "is_claimed": true,
+          "name": "Cora",
+          "notes": "",
+          "password_hash": "<volatile>",
+          "pref_party_size": "",
+          "pref_play_not_with": "",
+          "pref_play_not_with_ids": "[]",
+          "pref_play_with": "",
+          "pref_play_with_ids": "[]",
+          "pref_session_length": "",
+          "pref_vtt": "",
+          "sort_index": 0,
+          "timezone": "PST",
+          "unclaimed_at": null
+        },
+        "user_id": 2
+      }
+    },
+    {
+      "name": "set-member-permissions",
+      "request": "PATCH /api/campaigns/1/members/2/permissions",
+      "status": 200,
+      "body": {
+        "member": {
+          "campaign_id": 1,
+          "created_at": "<volatile>",
+          "id": 2,
+          "permissions": "{\"can_edit_self\":true}",
+          "player_id": null,
+          "role": "player",
+          "user_id": 2
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "unclaim-player",
+      "request": "POST /api/campaigns/1/unclaim-player",
+      "status": 403,
+      "body": {
+        "error": "forbidden"
+      }
+    },
+    {
+      "name": "discord-confirm-link",
+      "request": "POST /api/discord/confirm-link",
+      "status": 400,
+      "body": {
+        "error": "player_id and campaign_id required"
+      }
+    },
+    {
+      "name": "leave-campaign",
+      "request": "POST /api/campaigns/1/leave",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "name": "owner-cannot-leave",
+      "request": "POST /api/campaigns/1/leave",
+      "status": 400,
+      "body": {
+        "error": "owners_cannot_leave"
+      }
+    },
+    {
+      "name": "delete-invite",
+      "request": "DELETE /api/invites/1",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "name": "feedback",
+      "request": "POST /api/feedback",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "name": "sheet-columns-missing-id",
+      "request": "POST /api/sheet-columns",
+      "status": 400,
+      "body": {
+        "error": "spreadsheetId required"
+      }
+    },
+    {
+      "name": "sync-without-campaign",
+      "request": "POST /api/sync",
+      "status": 400,
+      "body": {
+        "error": "campaign_id required"
+      }
+    },
+    {
+      "name": "sync-invalid-sheet-id",
+      "request": "POST /api/sync",
+      "status": 400,
+      "body": {
+        "error": "Invalid spreadsheet id or URL provided."
+      }
+    },
+    {
+      "name": "rebuild-player",
+      "request": "POST /api/rebuild/1",
+      "status": 200,
+      "body": {
+        "created": 0,
+        "ok": true
+      }
+    },
+    {
+      "name": "rebuild-missing-player",
+      "request": "POST /api/rebuild/9999",
+      "status": 404,
+      "body": {
+        "error": "player_not_found"
+      }
+    },
+    {
+      "name": "create-player-with-preview-blocks",
+      "request": "POST /api/players",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "player": {
+          "age": "",
+          "campaign_id": 1,
+          "claimed_user_id": null,
+          "computer_access": "",
+          "ddb_avatar_url": null,
+          "ddb_json": null,
+          "ddb_url": null,
+          "discord": "",
+          "discord_id": null,
+          "id": 4,
+          "is_claimed": false,
+          "name": "Dane",
+          "notes": "",
+          "password_hash": "<volatile>",
+          "pref_party_size": "",
+          "pref_play_not_with": "",
+          "pref_play_not_with_ids": "[]",
+          "pref_play_with": "",
+          "pref_play_with_ids": "[]",
+          "pref_session_length": "",
+          "pref_vtt": "",
+          "sort_index": 2,
+          "timezone": "",
+          "unclaimed_at": null
+        }
+      }
+    },
+    {
+      "name": "delete-player",
+      "request": "DELETE /api/players/2",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "name": "delete-campaign",
+      "request": "DELETE /api/campaigns/1",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "name": "campaigns-after-delete",
+      "request": "GET /api/campaigns",
+      "status": 200,
+      "body": {
+        "campaigns": [],
+        "ok": true
+      }
+    }
+  ],
+  "errors": []
+}

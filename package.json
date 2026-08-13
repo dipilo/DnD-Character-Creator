@@ -1,13 +1,20 @@
 {
   "name": "dnd-character-creator-workspace",
   "private": true,
+  "workspaces": [
+    "app",
+    "server"
+  ],
   "scripts": {
-    "setup": "npm --prefix app install",
-    "dev": "npm --prefix app run dev",
-    "start": "npm --prefix app run dev",
-    "build": "npm --prefix app run build",
-    "lint": "npm --prefix app run lint",
-    "preview": "npm --prefix app run preview",
+    "setup": "npm install",
+    "dev": "npm run dev --workspace app",
+    "start": "npm run dev --workspace app",
+    "build": "npm run build --workspace app",
+    "lint": "npm run lint --workspace app",
+    "preview": "npm run preview --workspace app",
+    "server": "npm run start --workspace server",
+    "test:server": "node server/test/smoke.mjs",
+    "test:server:record": "node server/test/smoke.mjs --write",
     "import:source": "node scripts/import-source.mjs --",
     "import:5etools": "node scripts/import-5etools.mjs",
     "generate:free-core": "node scripts/generate-free-core-sources.mjs"
