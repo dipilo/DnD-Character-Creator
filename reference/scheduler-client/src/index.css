@@ -1,0 +1,332 @@
+/* Base / global */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Improve box sizing and media element scaling */
+*, *::before, *::after { box-sizing: border-box; }
+img, video { max-width: 100%; height: auto; }
+
+/* Buttons */
+button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  cursor: pointer;
+  font: inherit;
+  color: var(--text);
+}
+button:hover { filter: brightness(0.98); }
+
+/* Inputs / selects / textareas */
+input, select, textarea {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  font: inherit;
+  box-sizing: border-box;
+  color: var(--text);
+}
+
+/* Modal system */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.4);
+  z-index: 2147483647 !important;
+}
+.modal-panel {
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 16px;
+  z-index: 2147483648 !important;
+  max-height: 90vh;
+  overflow: auto;
+  touch-action: none;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+  color: var(--text);
+  max-width: 95vw; /* prevent overflow on small screens */
+}
+
+/* App-level modal alternative (keeps very high z-index) */
+.app-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 2147483000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.app-modal {
+  z-index: 2147483001;
+  width: 90%;
+  height: 90%;
+  background: var(--panel);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: var(--text);
+}
+
+/* FullCalendar tweaks */
+.fc .fc-toolbar-title { font-weight: 700; }
+.fc { z-index: 0; } /* keep calendar beneath modals */
+
+/* FullCalendar responsive adjustments */
+@media (max-width: 900px) {
+  .fc .fc-toolbar { flex-wrap: wrap; gap: 6px; }
+  .fc .fc-toolbar-chunk { margin-bottom: 6px; }
+  .fc .fc-view-harness { min-height: 520px; } /* reduce but keep usable height */
+}
+
+/* Tooltip for aggregate calendar (positioned via JS) */
+.agg-tooltip {
+  pointer-events: none;
+  position: fixed;
+  z-index: 2147483650;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* Range (slider) styling
+   - track is transparent; inline background gradient should be applied via style attribute
+   - thumbs are centered and visually consistent across browsers
+*/
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 12px;
+  border-radius: 8px;
+  background: transparent; /* inline gradient used for filled portion */
+  outline: none;
+  width: 100%;
+}
+
+/* Webkit track - transparent (gradient applied inline) */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 12px;
+  background: transparent;
+  border-radius: 8px;
+}
+
+/* Webkit thumb */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid rgba(0,0,0,0.15);
+  margin-top: -1px; /* nudges the thumb vertically to center on track */
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+/* Firefox */
+input[type="range"]::-moz-range-track {
+  height: 12px;
+  background: transparent;
+  border-radius: 8px;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid rgba(0,0,0,0.15);
+}
+
+/* accessible focus for thumb */
+input[type="range"]:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgba(0,0,0,0.06);
+}
+
+/* Small UI niceties */
+.color-drag-handle { font-size: 16px; color: #666; user-select: none; }
+
+/* backlink: render as underlined text (no code-block appearance) */
+.backlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* hide bracket markers in list view permanently (we don't reveal on hover) */
+.backlink .bracket {
+  visibility: hidden;
+}
+
+.token-editor .token {
+  display:inline;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  /* underline the visible name (no background) */
+  text-decoration: underline;
+  user-select: text;
+  cursor: pointer;
+  font-size: inherit;
+}
+
+/* bracket spans are real elements; hidden by default so they take no space */
+.token-editor .token .bracket { display: none; color:#666; font-weight:400; }
+
+/* show brackets when token is active (caret inside) */
+.token-editor .token.active .bracket { display: inline; }
+
+/* label is the editable-looking portion (still part of token) */
+.token-editor .token .label { background: transparent; padding: 0; margin: 0; }
+
+/* Utility / responsive */
+.hidden { display: none !important; }
+.small-muted { color: #666; font-size: 13px; }
+
+/* Ensure modal inputs don't get weird heavy padding */
+.modal-panel input, .modal-panel textarea { box-sizing: border-box; }
+
+/* Minor visual fixes to avoid overlapping hitboxes:
+   Ensure token color swatch and drag handle have distinct z-index ordering
+*/
+.color-swatch { z-index: 2; display: inline-block; }
+.color-drag { z-index: 3; cursor: grab; }
+
+/* Dark mode variables and utilities */
+:root {
+  --bg: #ffffff;
+  --panel: #f7f7f8;
+  --muted: #666666;
+  --text: #111111;
+  --accent: #4682B4;
+  --border: #e6e6e6;
+}
+
+.dark {
+  --bg: #0b0d10;
+  --panel: #0f1114;
+  --muted: #9aa3ae;
+  --text: #e6eef6;
+  --accent: #5aa0ff;
+  --border: #22262b;
+}
+
+body { background: var(--bg); color: var(--text); }
+.panel { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; }
+
+/* Floating dark mode toggle (for non-js fallback it's harmless) */
+.dark-toggle {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9999;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+/* Drag handle utility */
+.drag-handle { cursor: grab; color: var(--muted); padding: 4px; }
+.drag-handle:active { cursor: grabbing; }
+
+/* Hide raw ids (useful when showing campaign IDs in small places) */
+.hide-id { color: transparent; text-shadow: 0 0 0 var(--muted); font-size: 0.85em; }
+
+/* End of consolidated styles */
+
+/* Responsive layout helpers */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  gap: 12px;
+}
+.app-header .header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  max-width: 1400px;
+  margin: 24px auto;
+  gap: 24px;
+  padding: 0 12px;
+}
+
+.sidebar {
+  width: 360px;
+  min-width: 320px;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+.campaign-shelf {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 360px;
+  background: var(--panel);
+  box-shadow: -2px 0 16px rgba(0,0,0,0.08);
+  z-index: 100;
+  padding: 24px;
+  overflow-y: auto;
+  transition: transform 0.2s;
+  border-left: 1px solid var(--border);
+}
+
+/* Desktop: prevent horizontal overflow without clipping controls */
+@media (min-width: 901px) {
+  .campaign-shelf ul { list-style: none; margin: 0; padding-left: 0; }
+  .campaign-shelf li { width: 100%; max-width: 100%; box-sizing: border-box; }
+  .campaign-shelf li > * { min-width: 0; }
+}
+
+/* Small screens */
+@media (max-width: 900px) {
+  .app-shell { flex-direction: column; gap: 16px; margin: 12px auto; }
+  .sidebar { width: 100% !important; min-width: 0 !important; }
+  .main { width: 100%; }
+  .app-header { padding: 10px 12px; }
+  .app-header .header-controls { gap: 8px; }
+  .campaign-shelf { width: 100vw; padding: 16px; }
+  .dark-toggle { right: 12px; bottom: 12px; }
+  button { padding: 8px 10px; }
+}

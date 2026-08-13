@@ -1,13 +1,39 @@
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCharacterStore } from '@/store/characterStore';
+import { AccountMenu } from '@/components/auth/AccountMenu';
 import { Button } from '@/components/ui/button';
-import { Moon, Sun, Dices, Users, Home, Sword, Download, FlaskConical } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { cn } from '@/lib/utils';
+import { Moon, Sun, Dices, Users, Home, Sword, Download, FlaskConical, CalendarRange, Menu } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const COMMUNITY_TESTING_MODE: boolean = false;
+
+interface NavItem {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+  /** Prefix the route must start with to read as active; exact match when `exact` is set. */
+  match: string;
+  exact?: boolean;
+  /** Shown even when COMMUNITY_TESTING_MODE hides the rest of the nav. */
+  always?: boolean;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { to: '/builder', label: 'Builder', icon: Sword, match: '/builder', always: true },
+  { to: '/', label: 'Home', icon: Home, match: '/', exact: true },
+  { to: '/characters', label: 'My Characters', icon: Users, match: '/characters' },
+  { to: '/content/import', label: 'Import', icon: Download, match: '/content' },
+  { to: '/homebrew', label: 'Homebrew', icon: FlaskConical, match: '/homebrew' },
+  { to: '/campaigns', label: 'Campaigns', icon: CalendarRange, match: '/campaign' },
+  { to: '/dice', label: 'Dice', icon: Dices, match: '/dice' },
+];
 
 function DragonMark({ className }: Readonly<{ className?: string }>) {
   return (
@@ -24,105 +50,91 @@ function DragonMark({ className }: Readonly<{ className?: string }>) {
 export function Layout({ children }: Readonly<LayoutProps>) {
   const { darkMode, toggleDarkMode } = useCharacterStore();
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
   const isFullBleedBuilderRoute = location.pathname.startsWith('/builder/ability-scores') || location.pathname.startsWith('/dice');
   const showExtendedNavigation = COMMUNITY_TESTING_MODE === false;
 
-  const isActive = (path: string) => {
-    return location.pathname.startsWith(path);
-  };
+  const items = showExtendedNavigation ? NAV_ITEMS : NAV_ITEMS.filter((item) => item.always);
+  const isActive = (item: NavItem) =>
+    item.exact ? location.pathname === item.match : location.pathname.startsWith(item.match);
+
+  const mainClassName = isFullBleedBuilderRoute
+    ? 'w-full flex-1'
+    : 'mx-auto w-full max-w-7xl flex-1 px-3 py-4 sm:px-4 sm:py-6';
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="flex min-h-[100dvh] flex-col bg-background text-foreground">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-auto flex h-14 w-full max-w-7xl items-center px-4">
-          <Link to="/builder" className="mr-6 flex items-center gap-2">
-            <DragonMark className="h-6 w-6 text-primary" />
-            <span className="hidden text-lg font-bold sm:inline">D&D Character Builder</span>
+        <div className="px-safe mx-auto flex h-14 w-full max-w-7xl items-center gap-1 px-3 short:h-12 sm:px-4">
+          {/* Below lg the nav lives in a sheet: seven destinations plus the account controls
+              cannot share a 360px row, and icon-only buttons made them unguessable. */}
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-72 max-w-[85vw] p-0">
+              <SheetHeader className="border-b p-4">
+                <SheetTitle className="flex items-center gap-2">
+                  <DragonMark className="h-5 w-5 text-primary" />
+                  D&D Character Builder
+                </SheetTitle>
+              </SheetHeader>
+              <nav className="flex flex-col gap-1 overflow-y-auto p-3">
+                {items.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link key={item.to} to={item.to} onClick={() => setMenuOpen(false)}>
+                      <span
+                        className={cn(
+                          'flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors',
+                          isActive(item) ? 'bg-primary text-primary-foreground' : 'hover:bg-accent',
+                        )}
+                      >
+                        <Icon className="h-4 w-4 shrink-0" />
+                        {item.label}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </SheetContent>
+          </Sheet>
+
+          <Link to="/builder" className="flex min-w-0 items-center gap-2 lg:mr-6">
+            <DragonMark className="h-6 w-6 shrink-0 text-primary" />
+            <span className="truncate text-base font-bold sm:text-lg">D&D Character Builder</span>
           </Link>
 
-          <nav className="flex flex-1 items-center gap-1">
-            <Link to="/builder">
-              <Button
-                variant={isActive('/builder') ? 'default' : 'ghost'}
-                size="sm"
-                className="gap-2"
-              >
-                <Sword className="h-4 w-4" />
-                <span className="hidden sm:inline">Builder</span>
-              </Button>
-            </Link>
-            {showExtendedNavigation ? (
-              <>
-                <Link to="/">
-                  <Button
-                    variant={location.pathname === '/' ? 'default' : 'ghost'}
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <Home className="h-4 w-4" />
-                    <span className="hidden sm:inline">Home</span>
+          <nav className="hidden flex-1 items-center gap-1 lg:flex">
+            {items.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link key={item.to} to={item.to}>
+                  <Button variant={isActive(item) ? 'default' : 'ghost'} size="sm" className="gap-2">
+                    <Icon className="h-4 w-4" />
+                    {item.label}
                   </Button>
                 </Link>
-                <Link to="/characters">
-                  <Button
-                    variant={isActive('/characters') ? 'default' : 'ghost'}
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <Users className="h-4 w-4" />
-                    <span className="hidden sm:inline">My Characters</span>
-                  </Button>
-                </Link>
-                <Link to="/content/import">
-                  <Button
-                    variant={isActive('/content') ? 'default' : 'ghost'}
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <Download className="h-4 w-4" />
-                    <span className="hidden sm:inline">Import</span>
-                  </Button>
-                </Link>
-                <Link to="/homebrew">
-                  <Button
-                    variant={isActive('/homebrew') ? 'default' : 'ghost'}
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <FlaskConical className="h-4 w-4" />
-                    <span className="hidden sm:inline">Homebrew</span>
-                  </Button>
-                </Link>
-                <Link to="/dice">
-                  <Button
-                    variant={isActive('/dice') ? 'default' : 'ghost'}
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <Dices className="h-4 w-4" />
-                    <span className="hidden sm:inline">Dice</span>
-                  </Button>
-                </Link>
-              </>
-            ) : null}
+              );
+            })}
           </nav>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleDarkMode}
-            className="ml-auto"
-          >
-            {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </Button>
+          <div className="ml-auto flex shrink-0 items-center gap-1">
+            <AccountMenu />
+            <Button variant="ghost" size="icon" onClick={toggleDarkMode} aria-label="Toggle dark mode">
+              {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
+          </div>
         </div>
       </header>
 
-      <main className={isFullBleedBuilderRoute ? 'w-full flex-1' : 'mx-auto w-full max-w-7xl flex-1 px-4 py-6'}>
+      <main className={mainClassName}>
         {children}
       </main>
 
-      <footer className="border-t py-6 mt-auto">
+      <footer className="pb-safe mt-auto border-t py-4 sm:py-6">
         <div className="mx-auto w-full max-w-7xl px-4 text-center text-xs text-muted-foreground">
           <p>D&D Character Builder</p>
         </div>

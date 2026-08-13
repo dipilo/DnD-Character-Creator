@@ -58,7 +58,7 @@ function formatSelectedEquipmentLabel(name: string, quantity: number) {
 
 export function ReviewPage() {
   const navigate = useNavigate();
-  const { builderState, addCharacter, getCharacter, resetBuilder, updateBuilderCharacter, updateCharacter } = useCharacterStore();
+  const { builderState, addCharacter, getCharacter, resetBuilder, setPendingSeat, updateBuilderCharacter, updateCharacter } = useCharacterStore();
   const { backgrounds, equipment, feats } = useContentLibrary();
 
   const character = builderState.character;
@@ -223,9 +223,23 @@ export function ReviewPage() {
     }
 
     addCharacter(nextCharacter);
+
+    // Started from a campaign, so it takes that seat as soon as the server has it. The seat is
+    // recorded as an intent rather than written now: the character has only just been created
+    // locally and may not have synced yet, and the builder has to work signed out (Phase 5).
+    const { forCampaignId, forPlayerId, forCampaignName } = builderState;
+    if (forCampaignId) {
+      setPendingSeat(nextCharacter.id, { campaignId: forCampaignId, playerId: forPlayerId ?? null });
+    }
+
     toast.success(`Character "${characterName}" created successfully!`);
     resetBuilder();
-    navigate('/characters');
+    navigate(forCampaignId ? `/campaign/${forCampaignId}/party` : '/characters');
+    if (forCampaignName) {
+      toast.message(`${characterName} joins ${forCampaignName}`, {
+        description: 'It appears in the party view once it syncs.',
+      });
+    }
   };
 
   const isComplete = !!species && !!primaryClass && !!background && characterName.trim() && rolledComplete;

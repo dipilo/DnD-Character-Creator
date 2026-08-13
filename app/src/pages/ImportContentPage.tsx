@@ -58,7 +58,7 @@ export function ImportContentPage() {
   return (
     <div className="space-y-8">
       <section className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight">Import Content</h1>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Import Content</h1>
         <p className="text-muted-foreground">
           Load source books into your library from canonical JSON, or generate bundled modules with the workspace CLI.
         </p>

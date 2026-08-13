@@ -29,7 +29,7 @@ export function HomebrewHubPage() {
     <div className="space-y-8">
       <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Homebrew</h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Homebrew</h1>
           <p className="text-muted-foreground">
             Make your own content. Everything you save here is available to the character builder.
           </p>

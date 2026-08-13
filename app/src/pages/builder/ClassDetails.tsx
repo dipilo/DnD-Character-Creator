@@ -270,7 +270,9 @@ export function ClassDetails() {
       </div>
 
       <Tabs value={activeTab} onValueChange={(value) => updateSearchParam('tab', value)} className="w-full">
-        <TabsList className={`grid w-full ${cls.spellcasting ? 'grid-cols-4' : 'grid-cols-3'}`}>
+        {/* Scrolls at natural label width on a phone, equal columns from sm up — see the note on
+            the same pattern in CharacterSheetView. */}
+        <TabsList className={`w-full justify-start [&>*]:flex-none sm:grid sm:[&>*]:flex-1 ${cls.spellcasting ? 'sm:grid-cols-4' : 'sm:grid-cols-3'}`}>
           <TabsTrigger value="features">Features</TabsTrigger>
           <TabsTrigger value="subclasses">Subclasses</TabsTrigger>
           <TabsTrigger value="proficiencies">Proficiencies</TabsTrigger>
