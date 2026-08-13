@@ -4,8 +4,15 @@ const { config } = require('../config');
 const db = require('../db');
 const fetch = require('../lib/httpFetch');
 const { genToken } = require('../lib/tokens');
+const {
+  clearSessionCookie,
+  createSession,
+  publicUser,
+  revokeAllSessionsForUser,
+  revokeSession,
+} = require('../lib/sessions');
 const { getServerOrigin, isAllowedReturnTo } = require('../lib/urls');
-const { getRequestUser } = require('../middleware/auth');
+const { optionalAuth, requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -28,6 +35,34 @@ router.get('/auth/discord', (req, res) => {
   res.redirect(url);
 });
 
+/**
+ * Campaign seats that look like they belong to this Discord user but are not yet linked.
+ * The old callback shipped these to the client through postMessage/localStorage alongside a raw
+ * user id; now the browser is redirected with a session cookie and asks for them separately.
+ */
+async function findPotentialPlayerLinks(user, discordProfile) {
+  const username = discordProfile?.username ?? user.username;
+  const globalName = discordProfile?.global_name || username;
+  try {
+    const matches = await db.all(`
+      SELECT p.id, p.campaign_id, p.name, p.discord, c.name as campaign_name
+      FROM players p
+      JOIN campaigns c ON c.id = p.campaign_id
+      WHERE (p.name = ? OR p.discord = ? OR p.discord = ?)
+        AND p.discord_id IS NULL
+        AND p.password_hash IS NULL
+    `, username, username, globalName);
+    const out = [];
+    for (const match of matches) {
+      const existingLink = await db.get('SELECT 1 AS ok FROM campaign_members WHERE campaign_id = ? AND user_id = ?', match.campaign_id, user.id);
+      if (!existingLink) out.push(match);
+    }
+    return out;
+  } catch (linkErr) {
+    console.warn('Find potential matches failed:', linkErr);
+    return [];
+  }
+}
 
 router.get('/auth/discord/callback', async (req, res) => {
   try {
@@ -91,118 +126,21 @@ router.get('/auth/discord/callback', async (req, res) => {
     }
     const uRes = await fetch('https://discord.com/api/users/@me', { headers: { Authorization: `Bearer ${tokenJson.access_token}`, 'User-Agent': UA, 'Accept': 'application/json', 'Accept-Language': 'en-US,en;q=0.9', 'Connection': 'keep-alive' } });
     const uJson = await uRes.json();
+
     // create or update users table
-    const existing = await db.get('SELECT * FROM users WHERE discord_id = ?', uJson.id);
-    if (existing) {
-      await db.run('UPDATE users SET username = ? WHERE id = ?', uJson.username, existing.id);
-      
-      // Find potential players to link but don't auto-link them
-      let potentialMatches = [];
-      try {
-      potentialMatches = await db.all(`
-        SELECT p.id, p.campaign_id, p.name, p.discord, c.name as campaign_name
-        FROM players p 
-        JOIN campaigns c ON c.id = p.campaign_id
-        WHERE (p.name = ? OR p.discord = ? OR p.discord = ?) 
-          AND p.discord_id IS NULL
-          AND p.password_hash IS NULL
-      `, uJson.username, uJson.username, uJson.global_name || uJson.username);
-        potentialMatches = await (async () => {
-          const out = [];
-          for (const match of potentialMatches) {
-            const existingLink = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ?', match.campaign_id, existing.id);
-            if (!existingLink) out.push(match);
-          }
-          return out;
-        })();
-      } catch (linkErr) {
-        console.warn('Find potential matches failed:', linkErr);
-      }
-      
-      // respond with a small HTML page that posts the user id and potential matches to the opener window
-      return res.send(`<!doctype html><html><body>
-        <script>
-          (function(){
-            var userId = ${existing.id};
-            var potentialMatches = ${JSON.stringify(potentialMatches)};
-            try {
-              if (window.opener && !window.opener.closed) {
-                window.opener.postMessage({ type: 'discord-auth', userId: userId, potentialMatches: potentialMatches }, '*');
-                document.write('Login successful. You can close this window.');
-                setTimeout(function(){ try{ window.close(); }catch(e){} }, 800);
-              } else {
-                // No opener (likely opened with 'noopener'): set storage so original tab picks it up
-                try { localStorage.setItem('userId', String(userId)); } catch(e){}
-                try { localStorage.setItem('pendingMatches', JSON.stringify(potentialMatches)); } catch(e){}
-                try { sessionStorage.setItem('dnd-auth', '1'); } catch(e){}
-                if (window.name === 'discord_oauth' || window.name === '_blank') {
-                  document.write('Login successful. You can close this window.');
-                  setTimeout(function(){ try{ window.close(); }catch(e){} }, 800);
-                } else {
-                  // Same-tab or new-tab fallback — return to the app
-                  window.location.replace(${JSON.stringify(returnTo)});
-                }
-              }
-            } catch (e) {
-              try { localStorage.setItem('userId', String(userId)); } catch(_){ }
-              try { localStorage.setItem('pendingMatches', JSON.stringify(potentialMatches)); } catch(_){ }
-              try { sessionStorage.setItem('dnd-auth', '1'); } catch(_){ }
-              window.location.replace(${JSON.stringify(returnTo)});
-            }
-          })();
-        </script>
-      </body></html>`);
+    let user = await db.get('SELECT * FROM users WHERE discord_id = ?', uJson.id);
+    if (user) {
+      await db.run('UPDATE users SET username = ? WHERE id = ?', uJson.username, user.id);
+    } else {
+      const info = await db.run('INSERT INTO users(discord_id, username) VALUES (?, ?)', uJson.id, uJson.username);
+      user = await db.get('SELECT * FROM users WHERE id = ?', info.lastInsertRowid);
     }
-  const info = await db.run('INSERT INTO users(discord_id, username) VALUES (?, ?)', uJson.id, uJson.username);
-  const newUser = await db.get('SELECT * FROM users WHERE id = ?', info.lastInsertRowid);
-    
-    // Find potential players to link but don't auto-link them
-    let potentialMatches = [];
-    try {
-      potentialMatches = await db.all(`
-        SELECT p.id, p.campaign_id, p.name, p.discord, c.name as campaign_name
-        FROM players p 
-        JOIN campaigns c ON c.id = p.campaign_id
-        WHERE (p.name = ? OR p.discord = ? OR p.discord = ?) 
-          AND p.discord_id IS NULL
-          AND p.password_hash IS NULL
-      `, uJson.username, uJson.username, uJson.global_name || uJson.username);
-      
-      // No need to filter for new users since they can't have existing campaign memberships
-    } catch (linkErr) {
-      console.warn('Find potential matches failed:', linkErr);
-    }
-    
-    return res.send(`<!doctype html><html><body>
-      <script>
-        (function(){
-          var userId = ${newUser.id};
-          var potentialMatches = ${JSON.stringify(potentialMatches)};
-          try {
-            if (window.opener && !window.opener.closed) {
-              window.opener.postMessage({ type: 'discord-auth', userId: userId, potentialMatches: potentialMatches }, '*');
-              document.write('Account created. You can close this window.');
-              setTimeout(function(){ try{ window.close(); }catch(e){} }, 800);
-            } else {
-              try { localStorage.setItem('userId', String(userId)); } catch(e){}
-              try { localStorage.setItem('pendingMatches', JSON.stringify(potentialMatches)); } catch(e){}
-              try { sessionStorage.setItem('dnd-auth', '1'); } catch(e){}
-              if (window.name === 'discord_oauth' || window.name === '_blank') {
-                document.write('Account created. You can close this window.');
-                setTimeout(function(){ try{ window.close(); }catch(e){} }, 800);
-              } else {
-                window.location.replace(${JSON.stringify(returnTo)});
-              }
-            }
-          } catch (e) {
-            try { localStorage.setItem('userId', String(userId)); } catch(_){ }
-            try { localStorage.setItem('pendingMatches', JSON.stringify(potentialMatches)); } catch(_){ }
-            try { sessionStorage.setItem('dnd-auth', '1'); } catch(_){ }
-            window.location.replace(${JSON.stringify(returnTo)});
-          }
-        })();
-      </script>
-    </body></html>`);
+
+    // The whole point of Phase 1b: the browser leaves this route holding an httpOnly session
+    // cookie, not a user id it was trusted to send back. Unlinked seats are fetched afterwards
+    // from /api/discord/potential-links, which requires that session.
+    await createSession(req, res, user);
+    return res.redirect(returnTo);
   } catch (e) {
     console.error('Discord callback error', e);
     res.status(500).send('oauth error');
@@ -248,24 +186,34 @@ router.get('/diag/oauth', async (req, res) => {
   }
 });
 
+// Campaign seats this Discord user could claim. Replaces the potentialMatches blob the OAuth
+// callback used to postMessage into the opener window.
+router.get('/api/discord/potential-links', requireAuth, async (req, res) => {
+  try {
+    if (!req.user.discord_id) return res.json({ ok: true, potential_matches: [] });
+    const matches = await findPotentialPlayerLinks(req.user, null);
+    res.json({ ok: true, potential_matches: matches });
+  } catch (e) {
+    console.error('GET /api/discord/potential-links', e);
+    res.status(500).json({ error: e.message });
+  }
+});
 
 // Confirm linking Discord user to a specific player
-router.post('/api/discord/confirm-link', async (req, res) => {
+router.post('/api/discord/confirm-link', requireAuth, async (req, res) => {
   try {
-    const user = await getRequestUser(req);
-    if (!user) return res.status(401).json({ error: 'not_authenticated' });
-    
+    const user = req.user;
     const { player_id, campaign_id } = req.body;
     if (!player_id || !campaign_id) {
       return res.status(400).json({ error: 'player_id and campaign_id required' });
     }
-    
+
     // Verify the player exists and isn't already claimed
     const player = await db.get('SELECT * FROM players WHERE id = ? AND campaign_id = ? AND discord_id IS NULL', player_id, campaign_id);
     if (!player) {
       return res.status(404).json({ error: 'Player not found or already claimed' });
     }
-    
+
     // Check if user is already linked to this campaign
     const existingLink = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ?', campaign_id, user.id);
     if (existingLink) {
@@ -282,24 +230,32 @@ router.post('/api/discord/confirm-link', async (req, res) => {
   }
 });
 
+/**
+ * Resolve an invite_token in the request body to its campaign_id, or return an error code.
+ * Shared by signup and login, which both accept an invite as a way to name the campaign a
+ * passwordless account is scoped to.
+ */
+async function applyInviteToken(req) {
+  const inviteToken = req.body?.invite_token;
+  if (!inviteToken) return null;
+  const inv = await db.get('SELECT * FROM invites WHERE token = ?', inviteToken);
+  if (!inv) return 'invalid_invite';
+  if (inv.expires_at && new Date(inv.expires_at) < new Date()) return 'invite_expired';
+  if (inv.max_uses && inv.used_count >= inv.max_uses) return 'invite_full';
+  req.body.campaign_id = inv.campaign_id;
+  return null;
+}
 
 // Local signup/login endpoints for non-discord auth
 router.post('/auth/signup', async (req, res) => {
   try {
     // allow passing invite_token which resolves to a campaign_id
-    const inviteToken = req.body && req.body.invite_token;
-    if (inviteToken) {
-      const inv = await db.get('SELECT * FROM invites WHERE token = ?', inviteToken);
-      if (!inv) return res.status(400).json({ error: 'invalid_invite' });
-      // if invite expired or max_uses reached, reject
-      if (inv.expires_at && new Date(inv.expires_at) < new Date()) return res.status(400).json({ error: 'invite_expired' });
-      if (inv.max_uses && inv.used_count >= inv.max_uses) return res.status(400).json({ error: 'invite_full' });
-      // attach campaignId for downstream logic
-      req.body.campaign_id = inv.campaign_id;
-    }
-    const username = req.body && req.body.username;
-    const password = req.body && req.body.password;
-    const campaignId = req.body && req.body.campaign_id;
+    const inviteError = await applyInviteToken(req);
+    if (inviteError) return res.status(400).json({ error: inviteError });
+
+    const username = req.body?.username;
+    const password = req.body?.password;
+    const campaignId = req.body?.campaign_id;
     if (!username) return res.status(400).json({ error: 'username required' });
     // If password provided: create a persistent account. Disallow if any other persistent account
     // (passworded) already uses this username.
@@ -308,8 +264,9 @@ router.post('/auth/signup', async (req, res) => {
       if (conflict) return res.status(400).json({ error: 'username_taken' });
       const hash = bcrypt.hashSync(password, 10);
       const info = await db.run('INSERT INTO users(username, password_hash) VALUES (?, ?)', username, hash);
-      const u = await db.get('SELECT * FROM users WHERE id = ?', info.lastInsertRowid);
-      return res.json({ ok: true, user: u });
+      const u = await db.get('SELECT id, username, discord_id, created_at FROM users WHERE id = ?', info.lastInsertRowid);
+      await createSession(req, res, u);
+      return res.json({ ok: true, user: publicUser(u) });
     }
 
     // Password not provided -> create a campaign-scoped account. Require campaignId.
@@ -324,9 +281,10 @@ router.post('/auth/signup', async (req, res) => {
 
     // Create a new passwordless user scoped to this campaign
     const info2 = await db.run('INSERT INTO users(username, password_hash) VALUES (?, ?)', username, null);
-    const u2 = await db.get('SELECT * FROM users WHERE id = ?', info2.lastInsertRowid);
+    const u2 = await db.get('SELECT id, username, discord_id, created_at FROM users WHERE id = ?', info2.lastInsertRowid);
     await db.run('INSERT OR IGNORE INTO campaign_members(campaign_id,user_id,role,permissions) VALUES (?, ?, ?, ?)', campaignId, u2.id, 'player', JSON.stringify({ can_unclaim: true, can_edit_self: true }));
-    return res.json({ ok: true, user: u2 });
+    await createSession(req, res, u2);
+    return res.json({ ok: true, user: publicUser(u2) });
   } catch (e) {
     console.error('POST /auth/signup', e);
     res.status(500).json({ error: e.message });
@@ -335,25 +293,27 @@ router.post('/auth/signup', async (req, res) => {
 
 router.post('/auth/login', async (req, res) => {
   try {
-    const inviteToken = req.body && req.body.invite_token;
-    if (inviteToken) {
-      const inv = await db.get('SELECT * FROM invites WHERE token = ?', inviteToken);
-      if (!inv) return res.status(400).json({ error: 'invalid_invite' });
-      if (inv.expires_at && new Date(inv.expires_at) < new Date()) return res.status(400).json({ error: 'invite_expired' });
-      if (inv.max_uses && inv.used_count >= inv.max_uses) return res.status(400).json({ error: 'invite_full' });
-      req.body.campaign_id = inv.campaign_id;
-    }
-    const username = req.body && req.body.username;
-    const password = req.body && req.body.password;
-    const campaignId = req.body && req.body.campaign_id;
+    const inviteError = await applyInviteToken(req);
+    if (inviteError) return res.status(400).json({ error: inviteError });
+
+    const username = req.body?.username;
+    const password = req.body?.password;
+    const campaignId = req.body?.campaign_id;
     if (!username) return res.status(400).json({ error: 'username required' });
     // If password provided: search among passworded accounts with this username and verify the password
     if (password) {
       const candidates = await db.all('SELECT * FROM users WHERE username = ? AND password_hash IS NOT NULL', username);
       for (const c of candidates) {
+        let matched = false;
         try {
-          if (bcrypt.compareSync(password, c.password_hash)) return res.json({ ok: true, user_id: c.id });
-        } catch (e) { /* ignore */ }
+          matched = bcrypt.compareSync(password, c.password_hash);
+        } catch (e) {
+          console.warn('bcrypt compare failed for user', c.id, e?.message);
+        }
+        if (matched) {
+          await createSession(req, res, c);
+          return res.json({ ok: true, user: publicUser(c) });
+        }
       }
       return res.status(401).json({ error: 'invalid_credentials' });
     }
@@ -365,9 +325,41 @@ router.post('/auth/login', async (req, res) => {
       WHERE u.username = ? AND u.password_hash IS NULL AND cm.campaign_id = ?
     `, username, campaignId);
     if (!u) return res.status(401).json({ error: 'invalid_credentials' });
-    return res.json({ ok: true, user_id: u.id });
+    await createSession(req, res, u);
+    return res.json({ ok: true, user: publicUser(u) });
   } catch (e) {
     console.error('POST /auth/login', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Who am I? The client's only way to learn its own identity — the cookie is the source of truth
+// and script cannot read it.
+router.get('/api/me', optionalAuth, (req, res) => {
+  if (!req.user) return res.status(401).json({ error: 'not_authenticated' });
+  res.json({ ok: true, user: publicUser(req.user) });
+});
+
+// Sign out this device. Revokes server-side, so a copied cookie dies with it.
+router.post('/auth/logout', optionalAuth, async (req, res) => {
+  try {
+    if (req.user?.session_id) await revokeSession(req.user.session_id);
+    clearSessionCookie(res);
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('POST /auth/logout', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Sign out everywhere.
+router.post('/auth/logout-all', requireAuth, async (req, res) => {
+  try {
+    await revokeAllSessionsForUser(req.user.id);
+    clearSessionCookie(res);
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('POST /auth/logout-all', e);
     res.status(500).json({ error: e.message });
   }
 });

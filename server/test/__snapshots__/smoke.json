@@ -1,5 +1,5 @@
 {
-  "requests": 83,
+  "requests": 128,
   "results": [
     {
       "name": "root",
@@ -104,10 +104,10 @@
           "created_at": "<volatile>",
           "discord_id": null,
           "id": 1,
-          "password_hash": "<volatile>",
           "username": "alice"
         }
-      }
+      },
+      "set_cookie": "dnd_session=<volatile>; Max-Age=2592000; Path=/; Expires=<volatile>; HttpOnly; SameSite=Lax"
     },
     {
       "name": "signup-alice-again",
@@ -123,8 +123,14 @@
       "status": 200,
       "body": {
         "ok": true,
-        "user_id": 1
-      }
+        "user": {
+          "created_at": "<volatile>",
+          "discord_id": null,
+          "id": 1,
+          "username": "alice"
+        }
+      },
+      "set_cookie": "dnd_session=<volatile>; Max-Age=2592000; Path=/; Expires=<volatile>; HttpOnly; SameSite=Lax"
     },
     {
       "name": "login-alice-wrong-password",
@@ -152,10 +158,10 @@
           "created_at": "<volatile>",
           "discord_id": null,
           "id": 2,
-          "password_hash": "<volatile>",
           "username": "bob"
         }
-      }
+      },
+      "set_cookie": "dnd_session=<volatile>; Max-Age=2592000; Path=/; Expires=<volatile>; HttpOnly; SameSite=Lax"
     },
     {
       "name": "get-user",
@@ -169,6 +175,14 @@
           "id": 1,
           "username": "alice"
         }
+      }
+    },
+    {
+      "name": "get-user-unauthenticated",
+      "request": "GET /api/users/1",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
       }
     },
     {
@@ -334,7 +348,6 @@
           "is_claimed": false,
           "name": "Bran",
           "notes": "",
-          "password_hash": "<volatile>",
           "pref_party_size": "",
           "pref_play_not_with": "",
           "pref_play_not_with_ids": "[]",
@@ -368,7 +381,6 @@
           "is_claimed": false,
           "name": "Cora",
           "notes": "",
-          "password_hash": "<volatile>",
           "pref_party_size": "",
           "pref_play_not_with": "",
           "pref_play_not_with_ids": "[]",
@@ -401,7 +413,6 @@
           "is_claimed": false,
           "name": "Bran",
           "notes": "",
-          "password_hash": "<volatile>",
           "pref_party_size": "",
           "pref_play_not_with": "",
           "pref_play_not_with_ids": "[]",
@@ -427,7 +438,6 @@
           "is_claimed": false,
           "name": "Cora",
           "notes": "",
-          "password_hash": "<volatile>",
           "pref_party_size": "",
           "pref_play_not_with": "",
           "pref_play_not_with_ids": "[]",
@@ -459,7 +469,6 @@
           "id": 1,
           "name": "Bran the Bold",
           "notes": "",
-          "password_hash": "<volatile>",
           "pref_party_size": "",
           "pref_play_not_with": "",
           "pref_play_not_with_ids": "[]",
@@ -484,9 +493,9 @@
     {
       "name": "update-player-unauthenticated",
       "request": "PUT /api/players/1",
-      "status": 403,
+      "status": 401,
       "body": {
-        "error": "forbidden"
+        "error": "not_authenticated"
       }
     },
     {
@@ -697,7 +706,6 @@
               "id": 1,
               "name": "Bran the Bold",
               "notes": "",
-              "password_hash": "<volatile>",
               "pref_party_size": "",
               "pref_play_not_with": "",
               "pref_play_not_with_ids": "[]",
@@ -721,7 +729,6 @@
               "id": 2,
               "name": "Cora",
               "notes": "",
-              "password_hash": "<volatile>",
               "pref_party_size": "",
               "pref_play_not_with": "",
               "pref_play_not_with_ids": "[]",
@@ -771,7 +778,6 @@
               "id": 1,
               "name": "Bran the Bold",
               "notes": "",
-              "password_hash": "<volatile>",
               "pref_party_size": "",
               "pref_play_not_with": "",
               "pref_play_not_with_ids": "[]",
@@ -813,7 +819,6 @@
               "id": 1,
               "name": "Bran the Bold",
               "notes": "",
-              "password_hash": "<volatile>",
               "pref_party_size": "",
               "pref_play_not_with": "",
               "pref_play_not_with_ids": "[]",
@@ -837,7 +842,6 @@
               "id": 2,
               "name": "Cora",
               "notes": "",
-              "password_hash": "<volatile>",
               "pref_party_size": "",
               "pref_play_not_with": "",
               "pref_play_not_with_ids": "[]",
@@ -939,7 +943,6 @@
                 "id": 1,
                 "name": "Bran the Bold",
                 "notes": "",
-                "password_hash": "<volatile>",
                 "pref_party_size": "",
                 "pref_play_not_with": "",
                 "pref_play_not_with_ids": "[]",
@@ -973,7 +976,6 @@
                 "id": 1,
                 "name": "Bran the Bold",
                 "notes": "",
-                "password_hash": "<volatile>",
                 "pref_party_size": "",
                 "pref_play_not_with": "",
                 "pref_play_not_with_ids": "[]",
@@ -1016,7 +1018,6 @@
               "id": 1,
               "name": "Bran the Bold",
               "notes": "",
-              "password_hash": "<volatile>",
               "pref_party_size": "",
               "pref_play_not_with": "",
               "pref_play_not_with_ids": "[]",
@@ -1050,7 +1051,6 @@
               "id": 1,
               "name": "Bran the Bold",
               "notes": "",
-              "password_hash": "<volatile>",
               "pref_party_size": "",
               "pref_play_not_with": "",
               "pref_play_not_with_ids": "[]",
@@ -1217,6 +1217,35 @@
       }
     },
     {
+      "name": "signup-passwordless-with-invite",
+      "request": "POST /auth/signup",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "user": {
+          "created_at": "<volatile>",
+          "discord_id": null,
+          "id": 3,
+          "username": "dara"
+        }
+      },
+      "set_cookie": "dnd_session=<volatile>; Max-Age=2592000; Path=/; Expires=<volatile>; HttpOnly; SameSite=Lax"
+    },
+    {
+      "name": "me-as-passwordless-user",
+      "request": "GET /api/me",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "user": {
+          "created_at": "<volatile>",
+          "discord_id": null,
+          "id": 3,
+          "username": "dara"
+        }
+      }
+    },
+    {
       "name": "members-after-join",
       "request": "GET /api/campaigns/1/members",
       "status": 200,
@@ -1245,6 +1274,18 @@
             "user_discord": null,
             "user_id": 2,
             "user_name": "bob"
+          },
+          {
+            "campaign_id": 1,
+            "created_at": "<volatile>",
+            "id": 3,
+            "permissions": "{\"can_unclaim\":true,\"can_edit_self\":true}",
+            "player_id": null,
+            "player_name": null,
+            "role": "player",
+            "user_discord": null,
+            "user_id": 3,
+            "user_name": "dara"
           }
         ],
         "ok": true
@@ -1276,7 +1317,6 @@
           "id": 3,
           "name": "bob",
           "notes": "",
-          "password_hash": "<volatile>",
           "pref_party_size": null,
           "pref_play_not_with": null,
           "pref_play_not_with_ids": "[]",
@@ -1318,7 +1358,6 @@
           "is_claimed": true,
           "name": "Cora",
           "notes": "",
-          "password_hash": "<volatile>",
           "pref_party_size": "",
           "pref_play_not_with": "",
           "pref_play_not_with_ids": "[]",
@@ -1330,7 +1369,12 @@
           "timezone": "PST",
           "unclaimed_at": null
         },
-        "user_id": 2
+        "user": {
+          "created_at": "<volatile>",
+          "discord_id": null,
+          "id": 2,
+          "username": "bob"
+        }
       }
     },
     {
@@ -1401,9 +1445,9 @@
     {
       "name": "sheet-columns-missing-id",
       "request": "POST /api/sheet-columns",
-      "status": 400,
+      "status": 401,
       "body": {
-        "error": "spreadsheetId required"
+        "error": "not_authenticated"
       }
     },
     {
@@ -1459,7 +1503,6 @@
           "is_claimed": false,
           "name": "Dane",
           "notes": "",
-          "password_hash": "<volatile>",
           "pref_party_size": "",
           "pref_play_not_with": "",
           "pref_play_not_with_ids": "[]",
@@ -1471,6 +1514,446 @@
           "timezone": "",
           "unclaimed_at": null
         }
+      }
+    },
+    {
+      "name": "claim-player-anonymous",
+      "request": "POST /api/campaigns/1/claim-player",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "player": {
+          "age": null,
+          "campaign_id": 1,
+          "claimed_user_id": 4,
+          "computer_access": null,
+          "ddb_avatar_url": null,
+          "ddb_json": null,
+          "ddb_url": null,
+          "discord": null,
+          "discord_id": null,
+          "id": 5,
+          "is_claimed": true,
+          "name": "Ellis",
+          "notes": null,
+          "pref_party_size": null,
+          "pref_play_not_with": null,
+          "pref_play_not_with_ids": "[]",
+          "pref_play_with": null,
+          "pref_play_with_ids": "[]",
+          "pref_session_length": null,
+          "pref_vtt": null,
+          "sort_index": 0,
+          "timezone": null,
+          "unclaimed_at": null
+        },
+        "user": {
+          "created_at": "<volatile>",
+          "discord_id": null,
+          "id": 4,
+          "username": "Ellis"
+        }
+      },
+      "set_cookie": "dnd_session=<volatile>; Max-Age=2592000; Path=/; Expires=<volatile>; HttpOnly; SameSite=Lax"
+    },
+    {
+      "name": "me-as-anonymous-claimant",
+      "request": "GET /api/me",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "user": {
+          "created_at": "<volatile>",
+          "discord_id": null,
+          "id": 4,
+          "username": "Ellis"
+        }
+      }
+    },
+    {
+      "name": "characters-unauthenticated",
+      "request": "GET /api/characters",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
+      }
+    },
+    {
+      "name": "characters-empty",
+      "request": "GET /api/characters",
+      "status": 200,
+      "body": {
+        "characters": [],
+        "ok": true
+      }
+    },
+    {
+      "name": "create-character",
+      "request": "POST /api/characters",
+      "status": 201,
+      "body": {
+        "character": {
+          "campaign_id": null,
+          "created_at": "<volatile>",
+          "data": {
+            "classes": [
+              {
+                "classId": "wizard",
+                "level": 3
+              }
+            ],
+            "id": "char-miri",
+            "name": "Miri",
+            "speciesId": "elf"
+          },
+          "id": "char-miri",
+          "name": "Miri",
+          "player_id": null,
+          "schema_version": 1,
+          "updated_at": "<volatile>",
+          "user_id": 1,
+          "version": 1
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "create-character-unauthenticated",
+      "request": "POST /api/characters",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
+      }
+    },
+    {
+      "name": "create-character-duplicate-id",
+      "request": "POST /api/characters",
+      "status": 409,
+      "body": {
+        "error": "character_exists"
+      }
+    },
+    {
+      "name": "create-character-invalid-id",
+      "request": "POST /api/characters",
+      "status": 400,
+      "body": {
+        "error": "invalid_id"
+      }
+    },
+    {
+      "name": "create-character-invalid-data",
+      "request": "POST /api/characters",
+      "status": 400,
+      "body": {
+        "error": "data_must_be_an_object"
+      }
+    },
+    {
+      "name": "create-character-seated",
+      "request": "POST /api/characters",
+      "status": 201,
+      "body": {
+        "character": {
+          "campaign_id": 1,
+          "created_at": "<volatile>",
+          "data": {
+            "name": "Dane's Paladin"
+          },
+          "id": "char-dane",
+          "name": "Dane's Paladin",
+          "player_id": 4,
+          "schema_version": 1,
+          "updated_at": "<volatile>",
+          "user_id": 1,
+          "version": 1
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "create-character-foreign-campaign",
+      "request": "POST /api/characters",
+      "status": 403,
+      "body": {
+        "error": "not_a_member"
+      }
+    },
+    {
+      "name": "create-character-seat-without-campaign",
+      "request": "POST /api/characters",
+      "status": 400,
+      "body": {
+        "error": "campaign_id_required_for_player"
+      }
+    },
+    {
+      "name": "list-characters",
+      "request": "GET /api/characters",
+      "status": 200,
+      "body": {
+        "characters": [
+          {
+            "campaign_id": 1,
+            "created_at": "<volatile>",
+            "id": "char-dane",
+            "name": "Dane's Paladin",
+            "player_id": 4,
+            "schema_version": 1,
+            "updated_at": "<volatile>",
+            "user_id": 1,
+            "version": 1
+          },
+          {
+            "campaign_id": null,
+            "created_at": "<volatile>",
+            "id": "char-miri",
+            "name": "Miri",
+            "player_id": null,
+            "schema_version": 1,
+            "updated_at": "<volatile>",
+            "user_id": 1,
+            "version": 1
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "list-characters-by-campaign",
+      "request": "GET /api/characters?campaign_id=1",
+      "status": 200,
+      "body": {
+        "characters": [
+          {
+            "campaign_id": 1,
+            "created_at": "<volatile>",
+            "id": "char-dane",
+            "name": "Dane's Paladin",
+            "player_id": 4,
+            "schema_version": 1,
+            "updated_at": "<volatile>",
+            "user_id": 1,
+            "version": 1
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "get-character",
+      "request": "GET /api/characters/char-miri",
+      "status": 200,
+      "body": {
+        "character": {
+          "campaign_id": null,
+          "created_at": "<volatile>",
+          "data": {
+            "classes": [
+              {
+                "classId": "wizard",
+                "level": 3
+              }
+            ],
+            "id": "char-miri",
+            "name": "Miri",
+            "speciesId": "elf"
+          },
+          "id": "char-miri",
+          "name": "Miri",
+          "player_id": null,
+          "schema_version": 1,
+          "updated_at": "<volatile>",
+          "user_id": 1,
+          "version": 1
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "get-character-as-other-user",
+      "request": "GET /api/characters/char-miri",
+      "status": 404,
+      "body": {
+        "error": "character_not_found"
+      }
+    },
+    {
+      "name": "get-character-missing",
+      "request": "GET /api/characters/char-nonexistent",
+      "status": 404,
+      "body": {
+        "error": "character_not_found"
+      }
+    },
+    {
+      "name": "update-character-without-version",
+      "request": "PUT /api/characters/char-miri",
+      "status": 400,
+      "body": {
+        "error": "version_required"
+      }
+    },
+    {
+      "name": "update-character",
+      "request": "PUT /api/characters/char-miri",
+      "status": 200,
+      "body": {
+        "character": {
+          "campaign_id": null,
+          "created_at": "<volatile>",
+          "data": {
+            "classes": [
+              {
+                "classId": "wizard",
+                "level": 4
+              }
+            ],
+            "id": "char-miri",
+            "name": "Miri Brightwood",
+            "speciesId": "elf"
+          },
+          "id": "char-miri",
+          "name": "Miri Brightwood",
+          "player_id": null,
+          "schema_version": 1,
+          "updated_at": "<volatile>",
+          "user_id": 1,
+          "version": 2
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "update-character-stale-version",
+      "request": "PUT /api/characters/char-miri",
+      "status": 409,
+      "body": {
+        "character": {
+          "campaign_id": null,
+          "created_at": "<volatile>",
+          "data": {
+            "classes": [
+              {
+                "classId": "wizard",
+                "level": 4
+              }
+            ],
+            "id": "char-miri",
+            "name": "Miri Brightwood",
+            "speciesId": "elf"
+          },
+          "id": "char-miri",
+          "name": "Miri Brightwood",
+          "player_id": null,
+          "schema_version": 1,
+          "updated_at": "<volatile>",
+          "user_id": 1,
+          "version": 2
+        },
+        "error": "version_conflict"
+      }
+    },
+    {
+      "name": "update-character-unauthenticated",
+      "request": "PUT /api/characters/char-miri",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
+      }
+    },
+    {
+      "name": "import-characters",
+      "request": "POST /api/characters/import",
+      "status": 200,
+      "body": {
+        "imported": [
+          "char-imported"
+        ],
+        "ok": true,
+        "skipped": [
+          {
+            "id": "char-miri",
+            "reason": "already_exists"
+          },
+          {
+            "id": null,
+            "reason": "invalid_id"
+          }
+        ]
+      }
+    },
+    {
+      "name": "import-characters-not-an-array",
+      "request": "POST /api/characters/import",
+      "status": 400,
+      "body": {
+        "error": "characters_array_required"
+      }
+    },
+    {
+      "name": "delete-character",
+      "request": "DELETE /api/characters/char-miri",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "name": "delete-character-again",
+      "request": "DELETE /api/characters/char-miri",
+      "status": 200,
+      "body": {
+        "already_deleted": true,
+        "ok": true
+      }
+    },
+    {
+      "name": "get-character-after-delete",
+      "request": "GET /api/characters/char-miri",
+      "status": 404,
+      "body": {
+        "error": "character_not_found"
+      }
+    },
+    {
+      "name": "recreate-deleted-character",
+      "request": "POST /api/characters",
+      "status": 409,
+      "body": {
+        "error": "character_deleted"
+      }
+    },
+    {
+      "name": "characters-after-delete",
+      "request": "GET /api/characters",
+      "status": 200,
+      "body": {
+        "characters": [
+          {
+            "campaign_id": null,
+            "created_at": "<volatile>",
+            "id": "char-imported",
+            "name": "Imported",
+            "player_id": null,
+            "schema_version": 1,
+            "updated_at": "<volatile>",
+            "user_id": 1,
+            "version": 1
+          },
+          {
+            "campaign_id": 1,
+            "created_at": "<volatile>",
+            "id": "char-dane",
+            "name": "Dane's Paladin",
+            "player_id": 4,
+            "schema_version": 1,
+            "updated_at": "<volatile>",
+            "user_id": 1,
+            "version": 1
+          }
+        ],
+        "ok": true
       }
     },
     {
@@ -1496,6 +1979,152 @@
       "body": {
         "campaigns": [],
         "ok": true
+      }
+    },
+    {
+      "name": "characters-after-campaign-delete",
+      "request": "GET /api/characters",
+      "status": 200,
+      "body": {
+        "characters": [
+          {
+            "campaign_id": null,
+            "created_at": "<volatile>",
+            "id": "char-imported",
+            "name": "Imported",
+            "player_id": null,
+            "schema_version": 1,
+            "updated_at": "<volatile>",
+            "user_id": 1,
+            "version": 1
+          },
+          {
+            "campaign_id": null,
+            "created_at": "<volatile>",
+            "id": "char-dane",
+            "name": "Dane's Paladin",
+            "player_id": null,
+            "schema_version": 1,
+            "updated_at": "<volatile>",
+            "user_id": 1,
+            "version": 1
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "me-unauthenticated",
+      "request": "GET /api/me",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
+      }
+    },
+    {
+      "name": "me-forged-header",
+      "request": "GET /api/me",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
+      }
+    },
+    {
+      "name": "me-forged-query",
+      "request": "GET /api/me?user_id=1",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
+      }
+    },
+    {
+      "name": "campaigns-forged-header",
+      "request": "GET /api/campaigns",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
+      }
+    },
+    {
+      "name": "me-invented-session",
+      "request": "GET /api/me",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
+      }
+    },
+    {
+      "name": "me-authenticated",
+      "request": "GET /api/me",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "user": {
+          "created_at": "<volatile>",
+          "discord_id": null,
+          "id": 1,
+          "username": "alice"
+        }
+      }
+    },
+    {
+      "name": "discord-potential-links",
+      "request": "GET /api/discord/potential-links",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "potential_matches": []
+      }
+    },
+    {
+      "name": "logout-bob",
+      "request": "POST /auth/logout",
+      "status": 200,
+      "body": {
+        "ok": true
+      },
+      "set_cookie": "dnd_session=<volatile>; Path=/; Expires=<volatile>; HttpOnly; SameSite=Lax"
+    },
+    {
+      "name": "me-with-revoked-cookie",
+      "request": "GET /api/me",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
+      }
+    },
+    {
+      "name": "logout-without-session",
+      "request": "POST /auth/logout",
+      "status": 200,
+      "body": {
+        "ok": true
+      },
+      "set_cookie": "dnd_session=<volatile>; Path=/; Expires=<volatile>; HttpOnly; SameSite=Lax"
+    },
+    {
+      "name": "logout-all-unauthenticated",
+      "request": "POST /auth/logout-all",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
+      }
+    },
+    {
+      "name": "logout-all-alice",
+      "request": "POST /auth/logout-all",
+      "status": 200,
+      "body": {
+        "ok": true
+      },
+      "set_cookie": "dnd_session=<volatile>; Path=/; Expires=<volatile>; HttpOnly; SameSite=Lax"
+    },
+    {
+      "name": "me-after-logout-all",
+      "request": "GET /api/me",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
       }
     }
   ],

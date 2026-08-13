@@ -24,6 +24,7 @@ const groupsRoutes = require('./routes/groups');
 const usersRoutes = require('./routes/users');
 const availabilityRoutes = require('./routes/availability');
 const runtimeRoutes = require('./routes/runtime');
+const charactersRoutes = require('./routes/characters');
 
 const app = express();
 // Behind a reverse proxy (Render, Vercel, etc.), trust the first proxy hop
@@ -58,8 +59,12 @@ const corsOptions = {
     return callback(null, false);
   },
   methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type','X-User-Id','X-Campaign-Id','X-Diag-Token'],
-  credentials: false,
+  // X-User-Id is gone: it was the client-asserted identity Phase 1b replaced with a session
+  // cookie. Leaving it allowed would advertise a header the server no longer reads.
+  allowedHeaders: ['Content-Type','X-Campaign-Id','X-Diag-Token'],
+  // Cookies only travel cross-origin with credentials enabled and an exact origin echoed back
+  // (never '*'), which the origin function above guarantees.
+  credentials: true,
   optionsSuccessStatus: 204,
 };
 
@@ -68,11 +73,27 @@ app.use(cors(corsOptions));
 // Express 5 disallows '*' path strings; use a regex to match all paths for OPTIONS
 app.options(/.*/, cors(corsOptions));
 
+/** Read a positive integer from the environment, else fall back. Lets tests raise the caps. */
+function envLimit(name, fallback) {
+  const parsed = Number.parseInt(process.env[name] || '', 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
 // Rate limiting to prevent overwhelming your home connection
 const limiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
-  max: 100, // Limit each IP to 100 requests per windowMs
+  windowMs: envLimit('RATE_LIMIT_WINDOW_MS', 60 * 1000), // 1 minute
+  limit: envLimit('RATE_LIMIT_MAX', 100), // Limit each IP to 100 requests per windowMs
   message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Credential endpoints get a much tighter budget than the general API: they are the ones worth
+// grinding through with a password list, and a real user hits them once or twice a month.
+const authLimiter = rateLimit({
+  windowMs: envLimit('AUTH_RATE_LIMIT_WINDOW_MS', 15 * 60 * 1000),
+  limit: envLimit('AUTH_RATE_LIMIT_MAX', 20),
+  message: { error: 'too_many_auth_attempts' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -80,12 +101,17 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(compression()); // Enable gzip compression
 app.use(express.json({ limit: '10mb' })); // Increase payload limit
+for (const path of ['/auth/login', '/auth/signup', '/auth/discord']) app.use(path, authLimiter);
 
 // Mount order mirrors the original declaration order. Only /diag/oauth and / are reachable
 // through the SPA fallback's regex, so they must stay ahead of mountStaticClient; the /api and
 // /auth routers are excluded by that regex and can sit on either side of it.
 app.use(authRoutes);
 app.use(systemRoutes);
+// /health and /diag/db used to be registered inside the listen callback, which put them behind
+// the SPA fallback below — they would have 404ed into index.html the moment a client build
+// existed. Phase 1a preserved that; Phase 1b moves them ahead of the fallback where they belong.
+app.use(runtimeRoutes);
 app.use(feedbackRoutes);
 app.use(syncRoutes);
 mountStaticClient(app);
@@ -95,23 +121,27 @@ app.use(invitesRoutes);
 app.use(groupsRoutes);
 app.use(usersRoutes);
 app.use(availabilityRoutes);
+// New in Phase 2, so it has no original position to preserve; it sits last because everything
+// above it is the scheduler's declaration order and nothing here overlaps those paths.
+app.use(charactersRoutes);
 
-// Schema and migrations are handled at startup by ensureSchema(db)
 const port = config.port || 3001;
 
-// Production-ready server startup
-app.listen(port, '0.0.0.0', async () => {
-  console.log(`🚀 Server listening on port ${port}`);
+// Schema first, then listen. Ensuring it inside the listen callback meant the first requests
+// could race the `sessions` table into existence; a failure is still only a warning, because a
+// server that answers 500s is more debuggable than one that never binds a port.
+async function start() {
   try {
     await ensureSchema(db);
     console.log('✅ DB schema ensured');
   } catch (e) {
-    console.warn('⚠️  Failed to ensure DB schema:', e && e.message);
+    console.warn('⚠️  Failed to ensure DB schema:', e?.message);
   }
-  console.log(`📊 Database: ${process.env.TURSO_DATABASE_URL || process.env.LIBSQL_URL || process.env.DATABASE_URL || 'libsql'}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`🚀 Server listening on port ${port}`);
+    console.log(`📊 Database: ${process.env.TURSO_DATABASE_URL || process.env.LIBSQL_URL || process.env.DATABASE_URL || 'libsql'}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+}
 
-  // /health and /diag/db were registered here rather than at module scope, which puts them
-  // behind the SPA fallback above. Preserved as-is by Phase 1a; revisit in Phase 1b.
-  app.use(runtimeRoutes);
-});
+start();

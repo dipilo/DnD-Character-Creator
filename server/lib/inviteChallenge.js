@@ -1,3 +1,5 @@
+const crypto = require('node:crypto');
+
 const inviteChallengeSessions = new Map();
 const inviteChallengePassTokens = new Map();
 const INVITE_CHALLENGE_TTL_MS = 10 * 60 * 1000;
@@ -32,11 +34,17 @@ function pruneInviteChallengeState() {
   }
 }
 
+// The captcha text and the riddle choice are both parts of an access gate, so neither is drawn
+// from Math.random.
 function makeFakeCaptchaText() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let out = '';
-  for (let i = 0; i < 5; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  for (let i = 0; i < 5; i++) out += chars[crypto.randomInt(chars.length)];
   return out;
 }
 
-module.exports = { inviteChallengeSessions, inviteChallengePassTokens, INVITE_CHALLENGE_TTL_MS, CHALLENGE_FEATURES_ENABLED, INVITE_PASS_TTL_MS, RIDDLE_BANK, pruneInviteChallengeState, makeFakeCaptchaText };
+function pickRiddle() {
+  return RIDDLE_BANK[crypto.randomInt(RIDDLE_BANK.length)];
+}
+
+module.exports = { inviteChallengeSessions, inviteChallengePassTokens, INVITE_CHALLENGE_TTL_MS, CHALLENGE_FEATURES_ENABLED, INVITE_PASS_TTL_MS, RIDDLE_BANK, pickRiddle, pruneInviteChallengeState, makeFakeCaptchaText };

@@ -5,12 +5,16 @@ const { buildRangesFromText, mergeInsertAvailability } = require('../lib/availab
 const { resolveNamesToPlayerIds } = require('../lib/groups');
 const fetch = require('../lib/httpFetch');
 const { fetchSheetCSV, fetchSheetHeaders, parseSheetId } = require('../lib/sheets');
+const { canUserModifyPlayer, getCampaignMembership, requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
+// The three routes below all took no authentication at all. They make the server fetch a
+// caller-supplied URL, rewrite a campaign's whole roster, or forward a body to the configured
+// Apps Script endpoint, so all three now require a session (and campaign rights where relevant).
+
 // endpoint: POST /api/sheet-columns { spreadsheetId, gid?, sheetName? }
-// replace or add this in server/server.js (near your other endpoints)
-router.post('/api/sheet-columns', async (req, res) => {
+router.post('/api/sheet-columns', requireAuth, async (req, res) => {
   try {
     const raw = req.body.spreadsheetId || req.body.sheetId || req.body.sheetLink;
     if (!raw) return res.status(400).json({ error: 'spreadsheetId required' });
@@ -30,16 +34,18 @@ router.post('/api/sheet-columns', async (req, res) => {
 /* ---------- endpoints ---------- */
 
 // sync (imports sheet rows and parses availability into DB as source='sheet')
-router.post('/api/sync', async (req, res) => {
+router.post('/api/sync', requireAuth, async (req, res) => {
   try {
     // Accept spreadsheetId as a raw id or full URL
     const input = req.body.spreadsheetId || req.body.sheetLink || req.body.sheet || config.spreadsheetId;
     const gid = req.body.gid !== undefined ? req.body.gid : config.gid;
     const sheetName = req.body.sheetName || null;
-  const mapping = req.body.mapping || null; // optional mapping: { name: "Player Name", notes: "Availability", ... }
-  // Accept campaign_id to scope imported rows
-  const campaignId = req.body.campaign_id || (mapping && mapping.campaign_id) || null;
-  if (!campaignId) return res.status(400).json({ error: 'campaign_id required' });
+    const mapping = req.body.mapping || null; // optional mapping: { name: "Player Name", notes: "Availability", ... }
+    // Accept campaign_id to scope imported rows
+    const campaignId = req.body.campaign_id || mapping?.campaign_id || null;
+    if (!campaignId) return res.status(400).json({ error: 'campaign_id required' });
+    const mem = await getCampaignMembership(req.user.id, campaignId);
+    if (!mem) return res.status(403).json({ error: 'not_a_member' });
 
     const id = parseSheetId(input);
     if (!id) return res.status(400).json({ error: 'Invalid spreadsheet id or URL provided.' });
@@ -136,11 +142,12 @@ router.post('/api/sync', async (req, res) => {
 
 
 // rebuild availability for single player (re-parse notes, delete sheet-sourced blocks, insert new)
-router.post('/api/rebuild/:player_id', async (req, res) => {
+router.post('/api/rebuild/:player_id', requireAuth, async (req, res) => {
   try {
-    const player_id = parseInt(req.params.player_id, 10);
+    const player_id = Number.parseInt(req.params.player_id, 10);
     const player = await db.get('SELECT * FROM players WHERE id = ?', player_id);
     if (!player) return res.status(404).json({ error: 'player_not_found' });
+    if (!(await canUserModifyPlayer(req.user, player.campaign_id, player_id))) return res.status(403).json({ error: 'forbidden' });
     // delete previous sheet-origin availability
     await db.run("DELETE FROM availability WHERE player_id = ? AND source = 'sheet'", player_id);
     // parse fresh and insert as 'sheet'
@@ -156,7 +163,7 @@ router.post('/api/rebuild/:player_id', async (req, res) => {
 });
 
 // forward to Apps Script unchanged
-router.post('/api/push-to-sheet', async (req, res) => {
+router.post('/api/push-to-sheet', requireAuth, async (req, res) => {
   try {
     const targetUrl = config.appsScriptUrl;
     const r = await fetch(targetUrl, {

@@ -2,19 +2,20 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const db = require('../db');
 const { getCachedQueryAsync, setCache } = require('../lib/cache');
+const { publicPlayer } = require('../lib/players');
+const { createSession, publicUser } = require('../lib/sessions');
 const { genToken } = require('../lib/tokens');
-const { cleanupOrphanedUser, getRequestUser, requireCampaignAccess } = require('../middleware/auth');
+const { cleanupOrphanedUser, isCampaignOwner, memberHasPermission, optionalAuth, requireAuth, requireCampaignAccess } = require('../middleware/auth');
 
 const router = express.Router();
 
 // ---------- Campaign endpoints ----------
 
 // Create a campaign (authenticated user becomes owner)
-router.post('/api/campaigns', async (req, res) => {
+router.post('/api/campaigns', requireAuth, async (req, res) => {
   try {
-    const user = await getRequestUser(req);
-    if (!user) return res.status(401).json({ error: 'not_authenticated' });
-    const name = (req.body && req.body.name) ? String(req.body.name).trim() : 'New Campaign';
+    const user = req.user;
+    const name = req.body?.name ? String(req.body.name).trim() : 'New Campaign';
     const info = await db.run('INSERT INTO campaigns(name, owner_user_id) VALUES (?, ?)', name, user.id);
     const created = await db.get('SELECT * FROM campaigns WHERE id = ?', info.lastInsertRowid);
     // add campaign_members entry for owner
@@ -55,10 +56,9 @@ router.get('/api/campaigns/code/:code', async (req, res) => {
 });
 
 // Allow authenticated user to add themselves as a player to a campaign
-router.post('/api/campaigns/:campaignId/add-self', async (req, res) => {
+router.post('/api/campaigns/:campaignId/add-self', requireAuth, async (req, res) => {
   try {
-    const user = await getRequestUser(req);
-    if (!user) return res.status(401).json({ error: 'not_authenticated' });
+    const user = req.user;
     const campaignId = parseInt(req.params.campaignId, 10);
     if (!campaignId) return res.status(400).json({ error: 'invalid_campaign_id' });
     const camp = await db.get('SELECT * FROM campaigns WHERE id = ?', campaignId);
@@ -69,7 +69,7 @@ router.post('/api/campaigns/:campaignId/add-self', async (req, res) => {
     const created = await db.get('SELECT * FROM players WHERE id = ?', info.lastInsertRowid);
     // link membership (user -> player)
     await db.run('INSERT OR IGNORE INTO campaign_members (campaign_id, user_id, player_id, role) VALUES (?, ?, ?, ?)', campaignId, user.id, created.id, 'player');
-    res.json({ ok: true, player: created });
+    res.json({ ok: true, player: publicPlayer(created) });
   } catch (e) {
     console.error('/api/campaigns/:campaignId/add-self', e);
     res.status(500).json({ error: e.message });
@@ -77,10 +77,9 @@ router.post('/api/campaigns/:campaignId/add-self', async (req, res) => {
 });
 
 // List campaigns for the authenticated user
-router.get('/api/campaigns', async (req, res) => {
+router.get('/api/campaigns', requireAuth, async (req, res) => {
   try {
-    const user = await getRequestUser(req);
-    if (!user) return res.status(401).json({ error: 'not_authenticated' });
+    const user = req.user;
     const rows = await db.all(`
       SELECT c.* FROM campaigns c
       JOIN campaign_members cm ON cm.campaign_id = c.id
@@ -120,10 +119,12 @@ router.delete('/api/campaigns/:campaignId', requireCampaignAccess('owner'), asyn
       await trx.run('DELETE FROM campaign_members WHERE campaign_id = ?', cid);
       await trx.run('UPDATE availability SET campaign_id = NULL WHERE campaign_id = ?', cid);
       await trx.run('UPDATE players SET campaign_id = NULL WHERE campaign_id = ?', cid);
+      // A character belongs to a user, not to a campaign (MERGE_PLAN.md §9): deleting the campaign
+      // gives up the seat, it does not destroy someone's sheet.
+      await trx.run('UPDATE characters SET campaign_id = NULL, player_id = NULL WHERE campaign_id = ?', cid);
       await trx.run('DELETE FROM campaigns WHERE id = ?', cid);
     });
     // cleanup any users that were only scoped to this campaign (no password and no remaining campaign_members)
-    for (const uid of linkedUsers) await cleanupOrphanedUser(uid);
     for (const uid of linkedUsers) await cleanupOrphanedUser(uid);
     res.json({ ok: true });
   } catch (e) {
@@ -135,15 +136,14 @@ router.delete('/api/campaigns/:campaignId', requireCampaignAccess('owner'), asyn
 // Leave a campaign (remove user from campaign_members)
 router.post('/api/campaigns/:campaignId/leave', requireCampaignAccess(), async (req, res) => {
   try {
-    const user = await getRequestUser(req);
+    const user = req.user;
     const campaignId = req.campaign.id;
-    
+
     // Don't allow campaign owner to leave (they should delete the campaign instead)
-    const ownerCheck = await db.get("SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ? AND role = 'owner'", campaignId, user.id);
-    if (ownerCheck) {
+    if (await isCampaignOwner(user.id, campaignId)) {
       return res.status(400).json({ error: 'owners_cannot_leave' });
     }
-    
+
     // Remove user from campaign_members
     await db.run('DELETE FROM campaign_members WHERE campaign_id = ? AND user_id = ?', campaignId, user.id);
     
@@ -158,12 +158,11 @@ router.post('/api/campaigns/:campaignId/leave', requireCampaignAccess(), async (
 });
 
 // Reorder campaigns (body: { ids: [...] }) — owner must be a member of affected campaigns
-router.post('/api/campaigns/reorder', async (req, res) => {
+router.post('/api/campaigns/reorder', requireAuth, async (req, res) => {
   try {
-    const ids = req.body && req.body.ids;
+    const ids = req.body?.ids;
     if (!Array.isArray(ids)) return res.status(400).json({ error: 'invalid_ids' });
-    const user = await getRequestUser(req);
-    if (!user) return res.status(401).json({ error: 'not_authenticated' });
+    const user = req.user;
 
     // verify user is member of each campaign id provided
     for (const id of ids) {
@@ -222,12 +221,11 @@ router.get('/api/campaigns/:campaignId/members', requireCampaignAccess(), async 
 });
 
 // Add current user as a member of a campaign (join campaign)
-router.post('/api/campaigns/:campaignId/members', async (req, res) => {
+router.post('/api/campaigns/:campaignId/members', requireAuth, async (req, res) => {
   try {
     const campaignId = req.params.campaignId;
-    const user = await getRequestUser(req);
-    if (!user) return res.status(401).json({ error: 'not_authenticated' });
-    
+    const user = req.user;
+
     // Check if campaign exists
     const campaign = await db.get('SELECT * FROM campaigns WHERE id = ?', campaignId);
     if (!campaign) return res.status(404).json({ error: 'campaign_not_found' });
@@ -285,16 +283,16 @@ router.get('/api/campaigns/:campaignId/unclaimed-players', setCache, async (req,
 });
 
 // Claim a player in a campaign: link current user or create a password-protected player
-router.post('/api/campaigns/:campaignId/claim-player', async (req, res) => {
+router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req, res) => {
   try {
     const campaignId = req.params.campaignId;
-    const playerId = req.body && req.body.player_id;
-    const password = req.body && req.body.password; // optional
-    const name = req.body && req.body.name;
+    const playerId = req.body?.player_id;
+    const password = req.body?.password; // optional
+    const name = req.body?.name;
 
     // Validate input early
     if (!campaignId) return res.status(400).json({ error: 'campaign_id_required' });
-    if (!name && !req.get('X-User-Id')) return res.status(400).json({ error: 'name_required_for_anonymous' });
+    if (!name && !req.user) return res.status(400).json({ error: 'name_required_for_anonymous' });
 
     // Use cached query for campaign validation
     const cacheKey = `campaign_${campaignId}`;
@@ -304,7 +302,7 @@ router.post('/api/campaigns/:campaignId/claim-player', async (req, res) => {
     
     if (!campaign) return res.status(404).json({ error: 'campaign_not_found' });
 
-    const user = await getRequestUser(req);
+    const user = req.user;
     if (user) {
       // Use database transaction for consistency and better performance
       const transaction = async () => await db.transaction(async (trx) => {
@@ -358,7 +356,7 @@ router.post('/api/campaigns/:campaignId/claim-player', async (req, res) => {
       
       try {
         const playerOut = await transaction();
-        return res.json({ ok: true, player: playerOut, user_id: user.id });
+        return res.json({ ok: true, player: publicPlayer(playerOut), user: publicUser(user) });
       } catch (error) {
         return res.status(400).json({ error: error.message });
       }
@@ -382,8 +380,10 @@ router.post('/api/campaigns/:campaignId/claim-player', async (req, res) => {
     await db.run('INSERT INTO campaign_members(campaign_id,user_id,player_id,role,permissions) VALUES (?, ?, ?, ?, ?)', campaignId, newUser.id, newPid, 'player', perms);
   const created = await db.get('SELECT * FROM players WHERE id = ?', newPid);
   const claimedRow = await db.get('SELECT user_id FROM campaign_members WHERE player_id = ? AND campaign_id = ? AND user_id IS NOT NULL LIMIT 1', newPid, campaignId);
-  const playerOut = { ...created, claimed_user_id: claimedRow ? claimedRow.user_id : null, is_claimed: Boolean(claimedRow && claimedRow.user_id) || Boolean(created.password_hash) || Boolean(created.discord_id) };
-  return res.json({ ok: true, player: playerOut, user_id: newUser.id });
+  const playerOut = { ...created, claimed_user_id: claimedRow ? claimedRow.user_id : null, is_claimed: Boolean(claimedRow?.user_id) || Boolean(created.password_hash) || Boolean(created.discord_id) };
+  // The campaign-scoped account just created is a real account, so it gets a real session too.
+  await createSession(req, res, newUser);
+  return res.json({ ok: true, player: publicPlayer(playerOut), user: publicUser(newUser) });
   }
   // claiming existing player
   const p = await db.get('SELECT * FROM players WHERE id = ? AND campaign_id = ?', playerId, campaignId);
@@ -401,11 +401,11 @@ router.post('/api/campaigns/:campaignId/claim-player', async (req, res) => {
   // If no password was provided, this is a campaign-scoped account; store a minimal permission set on campaign_members
   const perms = JSON.stringify({ can_unclaim: true, can_edit_self: true });
   await db.run('INSERT INTO campaign_members(campaign_id,user_id,player_id,role,permissions) VALUES (?, ?, ?, ?, ?)', campaignId, newUser.id, playerId, 'player', perms);
-  // return the new user id so the client can persist it (lightweight dev auth)
   const createdP = await db.get('SELECT * FROM players WHERE id = ?', playerId);
   const claimedR = await db.get('SELECT user_id FROM campaign_members WHERE player_id = ? AND campaign_id = ? AND user_id IS NOT NULL LIMIT 1', playerId, campaignId);
-  const playerOutFinal = { ...createdP, claimed_user_id: claimedR ? claimedR.user_id : null, is_claimed: Boolean(claimedR && claimedR.user_id) || Boolean(createdP.password_hash) || Boolean(createdP.discord_id) };
-  res.json({ ok: true, player: playerOutFinal, user_id: newUser.id });
+  const playerOutFinal = { ...createdP, claimed_user_id: claimedR ? claimedR.user_id : null, is_claimed: Boolean(claimedR?.user_id) || Boolean(createdP.password_hash) || Boolean(createdP.discord_id) };
+  await createSession(req, res, newUser);
+  res.json({ ok: true, player: publicPlayer(playerOutFinal), user: publicUser(newUser) });
   } catch (e) {
     console.error('POST /api/campaigns/:campaignId/claim-player', e);
     res.status(500).json({ error: e.message });
@@ -413,34 +413,23 @@ router.post('/api/campaigns/:campaignId/claim-player', async (req, res) => {
 });
 
 // Unclaim a player: owner or linked user may unclaim (removes password_hash and clears campaign_members link)
-router.post('/api/campaigns/:campaignId/unclaim-player', async (req, res) => {
+router.post('/api/campaigns/:campaignId/unclaim-player', requireAuth, async (req, res) => {
   try {
     const campaignId = req.params.campaignId;
-    const playerId = req.body && req.body.player_id;
+    const playerId = req.body?.player_id;
     if (!playerId) return res.status(400).json({ error: 'player_id required' });
-    
-    const user = await getRequestUser(req);
+
+    const user = req.user;
     const existing = await db.get('SELECT * FROM players WHERE id = ? AND campaign_id = ?', playerId, campaignId);
     if (!existing) return res.status(404).json({ error: 'player_not_found' });
-    
+
     // owner can unclaim, or the linked user with can_unclaim permission can unclaim their own player
-    const ownerCheck = user ? await db.get("SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ? AND role = 'owner'", campaignId, user.id) : null;
-    const linked = user ? await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ? AND player_id = ?', campaignId, user.id, playerId) : null;
-    
-    let hasPermission = false;
-    if (ownerCheck) hasPermission = true;
-    if (linked) {
-      // linked.permissions is a JSON string
-      try {
-        const perms = linked.permissions ? JSON.parse(linked.permissions) : {};
-        // Check for legacy can_unclaim or modern players_self_delete permission
-        if (perms && (perms.can_unclaim || perms.players_self_delete)) hasPermission = true;
-      } catch (e) { 
-        /* ignore parse errors */
-      }
-    }
+    const isOwner = await isCampaignOwner(user.id, campaignId);
+    const linked = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ? AND player_id = ?', campaignId, user.id, playerId);
+    // legacy can_unclaim or modern players_self_delete both grant it
+    const hasPermission = isOwner || memberHasPermission(linked, 'can_unclaim', 'players_self_delete');
     if (!hasPermission) return res.status(403).json({ error: 'forbidden' });
-    
+
     // remove password_hash and unlink any user mapping, mark as explicitly unclaimed
     const linkedUsers = (await db.all('SELECT DISTINCT user_id FROM campaign_members WHERE campaign_id = ? AND player_id = ?', campaignId, playerId)).map(r => r.user_id).filter(Boolean);
     await db.run('UPDATE players SET password_hash = NULL, discord_id = NULL, unclaimed_at = CURRENT_TIMESTAMP WHERE id = ?', playerId);

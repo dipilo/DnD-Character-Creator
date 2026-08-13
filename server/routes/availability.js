@@ -1,19 +1,18 @@
 const express = require('express');
 const db = require('../db');
 const { buildRangesFromText, extractTzFromText, mergeInsertAvailability, tzFromAbbrev } = require('../lib/availability');
-const { canUserModifyPlayer, getCampaignMembership, getRequestUser } = require('../middleware/auth');
+const { canUserModifyPlayer, getCampaignMembership, requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
 // insert availability (server will merge with existing)
-router.post('/api/availability', async (req, res) => {
+router.post('/api/availability', requireAuth, async (req, res) => {
   try {
     const { player_id, start_iso, end_iso, source } = req.body;
     if (!player_id || !start_iso || !end_iso) return res.status(400).json({ error: 'missing_fields' });
     const player = await db.get('SELECT * FROM players WHERE id = ?', player_id);
     if (!player) return res.status(404).json({ error: 'player_not_found' });
-    const user = await getRequestUser(req);
-    if (!(await canUserModifyPlayer(user, player.campaign_id, player_id))) return res.status(403).json({ error: 'forbidden' });
+    if (!(await canUserModifyPlayer(req.user, player.campaign_id, player_id))) return res.status(403).json({ error: 'forbidden' });
     const merged = await mergeInsertAvailability(player_id, start_iso, end_iso, source || 'manual');
     // ensure campaign_id saved on availability
     await db.run('UPDATE availability SET campaign_id = ? WHERE id = ?', player.campaign_id, merged.id);
@@ -25,15 +24,13 @@ router.post('/api/availability', async (req, res) => {
 });
 
 // GET availability for a player (supports client calling GET /api/availability?player_id=1)
-router.get('/api/availability', async (req, res) => {
+router.get('/api/availability', requireAuth, async (req, res) => {
   try {
-    const player_id = parseInt(req.query.player_id, 10);
+    const player_id = Number.parseInt(req.query.player_id, 10);
     const campaignId = req.query.campaign_id || req.get('X-Campaign-Id');
     if (!player_id) return res.status(400).json({ error: 'missing_player_id' });
     if (!campaignId) return res.status(400).json({ error: 'campaign_id required' });
-    const user = await getRequestUser(req);
-    if (!user) return res.status(401).json({ error: 'not_authenticated' });
-    const mem = await getCampaignMembership(user.id, campaignId);
+    const mem = await getCampaignMembership(req.user.id, campaignId);
     if (!mem) return res.status(403).json({ error: 'not_a_member' });
 
     // ensure the player belongs to the campaign
@@ -48,11 +45,8 @@ router.get('/api/availability', async (req, res) => {
   }
 });
 
-router.post('/api/availability/preview', async (req, res) => {
+router.post('/api/availability/preview', requireAuth, async (req, res) => {
   try {
-    const user = await getRequestUser(req);
-    if (!user) return res.status(401).json({ error: 'not_authenticated' });
-
     const text = String(req.body?.text || '');
     const timezone = String(req.body?.timezone || '');
     const daysAheadRaw = parseInt(req.body?.daysAhead, 10);
@@ -75,42 +69,32 @@ router.post('/api/availability/preview', async (req, res) => {
 });
 
 // GET /api/availability/aggregate?start=2025-09-13T00:00:00Z&end=2025-09-20T00:00:00Z
-router.get('/api/availability/aggregate', async (req, res) => {
+// Campaign scoping used to be optional here, and so did authentication: omitting campaign_id
+// aggregated every availability row in the database for any caller. Both are required now.
+router.get('/api/availability/aggregate', requireAuth, async (req, res) => {
   try {
     const start = req.query.start;
     const end = req.query.end;
     if (!start || !end) return res.status(400).json({ error: 'start and end query params required (ISO strings)' });
 
-    let rows;
-    const pids = req.query.player_ids ? String(req.query.player_ids).split(',').map(x=>parseInt(x,10)).filter(Boolean) : null;
     const campaignId = req.query.campaign_id || req.get('X-Campaign-Id') || null;
+    if (!campaignId) return res.status(400).json({ error: 'campaign_id required' });
+    const mem = await getCampaignMembership(req.user.id, campaignId);
+    if (!mem) return res.status(403).json({ error: 'not_a_member' });
 
-    if (campaignId) {
-      // Ensure we only aggregate availability for players that belong to the given campaign.
-      if (pids && pids.length > 0) {
-        const placeholders = pids.map(()=> '?').join(',');
-        // join to players to enforce campaign membership
-        const sql = `SELECT a.player_id, a.start_iso, a.end_iso FROM availability a JOIN players p ON p.id = a.player_id
-                     WHERE p.campaign_id = ? AND a.player_id IN (${placeholders}) AND NOT (a.end_iso <= ? OR a.start_iso >= ?)`;
-        rows = await db.all(sql, campaignId, ...pids, start, end);
-      } else {
-        const sql = `SELECT a.player_id, a.start_iso, a.end_iso FROM availability a JOIN players p ON p.id = a.player_id
-                     WHERE p.campaign_id = ? AND NOT (a.end_iso <= ? OR a.start_iso >= ?)`;
-        rows = await db.all(sql, campaignId, start, end);
-      }
+    const pids = req.query.player_ids ? String(req.query.player_ids).split(',').map(x=>Number.parseInt(x,10)).filter(Boolean) : null;
+
+    // Join to players either way so only this campaign's rows can be aggregated.
+    let rows;
+    if (pids && pids.length > 0) {
+      const placeholders = pids.map(()=> '?').join(',');
+      const sql = `SELECT a.player_id, a.start_iso, a.end_iso FROM availability a JOIN players p ON p.id = a.player_id
+                   WHERE p.campaign_id = ? AND a.player_id IN (${placeholders}) AND NOT (a.end_iso <= ? OR a.start_iso >= ?)`;
+      rows = await db.all(sql, campaignId, ...pids, start, end);
     } else {
-      if (pids && pids.length > 0) {
-        const placeholders = pids.map(()=> '?').join(',');
-        rows = await db.all(
-          `SELECT player_id, start_iso, end_iso FROM availability
-           WHERE player_id IN (${placeholders}) AND NOT (end_iso <= ? OR start_iso >= ?)`
-        , ...pids, start, end);
-      } else {
-        rows = await db.all(
-          `SELECT player_id, start_iso, end_iso FROM availability
-           WHERE NOT (end_iso <= ? OR start_iso >= ?)`
-        , start, end);
-      }
+      const sql = `SELECT a.player_id, a.start_iso, a.end_iso FROM availability a JOIN players p ON p.id = a.player_id
+                   WHERE p.campaign_id = ? AND NOT (a.end_iso <= ? OR a.start_iso >= ?)`;
+      rows = await db.all(sql, campaignId, start, end);
     }
 
     // build sorted unique timepoints
@@ -148,7 +132,7 @@ router.get('/api/availability/aggregate', async (req, res) => {
 });
 
 // PUT /api/availability/:id -> update an availability block
-router.put('/api/availability/:id', async (req, res) => {
+router.put('/api/availability/:id', requireAuth, async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
     if (!id) return res.status(400).json({ error: 'invalid_id' });
@@ -156,8 +140,7 @@ router.put('/api/availability/:id', async (req, res) => {
     if (!row) return res.status(404).json({ error: 'not_found' });
     const player = await db.get('SELECT * FROM players WHERE id = ?', row.player_id);
     if (!player) return res.status(404).json({ error: 'player_not_found' });
-    const user = await getRequestUser(req);
-    if (!(await canUserModifyPlayer(user, player.campaign_id, player.id))) return res.status(403).json({ error: 'forbidden' });
+    if (!(await canUserModifyPlayer(req.user, player.campaign_id, player.id))) return res.status(403).json({ error: 'forbidden' });
     const { start_iso, end_iso, campaign_id } = req.body || {};
     await db.run('UPDATE availability SET start_iso = ?, end_iso = ?, campaign_id = ? WHERE id = ?', start_iso || row.start_iso, end_iso || row.end_iso, (campaign_id !== undefined ? campaign_id : row.campaign_id), id);
     const upd = await db.get('SELECT * FROM availability WHERE id = ?', id);
@@ -169,7 +152,7 @@ router.put('/api/availability/:id', async (req, res) => {
 });
 
 // DELETE /api/availability/:id -> delete availability block
-router.delete('/api/availability/:id', async (req, res) => {
+router.delete('/api/availability/:id', requireAuth, async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
     if (!id) return res.status(400).json({ error: 'invalid_id' });
@@ -177,8 +160,7 @@ router.delete('/api/availability/:id', async (req, res) => {
     if (!row) return res.status(404).json({ error: 'not_found' });
     const player = await db.get('SELECT * FROM players WHERE id = ?', row.player_id);
     if (!player) return res.status(404).json({ error: 'player_not_found' });
-    const user = await getRequestUser(req);
-    if (!(await canUserModifyPlayer(user, player.campaign_id, player.id))) return res.status(403).json({ error: 'forbidden' });
+    if (!(await canUserModifyPlayer(req.user, player.campaign_id, player.id))) return res.status(403).json({ error: 'forbidden' });
     await db.run('DELETE FROM availability WHERE id = ?', id);
     res.json({ ok: true });
   } catch (e) {
@@ -188,16 +170,14 @@ router.delete('/api/availability/:id', async (req, res) => {
 });
 
 // POST /api/availability/batch -> coalesce multiple creates/updates/deletes in one transaction
-router.post('/api/availability/batch', async (req, res) => {
+router.post('/api/availability/batch', requireAuth, async (req, res) => {
   try {
-    const user = await getRequestUser(req);
-    if (!user) return res.status(401).json({ error: 'not_authenticated' });
     const campaignId = req.body.campaign_id || req.query.campaign_id || req.get('X-Campaign-Id');
     if (!campaignId) return res.status(400).json({ error: 'campaign_id required' });
     const operations = Array.isArray(req.body.operations) ? req.body.operations : [];
     if (operations.length === 0) return res.json({ ok: true, processed: 0, results: [] });
 
-    const mem = await getCampaignMembership(user.id, campaignId);
+    const mem = await getCampaignMembership(req.user.id, campaignId);
     if (!mem) return res.status(403).json({ error: 'not_a_member' });
 
     const results = [];

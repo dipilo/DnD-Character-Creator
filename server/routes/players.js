@@ -2,17 +2,17 @@ const express = require('express');
 const db = require('../db');
 const { buildRangesFromText, mergeInsertAvailability, normalizePreviewBlocks } = require('../lib/availability');
 const { resolveNamesToPlayerIds } = require('../lib/groups');
-const { canUserModifyPlayer, cleanupOrphanedUser, getCampaignMembership, getRequestUser } = require('../middleware/auth');
+const { publicPlayer } = require('../lib/players');
+const { canUserModifyPlayer, cleanupOrphanedUser, getCampaignMembership, isCampaignOwner, memberHasPermission, requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
 // list players for a campaign (requires membership)
-router.get('/api/players', async (req, res) => {
+router.get('/api/players', requireAuth, async (req, res) => {
   try {
     const campaignId = req.query.campaign_id || req.get('X-Campaign-Id');
     if (!campaignId) return res.status(400).json({ error: 'campaign_id required' });
-    const user = await getRequestUser(req);
-    if (!user) return res.status(401).json({ error: 'not_authenticated' });
+    const user = req.user;
     const mem = await getCampaignMembership(user.id, campaignId);
     if (!mem) return res.status(403).json({ error: 'not_a_member' });
     const rows = await db.all(`
@@ -28,7 +28,7 @@ router.get('/api/players', async (req, res) => {
       ...r,
       is_claimed: r.unclaimed_at ? false : (Boolean(r.claimed_user_id) || Boolean(r.password_hash) || Boolean(r.discord_id))
     }));
-    res.json(annotated);
+    res.json(annotated.map(publicPlayer));
   } catch (e) {
     console.error('GET /api/players error', e);
     res.status(500).json({ error: e.message });
@@ -37,28 +37,23 @@ router.get('/api/players', async (req, res) => {
 
 // CREATE player
 // CREATE player in a campaign (requires membership)
-router.post('/api/players', async (req, res) => {
+router.post('/api/players', requireAuth, async (req, res) => {
   try {
     const b = req.body || {};
     const campaignId = b.campaign_id || req.get('X-Campaign-Id');
     if (!campaignId) return res.status(400).json({ error: 'campaign_id required' });
-    const user = await getRequestUser(req);
-    if (!user) return res.status(401).json({ error: 'not_authenticated' });
+    const user = req.user;
     const mem = await getCampaignMembership(user.id, campaignId);
     if (!mem) return res.status(403).json({ error: 'not_a_member' });
     // enforce can_create_players for non-owners
-    const ownerCheck = await db.get("SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ? AND role = 'owner'", campaignId, user.id);
-    if (!ownerCheck) {
-      try {
-        const perms = mem.permissions ? JSON.parse(mem.permissions) : {};
-        if (!perms || !perms.can_create_players) return res.status(403).json({ error: 'forbidden' });
-      } catch (e) { return res.status(403).json({ error: 'forbidden' }); }
+    if (!await isCampaignOwner(user.id, campaignId) && !memberHasPermission(mem, 'can_create_players')) {
+      return res.status(403).json({ error: 'forbidden' });
     }
 
     const withIds = await resolveNamesToPlayerIds(b.pref_play_with || '');
     const notIds = await resolveNamesToPlayerIds(b.pref_play_not_with || '');
     const mx = await db.get('SELECT MAX(sort_index) as mx FROM players WHERE campaign_id = ?', campaignId);
-    const nextIndex = (mx && mx.mx != null) ? mx.mx + 1 : 0;
+    const nextIndex = mx?.mx != null ? mx.mx + 1 : 0;
     const info = await db.run(
       `INSERT INTO players(
         name, discord, timezone, notes, age, computer_access,
@@ -102,24 +97,24 @@ router.post('/api/players', async (req, res) => {
   
   // include claimed metadata (should be unclaimed since we didn't create a campaign_members link)
   const claimedRow = await db.get('SELECT user_id FROM campaign_members WHERE player_id = ? AND campaign_id = ? AND user_id IS NOT NULL LIMIT 1', created.id, campaignId);
-  const playerOut = { ...created, claimed_user_id: claimedRow ? claimedRow.user_id : null, is_claimed: created.unclaimed_at ? false : (Boolean(claimedRow && claimedRow.user_id) || Boolean(created.password_hash) || Boolean(created.discord_id)) };
-  res.json({ ok: true, player: playerOut });
+  const playerOut = { ...created, claimed_user_id: claimedRow ? claimedRow.user_id : null, is_claimed: created.unclaimed_at ? false : (Boolean(claimedRow?.user_id) || Boolean(created.password_hash) || Boolean(created.discord_id)) };
+  res.json({ ok: true, player: publicPlayer(playerOut) });
   } catch (e) {
     console.error('POST /api/players error', e);
     res.status(500).json({ error: e.message });
   }
 });
 
-router.put('/api/players/:id', async (req, res) => {
+router.put('/api/players/:id', requireAuth, async (req, res) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = Number.parseInt(req.params.id, 10);
     if (!id) return res.status(400).json({ error:'invalid_id' });
     const body = req.body || {};
     const existing = await db.get('SELECT * FROM players WHERE id = ?', id);
     if (!existing) return res.status(404).json({ error:'player_not_found' });
 
     // permission: only owner or the linked user can modify
-    const user = await getRequestUser(req);
+    const user = req.user;
     const campaignId = existing.campaign_id;
     if (!(await canUserModifyPlayer(user, campaignId, id))) return res.status(403).json({ error: 'forbidden' });
 
@@ -150,7 +145,7 @@ router.put('/api/players/:id', async (req, res) => {
       pref_play_not_with_ids = JSON.stringify(notIds);
     } catch (e) {
       // don't fail save on resolution problems
-      console.warn('Could not parse pref_play fields for player', id, e && e.message);
+      console.warn('Could not parse pref_play fields for player', id, e?.message);
     }
 
     await db.run(`UPDATE players SET
@@ -174,7 +169,7 @@ router.put('/api/players/:id', async (req, res) => {
     }
 
     const updated = await db.get('SELECT * FROM players WHERE id = ?', id);
-    res.json({ ok: true, player: updated });
+    res.json({ ok: true, player: publicPlayer(updated) });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: e.message });
@@ -182,31 +177,20 @@ router.put('/api/players/:id', async (req, res) => {
 });
 
 // DELETE player (and its availability)
-router.delete('/api/players/:id', async (req, res) => {
+router.delete('/api/players/:id', requireAuth, async (req, res) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = Number.parseInt(req.params.id, 10);
     if (!id) return res.status(400).json({ error: 'invalid_id' });
     const existing = await db.get('SELECT * FROM players WHERE id = ?', id);
     if (!existing) return res.status(404).json({ error: 'player_not_found' });
-    const user = await getRequestUser(req);
-    if (!user) return res.status(401).json({ error: 'not_authenticated' });
-    // owner allowed
-    const ownerCheck = await db.get("SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ? AND role = 'owner'", existing.campaign_id, user.id);
-    if (ownerCheck) {
-      // allowed
-    } else {
-      // linked user allowed (they can unclaim/delete their linked player)
+    const user = req.user;
+    // owner, the linked user (deleting their own seat), or a member with can_delete_players
+    const isOwner = await isCampaignOwner(user.id, existing.campaign_id);
+    if (!isOwner) {
       const linked = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ? AND player_id = ?', existing.campaign_id, user.id, id);
-      if (linked) {
-        // allowed
-      } else {
-        // check permission can_delete_players
+      if (!linked) {
         const cm = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ?', existing.campaign_id, user.id);
-        if (!cm) return res.status(403).json({ error: 'forbidden' });
-        try {
-          const perms = cm.permissions ? JSON.parse(cm.permissions) : {};
-          if (!perms || !perms.can_delete_players) return res.status(403).json({ error: 'forbidden' });
-        } catch (e) { return res.status(403).json({ error: 'forbidden' }); }
+        if (!memberHasPermission(cm, 'can_delete_players')) return res.status(403).json({ error: 'forbidden' });
       }
     }
         // delete dependent rows first to avoid FK constraint failures
@@ -216,6 +200,9 @@ router.delete('/api/players/:id', async (req, res) => {
           await trx.run('DELETE FROM group_members WHERE player_id = ?', id);
           await trx.run('DELETE FROM campaign_members WHERE player_id = ?', id);
           await trx.run('DELETE FROM availability WHERE player_id = ?', id);
+          // Deleting a seat unseats any character sitting in it; the character itself belongs to
+          // its user and survives (MERGE_PLAN.md §9).
+          await trx.run('UPDATE characters SET player_id = NULL WHERE player_id = ?', id);
           await trx.run('DELETE FROM players WHERE id = ?', id);
         });
         // cleanup any now-orphaned users (no password_hash and no remaining campaign_members)
@@ -228,15 +215,27 @@ router.delete('/api/players/:id', async (req, res) => {
 });
 
 // reorder players (body: { ids: [id1, id2, ...] }) -> sets sort_index according to array order
-router.post('/api/players/reorder', async (req, res) => {
+// This route took no auth at all before Phase 1b: anyone who could guess a player id could
+// shuffle another campaign's roster. Membership in every affected campaign is now required.
+router.post('/api/players/reorder', requireAuth, async (req, res) => {
   try {
-    const ids = req.body && req.body.ids;
+    const ids = req.body?.ids;
     if (!Array.isArray(ids)) return res.status(400).json({ error: 'invalid_ids' });
+    const numericIds = ids.map((v) => Number.parseInt(v, 10)).filter((v) => !Number.isNaN(v));
+
+    const campaignIds = new Set();
+    for (const id of numericIds) {
+      const p = await db.get('SELECT campaign_id FROM players WHERE id = ?', id);
+      if (p?.campaign_id != null) campaignIds.add(p.campaign_id);
+    }
+    for (const cid of campaignIds) {
+      const mem = await getCampaignMembership(req.user.id, cid);
+      if (!mem) return res.status(403).json({ error: 'not_a_member_of_all' });
+    }
 
     await db.transaction(async (trx) => {
-      for (let i = 0; i < ids.length; i++) {
-        const iid = parseInt(ids[i], 10);
-        if (!Number.isNaN(iid)) await trx.run('UPDATE players SET sort_index = ? WHERE id = ?', i, iid);
+      for (let i = 0; i < numericIds.length; i++) {
+        await trx.run('UPDATE players SET sort_index = ? WHERE id = ?', i, numericIds[i]);
       }
     });
     res.json({ ok: true });

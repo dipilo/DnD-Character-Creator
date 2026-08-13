@@ -60,7 +60,35 @@ function blankPath(body, path) {
 }
 
 const ctx = {};
-const asUser = (id) => ({ 'X-User-Id': String(id) });
+
+// Authentication is a session cookie now (MERGE_PLAN.md Phase 1b), so the harness keeps a jar
+// per named user instead of asserting an id in a header. A step's `jar` names the slot its
+// Set-Cookie lands in; logout responses clear the cookie and are deliberately not stored, so a
+// later request can replay the revoked cookie and prove the server killed it.
+const cookieJar = {};
+const asUser = (name) => (cookieJar[name] ? { Cookie: cookieJar[name] } : {});
+
+const SESSION_COOKIE = 'dnd_session';
+
+function readSetCookies(res) {
+  if (typeof res.headers.getSetCookie === 'function') return res.headers.getSetCookie();
+  const single = res.headers.get('set-cookie');
+  return single ? [single] : [];
+}
+
+function sessionCookieFrom(res) {
+  for (const line of readSetCookies(res)) {
+    if (line.startsWith(`${SESSION_COOKIE}=`)) return line;
+  }
+  return null;
+}
+
+/** Keep the cookie's attributes in the snapshot — they are the security assertion — not its value. */
+function normaliseSetCookie(line) {
+  return line
+    .replace(/^([^=]+)=[^;]*/, '$1=<volatile>')
+    .replace(/Expires=[^;]*/i, 'Expires=<volatile>');
+}
 
 /** Values minted at random by the server that leak into request URLs. */
 const masked = [];
@@ -78,99 +106,163 @@ const steps = [
   { name: 'discord-authorize-unconfigured', method: 'GET', path: '/auth/discord', redirect: 'manual' },
 
   { name: 'signup-passwordless-without-campaign', method: 'POST', path: '/auth/signup', body: { username: 'alice' } },
-  { name: 'signup-alice', method: 'POST', path: '/auth/signup', body: { username: 'alice', password: 'pw-alice' }, capture: (j) => { ctx.alice = j.user?.id; } },
+  { name: 'signup-alice', method: 'POST', path: '/auth/signup', body: { username: 'alice', password: 'pw-alice' }, jar: 'alice', capture: (j) => { ctx.alice = j.user?.id; } },
   { name: 'signup-alice-again', method: 'POST', path: '/auth/signup', body: { username: 'alice', password: 'other' } },
-  { name: 'login-alice', method: 'POST', path: '/auth/login', body: { username: 'alice', password: 'pw-alice' } },
+  { name: 'login-alice', method: 'POST', path: '/auth/login', body: { username: 'alice', password: 'pw-alice' }, jar: 'alice' },
   { name: 'login-alice-wrong-password', method: 'POST', path: '/auth/login', body: { username: 'alice', password: 'nope' } },
   { name: 'login-alice-no-password', method: 'POST', path: '/auth/login', body: { username: 'alice' } },
-  { name: 'signup-bob', method: 'POST', path: '/auth/signup', body: { username: 'bob', password: 'pw-bob' }, capture: (j) => { ctx.bob = j.user?.id; } },
+  { name: 'signup-bob', method: 'POST', path: '/auth/signup', body: { username: 'bob', password: 'pw-bob' }, jar: 'bob', capture: (j) => { ctx.bob = j.user?.id; } },
 
-  { name: 'get-user', method: 'GET', path: () => `/api/users/${ctx.alice}` },
-  { name: 'get-user-missing', method: 'GET', path: '/api/users/9999' },
+  { name: 'get-user', method: 'GET', path: () => `/api/users/${ctx.alice}`, headers: () => asUser('alice') },
+  { name: 'get-user-unauthenticated', method: 'GET', path: () => `/api/users/${ctx.alice}` },
+  { name: 'get-user-missing', method: 'GET', path: '/api/users/9999', headers: () => asUser('alice') },
 
   { name: 'create-campaign-unauthenticated', method: 'POST', path: '/api/campaigns', body: { name: 'Nope' } },
-  { name: 'create-campaign', method: 'POST', path: '/api/campaigns', headers: () => asUser(ctx.alice), body: { name: 'Test Camp' }, capture: (j) => { ctx.camp = j.campaign?.id; } },
-  { name: 'list-campaigns', method: 'GET', path: '/api/campaigns', headers: () => asUser(ctx.alice) },
+  { name: 'create-campaign', method: 'POST', path: '/api/campaigns', headers: () => asUser('alice'), body: { name: 'Test Camp' }, capture: (j) => { ctx.camp = j.campaign?.id; } },
+  { name: 'list-campaigns', method: 'GET', path: '/api/campaigns', headers: () => asUser('alice') },
   { name: 'campaign-by-unknown-code', method: 'GET', path: '/api/campaigns/code/not-a-code' },
-  { name: 'regenerate-code', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/regenerate-code`, headers: () => asUser(ctx.alice) },
-  { name: 'rename-campaign', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser(ctx.alice), body: { name: 'Renamed Camp' } },
-  { name: 'rename-campaign-no-name', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser(ctx.alice), body: {} },
+  { name: 'regenerate-code', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/regenerate-code`, headers: () => asUser('alice') },
+  { name: 'rename-campaign', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice'), body: { name: 'Renamed Camp' } },
+  { name: 'rename-campaign-no-name', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice'), body: {} },
   { name: 'rename-campaign-forged-user', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: { 'X-User-Id': '4242' }, body: { name: 'Hijacked' } },
-  { name: 'campaign-members', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/members`, headers: () => asUser(ctx.alice) },
+  { name: 'campaign-members', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/members`, headers: () => asUser('alice') },
 
-  { name: 'players-empty', method: 'GET', path: () => `/api/players?campaign_id=${ctx.camp}`, headers: () => asUser(ctx.alice) },
-  { name: 'players-without-campaign', method: 'GET', path: '/api/players', headers: () => asUser(ctx.alice) },
-  { name: 'create-player-bran', method: 'POST', path: '/api/players', headers: () => asUser(ctx.alice), body: () => ({ campaign_id: ctx.camp, name: 'Bran', timezone: 'EST', notes: '' }), capture: (j) => { ctx.bran = j.player?.id; } },
-  { name: 'create-player-cora', method: 'POST', path: '/api/players', headers: () => asUser(ctx.alice), body: () => ({ campaign_id: ctx.camp, name: 'Cora', timezone: 'PST', notes: '' }), capture: (j) => { ctx.cora = j.player?.id; } },
-  { name: 'list-players', method: 'GET', path: () => `/api/players?campaign_id=${ctx.camp}`, headers: () => asUser(ctx.alice) },
-  { name: 'update-player', method: 'PUT', path: () => `/api/players/${ctx.bran}`, headers: () => asUser(ctx.alice), body: { name: 'Bran the Bold' } },
-  { name: 'update-player-missing', method: 'PUT', path: '/api/players/9999', headers: () => asUser(ctx.alice), body: { name: 'Ghost' } },
+  { name: 'players-empty', method: 'GET', path: () => `/api/players?campaign_id=${ctx.camp}`, headers: () => asUser('alice') },
+  { name: 'players-without-campaign', method: 'GET', path: '/api/players', headers: () => asUser('alice') },
+  { name: 'create-player-bran', method: 'POST', path: '/api/players', headers: () => asUser('alice'), body: () => ({ campaign_id: ctx.camp, name: 'Bran', timezone: 'EST', notes: '' }), capture: (j) => { ctx.bran = j.player?.id; } },
+  { name: 'create-player-cora', method: 'POST', path: '/api/players', headers: () => asUser('alice'), body: () => ({ campaign_id: ctx.camp, name: 'Cora', timezone: 'PST', notes: '' }), capture: (j) => { ctx.cora = j.player?.id; } },
+  { name: 'list-players', method: 'GET', path: () => `/api/players?campaign_id=${ctx.camp}`, headers: () => asUser('alice') },
+  { name: 'update-player', method: 'PUT', path: () => `/api/players/${ctx.bran}`, headers: () => asUser('alice'), body: { name: 'Bran the Bold' } },
+  { name: 'update-player-missing', method: 'PUT', path: '/api/players/9999', headers: () => asUser('alice'), body: { name: 'Ghost' } },
   { name: 'update-player-unauthenticated', method: 'PUT', path: () => `/api/players/${ctx.bran}`, body: { name: 'Hijacked' } },
-  { name: 'reorder-players', method: 'POST', path: '/api/players/reorder', headers: () => asUser(ctx.alice), body: () => ({ ids: [ctx.cora, ctx.bran] }) },
-  { name: 'unclaimed-players', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/unclaimed-players`, headers: () => asUser(ctx.alice) },
+  { name: 'reorder-players', method: 'POST', path: '/api/players/reorder', headers: () => asUser('alice'), body: () => ({ ids: [ctx.cora, ctx.bran] }) },
+  { name: 'unclaimed-players', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/unclaimed-players`, headers: () => asUser('alice') },
 
-  { name: 'availability-create', method: 'POST', path: '/api/availability', headers: () => asUser(ctx.alice), body: () => ({ player_id: ctx.bran, start_iso: '2026-09-01T18:00:00.000Z', end_iso: '2026-09-01T22:00:00.000Z' }) },
-  { name: 'availability-create-overlapping', method: 'POST', path: '/api/availability', headers: () => asUser(ctx.alice), body: () => ({ player_id: ctx.bran, start_iso: '2026-09-01T21:00:00.000Z', end_iso: '2026-09-02T01:00:00.000Z' }), capture: (j) => { ctx.avail = j.id; } },
-  { name: 'availability-create-missing-fields', method: 'POST', path: '/api/availability', headers: () => asUser(ctx.alice), body: () => ({ player_id: ctx.bran }) },
-  { name: 'availability-list', method: 'GET', path: () => `/api/availability?player_id=${ctx.bran}&campaign_id=${ctx.camp}`, headers: () => asUser(ctx.alice) },
-  { name: 'availability-update', method: 'PUT', path: () => `/api/availability/${ctx.avail}`, headers: () => asUser(ctx.alice), body: { start_iso: '2026-09-01T17:00:00.000Z', end_iso: '2026-09-02T02:00:00.000Z' } },
-  { name: 'availability-batch', method: 'POST', path: '/api/availability/batch', headers: () => asUser(ctx.alice), body: () => ({ campaign_id: ctx.camp, operations: [
+  { name: 'availability-create', method: 'POST', path: '/api/availability', headers: () => asUser('alice'), body: () => ({ player_id: ctx.bran, start_iso: '2026-09-01T18:00:00.000Z', end_iso: '2026-09-01T22:00:00.000Z' }) },
+  { name: 'availability-create-overlapping', method: 'POST', path: '/api/availability', headers: () => asUser('alice'), body: () => ({ player_id: ctx.bran, start_iso: '2026-09-01T21:00:00.000Z', end_iso: '2026-09-02T01:00:00.000Z' }), capture: (j) => { ctx.avail = j.id; } },
+  { name: 'availability-create-missing-fields', method: 'POST', path: '/api/availability', headers: () => asUser('alice'), body: () => ({ player_id: ctx.bran }) },
+  { name: 'availability-list', method: 'GET', path: () => `/api/availability?player_id=${ctx.bran}&campaign_id=${ctx.camp}`, headers: () => asUser('alice') },
+  { name: 'availability-update', method: 'PUT', path: () => `/api/availability/${ctx.avail}`, headers: () => asUser('alice'), body: { start_iso: '2026-09-01T17:00:00.000Z', end_iso: '2026-09-02T02:00:00.000Z' } },
+  { name: 'availability-batch', method: 'POST', path: '/api/availability/batch', headers: () => asUser('alice'), body: () => ({ campaign_id: ctx.camp, operations: [
     { op: 'create', player_id: ctx.cora, start_iso: '2026-09-03T18:00:00.000Z', end_iso: '2026-09-03T23:00:00.000Z' },
     { op: 'delete', id: 9999 },
     { op: 'nonsense' },
   ] }) },
-  { name: 'availability-aggregate', method: 'GET', path: () => `/api/availability/aggregate?start=2026-09-01T00:00:00.000Z&end=2026-09-08T00:00:00.000Z&campaign_id=${ctx.camp}`, headers: () => asUser(ctx.alice) },
-  { name: 'availability-preview', method: 'POST', path: '/api/availability/preview', headers: () => asUser(ctx.alice), body: { text: 'Free Mondays 6pm-10pm EST', timezone: 'EST' }, blank: ['availability'] },
-  { name: 'availability-delete', method: 'DELETE', path: () => `/api/availability/${ctx.avail}`, headers: () => asUser(ctx.alice) },
+  { name: 'availability-aggregate', method: 'GET', path: () => `/api/availability/aggregate?start=2026-09-01T00:00:00.000Z&end=2026-09-08T00:00:00.000Z&campaign_id=${ctx.camp}`, headers: () => asUser('alice') },
+  { name: 'availability-preview', method: 'POST', path: '/api/availability/preview', headers: () => asUser('alice'), body: { text: 'Free Mondays 6pm-10pm EST', timezone: 'EST' }, blank: ['availability'] },
+  { name: 'availability-delete', method: 'DELETE', path: () => `/api/availability/${ctx.avail}`, headers: () => asUser('alice') },
 
-  { name: 'groups-empty', method: 'GET', path: () => `/api/groups?campaign_id=${ctx.camp}`, headers: () => asUser(ctx.alice) },
-  { name: 'create-group', method: 'POST', path: '/api/groups', headers: () => asUser(ctx.alice), body: () => ({ name: 'Table A', campaign_id: ctx.camp, member_ids: [ctx.bran, ctx.cora] }), capture: (j) => { ctx.group = j.group?.id; } },
-  { name: 'create-group-not-owner', method: 'POST', path: '/api/groups', headers: () => asUser(ctx.bob), body: () => ({ name: 'Table B', campaign_id: ctx.camp }) },
-  { name: 'update-group', method: 'PUT', path: () => `/api/groups/${ctx.group}`, headers: () => asUser(ctx.alice), body: () => ({ name: 'Table A prime', member_ids: [ctx.bran] }) },
-  { name: 'group-add-member', method: 'POST', path: () => `/api/groups/${ctx.group}/members`, headers: () => asUser(ctx.alice), body: () => ({ player_id: ctx.cora }) },
-  { name: 'group-remove-member', method: 'DELETE', path: () => `/api/groups/${ctx.group}/members/${ctx.cora}`, headers: () => asUser(ctx.alice) },
-  { name: 'reorder-groups', method: 'POST', path: '/api/groups/reorder', headers: () => asUser(ctx.alice), body: () => ({ ids: [ctx.group] }) },
-  { name: 'suggest-groups', method: 'POST', path: '/api/groups/suggest', headers: () => asUser(ctx.alice), body: () => ({ campaign_id: ctx.camp, numGroups: 2, targetSize: 2 }) },
-  { name: 'save-suggestion', method: 'POST', path: '/api/groups/save-suggestion', headers: () => asUser(ctx.alice), body: () => ({ campaign_id: ctx.camp, groups: [{ name: 'Suggested 1', member_ids: [ctx.bran] }] }) },
-  { name: 'groups-listed', method: 'GET', path: () => `/api/groups?campaign_id=${ctx.camp}`, headers: () => asUser(ctx.alice) },
-  { name: 'delete-group', method: 'DELETE', path: () => `/api/groups/${ctx.group}`, headers: () => asUser(ctx.alice) },
+  { name: 'groups-empty', method: 'GET', path: () => `/api/groups?campaign_id=${ctx.camp}`, headers: () => asUser('alice') },
+  { name: 'create-group', method: 'POST', path: '/api/groups', headers: () => asUser('alice'), body: () => ({ name: 'Table A', campaign_id: ctx.camp, member_ids: [ctx.bran, ctx.cora] }), capture: (j) => { ctx.group = j.group?.id; } },
+  { name: 'create-group-not-owner', method: 'POST', path: '/api/groups', headers: () => asUser('bob'), body: () => ({ name: 'Table B', campaign_id: ctx.camp }) },
+  { name: 'update-group', method: 'PUT', path: () => `/api/groups/${ctx.group}`, headers: () => asUser('alice'), body: () => ({ name: 'Table A prime', member_ids: [ctx.bran] }) },
+  { name: 'group-add-member', method: 'POST', path: () => `/api/groups/${ctx.group}/members`, headers: () => asUser('alice'), body: () => ({ player_id: ctx.cora }) },
+  { name: 'group-remove-member', method: 'DELETE', path: () => `/api/groups/${ctx.group}/members/${ctx.cora}`, headers: () => asUser('alice') },
+  { name: 'reorder-groups', method: 'POST', path: '/api/groups/reorder', headers: () => asUser('alice'), body: () => ({ ids: [ctx.group] }) },
+  { name: 'suggest-groups', method: 'POST', path: '/api/groups/suggest', headers: () => asUser('alice'), body: () => ({ campaign_id: ctx.camp, numGroups: 2, targetSize: 2 }) },
+  { name: 'save-suggestion', method: 'POST', path: '/api/groups/save-suggestion', headers: () => asUser('alice'), body: () => ({ campaign_id: ctx.camp, groups: [{ name: 'Suggested 1', member_ids: [ctx.bran] }] }) },
+  { name: 'groups-listed', method: 'GET', path: () => `/api/groups?campaign_id=${ctx.camp}`, headers: () => asUser('alice') },
+  { name: 'delete-group', method: 'DELETE', path: () => `/api/groups/${ctx.group}`, headers: () => asUser('alice') },
 
-  { name: 'create-invite', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/invites`, headers: () => asUser(ctx.alice), body: { max_uses: 3 }, capture: (j) => { ctx.inviteToken = j.invite?.token; ctx.inviteId = j.invite?.id; if (ctx.inviteToken) masked.push(ctx.inviteToken); } },
+  { name: 'create-invite', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/invites`, headers: () => asUser('alice'), body: { max_uses: 3 }, capture: (j) => { ctx.inviteToken = j.invite?.token; ctx.inviteId = j.invite?.id; if (ctx.inviteToken) masked.push(ctx.inviteToken); } },
   { name: 'invite-preview', method: 'GET', path: () => `/api/invites/${ctx.inviteToken}` },
   { name: 'invite-preview-unknown', method: 'GET', path: '/api/invites/no-such-token' },
   { name: 'invite-challenge', method: 'GET', path: () => `/api/invites/${ctx.inviteToken}/challenge` },
   { name: 'invite-challenge-complete', method: 'POST', path: () => `/api/invites/${ctx.inviteToken}/challenge/complete`, body: { session_id: 'made-up', zoople_score: 999 } },
-  { name: 'list-invites', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/invites`, headers: () => asUser(ctx.alice) },
-  { name: 'patch-invite', method: 'PATCH', path: () => `/api/invites/${ctx.inviteId}`, headers: () => asUser(ctx.alice), body: { max_uses: 5, challenge_enabled: true } },
-  { name: 'patch-invite-not-a-member', method: 'PATCH', path: () => `/api/invites/${ctx.inviteId}`, headers: () => asUser(ctx.bob), body: { max_uses: 99 } },
-  { name: 'invite-join', method: 'POST', path: '/api/invites/join', headers: () => asUser(ctx.bob), body: () => ({ token: ctx.inviteToken }) },
+  { name: 'list-invites', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/invites`, headers: () => asUser('alice') },
+  { name: 'patch-invite', method: 'PATCH', path: () => `/api/invites/${ctx.inviteId}`, headers: () => asUser('alice'), body: { max_uses: 5, challenge_enabled: true } },
+  { name: 'patch-invite-not-a-member', method: 'PATCH', path: () => `/api/invites/${ctx.inviteId}`, headers: () => asUser('bob'), body: { max_uses: 99 } },
+  { name: 'invite-join', method: 'POST', path: '/api/invites/join', headers: () => asUser('bob'), body: () => ({ token: ctx.inviteToken }) },
   { name: 'invite-join-unknown-token', method: 'POST', path: '/api/invites/join', body: { token: 'no-such-token' } },
-  { name: 'members-after-join', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/members`, headers: () => asUser(ctx.alice) },
-  { name: 'add-member-already-joined', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/members`, headers: () => asUser(ctx.bob) },
-  { name: 'add-self-as-player', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/add-self`, headers: () => asUser(ctx.bob) },
-  { name: 'reorder-campaigns', method: 'POST', path: '/api/campaigns/reorder', headers: () => asUser(ctx.alice), body: () => ({ ids: [ctx.camp] }) },
 
-  { name: 'claim-player', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/claim-player`, headers: () => asUser(ctx.bob), body: () => ({ player_id: ctx.cora }) },
-  { name: 'set-member-permissions', method: 'PATCH', path: () => `/api/campaigns/${ctx.camp}/members/${ctx.bob}/permissions`, headers: () => asUser(ctx.alice), body: { permissions: { can_edit_self: true } } },
-  { name: 'unclaim-player', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/unclaim-player`, headers: () => asUser(ctx.bob), body: () => ({ player_id: ctx.cora }) },
-  { name: 'discord-confirm-link', method: 'POST', path: '/api/discord/confirm-link', headers: () => asUser(ctx.bob), body: () => ({ player_id: ctx.cora }) },
-  { name: 'leave-campaign', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/leave`, headers: () => asUser(ctx.bob) },
-  { name: 'owner-cannot-leave', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/leave`, headers: () => asUser(ctx.alice) },
-  { name: 'delete-invite', method: 'DELETE', path: () => `/api/invites/${ctx.inviteId}`, headers: () => asUser(ctx.alice) },
+  // Account tier 3: passwordless and campaign-scoped, reached through an invite. It gets a real
+  // session like the other two tiers.
+  { name: 'signup-passwordless-with-invite', method: 'POST', path: '/auth/signup', body: () => ({ username: 'dara', invite_token: ctx.inviteToken }), jar: 'dara', capture: (j) => { ctx.dara = j.user?.id; } },
+  { name: 'me-as-passwordless-user', method: 'GET', path: '/api/me', headers: () => asUser('dara') },
+  { name: 'members-after-join', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/members`, headers: () => asUser('alice') },
+  { name: 'add-member-already-joined', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/members`, headers: () => asUser('bob') },
+  { name: 'add-self-as-player', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/add-self`, headers: () => asUser('bob') },
+  { name: 'reorder-campaigns', method: 'POST', path: '/api/campaigns/reorder', headers: () => asUser('alice'), body: () => ({ ids: [ctx.camp] }) },
 
-  { name: 'feedback', method: 'POST', path: '/api/feedback', headers: () => asUser(ctx.alice), body: { message: 'smoke test', url: '/campaigns' } },
+  { name: 'claim-player', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/claim-player`, headers: () => asUser('bob'), body: () => ({ player_id: ctx.cora }) },
+  { name: 'set-member-permissions', method: 'PATCH', path: () => `/api/campaigns/${ctx.camp}/members/${ctx.bob}/permissions`, headers: () => asUser('alice'), body: { permissions: { can_edit_self: true } } },
+  { name: 'unclaim-player', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/unclaim-player`, headers: () => asUser('bob'), body: () => ({ player_id: ctx.cora }) },
+  { name: 'discord-confirm-link', method: 'POST', path: '/api/discord/confirm-link', headers: () => asUser('bob'), body: () => ({ player_id: ctx.cora }) },
+  { name: 'leave-campaign', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/leave`, headers: () => asUser('bob') },
+  { name: 'owner-cannot-leave', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/leave`, headers: () => asUser('alice') },
+  { name: 'delete-invite', method: 'DELETE', path: () => `/api/invites/${ctx.inviteId}`, headers: () => asUser('alice') },
+
+  { name: 'feedback', method: 'POST', path: '/api/feedback', headers: () => asUser('alice'), body: { message: 'smoke test', url: '/campaigns' } },
   { name: 'sheet-columns-missing-id', method: 'POST', path: '/api/sheet-columns', body: {} },
-  { name: 'sync-without-campaign', method: 'POST', path: '/api/sync', headers: () => asUser(ctx.alice), body: {} },
-  { name: 'sync-invalid-sheet-id', method: 'POST', path: '/api/sync', headers: () => asUser(ctx.alice), body: () => ({ campaign_id: ctx.camp, spreadsheetId: '///' }) },
-  { name: 'rebuild-player', method: 'POST', path: () => `/api/rebuild/${ctx.bran}`, headers: () => asUser(ctx.alice) },
-  { name: 'rebuild-missing-player', method: 'POST', path: '/api/rebuild/9999', headers: () => asUser(ctx.alice) },
+  { name: 'sync-without-campaign', method: 'POST', path: '/api/sync', headers: () => asUser('alice'), body: {} },
+  { name: 'sync-invalid-sheet-id', method: 'POST', path: '/api/sync', headers: () => asUser('alice'), body: () => ({ campaign_id: ctx.camp, spreadsheetId: '///' }) },
+  { name: 'rebuild-player', method: 'POST', path: () => `/api/rebuild/${ctx.bran}`, headers: () => asUser('alice') },
+  { name: 'rebuild-missing-player', method: 'POST', path: '/api/rebuild/9999', headers: () => asUser('alice') },
 
   // Exercises the availability_preview_blocks branch of POST /api/players.
-  { name: 'create-player-with-preview-blocks', method: 'POST', path: '/api/players', headers: () => asUser(ctx.alice), body: () => ({ campaign_id: ctx.camp, name: 'Dane', availability_preview_blocks: [{ start_iso: '2026-09-05T18:00:00.000Z', end_iso: '2026-09-05T22:00:00.000Z' }] }) },
+  { name: 'create-player-with-preview-blocks', method: 'POST', path: '/api/players', headers: () => asUser('alice'), body: () => ({ campaign_id: ctx.camp, name: 'Dane', availability_preview_blocks: [{ start_iso: '2026-09-05T18:00:00.000Z', end_iso: '2026-09-05T22:00:00.000Z' }] }), capture: (j) => { ctx.dane = j.player?.id; } },
 
-  { name: 'delete-player', method: 'DELETE', path: () => `/api/players/${ctx.cora}`, headers: () => asUser(ctx.alice) },
-  { name: 'delete-campaign', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser(ctx.alice) },
-  { name: 'campaigns-after-delete', method: 'GET', path: '/api/campaigns', headers: () => asUser(ctx.alice) },
+  // Anonymous claim creates an account on the spot; it must come back with a session, not a
+  // user id the caller is trusted to echo.
+  { name: 'claim-player-anonymous', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/claim-player`, body: { name: 'Ellis' }, jar: 'ellis' },
+  { name: 'me-as-anonymous-claimant', method: 'GET', path: '/api/me', headers: () => asUser('ellis') },
+
+  // Phase 2: builder characters. Private per-user documents, which is why they could not land
+  // before Phase 1b — every route is behind the session, and another user's id reads as 404 so the
+  // id space stays unwalkable.
+  { name: 'characters-unauthenticated', method: 'GET', path: '/api/characters' },
+  { name: 'characters-empty', method: 'GET', path: '/api/characters', headers: () => asUser('alice') },
+  { name: 'create-character', method: 'POST', path: '/api/characters', headers: () => asUser('alice'), body: { id: 'char-miri', data: { id: 'char-miri', name: 'Miri', speciesId: 'elf', classes: [{ classId: 'wizard', level: 3 }] } } },
+  { name: 'create-character-unauthenticated', method: 'POST', path: '/api/characters', body: { id: 'char-forged', data: { name: 'Forged' } } },
+  { name: 'create-character-duplicate-id', method: 'POST', path: '/api/characters', headers: () => asUser('alice'), body: { id: 'char-miri', data: { name: 'Miri again' } } },
+  { name: 'create-character-invalid-id', method: 'POST', path: '/api/characters', headers: () => asUser('alice'), body: { id: 'not a valid id', data: { name: 'Nope' } } },
+  { name: 'create-character-invalid-data', method: 'POST', path: '/api/characters', headers: () => asUser('alice'), body: { id: 'char-nodata', data: 'a string is not a character' } },
+  { name: 'create-character-seated', method: 'POST', path: '/api/characters', headers: () => asUser('alice'), body: () => ({ id: 'char-dane', campaign_id: ctx.camp, player_id: ctx.dane, data: { name: "Dane's Paladin" } }) },
+  { name: 'create-character-foreign-campaign', method: 'POST', path: '/api/characters', headers: () => asUser('bob'), body: () => ({ id: 'char-bob', campaign_id: ctx.camp, data: { name: 'Trespasser' } }) },
+  { name: 'create-character-seat-without-campaign', method: 'POST', path: '/api/characters', headers: () => asUser('alice'), body: () => ({ id: 'char-seatless', player_id: ctx.dane, data: { name: 'Seatless' } }) },
+  { name: 'list-characters', method: 'GET', path: '/api/characters', headers: () => asUser('alice') },
+  { name: 'list-characters-by-campaign', method: 'GET', path: () => `/api/characters?campaign_id=${ctx.camp}`, headers: () => asUser('alice') },
+  { name: 'get-character', method: 'GET', path: '/api/characters/char-miri', headers: () => asUser('alice') },
+  { name: 'get-character-as-other-user', method: 'GET', path: '/api/characters/char-miri', headers: () => asUser('bob') },
+  { name: 'get-character-missing', method: 'GET', path: '/api/characters/char-nonexistent', headers: () => asUser('alice') },
+  { name: 'update-character-without-version', method: 'PUT', path: '/api/characters/char-miri', headers: () => asUser('alice'), body: { data: { name: 'Miri II' } } },
+  { name: 'update-character', method: 'PUT', path: '/api/characters/char-miri', headers: () => asUser('alice'), body: { version: 1, data: { id: 'char-miri', name: 'Miri Brightwood', speciesId: 'elf', classes: [{ classId: 'wizard', level: 4 }] } } },
+  // The same write replayed by a client that never saw version 2 — the other-device case the
+  // whole `version` column exists for. It must be refused with the server's copy, not merged.
+  { name: 'update-character-stale-version', method: 'PUT', path: '/api/characters/char-miri', headers: () => asUser('alice'), body: { version: 1, data: { name: 'Clobbered' } } },
+  { name: 'update-character-unauthenticated', method: 'PUT', path: '/api/characters/char-miri', body: { version: 2, data: { name: 'Hijacked' } } },
+  { name: 'import-characters', method: 'POST', path: '/api/characters/import', headers: () => asUser('alice'), body: { characters: [{ id: 'char-imported', data: { name: 'Imported' } }, { id: 'char-miri', data: { name: 'Already here' } }, { id: 'bad id', data: {} }] } },
+  { name: 'import-characters-not-an-array', method: 'POST', path: '/api/characters/import', headers: () => asUser('alice'), body: { characters: 'nope' } },
+  { name: 'delete-character', method: 'DELETE', path: '/api/characters/char-miri', headers: () => asUser('alice') },
+  { name: 'delete-character-again', method: 'DELETE', path: '/api/characters/char-miri', headers: () => asUser('alice') },
+  { name: 'get-character-after-delete', method: 'GET', path: '/api/characters/char-miri', headers: () => asUser('alice') },
+  { name: 'recreate-deleted-character', method: 'POST', path: '/api/characters', headers: () => asUser('alice'), body: { id: 'char-miri', data: { name: 'Resurrected' } } },
+  { name: 'characters-after-delete', method: 'GET', path: '/api/characters', headers: () => asUser('alice') },
+
+  { name: 'delete-player', method: 'DELETE', path: () => `/api/players/${ctx.cora}`, headers: () => asUser('alice') },
+  { name: 'delete-campaign', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice') },
+  { name: 'campaigns-after-delete', method: 'GET', path: '/api/campaigns', headers: () => asUser('alice') },
+  // Deleting the campaign gives up the seat; the sheet belongs to its user and survives detached.
+  { name: 'characters-after-campaign-delete', method: 'GET', path: '/api/characters', headers: () => asUser('alice') },
+
+  // Phase 1b gate. The first four are the forgery the old server accepted: naming a user id in a
+  // header or query string used to *be* the login. All four must now come back 401.
+  { name: 'me-unauthenticated', method: 'GET', path: '/api/me' },
+  { name: 'me-forged-header', method: 'GET', path: '/api/me', headers: () => ({ 'X-User-Id': String(ctx.alice) }) },
+  { name: 'me-forged-query', method: 'GET', path: () => `/api/me?user_id=${ctx.alice}` },
+  { name: 'campaigns-forged-header', method: 'GET', path: '/api/campaigns', headers: () => ({ 'X-User-Id': String(ctx.alice) }) },
+  { name: 'me-invented-session', method: 'GET', path: '/api/me', headers: { Cookie: 'dnd_session=not-a-real-session-id' } },
+  { name: 'me-authenticated', method: 'GET', path: '/api/me', headers: () => asUser('alice') },
+  { name: 'discord-potential-links', method: 'GET', path: '/api/discord/potential-links', headers: () => asUser('alice') },
+
+  // Signing out must kill the session server-side, not merely drop the cookie: the jar keeps
+  // bob's pre-logout cookie (logout's Set-Cookie is a clear, which is never stored) and replays it.
+  { name: 'logout-bob', method: 'POST', path: '/auth/logout', headers: () => asUser('bob') },
+  { name: 'me-with-revoked-cookie', method: 'GET', path: '/api/me', headers: () => asUser('bob') },
+  { name: 'logout-without-session', method: 'POST', path: '/auth/logout' },
+  { name: 'logout-all-unauthenticated', method: 'POST', path: '/auth/logout-all' },
+  { name: 'logout-all-alice', method: 'POST', path: '/auth/logout-all', headers: () => asUser('alice') },
+  { name: 'me-after-logout-all', method: 'GET', path: '/api/me', headers: () => asUser('alice') },
 ];
 
 const resolve = (v) => (typeof v === 'function' ? v() : v);
@@ -209,7 +301,16 @@ async function runStep(step) {
   }
   if (step.capture && parsed && typeof parsed === 'object') step.capture(parsed);
   if (step.blank) for (const p of step.blank) blankPath(parsed, p);
-  return { name: step.name, request: mask(`${step.method} ${path}`), status: res.status, body: redact(parsed) };
+
+  const setCookie = sessionCookieFrom(res);
+  // A cleared cookie (empty value) is not a session and must not overwrite the jar.
+  if (step.jar && setCookie && !setCookie.startsWith(`${SESSION_COOKIE}=;`)) {
+    cookieJar[step.jar] = setCookie.split(';')[0];
+  }
+
+  const out = { name: step.name, request: mask(`${step.method} ${path}`), status: res.status, body: redact(parsed) };
+  if (setCookie) out.set_cookie = normaliseSetCookie(setCookie);
+  return out;
 }
 
 /** Strip absolute paths and line numbers so a stack trace does not fail the diff. */
@@ -231,6 +332,10 @@ async function main() {
       TURSO_DATABASE_URL: `file:${join(dbDir, 'smoke.db').replaceAll('\\', '/')}`,
       PORT: String(port),
       NODE_ENV: 'test',
+      // The scenario is longer than either production rate-limit budget, and the limiters are
+      // not what it is testing. Raising them here is what lets the step list keep growing.
+      RATE_LIMIT_MAX: '100000',
+      AUTH_RATE_LIMIT_MAX: '100000',
     },
     stdio: ['ignore', 'pipe', 'pipe'],
   });

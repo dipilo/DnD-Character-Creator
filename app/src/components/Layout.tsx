@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useCharacterStore } from '@/store/characterStore';
+import { AccountMenu } from '@/components/auth/AccountMenu';
 import { Button } from '@/components/ui/button';
 import { Moon, Sun, Dices, Users, Home, Sword, Download, FlaskConical } from 'lucide-react';
 
@@ -107,14 +108,16 @@ export function Layout({ children }: Readonly<LayoutProps>) {
             ) : null}
           </nav>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleDarkMode}
-            className="ml-auto"
-          >
-            {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </Button>
+          <div className="ml-auto flex items-center gap-1">
+            <AccountMenu />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleDarkMode}
+            >
+              {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
+          </div>
         </div>
       </header>
 

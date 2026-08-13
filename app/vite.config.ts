@@ -4,6 +4,10 @@ import { defineConfig } from "vite"
 import { inspectAttr } from 'kimi-plugin-inspect-react'
 
 const devPort = Number(process.env.PORT ?? '4144')
+// The session cookie is SameSite=Lax, which only works because the SPA reaches the API
+// same-origin: through the Vercel rewrites in production (MERGE_PLAN.md §5.2) and through this
+// proxy in dev. Point it elsewhere with VITE_DEV_API_PROXY when the server runs on another port.
+const devApiTarget = process.env.VITE_DEV_API_PROXY ?? 'http://localhost:3001'
 const publicHmrHost = process.env.VITE_PUBLIC_HOST
 const publicHmrPort = Number(process.env.VITE_PUBLIC_PORT ?? String(devPort))
 const hmrConfig = publicHmrHost
@@ -40,6 +44,10 @@ export default defineConfig({
     strictPort: true,
     allowedHosts: true,
     hmr: hmrConfig,
+    proxy: {
+      '/api': { target: devApiTarget },
+      '/auth': { target: devApiTarget },
+    },
   },
   preview: {
     host: '0.0.0.0',

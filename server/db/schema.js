@@ -39,6 +39,19 @@ async function ensureSchema(db) {
     password_hash TEXT
   )`);
 
+  // Server-side sessions. The id is the cookie value: 256 bits of crypto-random, so it is a
+  // credential in its own right and nothing else about it needs to be secret.
+  await db.run(`CREATE TABLE IF NOT EXISTS sessions (
+    id TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    expires_at TEXT,
+    last_seen_at TEXT,
+    revoked_at TEXT,
+    user_agent TEXT,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+  )`);
+
   await db.run(`CREATE TABLE IF NOT EXISTS campaigns (
     id INTEGER PRIMARY KEY,
     name TEXT,
@@ -55,6 +68,32 @@ async function ensureSchema(db) {
     discord TEXT,
     timezone TEXT,
     notes TEXT
+  )`);
+
+  // Builder characters (MERGE_PLAN.md Phase 2). Created after `players` because it references it:
+  // a CREATE TABLE naming a table that does not exist yet is only an error once foreign keys are
+  // enforced, which is exactly the kind of difference between two deployments worth not having.
+  //
+  // The id is the uuid the builder already mints client-side, so a character keeps one identity
+  // across localStorage and the server. `data` is the whole `Character` object as JSON,
+  // deliberately not mapped to columns: CLAUDE.md requires a saved character to read back into the
+  // builder, and that needs every choice-mode and selection field intact. `version` is bumped on
+  // each write so a stale client gets a 409 rather than clobbering a sheet edited elsewhere.
+  await db.run(`CREATE TABLE IF NOT EXISTS characters (
+    id TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    campaign_id INTEGER,
+    player_id INTEGER,
+    name TEXT,
+    data TEXT NOT NULL,
+    schema_version INTEGER DEFAULT 1,
+    version INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now')),
+    deleted_at TEXT,
+    FOREIGN KEY(user_id) REFERENCES users(id),
+    FOREIGN KEY(campaign_id) REFERENCES campaigns(id),
+    FOREIGN KEY(player_id) REFERENCES players(id)
   )`);
 
   await db.run(`CREATE TABLE IF NOT EXISTS availability (
@@ -275,6 +314,12 @@ async function ensureSchema(db) {
   await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_campaign_members_campaign ON campaign_members(campaign_id)', ['campaign_id'], 'campaign_members');
   await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_campaign_members_user ON campaign_members(user_id)', ['user_id'], 'campaign_members');
   await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_invites_token ON invites(token)', ['token'], 'invites');
+  await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id)', ['user_id'], 'sessions');
+  await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at)', ['expires_at'], 'sessions');
+  // Only user_id and campaign_id are indexed: every other field a client filters on lives inside
+  // the `data` JSON, which is read whole and never queried into.
+  await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_characters_user ON characters(user_id)', ['user_id'], 'characters');
+  await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_characters_campaign ON characters(campaign_id)', ['campaign_id'], 'characters');
 }
 
 module.exports = { ensureSchema };

@@ -1,4 +1,5 @@
 const db = require('../db');
+const { publicPlayer } = require('./players');
 
 // helper: load groups with member objects
 async function loadGroupsWithMembers(campaignId = null) {
@@ -44,7 +45,7 @@ async function loadGroupsWithMembers(campaignId = null) {
       JOIN group_members gm ON gm.player_id = p.id
       WHERE gm.group_id = ?
     `, g.id);
-    out.push({ ...g, members });
+    out.push({ ...g, members: members.map(publicPlayer) });
   }
   return out;
 }

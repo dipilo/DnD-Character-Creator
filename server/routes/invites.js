@@ -1,45 +1,59 @@
 const express = require('express');
 const db = require('../db');
 const { getCachedQueryAsync, setCache } = require('../lib/cache');
-const { CHALLENGE_FEATURES_ENABLED, INVITE_CHALLENGE_TTL_MS, INVITE_PASS_TTL_MS, RIDDLE_BANK, inviteChallengePassTokens, inviteChallengeSessions, makeFakeCaptchaText, pruneInviteChallengeState } = require('../lib/inviteChallenge');
+const { CHALLENGE_FEATURES_ENABLED, INVITE_CHALLENGE_TTL_MS, INVITE_PASS_TTL_MS, inviteChallengePassTokens, inviteChallengeSessions, makeFakeCaptchaText, pickRiddle, pruneInviteChallengeState } = require('../lib/inviteChallenge');
 const { genToken } = require('../lib/tokens');
-const { getRequestUser, requireCampaignAccess } = require('../middleware/auth');
+const { getCampaignMembership, isCampaignOwner, memberHasPermission, optionalAuth, requireAuth, requireCampaignAccess } = require('../middleware/auth');
 
 const router = express.Router();
+
+/** An empty/absent/non-positive max_uses means "unlimited", stored as NULL. */
+function normalizeMaxUses(value) {
+  if (value === '' || value === null || value === undefined) return null;
+  const parsed = Number.parseInt(String(value), 10);
+  return Number.isNaN(parsed) || parsed <= 0 ? null : parsed;
+}
+
+function normalizeMinScore(value) {
+  const parsed = Number.parseInt(String(value ?? ''), 10);
+  return Number.isNaN(parsed) || parsed < 1 ? 200 : parsed;
+}
+
+// The columns PATCH /api/invites/:id may write, and how each request value is normalised. A
+// table rather than one hasOwnProperty branch per column.
+const PATCHABLE_INVITE_FIELDS = [
+  ['max_uses', normalizeMaxUses],
+  ['expires_at', (v) => (v === '' ? null : v)],
+  ['token', (v) => (v === '' ? null : v)],
+  ['challenge_enabled', (v) => (v ? 1 : 0)],
+  ['challenge_min_score', normalizeMinScore],
+];
+
+/** Owner, the invite's creator, or a member holding can_create_invites. */
+async function canManageInvites(user, campaignId, invite = null) {
+  if (!user) return false;
+  if (await isCampaignOwner(user.id, campaignId)) return true;
+  if (invite && invite.created_by_user_id === user.id) return true;
+  const cm = await getCampaignMembership(user.id, campaignId);
+  return memberHasPermission(cm, 'can_create_invites');
+}
 
 // Create an invite token for a campaign (owner or member with permission)
 router.post('/api/campaigns/:campaignId/invites', requireCampaignAccess(), async (req, res) => {
   try {
     const { expires_at, max_uses, challenge_enabled, challenge_min_score } = req.body || {};
-    const user = await getRequestUser(req);
-    // owner or member with can_create_invites
-    const ownerCheck = user ? await db.get("SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ? AND role = 'owner'", req.campaign.id, user.id) : null;
-    let allowed = false;
-    if (ownerCheck) allowed = true;
-    if (!allowed && user) {
-      const cm = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ?', req.campaign.id, user.id);
-      if (cm && cm.permissions) {
-        try { const perms = JSON.parse(cm.permissions); if (perms && perms.can_create_invites) allowed = true; } catch (e) { }
-      }
-    }
-    if (!allowed) return res.status(403).json({ error: 'forbidden' });
+    const user = req.user;
+    if (!await canManageInvites(user, req.campaign.id)) return res.status(403).json({ error: 'forbidden' });
 
     const token = genToken(32);
-    const parsedMaxUses = max_uses === '' || max_uses === null || max_uses === undefined
-      ? null
-      : Number.parseInt(String(max_uses), 10);
-    const normalizedMaxUses = Number.isNaN(parsedMaxUses) || parsedMaxUses <= 0 ? null : parsedMaxUses;
-    const parsedMinScore = Number.parseInt(String(challenge_min_score ?? ''), 10);
-    const normalizedMinScore = Number.isNaN(parsedMinScore) || parsedMinScore < 1 ? 200 : parsedMinScore;
-    const challengeEnabledInt = challenge_enabled ? 1 : 0;
     const info = await db.run('INSERT INTO invites(token,campaign_id,created_by_user_id,expires_at,max_uses,challenge_enabled,challenge_min_score) VALUES (?, ?, ?, ?, ?, ?, ?)',
       token,
       req.campaign.id,
-      user && user.id ? user.id : null,
+      user?.id ?? null,
       expires_at || null,
-      normalizedMaxUses,
-      challengeEnabledInt,
-      normalizedMinScore
+      normalizeMaxUses(max_uses),
+      challenge_enabled ? 1 : 0,
+      normalizeMinScore(challenge_min_score)
     );
     const row = await db.get('SELECT * FROM invites WHERE id = ?', info.lastInsertRowid);
     res.json({ ok: true, invite: row });
@@ -50,17 +64,17 @@ router.post('/api/campaigns/:campaignId/invites', requireCampaignAccess(), async
 });
 
 // Join a campaign using invite token (authenticated or anonymous)
-router.post('/api/invites/join', async (req, res) => {
+router.post('/api/invites/join', optionalAuth, async (req, res) => {
   try {
     pruneInviteChallengeState();
-    const token = req.body && req.body.token;
+    const token = req.body?.token;
     if (!token) return res.status(400).json({ error: 'token required' });
     const inv = await db.get('SELECT * FROM invites WHERE token = ?', token);
     if (!inv) return res.status(404).json({ error: 'invite_not_found' });
     if (inv.expires_at && new Date(inv.expires_at) < new Date()) return res.status(400).json({ error: 'invite_expired' });
     if (inv.max_uses && inv.used_count >= inv.max_uses) return res.status(400).json({ error: 'invite_maxed_out' });
     if (CHALLENGE_FEATURES_ENABLED && inv.challenge_enabled) {
-      const passToken = req.body && req.body.challenge_pass_token;
+      const passToken = req.body?.challenge_pass_token;
       const pass = passToken ? inviteChallengePassTokens.get(String(passToken)) : null;
       if (!pass || pass.inviteToken !== token || pass.expiresAt <= Date.now()) {
         return res.status(403).json({ error: 'challenge_required' });
@@ -68,27 +82,15 @@ router.post('/api/invites/join', async (req, res) => {
       inviteChallengePassTokens.delete(String(passToken));
     }
 
-    const user = await getRequestUser(req);
-    // If user provided discord_id in body, try to link
-    const discord_id = req.body && req.body.discord_id;
+    // A `discord_id` in the body used to create-or-find a user with that Discord identity and
+    // join it to the campaign — an anonymous caller could add any Discord user to any campaign
+    // they held an invite for. Identity now comes from the session or not at all.
+    const user = req.user;
 
     await db.transaction(async (trx) => {
-      // If a user exists (authenticated), add membership linking user
-      let joinUserId = null;
       if (user) {
-        joinUserId = user.id;
         const exists = await trx.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ?', inv.campaign_id, user.id);
         if (!exists) await trx.run('INSERT INTO campaign_members(campaign_id,user_id,role) VALUES (?, ?, ?)', inv.campaign_id, user.id, 'player');
-      } else if (discord_id) {
-        // create or find a user by discord_id
-        let u = await trx.get('SELECT * FROM users WHERE discord_id = ?', discord_id);
-        if (!u) {
-          const info = await trx.run('INSERT INTO users(discord_id, username) VALUES (?, ?)', discord_id, (req.body && req.body.username) || ('discord:'+discord_id));
-          u = await trx.get('SELECT * FROM users WHERE id = ?', info.lastInsertRowid);
-        }
-        joinUserId = u.id;
-        const exists = await trx.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ?', inv.campaign_id, joinUserId);
-        if (!exists) await trx.run('INSERT INTO campaign_members(campaign_id,user_id,role) VALUES (?, ?, ?)', inv.campaign_id, joinUserId, 'player');
       }
 
       // increment used_count
@@ -135,7 +137,7 @@ router.get('/api/invites/:token/challenge', async (req, res) => {
     if (!inv) return res.status(404).json({ error: 'invite_not_found' });
     if (!CHALLENGE_FEATURES_ENABLED || !inv.challenge_enabled) return res.json({ ok: true, required: false });
 
-    const riddle = RIDDLE_BANK[Math.floor(Math.random() * RIDDLE_BANK.length)];
+    const riddle = pickRiddle();
     const sessionId = genToken(28);
     const captcha = makeFakeCaptchaText();
     inviteChallengeSessions.set(sessionId, {
@@ -214,55 +216,21 @@ router.get('/api/campaigns/:campaignId/invites', requireCampaignAccess(), async 
 });
 
 // Patch invite to edit constraints (owner, creator, or member with permission)
-router.patch('/api/invites/:id', async (req, res) => {
+router.patch('/api/invites/:id', requireAuth, async (req, res) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = Number.parseInt(req.params.id, 10);
     if (!id) return res.status(400).json({ error: 'invalid_id' });
-    const user = await getRequestUser(req);
-    if (!user) return res.status(401).json({ error: 'not_authenticated' });
     const inv = await db.get('SELECT * FROM invites WHERE id = ?', id);
     if (!inv) return res.status(404).json({ error: 'invite_not_found' });
-    // check permissions: owner, creator, or member with can_create_invites
-    const ownerCheck = await db.get("SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ? AND role = 'owner'", inv.campaign_id, user.id);
-    let allowed = false;
-    if (ownerCheck) allowed = true;
-    if (!allowed && inv.created_by_user_id === user.id) allowed = true;
-    if (!allowed) {
-      const cm = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ?', inv.campaign_id, user.id);
-      if (cm && cm.permissions) {
-        try { const perms = JSON.parse(cm.permissions); if (perms && perms.can_create_invites) allowed = true; } catch (e) { }
-      }
-    }
-    if (!allowed) return res.status(403).json({ error: 'forbidden' });
+    if (!await canManageInvites(req.user, inv.campaign_id, inv)) return res.status(403).json({ error: 'forbidden' });
 
-    const { max_uses, expires_at, token, challenge_enabled, challenge_min_score } = req.body || {};
+    const body = req.body || {};
     const updates = [];
     const values = [];
-
-    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'max_uses')) {
-      const parsedMaxUses = max_uses === '' || max_uses === null || max_uses === undefined
-        ? null
-        : Number.parseInt(String(max_uses), 10);
-      const normalizedMaxUses = Number.isNaN(parsedMaxUses) || parsedMaxUses <= 0 ? null : parsedMaxUses;
-      updates.push('max_uses = ?');
-      values.push(normalizedMaxUses);
-    }
-    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'expires_at')) {
-      updates.push('expires_at = ?');
-      values.push(expires_at === '' ? null : expires_at);
-    }
-    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'token')) {
-      updates.push('token = ?');
-      values.push(token === '' ? null : token);
-    }
-    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'challenge_enabled')) {
-      updates.push('challenge_enabled = ?');
-      values.push(challenge_enabled ? 1 : 0);
-    }
-    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'challenge_min_score')) {
-      const parsed = Number.parseInt(String(challenge_min_score ?? ''), 10);
-      values.push(Number.isNaN(parsed) || parsed < 1 ? 200 : parsed);
-      updates.push('challenge_min_score = ?');
+    for (const [column, normalize] of PATCHABLE_INVITE_FIELDS) {
+      if (!Object.hasOwn(body, column)) continue;
+      updates.push(`${column} = ?`);
+      values.push(normalize(body[column]));
     }
 
     if (updates.length > 0) {
@@ -278,26 +246,13 @@ router.patch('/api/invites/:id', async (req, res) => {
 });
 
 // Delete an invite (owner, creator, or member with can_create_invites)
-router.delete('/api/invites/:id', async (req, res) => {
+router.delete('/api/invites/:id', requireAuth, async (req, res) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = Number.parseInt(req.params.id, 10);
     if (!id) return res.status(400).json({ error: 'invalid_id' });
-    const user = await getRequestUser(req);
-    if (!user) return res.status(401).json({ error: 'not_authenticated' });
     const inv = await db.get('SELECT * FROM invites WHERE id = ?', id);
     if (!inv) return res.status(404).json({ error: 'invite_not_found' });
-    // permission check: owner, creator, or member with can_create_invites
-    const ownerCheck = await db.get("SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ? AND role = 'owner'", inv.campaign_id, user.id);
-    let allowed = false;
-    if (ownerCheck) allowed = true;
-    if (!allowed && inv.created_by_user_id === user.id) allowed = true;
-    if (!allowed) {
-      const cm = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ?', inv.campaign_id, user.id);
-      if (cm && cm.permissions) {
-        try { const perms = JSON.parse(cm.permissions); if (perms && perms.can_create_invites) allowed = true; } catch (e) { }
-      }
-    }
-    if (!allowed) return res.status(403).json({ error: 'forbidden' });
+    if (!await canManageInvites(req.user, inv.campaign_id, inv)) return res.status(403).json({ error: 'forbidden' });
     await db.run('DELETE FROM invites WHERE id = ?', id);
     res.json({ ok: true });
   } catch (e) {
