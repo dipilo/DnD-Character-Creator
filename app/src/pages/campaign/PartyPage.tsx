@@ -84,8 +84,7 @@ export function PartyPage() {
         <div>
           <h2 className="text-xl font-semibold">Party</h2>
           <p className="text-sm text-muted-foreground">
-            Every character at this table. Attaching one shares it with the campaign's members —
-            it stays yours, and only you can edit it.
+            Every character at this table.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

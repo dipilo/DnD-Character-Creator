@@ -163,8 +163,7 @@ export function MembersPage() {
         <CardHeader>
           <CardTitle className="text-base">Members</CardTitle>
           <CardDescription>
-            Owners hold every permission. Everything else is granted per member — and checked again
-            on the server, so a hidden control is a courtesy, not the boundary.
+            Owners hold every permission. Everything else is granted per member.
           </CardDescription>
         </CardHeader>
         {/* Below md the permission grid becomes one card per member. A horizontally scrolling
@@ -340,8 +339,7 @@ export function MembersPage() {
             <div className="space-y-2">
               <p className="text-sm font-medium text-destructive">Delete this campaign</p>
               <p className="text-sm text-muted-foreground">
-                Seats, availability and invites go. Characters are only unseated — a character
-                belongs to its player's account, not to the campaign.
+                Seats, availability and invites go. Characters are only unseated.
               </p>
               <Button variant="destructive" size="sm" onClick={handleDeleteCampaign}>
                 Delete campaign

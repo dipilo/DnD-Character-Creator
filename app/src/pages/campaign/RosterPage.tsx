@@ -113,8 +113,7 @@ export function RosterPage() {
         <div>
           <h2 className="text-xl font-semibold">Roster</h2>
           <p className="text-sm text-muted-foreground">
-            A seat can sit unclaimed until someone takes it — that is how a roster imported from a
-            sheet starts out.
+            A seat can sit unclaimed until someone takes it.
           </p>
         </div>
         {canAdd ? (
