@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Copy, Link2, Plus, RefreshCw, Trash2 } from 'lucide-react';
+import { Copy, Link2, Plus, RefreshCw, Settings2, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
-  createInvite,
   deleteCampaign,
   deleteInvite,
   leaveCampaign,
@@ -18,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CampaignSourcesCard } from '@/components/schedule/CampaignSourcesCard';
+import { InviteSettingsDialog } from '@/components/schedule/InviteSettingsDialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
@@ -34,6 +34,13 @@ import { useCampaignId } from '@/pages/campaign/useCampaignData';
 
 function memberName(member: CampaignMember): string {
   return member.user_name || member.player_name || (member.user_discord ? `Discord ${member.user_discord}` : `Member #${member.id}`);
+}
+
+/** "expired" is worth saying out loud — a link that silently stops working reads as a bug. */
+function expiryLabel(expiresAt: string): string {
+  const when = new Date(expiresAt);
+  if (Number.isNaN(when.getTime())) return 'expiry unknown';
+  return when.getTime() < Date.now() ? 'expired' : `expires ${when.toLocaleDateString()}`;
 }
 
 async function copyToClipboard(value: string, what: string): Promise<void> {
@@ -129,13 +136,14 @@ export function MembersPage() {
     }
   };
 
-  const handleCreateInvite = async () => {
-    try {
-      const invite = await createInvite(campaignId);
-      setInvites((current) => [...current, invite]);
-    } catch (e) {
-      toast.error('Could not create an invite', { description: e instanceof Error ? e.message : undefined });
-    }
+  /** Null while the dialog is closed; `{ invite: null }` means "creating a new one". */
+  const [inviteDialog, setInviteDialog] = useState<{ invite: Invite | null } | null>(null);
+
+  const handleInviteSaved = (saved: Invite) => {
+    setInvites((current) => {
+      const exists = current.some((entry) => entry.id === saved.id);
+      return exists ? current.map((entry) => (entry.id === saved.id ? saved : entry)) : [...current, saved];
+    });
   };
 
   const handleDeleteInvite = async (invite: Invite) => {
@@ -249,7 +257,7 @@ export function MembersPage() {
               <CardDescription>An invite link joins whoever opens it, once they have an account.</CardDescription>
             </div>
             {canInvite ? (
-              <Button size="sm" onClick={handleCreateInvite}>
+              <Button size="sm" className="min-h-11" onClick={() => setInviteDialog({ invite: null })}>
                 <Plus className="h-4 w-4" />
                 New invite
               </Button>
@@ -292,13 +300,19 @@ export function MembersPage() {
                   <code className="w-full min-w-0 flex-1 truncate text-xs sm:w-auto">{url}</code>
                   <span className="text-xs text-muted-foreground">
                     used {invite.used_count}
-                    {invite.max_uses ? ` / ${invite.max_uses}` : ''}
+                    {invite.max_uses ? ` / ${invite.max_uses}` : ' / unlimited'}
+                    {invite.expires_at ? ` · ${expiryLabel(invite.expires_at)}` : ''}
                   </span>
-                  <Button size="sm" variant="ghost" onClick={() => copyToClipboard(url, 'Invite link')}>
+                  <Button size="sm" variant="ghost" className="min-h-11" onClick={() => copyToClipboard(url, 'Invite link')} aria-label="Copy invite link">
                     <Copy className="h-4 w-4" />
                   </Button>
                   {canInvite ? (
-                    <Button size="sm" variant="ghost" onClick={() => handleDeleteInvite(invite)} aria-label="Delete invite">
+                    <Button size="sm" variant="ghost" className="min-h-11" onClick={() => setInviteDialog({ invite })} aria-label="Invite settings">
+                      <Settings2 className="h-4 w-4" />
+                    </Button>
+                  ) : null}
+                  {canInvite ? (
+                    <Button size="sm" variant="ghost" className="min-h-11" onClick={() => handleDeleteInvite(invite)} aria-label="Delete invite">
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   ) : null}
@@ -358,6 +372,14 @@ export function MembersPage() {
           )}
         </CardContent>
       </Card>
+
+      <InviteSettingsDialog
+        open={inviteDialog !== null}
+        onOpenChange={(open) => setInviteDialog(open ? inviteDialog : null)}
+        campaignId={campaignId}
+        invite={inviteDialog?.invite ?? null}
+        onSaved={handleInviteSaved}
+      />
     </div>
   );
 }

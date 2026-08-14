@@ -36,6 +36,8 @@ import {
   resolveCharacterEquipment,
   sortFeaturesByLevel
 } from '@/lib/builderRules';
+import { deriveSheetVitals } from '@/lib/sheetDerivations';
+import { SheetVitalsPanel } from '@/components/character/SheetVitalsPanel';
 import type { AbilityScores, Character } from '@/types/dnd';
 
 const humanizeFallbackId = (value: string) => value.split('-').filter(Boolean).join(' ');
@@ -239,6 +241,18 @@ export function CharacterSheetView({ character, actions, leading, note }: Readon
 
   const totalLevel = character.classes.reduce((sum, entry) => sum + entry.level, 0) || 1;
   const proficiencyBonus = getCharacterProficiencyBonus(totalLevel);
+
+  const vitals = useMemo(() => {
+    return deriveSheetVitals({
+      abilityScores: displayedAbilityScores,
+      proficiencies: derivedProficiencies,
+      resolvedClasses,
+      // Species speed is the walking speed; 30 is the default when nothing is chosen yet.
+      speed: species?.speed ?? 30,
+      totalLevel
+    });
+  }, [derivedProficiencies, displayedAbilityScores, resolvedClasses, species, totalLevel]);
+
   const classSummary = resolvedClasses
     .map(({ entry, cls, subclass }) => {
       const label = `${cls.name} ${entry.level}`;
@@ -341,6 +355,8 @@ export function CharacterSheetView({ character, actions, leading, note }: Readon
               </CardContent>
             </Card>
           </div>
+
+          <SheetVitalsPanel vitals={vitals} />
 
           <Card>
             <CardHeader>

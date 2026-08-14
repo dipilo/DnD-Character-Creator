@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CalendarDays, Plus, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { ApiError, createCampaign, findCampaignByCode, joinCampaign } from '@/lib/api';
+import { randomCampaignName } from '@/data/campaignNames';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
@@ -29,6 +30,9 @@ export function CampaignsPage() {
   const [newName, setNewName] = useState('');
   const [joinCode, setJoinCode] = useState('');
   const [busy, setBusy] = useState(false);
+  // A lazy initializer, not a render-body call: Math.random() during render is impure and would
+  // hand the field a different suggestion on every re-render.
+  const [nameSuggestion, setNameSuggestion] = useState(() => randomCampaignName());
 
   useEffect(() => {
     void loadCampaigns();
@@ -48,6 +52,7 @@ export function CampaignsPage() {
       const campaign = await createCampaign(name);
       upsertCampaign(campaign);
       setNewName('');
+      setNameSuggestion(randomCampaignName());
       toast.success(`Created ${campaign.name}`);
       openCampaign(campaign.id);
     } catch (e) {
@@ -94,14 +99,16 @@ export function CampaignsPage() {
             <CardDescription>You become its owner and get an invite code to share.</CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="flex gap-2" onSubmit={handleCreate}>
-              <div className="flex-1 space-y-1.5">
+            {/* items-start, and no space-y on the field: an sr-only label is out of flow, so
+                space-y's margin lands on the input alone and drops it below the button. */}
+            <form className="flex items-start gap-2" onSubmit={handleCreate}>
+              <div className="flex-1">
                 <Label htmlFor="campaign-name" className="sr-only">
                   Campaign name
                 </Label>
                 <Input
                   id="campaign-name"
-                  placeholder="Curse of Strahd"
+                  placeholder={nameSuggestion}
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                 />
@@ -120,8 +127,8 @@ export function CampaignsPage() {
             <CardDescription>Ask the DM for the campaign code, or follow their invite link.</CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="flex gap-2" onSubmit={handleJoin}>
-              <div className="flex-1 space-y-1.5">
+            <form className="flex items-start gap-2" onSubmit={handleJoin}>
+              <div className="flex-1">
                 <Label htmlFor="campaign-code" className="sr-only">
                   Campaign code
                 </Label>

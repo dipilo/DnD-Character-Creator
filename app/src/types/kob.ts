@@ -1,0 +1,90 @@
+import type { KobAge, KobDie, KobStatId } from '@/data/gameSystems/kidsOnBikes/types';
+
+/**
+ * A Kids on Bikes character, as one document.
+ *
+ * Same posture as the 5e `Character`: this is an editable document, not a receipt. Every choice
+ * the player made is stored — including the ones a sheet could derive, like which strengths came
+ * from the trope's suggestions — so reopening the builder shows what they picked rather than a
+ * reconstruction of it.
+ */
+export interface KobCharacter {
+  id: string;
+  /** Discriminates the document once several systems share one store or one server row. */
+  systemId: 'kids-on-bikes';
+  schemaVersion: 1;
+
+  firstName: string;
+  lastName: string;
+  pronouns: string;
+  description: string;
+
+  tropeId: string | null;
+  age: KobAge | null;
+  /**
+   * True when the player assigned dice themselves ("Creating a Character from Scratch") rather
+   * than taking the trope's spread. Kept because it changes what the builder shows on reopening.
+   */
+  fromScratch: boolean;
+  /** Stat id → die. Written from the trope, or by hand in from-scratch mode. */
+  statDice: Record<KobStatId, KobDie>;
+
+  /** The two chosen Strengths. The age's free Strength is derived, never stored here. */
+  strengthIds: string[];
+  /** Fills the blank in "Skilled at ___". */
+  skilledAt: string;
+  flawId: string | null;
+  /** A Flaw agreed with the GM that is not on the list. Wins over `flawId` when set. */
+  customFlaw: string;
+
+  motivation: string;
+  fear: string;
+  obligations: string;
+  /** One at creation, three at most, per the rules. */
+  knacks: string[];
+  backpack: string;
+  /** Answers to the trope's two questions, in the order the trope lists them. */
+  tropeAnswers: string[];
+
+  bike: KobBike;
+  relationships: KobRelationship[];
+  bondedActions: KobBondedActionEntry[];
+
+  /** Each player starts the game with 3. */
+  adversityTokens: number;
+  notes: string;
+
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface KobBike {
+  /** Bike colour option id, or '' for none chosen. */
+  colorId: string;
+  upgradeId: string;
+  name: string;
+  origin: string;
+  favoriteMemory: string;
+}
+
+export interface KobRelationship {
+  id: string;
+  /** The other character, by name — they may not exist in this app at all. */
+  who: string;
+  /** How the two know each other, in the player's words. */
+  connection: string;
+  /** Which question list the answer came from. */
+  kind: 'positive' | 'negative' | 'stranger';
+  question: string;
+  answer: string;
+}
+
+export interface KobBondedActionEntry {
+  /** Bonded action id from the appendix, or '' when the pair invented one. */
+  actionId: string;
+  /** The invented action's name, when `actionId` is empty. */
+  customName: string;
+  withCharacter: string;
+  /** The three shared experiences the rules ask the pair to describe. */
+  backstory: string;
+}

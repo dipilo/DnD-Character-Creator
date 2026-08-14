@@ -42,6 +42,13 @@ export default {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
+        // Set per game system by store/themeStore.ts. Use it for decoration that should say which
+        // game you are in (hero gradients, system badges), not for controls — those read --primary.
+        brand: {
+          DEFAULT: "hsl(var(--brand))",
+          foreground: "hsl(var(--brand-foreground))",
+          muted: "hsl(var(--brand-muted))",
+        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",

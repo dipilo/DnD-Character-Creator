@@ -27,7 +27,6 @@ interface CharacterState {
   characters: Character[];
   currentCharacter: Partial<Character> | null;
   builderState: BuilderState;
-  darkMode: boolean;
 
   // Server sync bookkeeping. Persisted with the characters: a cache that forgets what it already
   // uploaded would re-upload everything, or worse, mistake a deletion made elsewhere for one.
@@ -66,9 +65,6 @@ interface CharacterState {
   loadCharacterIntoBuilder: (id: string) => boolean;
   resetBuilder: () => void;
   
-  // Dark mode
-  toggleDarkMode: () => void;
-  setDarkMode: (value: boolean) => void;
 }
 
 const defaultAbilityScores: AbilityScores = {
@@ -115,7 +111,6 @@ export const useCharacterStore = create<CharacterState>()(
       characters: [],
       currentCharacter: null,
       builderState: initialBuilderState,
-      darkMode: false,
       syncMeta: {},
       pendingDeletes: [],
       pendingSeats: {},
@@ -330,21 +325,12 @@ export const useCharacterStore = create<CharacterState>()(
 
       resetBuilder: () => {
         set({ builderState: initialBuilderState });
-      },
-
-      toggleDarkMode: () => {
-        set((state) => ({ darkMode: !state.darkMode }));
-      },
-
-      setDarkMode: (value) => {
-        set({ darkMode: value });
       }
     }),
     {
       name: 'dnd-character-storage',
       partialize: (state) => ({
         characters: state.characters,
-        darkMode: state.darkMode,
         syncMeta: state.syncMeta,
         pendingDeletes: state.pendingDeletes,
         pendingSeats: state.pendingSeats,

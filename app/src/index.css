@@ -32,6 +32,12 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Base values only. store/themeStore.ts overwrites --primary, --accent, --ring and the
+       --brand-* set inline on <html> for whichever game system's palette is active, so a system
+       that omits a token falls back to what is declared here. */
+    --brand: 240 5.9% 10%;
+    --brand-foreground: 0 0% 98%;
+    --brand-muted: 240 4.8% 95.9%;
   }
 
   .dark {
@@ -62,6 +68,9 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --brand: 0 0% 98%;
+    --brand-foreground: 240 5.9% 10%;
+    --brand-muted: 240 3.7% 15.9%;
   }
 }
 

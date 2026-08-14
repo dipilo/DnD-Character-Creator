@@ -137,24 +137,10 @@ interface DiceSceneProps {
   onReadyChange?: (ready: boolean) => void;
 }
 
-const getAssetPath = () => {
-  if (globalThis.window === undefined) {
-    return '/assets/';
-  }
-
-  // The build uses a relative Vite base ('./'), so BASE_URL resolved against
-  // location.href follows the client-side route: on /builder the dice assets would
-  // resolve to /builder/assets/… and 404. Built chunks are emitted into the same
-  // directory the public/assets tree is copied to (dist/assets), so the module URL
-  // anchors the assets independently of the route.
-  if (!import.meta.env.DEV) {
-    return new URL('./', import.meta.url).pathname;
-  }
-
-  // The dev server serves this module from /src/…, so anchor on its base URL
-  // instead, which is always absolute in dev.
-  return new URL(`${import.meta.env.BASE_URL}assets/`, globalThis.window.location.href).pathname;
-};
+// BASE_URL is absolute in both dev and prod now that the Vite base is '/', so these runtime-fetched
+// dice-box files resolve the same on /builder as on /. It must stay absolute: a relative base makes
+// this follow the client route and 404.
+const getAssetPath = () => `${import.meta.env.BASE_URL}assets/`;
 
 export const DiceScene = forwardRef<DiceSceneHandle, DiceSceneProps>(function DiceScene({
   className,

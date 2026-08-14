@@ -19,7 +19,11 @@ const hmrConfig = publicHmrHost
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: './',
+  // Absolute, not './'. A relative base makes index.html reference ./assets/index-*.js, which the
+  // browser resolves against the *client route* — /invite/abc asks for /invite/assets/index-*.js,
+  // the SPA rewrite answers with index.html, and every module fails strict MIME checking. Any
+  // deploy under a subpath must set this to that subpath rather than going back to relative.
+  base: '/',
   plugins: [
     inspectAttr(),
     react({

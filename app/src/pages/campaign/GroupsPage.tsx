@@ -101,8 +101,10 @@ export function GroupsPage() {
         </div>
         {canManage ? (
           <div className="flex flex-wrap items-end gap-2">
-            <form className="flex gap-2" onSubmit={handleCreate}>
-              <div className="space-y-1.5">
+            <form className="flex items-start gap-2" onSubmit={handleCreate}>
+              {/* No space-y here: the label is sr-only and out of flow, so its margin would land
+                  on the input alone and push it below the button. */}
+              <div>
                 <Label htmlFor="new-group" className="sr-only">
                   Group name
                 </Label>

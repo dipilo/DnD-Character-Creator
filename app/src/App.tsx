@@ -1,7 +1,5 @@
-import { Suspense, lazy, useEffect } from 'react';
+import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useCharacterStore } from '@/store/characterStore';
-import { ThemeProvider } from '@/components/ThemeProvider';
 import { Layout } from '@/components/Layout';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { HomePage } from '@/pages/HomePage';
@@ -35,6 +33,11 @@ const RosterPage = lazy(() => import('@/pages/campaign/RosterPage').then((module
 const GroupsPage = lazy(() => import('@/pages/campaign/GroupsPage').then((module) => ({ default: module.GroupsPage })));
 const MembersPage = lazy(() => import('@/pages/campaign/MembersPage').then((module) => ({ default: module.MembersPage })));
 const InviteLandingPage = lazy(() => import('@/pages/campaign/InviteLandingPage').then((module) => ({ default: module.InviteLandingPage })));
+// Kids on Bikes. A second game system, so its screens are lazy for the same reason the campaign
+// ones are: nobody building a D&D character should download another game's content.
+const KobCharactersPage = lazy(() => import('@/pages/kob/KobCharactersPage').then((module) => ({ default: module.KobCharactersPage })));
+const KobBuilderPage = lazy(() => import('@/pages/kob/KobBuilderPage').then((module) => ({ default: module.KobBuilderPage })));
+const KobSheetPage = lazy(() => import('@/pages/kob/KobSheetPage').then((module) => ({ default: module.KobSheetPage })));
 // Phase 5: the join between the two halves — real builder characters seated at campaign tables.
 const PartyPage = lazy(() => import('@/pages/campaign/PartyPage').then((module) => ({ default: module.PartyPage })));
 const CampaignCharacterPage = lazy(() => import('@/pages/campaign/CampaignCharacterPage').then((module) => ({ default: module.CampaignCharacterPage })));
@@ -48,18 +51,10 @@ function RouteFallback() {
 }
 
 function App() {
-  const { darkMode } = useCharacterStore();
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
-
+  // The `dark` class and every palette token are written by `startThemeWatcher` (main.tsx) before
+  // React mounts, so nothing here has to know about the theme.
   return (
-    <ThemeProvider defaultTheme={darkMode ? 'dark' : 'light'}>
+    <>
       <BrowserRouter>
         <Layout>
           <Suspense fallback={<RouteFallback />}>
@@ -87,6 +82,11 @@ function App() {
                 <Route path="review" element={<ReviewPage />} />
               </Route>
               <Route path="/character/:id" element={<CharacterSheetPage />} />
+
+              <Route path="/kob" element={<KobCharactersPage />} />
+              <Route path="/kob/builder" element={<KobCharactersPage />} />
+              <Route path="/kob/builder/:characterId" element={<KobBuilderPage />} />
+              <Route path="/kob/character/:characterId" element={<KobSheetPage />} />
 
               {/* Campaign-scoped routes are the ones Phase 3's guard was written for. The invite
                   landing page is deliberately outside it: an invite reaches someone who has no
@@ -121,7 +121,7 @@ function App() {
         </Layout>
       </BrowserRouter>
       <Toaster />
-    </ThemeProvider>
+    </>
   );
 }
 

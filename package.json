@@ -21,6 +21,7 @@
     "test:sheet-intake": "node server/test/sheetIntake.mjs",
     "import:source": "node scripts/import-source.mjs --",
     "import:5etools": "node scripts/import-5etools.mjs",
+    "import:kids-on-bikes": "node scripts/import-kids-on-bikes.mjs",
     "generate:free-core": "node scripts/generate-free-core-sources.mjs"
   },
   "devDependencies": {

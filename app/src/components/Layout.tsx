@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useCharacterStore } from '@/store/characterStore';
 import { AccountMenu } from '@/components/auth/AccountMenu';
+import { AppearanceMenu } from '@/components/AppearanceMenu';
+import { getGameSystemForPath } from '@/data/gameSystems';
+import { setRoutePalette } from '@/store/themeStore';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import { Moon, Sun, Dices, Users, Home, Sword, Download, FlaskConical, CalendarRange, Menu } from 'lucide-react';
+import { Bike, Dices, Users, Home, Sword, Download, FlaskConical, CalendarRange, Menu } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface LayoutProps {
@@ -31,6 +33,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/characters', label: 'My Characters', icon: Users, match: '/characters' },
   { to: '/content/import', label: 'Import', icon: Download, match: '/content' },
   { to: '/homebrew', label: 'Homebrew', icon: FlaskConical, match: '/homebrew' },
+  { to: '/kob', label: 'Kids on Bikes', icon: Bike, match: '/kob' },
   { to: '/campaigns', label: 'Campaigns', icon: CalendarRange, match: '/campaign' },
   { to: '/dice', label: 'Dice', icon: Dices, match: '/dice' },
 ];
@@ -48,15 +51,26 @@ function DragonMark({ className }: Readonly<{ className?: string }>) {
 }
 
 export function Layout({ children }: Readonly<LayoutProps>) {
-  const { darkMode, toggleDarkMode } = useCharacterStore();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const routeSystem = getGameSystemForPath(location.pathname);
+
+  // A DOM write keyed off the route, not state mirrored into state: the theme store owns the
+  // palette, the router owns the path, and this tells the one about the other.
+  useEffect(() => {
+    setRoutePalette(routeSystem?.id ?? null);
+  }, [routeSystem?.id]);
   const isFullBleedBuilderRoute = location.pathname.startsWith('/builder/ability-scores') || location.pathname.startsWith('/dice');
   const showExtendedNavigation = COMMUNITY_TESTING_MODE === false;
 
   const items = showExtendedNavigation ? NAV_ITEMS : NAV_ITEMS.filter((item) => item.always);
   const isActive = (item: NavItem) =>
     item.exact ? location.pathname === item.match : location.pathname.startsWith(item.match);
+
+  // The header names the game you are in — "D&D Character Creator" over a Kids on Bikes sheet
+  // reads as the wrong app. Off any system's routes it falls back to the app's own name.
+  const brandLabel = routeSystem ? `${routeSystem.shortName} Character Creator` : 'TTRPG Character Creator';
+  const brandHref = routeSystem?.charactersPath ?? '/builder';
 
   const mainClassName = isFullBleedBuilderRoute
     ? 'w-full flex-1'
@@ -78,7 +92,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
               <SheetHeader className="border-b p-4">
                 <SheetTitle className="flex items-center gap-2">
                   <DragonMark className="h-5 w-5 text-primary" />
-                  D&D Character Creator
+                  {brandLabel}
                 </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col gap-1 overflow-y-auto p-3">
@@ -102,9 +116,9 @@ export function Layout({ children }: Readonly<LayoutProps>) {
             </SheetContent>
           </Sheet>
 
-          <Link to="/builder" className="flex min-w-0 items-center gap-2 lg:mr-6">
+          <Link to={brandHref} className="flex min-w-0 items-center gap-2 lg:mr-6">
             <DragonMark className="h-6 w-6 shrink-0 text-primary" />
-            <span className="truncate text-base font-bold sm:text-lg">D&D Character Creator</span>
+            <span className="truncate text-base font-bold sm:text-lg">{brandLabel}</span>
           </Link>
 
           <nav className="hidden flex-1 items-center gap-1 lg:flex">
@@ -123,9 +137,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
 
           <div className="ml-auto flex shrink-0 items-center gap-1">
             <AccountMenu />
-            <Button variant="ghost" size="icon" onClick={toggleDarkMode} aria-label="Toggle dark mode">
-              {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
+            <AppearanceMenu />
           </div>
         </div>
       </header>
@@ -136,7 +148,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
 
       <footer className="pb-safe mt-auto border-t py-4 sm:py-6">
         <div className="mx-auto w-full max-w-7xl px-4 text-center text-xs text-muted-foreground">
-          <p>D&D Character Creator</p>
+          <p>{brandLabel}</p>
         </div>
       </footer>
     </div>
