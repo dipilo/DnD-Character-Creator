@@ -19,6 +19,11 @@ config = {
   discordClientId: process.env.DISCORD_CLIENT_ID || config.discordClientId,
   discordClientSecret: process.env.DISCORD_CLIENT_SECRET || config.discordClientSecret,
   discordRedirectUri: process.env.DISCORD_REDIRECT_URI || config.discordRedirectUri,
+  // The intake templates a DM copies (MERGE_PLAN.md §20). These are "make a copy" URLs for
+  // documents the deployment owns; leaving them unset hides the copy buttons and leaves the
+  // rest of the import working, because pasting an existing sheet was always the fallback.
+  sheetTemplateUrl: process.env.SHEET_TEMPLATE_URL || config.sheetTemplateUrl || null,
+  formTemplateUrl: process.env.FORM_TEMPLATE_URL || config.formTemplateUrl || null,
   // Optional frontend origin allowlist
   frontendOrigin: process.env.FRONTEND_ORIGIN || config.frontendOrigin,
   allowedReturnOrigins: (process.env.ALLOWED_RETURN_ORIGINS

@@ -1,5 +1,5 @@
 {
-  "requests": 150,
+  "requests": 153,
   "results": [
     {
       "name": "root",
@@ -1455,6 +1455,213 @@
       }
     },
     {
+      "name": "sheet-template-unauthenticated",
+      "request": "GET /api/sheet-template",
+      "status": 401,
+      "body": {
+        "error": "not_authenticated"
+      }
+    },
+    {
+      "name": "sheet-template",
+      "request": "GET /api/sheet-template",
+      "status": 200,
+      "body": {
+        "fields": [
+          {
+            "aliases": [
+              "name",
+              "player name",
+              "player",
+              "full name",
+              "your name"
+            ],
+            "column": "name",
+            "help": "What the DM should call them. This is what the roster lists.",
+            "identity": true,
+            "key": "name",
+            "label": "Player name",
+            "question": "What is your name?",
+            "required": true,
+            "type": "short"
+          },
+          {
+            "aliases": [
+              "discord",
+              "discord username",
+              "discord handle",
+              "discord name",
+              "discord tag"
+            ],
+            "column": "discord",
+            "help": "Matched first when re-importing, so a rename does not create a duplicate seat.",
+            "identity": true,
+            "key": "discord",
+            "label": "Discord handle",
+            "question": "What is your Discord username?",
+            "type": "short"
+          },
+          {
+            "aliases": [
+              "timezone",
+              "time zone",
+              "tz",
+              "your timezone"
+            ],
+            "column": "timezone",
+            "help": "An abbreviation (EST, PST, GMT, CET) or an IANA name (Europe/London). Availability is read in this zone.",
+            "key": "timezone",
+            "label": "Time zone",
+            "question": "What time zone are you in?",
+            "required": true,
+            "type": "short"
+          },
+          {
+            "aliases": [
+              "availability",
+              "notes",
+              "availability notes",
+              "when are you free",
+              "free times",
+              "when are you generally free to play"
+            ],
+            "column": "notes",
+            "help": "Free text. Parsed into calendar blocks — \"Mon, Wed, Fri 8pm-midnight\" and \"weekends after 5pm\" both work.",
+            "key": "notes",
+            "label": "Availability",
+            "question": "When are you generally free to play?",
+            "required": true,
+            "type": "paragraph"
+          },
+          {
+            "aliases": [
+              "age",
+              "how old are you"
+            ],
+            "column": "age",
+            "help": "Optional. Some tables group by age range.",
+            "key": "age",
+            "label": "Age",
+            "question": "How old are you?",
+            "type": "short"
+          },
+          {
+            "aliases": [
+              "computer access",
+              "computer",
+              "what will you play on",
+              "device"
+            ],
+            "choices": [
+              "Desktop or laptop",
+              "Tablet",
+              "Phone only",
+              "Varies"
+            ],
+            "column": "computer_access",
+            "help": "A phone-only player cannot share a screen, which changes which VTT works.",
+            "key": "computer_access",
+            "label": "Computer access",
+            "question": "What will you play on?",
+            "type": "choice"
+          },
+          {
+            "aliases": [
+              "preferred party size",
+              "party size",
+              "pref party size"
+            ],
+            "choices": [
+              "2–3",
+              "4–5",
+              "6+",
+              "No preference"
+            ],
+            "column": "pref_party_size",
+            "key": "pref_party_size",
+            "label": "Preferred party size",
+            "question": "What party size do you prefer?",
+            "type": "choice"
+          },
+          {
+            "aliases": [
+              "preferred session length",
+              "session length",
+              "pref session length"
+            ],
+            "choices": [
+              "2 hours",
+              "3 hours",
+              "4 hours",
+              "4+ hours",
+              "No preference"
+            ],
+            "column": "pref_session_length",
+            "key": "pref_session_length",
+            "label": "Preferred session length",
+            "question": "How long do you like sessions to run?",
+            "type": "choice"
+          },
+          {
+            "aliases": [
+              "preferred vtt",
+              "vtt",
+              "pref vtt",
+              "virtual tabletop"
+            ],
+            "choices": [
+              "Roll20",
+              "Foundry VTT",
+              "Owlbear Rodeo",
+              "Theatre of the mind",
+              "In person",
+              "No preference"
+            ],
+            "column": "pref_vtt",
+            "key": "pref_vtt",
+            "label": "Preferred VTT",
+            "question": "Which virtual tabletop do you prefer?",
+            "type": "choice"
+          },
+          {
+            "aliases": [
+              "prefer play with",
+              "prefer to play with",
+              "preferred players",
+              "players you prefer",
+              "play with"
+            ],
+            "column": "pref_play_with",
+            "help": "Names, comma separated. Matched against the roster and used as a soft constraint by the group suggester.",
+            "key": "pref_play_with",
+            "label": "Plays well with",
+            "question": "Is there anyone you would especially like to play with?",
+            "type": "short"
+          },
+          {
+            "aliases": [
+              "prefer not play with",
+              "prefer not to play with",
+              "players you prefer not to play with",
+              "do not play with",
+              "dont play with"
+            ],
+            "column": "pref_play_not_with",
+            "help": "Kept private to the DM. Also a soft constraint, never a hard one.",
+            "key": "pref_play_not_with",
+            "label": "Would rather not play with",
+            "question": "Is there anyone you would rather not play with?",
+            "type": "short"
+          }
+        ],
+        "ok": true,
+        "templates": {
+          "form": null,
+          "sheet": null
+        }
+      }
+    },
+    {
       "name": "sync-without-campaign",
       "request": "POST /api/sync",
       "status": 400,
@@ -1468,6 +1675,14 @@
       "status": 400,
       "body": {
         "error": "Invalid spreadsheet id or URL provided."
+      }
+    },
+    {
+      "name": "sync-as-member-without-rights",
+      "request": "POST /api/sync",
+      "status": 403,
+      "body": {
+        "error": "forbidden"
       }
     },
     {

@@ -1,2 +1,13 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# `text=auto` alone normalises to LF *in the repository* but still checks out CRLF wherever
+# core.autocrlf=true (every default Windows install). The smoke harness compares its snapshot
+# byte-for-byte, so a CRLF checkout reported all 2511 lines as drift on a tree that had not
+# changed. Pin the working-tree ending for the files that are compared as bytes.
+*.json text eol=lf
+*.mjs  text eol=lf
+*.js   text eol=lf
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.css  text eol=lf

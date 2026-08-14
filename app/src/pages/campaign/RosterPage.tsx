@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Pencil, Plus, Sparkles, Trash2, UserCheck, UserPlus } from 'lucide-react';
+import { Pencil, Plus, Sparkles, Trash2, Upload, UserCheck, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { claimPlayer, deletePlayer, parseAllowedSourceIds, unclaimPlayer } from '@/lib/api';
 import type { Player } from '@/lib/api';
 import { DdbSeedDialog } from '@/components/schedule/DdbSeedDialog';
 import { PlayerEditorDialog } from '@/components/schedule/PlayerEditorDialog';
+import { SheetImportDialog } from '@/components/schedule/SheetImportDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -54,6 +55,7 @@ export function RosterPage() {
   // blob the scheduler used to keep on `players.ddb_json`.
   const { characterForPlayer } = useCampaignCharacters(campaignId);
   const [editing, setEditing] = useState<Player | 'new' | null>(null);
+  const [importing, setImporting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<Player | null>(null);
   const [seeding, setSeeding] = useState<Player | null>(null);
 
@@ -116,10 +118,17 @@ export function RosterPage() {
           </p>
         </div>
         {canAdd ? (
-          <Button onClick={() => setEditing('new')}>
-            <Plus className="h-4 w-4" />
-            Add a seat
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            {/* Importing creates and edits seats, so it is the same right as adding one (§20). */}
+            <Button variant="outline" onClick={() => setImporting(true)}>
+              <Upload className="h-4 w-4" />
+              Import from a sheet
+            </Button>
+            <Button onClick={() => setEditing('new')}>
+              <Plus className="h-4 w-4" />
+              Add a seat
+            </Button>
+          </div>
         ) : null}
       </div>
 
@@ -206,6 +215,13 @@ export function RosterPage() {
         onOpenChange={(open) => {
           if (!open) setSeeding(null);
         }}
+      />
+
+      <SheetImportDialog
+        campaignId={campaignId}
+        open={importing}
+        onOpenChange={setImporting}
+        onImported={reload}
       />
 
       <PlayerEditorDialog

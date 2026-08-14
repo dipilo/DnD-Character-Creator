@@ -277,3 +277,65 @@ export interface UnclaimedPlayer {
   notes: string | null;
   sort_index: number | null;
 }
+
+/* ---------- Google Sheets intake (MERGE_PLAN.md §20) ---------- */
+
+/**
+ * One question the intake template asks. Mirrors `server/lib/sheetIntake.js`, which is the single
+ * definition — this type describes what `GET /api/sheet-template` sends, it does not restate it.
+ */
+export interface IntakeField {
+  key: string;
+  /** The `players` column the answer is stored in. */
+  column: string;
+  label: string;
+  /** The Form question, verbatim. This is the wording the template uses. */
+  question: string;
+  type: 'short' | 'paragraph' | 'choice';
+  required?: boolean;
+  /** Participates in matching a row to an existing seat. */
+  identity?: boolean;
+  aliases: string[];
+  help?: string;
+  choices?: string[];
+}
+
+export interface SheetIntakeTemplate {
+  fields: IntakeField[];
+  /** "Make a copy" URLs, or null when the deployment has not configured them. */
+  templates: { sheet: string | null; form: string | null };
+}
+
+/** field key -> the sheet header it reads from. */
+export type SheetMapping = Record<string, string>;
+
+export interface SheetSyncRequest {
+  campaign_id: number;
+  spreadsheetId: string;
+  gid?: string;
+  mapping?: SheetMapping | null;
+}
+
+export interface SheetPlanDetail {
+  creates: { row: number; name: string; discord: string }[];
+  updates: { row: number; seat_id: number; seat_name: string | null; claimed: boolean; columns: string[] }[];
+  skipped: { row: number; seat_id: number | null; reason: string }[];
+}
+
+export interface SheetPreview {
+  ok: true;
+  dry_run: true;
+  created: number;
+  updated: number;
+  skipped: number;
+  detail: SheetPlanDetail;
+}
+
+export interface SheetImportResult {
+  ok: true;
+  created: number;
+  updated: number;
+  skipped: number;
+  detail: SheetPlanDetail;
+  players: Player[];
+}

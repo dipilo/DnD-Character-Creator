@@ -194,8 +194,16 @@ const steps = [
 
   { name: 'feedback', method: 'POST', path: '/api/feedback', headers: () => asUser('alice'), body: { message: 'smoke test', url: '/campaigns' } },
   { name: 'sheet-columns-missing-id', method: 'POST', path: '/api/sheet-columns', body: {} },
+  // The intake schema is served, not duplicated in the client, so its shape is worth pinning:
+  // a renamed field key silently breaks the mapping UI and every alias the importer matches on.
+  { name: 'sheet-template-unauthenticated', method: 'GET', path: '/api/sheet-template' },
+  { name: 'sheet-template', method: 'GET', path: '/api/sheet-template', headers: () => asUser('alice') },
   { name: 'sync-without-campaign', method: 'POST', path: '/api/sync', headers: () => asUser('alice'), body: {} },
   { name: 'sync-invalid-sheet-id', method: 'POST', path: '/api/sync', headers: () => asUser('alice'), body: () => ({ campaign_id: ctx.camp, spreadsheetId: '///' }) },
+  // Importing rewrites the roster, so it is gated on can_create_players rather than membership.
+  // Dara joined alice's campaign by invite and is a plain member; the old route let any member
+  // import over every seat in the campaign.
+  { name: 'sync-as-member-without-rights', method: 'POST', path: '/api/sync', headers: () => asUser('dara'), body: () => ({ campaign_id: ctx.camp, spreadsheetId: '///' }) },
   { name: 'rebuild-player', method: 'POST', path: () => `/api/rebuild/${ctx.bran}`, headers: () => asUser('alice') },
   { name: 'rebuild-missing-player', method: 'POST', path: '/api/rebuild/9999', headers: () => asUser('alice') },
 
@@ -411,7 +419,10 @@ async function main() {
 
   let baseline;
   try {
-    baseline = readFileSync(snapshotPath, 'utf8');
+    // Normalised because git checks the snapshot out with CRLF wherever core.autocrlf=true, and a
+    // byte comparison then reports every line as drift on a tree that has not changed.
+    // .gitattributes pins eol=lf as well; this is the half that survives a mis-configured clone.
+    baseline = readFileSync(snapshotPath, 'utf8').replaceAll('\r\n', '\n');
   } catch {
     console.error(`no baseline at ${snapshotPath} — run with --write first`);
     process.exitCode = 1;
