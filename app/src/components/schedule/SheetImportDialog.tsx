@@ -33,9 +33,18 @@ interface SheetImportDialogProps {
   onImported: () => void;
 }
 
-/** Google's own "copy this document" URL. Turning a normal link into one is a suffix swap. */
-function toCopyUrl(url: string): string {
-  return url.replace(/\/(edit|view|viewform)?(\?.*)?$/, '/copy');
+/**
+ * Google's own "make a copy" URL, which only exists for a document's *own* id.
+ *
+ * A published form (`/forms/d/e/<token>/viewform`) and a `forms.gle` short link both carry a
+ * response token rather than the document id, so neither can become a `/copy`. The suffix swap
+ * this replaced silently returned those unchanged, sending the DM to fill in the deployment's
+ * live form instead of copying it. They link through as-is and the button says so.
+ */
+function toCopyUrl(url: string): { href: string; copyable: boolean } {
+  const match = /^(https:\/\/docs\.google\.com\/(?:spreadsheets|forms|document)\/d\/)(?!e\/)([\w-]{20,})/.exec(url);
+  if (!match) return { href: url, copyable: false };
+  return { href: `${match[1]}${match[2]}/copy`, copyable: true };
 }
 
 const NOT_MAPPED = '__none__';
@@ -57,25 +66,37 @@ function TemplateLinks({ templates }: Readonly<{ templates: SheetIntakeTemplate[
     );
   }
 
+  const form = templates.form ? toCopyUrl(templates.form) : null;
+  const sheet = templates.sheet ? toCopyUrl(templates.sheet) : null;
+
   return (
-    <div className="flex flex-wrap gap-2">
-      {templates.form ? (
-        <Button asChild variant="outline" size="sm" className="min-h-11">
-          <a href={toCopyUrl(templates.form)} target="_blank" rel="noreferrer noopener">
-            <ListChecks className="h-4 w-4" />
-            Copy the intake form
-            <ExternalLink className="h-3.5 w-3.5 opacity-60" />
-          </a>
-        </Button>
-      ) : null}
-      {templates.sheet ? (
-        <Button asChild variant="outline" size="sm" className="min-h-11">
-          <a href={toCopyUrl(templates.sheet)} target="_blank" rel="noreferrer noopener">
-            <FileSpreadsheet className="h-4 w-4" />
-            Copy the spreadsheet
-            <ExternalLink className="h-3.5 w-3.5 opacity-60" />
-          </a>
-        </Button>
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-2">
+        {form ? (
+          <Button asChild variant="outline" size="sm" className="min-h-11">
+            <a href={form.href} target="_blank" rel="noreferrer noopener">
+              <ListChecks className="h-4 w-4" />
+              {form.copyable ? 'Copy the intake form' : 'Open the intake form'}
+              <ExternalLink className="h-3.5 w-3.5 opacity-60" />
+            </a>
+          </Button>
+        ) : null}
+        {sheet ? (
+          <Button asChild variant="outline" size="sm" className="min-h-11">
+            <a href={sheet.href} target="_blank" rel="noreferrer noopener">
+              <FileSpreadsheet className="h-4 w-4" />
+              {sheet.copyable ? 'Copy the spreadsheet' : 'Open the spreadsheet'}
+              <ExternalLink className="h-3.5 w-3.5 opacity-60" />
+            </a>
+          </Button>
+        ) : null}
+      </div>
+      {(form && !form.copyable) || (sheet && !sheet.copyable) ? (
+        <p className="text-xs text-muted-foreground">
+          One of these links opens the original rather than a copy — a short link or a published
+          form URL carries a response token, not the document id. Use{' '}
+          <strong>File &rarr; Make a copy</strong> once it opens.
+        </p>
       ) : null}
     </div>
   );

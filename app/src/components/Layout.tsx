@@ -78,7 +78,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
               <SheetHeader className="border-b p-4">
                 <SheetTitle className="flex items-center gap-2">
                   <DragonMark className="h-5 w-5 text-primary" />
-                  D&D Character Builder
+                  D&D Character Creator
                 </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col gap-1 overflow-y-auto p-3">
@@ -104,7 +104,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
 
           <Link to="/builder" className="flex min-w-0 items-center gap-2 lg:mr-6">
             <DragonMark className="h-6 w-6 shrink-0 text-primary" />
-            <span className="truncate text-base font-bold sm:text-lg">D&D Character Builder</span>
+            <span className="truncate text-base font-bold sm:text-lg">D&D Character Creator</span>
           </Link>
 
           <nav className="hidden flex-1 items-center gap-1 lg:flex">
@@ -136,7 +136,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
 
       <footer className="pb-safe mt-auto border-t py-4 sm:py-6">
         <div className="mx-auto w-full max-w-7xl px-4 text-center text-xs text-muted-foreground">
-          <p>D&D Character Builder</p>
+          <p>D&D Character Creator</p>
         </div>
       </footer>
     </div>

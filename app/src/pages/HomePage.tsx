@@ -65,7 +65,7 @@ export function HomePage() {
   return (
     <div className="mx-auto max-w-5xl space-y-8 py-6">
       <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">D&D Character Builder</h1>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">D&D Character Creator</h1>
         <p className="text-muted-foreground">Pick up where you left off or start something new.</p>
       </div>
 
