@@ -222,6 +222,8 @@ export interface Equipment {
   toolCategory?: string;
   damage?: string;
   damageType?: string;
+  /** Versatile's two-handed die, when the source states one. Never inferred from the die size. */
+  versatileDamage?: string;
   properties?: string[];
   range?: { normal: number; long?: number };
   // Armor properties

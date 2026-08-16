@@ -97,6 +97,19 @@ export interface Campaign {
    * which is what an empty selection means in the builder's own source filter too.
    */
   allowed_source_ids: string | null;
+  /**
+   * The game this table plays, as a `GameSystemId`. The server bounds the shape and interprets
+   * nothing — the registry is the client's (`data/gameSystems.ts`) — so read it through
+   * `getGameSystem`, which falls back to the default for the null a pre-column campaign carries.
+   */
+  system_id: string | null;
+  /** JSON permission blob granted to anyone who joins. Null grants nothing. */
+  default_member_permissions: string | null;
+  /**
+   * JSON permission blob a new invite link starts with. Distinct from the member default because
+   * an invited arrival and someone joining with the campaign code are not the same audience.
+   */
+  default_invite_permissions: string | null;
 }
 
 /**
@@ -255,6 +268,11 @@ export interface Invite {
   challenge_min_score: number;
   used_count: number;
   created_at: string | null;
+  /**
+   * What this link grants whoever joins on it, as a JSON blob. Null means "no opinion" and the
+   * campaign's `default_invite_permissions` applies; `"{}"` is an explicit "grant nothing".
+   */
+  permissions: string | null;
 }
 
 export interface InvitePreview {

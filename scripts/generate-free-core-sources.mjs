@@ -260,6 +260,24 @@ const getToolCategory = (entry) => {
     .find((name) => name && toolCategoryNames.has(name));
 };
 
+// The same shape change hit weapons: 2014 states `weapon_category` ("Martial") and `weapon_range`
+// ("Melee") outright, 2024 states neither and lists "Martial Melee Weapons" among its
+// `equipment_categories`. Without these two the 2024 printings carried no category at all, so a
+// sheet could not tell whether the character was proficient with them and read every one as melee.
+const weaponCategoryIndexes = new Set(['simple', 'martial']);
+const weaponRangeIndexes = new Set(['melee', 'ranged']);
+
+const getWeaponFacet = (entry, allowed, explicit) => {
+  if (explicit) return explicit.toLowerCase();
+  for (const category of entry.equipment_categories ?? []) {
+    // "martial-melee-weapons" -> ['martial', 'melee', 'weapons']
+    for (const part of String(category?.index ?? '').split('-')) {
+      if (allowed.has(part)) return part;
+    }
+  }
+  return undefined;
+};
+
 // Feats carry their benefits in two different shapes: the 2014 dataset splits them into a `desc`
 // array whose benefit lines start with "-", while the 2024 dataset ships one markdown
 // `description` string whose benefits are "**Name.** text" lines. Reading only the 2014 shape
@@ -803,13 +821,16 @@ export const createPack = async ({ edition, sourceId, label, category, includeCo
         },
         weight: entry.weight ?? 0,
         description: (entry.desc ?? []).join(' ') || undefined,
-        weaponCategory: entry.weapon_category ? entry.weapon_category.toLowerCase() : undefined,
-        weaponType: entry.weapon_range ? entry.weapon_range.toLowerCase() : undefined,
+        weaponCategory: getWeaponFacet(entry, weaponCategoryIndexes, entry.weapon_category),
+        weaponType: getWeaponFacet(entry, weaponRangeIndexes, entry.weapon_range),
         // "Artisan's Tools" / "Gaming Sets" / "Musical Instruments" — what a proficiency phrased
         // as "one type of gaming set" is actually choosing between.
         toolCategory: getToolCategory(entry),
         damage: entry.damage?.damage_dice,
         damageType: entry.damage?.damage_type?.name,
+        // Versatile's larger die. The property name alone says a weapon *has* a two-handed line
+        // without saying what it is, and a sheet must not guess one die size up.
+        versatileDamage: entry.two_handed_damage?.damage_dice,
         properties: (entry.properties ?? []).map((property) => property.name),
         range: entry.range ? { normal: entry.range.normal, long: entry.range.long } : undefined,
         armorCategory: entry.armor_category ? entry.armor_category.toLowerCase() : undefined,

@@ -4,13 +4,17 @@ import { CalendarDays, Plus, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { ApiError, createCampaign, findCampaignByCode, joinCampaign } from '@/lib/api';
 import { randomCampaignName } from '@/data/campaignNames';
+import { GAME_SYSTEM_LIST, getGameSystem, type GameSystemId } from '@/data/gameSystems';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { useCampaignStore } from '@/store/campaignStore';
+import { useGameSystemStore } from '@/store/gameSystemStore';
 
 /** Server error codes for the join flow, in the words a player would use. */
 const joinErrors: Record<string, string> = {
@@ -33,6 +37,8 @@ export function CampaignsPage() {
   // A lazy initializer, not a render-body call: Math.random() during render is impure and would
   // hand the field a different suggestion on every re-render.
   const [nameSuggestion, setNameSuggestion] = useState(() => randomCampaignName());
+  const preferredSystemId = useGameSystemStore((state) => state.preferredSystemId);
+  const [newSystemId, setNewSystemId] = useState<GameSystemId>(preferredSystemId);
 
   useEffect(() => {
     void loadCampaigns();
@@ -49,7 +55,9 @@ export function CampaignsPage() {
     if (!name || busy) return;
     setBusy(true);
     try {
-      const campaign = await createCampaign(name);
+      // The campaign is created for the game you are in. A table's system decides which builder
+      // its "new character" button opens, so it cannot be left to a default.
+      const campaign = await createCampaign(name, newSystemId);
       upsertCampaign(campaign);
       setNewName('');
       setNameSuggestion(randomCampaignName());
@@ -101,22 +109,37 @@ export function CampaignsPage() {
           <CardContent>
             {/* items-start, and no space-y on the field: an sr-only label is out of flow, so
                 space-y's margin lands on the input alone and drops it below the button. */}
-            <form className="flex items-start gap-2" onSubmit={handleCreate}>
-              <div className="flex-1">
-                <Label htmlFor="campaign-name" className="sr-only">
-                  Campaign name
-                </Label>
-                <Input
-                  id="campaign-name"
-                  placeholder={nameSuggestion}
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                />
+            <form className="space-y-3" onSubmit={handleCreate}>
+              <div className="flex items-start gap-2">
+                <div className="flex-1">
+                  <Label htmlFor="campaign-name" className="sr-only">
+                    Campaign name
+                  </Label>
+                  <Input
+                    id="campaign-name"
+                    placeholder={nameSuggestion}
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                  />
+                </div>
+                <Button type="submit" disabled={busy || newName.trim().length === 0}>
+                  <Plus className="h-4 w-4" />
+                  Create
+                </Button>
               </div>
-              <Button type="submit" disabled={busy || newName.trim().length === 0}>
-                <Plus className="h-4 w-4" />
-                Create
-              </Button>
+              <div className="space-y-1.5">
+                <Label htmlFor="campaign-system">Game</Label>
+                <Select value={newSystemId} onValueChange={(value) => setNewSystemId(value as GameSystemId)}>
+                  <SelectTrigger id="campaign-system" className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {GAME_SYSTEM_LIST.filter((system) => system.available).map((system) => (
+                      <SelectItem key={system.id} value={system.id}>{system.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </form>
           </CardContent>
         </Card>
@@ -177,7 +200,10 @@ export function CampaignsPage() {
         {campaigns.map((campaign) => (
           <Card key={campaign.id} className="flex flex-col">
             <CardHeader>
-              <CardTitle className="text-lg">{campaign.name || 'Untitled campaign'}</CardTitle>
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <CardTitle className="text-lg">{campaign.name || 'Untitled campaign'}</CardTitle>
+                <Badge variant="secondary">{getGameSystem(campaign.system_id).shortName}</Badge>
+              </div>
               <CardDescription>
                 {campaign.created_at ? `Created ${new Date(campaign.created_at).toLocaleDateString()}` : 'Campaign'}
               </CardDescription>

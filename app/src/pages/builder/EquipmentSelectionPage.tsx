@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { EquipmentOption } from '@/types/dnd';
 import { useCharacterStore } from '@/store/characterStore';
-import { useContentLibrary } from '@/data';
+import { resolveClassById, useContentLibrary } from '@/data';
 import { SourceFilterBar } from '@/components/SourceFilterBar';
 import { sourceMatchesSelection } from '@/data/librarySources';
 import { Button } from '@/components/ui/button';
@@ -541,8 +541,10 @@ export function EquipmentSelectionPage() {
   const { classes, backgrounds, equipment } = useContentLibrary();
 
   const selectedClasses = useMemo(() => {
+    // Canonical, not exact: an older stored class id otherwise reports "0 class kits" and drops
+    // the starting-equipment choices for a class the Class step shows as selected.
     return (builderState.character?.classes || [])
-      .map((entry) => classes.find((cls) => cls.id === entry.classId))
+      .map((entry) => resolveClassById(classes, entry.classId))
       .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
   }, [builderState.character?.classes, classes]);
 
@@ -620,7 +622,7 @@ export function EquipmentSelectionPage() {
       equipment: builderState.character?.equipment ?? [],
       getEquipmentById: (equipmentId) => equipment.find((entry) => entry.id === equipmentId),
       findEquipmentByName: (equipmentName) => equipment.find((entry) => normalizeName(entry.name) === normalizeName(equipmentName)),
-      getClassById: (classId) => classes.find((entry) => entry.id === classId),
+      getClassById: (classId) => resolveClassById(classes, classId),
       getBackgroundById: (backgroundId) => backgrounds.find((entry) => entry.id === backgroundId)
     });
   }, [backgrounds, builderState.character?.equipment, classes, equipment]);

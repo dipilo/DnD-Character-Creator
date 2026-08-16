@@ -272,6 +272,7 @@ export const equipmentSchema: z.ZodType<Equipment> = z.object({
   toolCategory: z.string().min(1).optional(),
   damage: z.string().optional(),
   damageType: z.string().optional(),
+  versatileDamage: z.string().optional(),
   properties: z.array(z.string().min(1)).optional(),
   range: z.object({ normal: z.number().nonnegative(), long: z.number().nonnegative().optional() }).optional(),
   armorCategory: z.enum(['light', 'medium', 'heavy', 'shield']).optional(),

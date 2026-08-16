@@ -21,6 +21,9 @@ const LEGACY_COLUMNS = {
     ['campaign_code', 'TEXT'],
     ['sort_index', 'INTEGER DEFAULT 0'],
     ['allowed_source_ids', 'TEXT'],
+    ['system_id', 'TEXT'],
+    ['default_member_permissions', 'TEXT'],
+    ['default_invite_permissions', 'TEXT'],
   ],
   players: [
     ['discord', 'TEXT'],
@@ -69,6 +72,7 @@ const LEGACY_COLUMNS = {
     ['challenge_min_score', 'INTEGER DEFAULT 200'],
     ['used_count', 'INTEGER DEFAULT 0'],
     ['created_at', "TEXT DEFAULT (datetime('now'))"],
+    ['permissions', 'TEXT'],
   ],
   feedback: [
     ['user_id', 'INTEGER'],
@@ -151,6 +155,16 @@ async function ensureSchema(db) {
   // table's content agreement — what the builder offers when a character is started for this
   // campaign — and the server keeps it opaque: the source manifest is the client's, not the API's.
   // Empty or null means "no restriction", which is also what the builder's own filter means.
+  //
+  // `system_id` names the game this table plays, on the same terms: the registry that defines a
+  // system lives in the client (`app/src/data/gameSystems.ts`), so the server bounds the shape of
+  // the string and interprets nothing. NULL means a campaign that predates the column, which the
+  // client reads as its default system.
+  //
+  // `default_member_permissions` and `default_invite_permissions` are JSON permission blobs applied
+  // when someone joins — the first for any join, the second only to people arriving on an invite
+  // that carries no permissions of its own. NULL means "grant nothing", which is what joining did
+  // before the columns existed.
   await db.run(`CREATE TABLE IF NOT EXISTS campaigns (
     id INTEGER PRIMARY KEY,
     name TEXT,
@@ -159,6 +173,9 @@ async function ensureSchema(db) {
     campaign_code TEXT,
     sort_index INTEGER DEFAULT 0,
     allowed_source_ids TEXT,
+    system_id TEXT,
+    default_member_permissions TEXT,
+    default_invite_permissions TEXT,
     FOREIGN KEY(owner_user_id) REFERENCES users(id)
   )`);
 
@@ -223,6 +240,9 @@ async function ensureSchema(db) {
     FOREIGN KEY(player_id) REFERENCES players(id)
   )`);
 
+  // `permissions` is the blob granted to whoever joins on this link, overriding the campaign's own
+  // default for arrivals. NULL means "use the campaign's default", not "grant nothing" — the two
+  // have to stay distinguishable or an invite could never opt out of a default.
   await db.run(`CREATE TABLE IF NOT EXISTS invites (
     id INTEGER PRIMARY KEY,
     token TEXT,
@@ -234,6 +254,7 @@ async function ensureSchema(db) {
     challenge_min_score INTEGER DEFAULT 200,
     used_count INTEGER DEFAULT 0,
     created_at TEXT DEFAULT (datetime('now')),
+    permissions TEXT,
     FOREIGN KEY(campaign_id) REFERENCES campaigns(id),
     FOREIGN KEY(created_by_user_id) REFERENCES users(id)
   )`);

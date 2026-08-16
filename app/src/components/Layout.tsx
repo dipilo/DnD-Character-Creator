@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 import { AppearanceMenu } from '@/components/AppearanceMenu';
-import { getGameSystemForPath } from '@/data/gameSystems';
+import { GameSystemMenu } from '@/components/GameSystemMenu';
+import type { GameSystemNavItem } from '@/data/gameSystems';
+import { resolveActiveGameSystem, useGameSystemStore } from '@/store/gameSystemStore';
 import { setRoutePalette } from '@/store/themeStore';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import { Bike, Dices, Users, Home, Sword, Download, FlaskConical, CalendarRange, Menu } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Dices, Home, CalendarRange, Menu } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,24 +17,13 @@ interface LayoutProps {
 
 const COMMUNITY_TESTING_MODE: boolean = false;
 
-interface NavItem {
-  to: string;
-  label: string;
-  icon: LucideIcon;
-  /** Prefix the route must start with to read as active; exact match when `exact` is set. */
-  match: string;
-  exact?: boolean;
-  /** Shown even when COMMUNITY_TESTING_MODE hides the rest of the nav. */
-  always?: boolean;
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { to: '/builder', label: 'Builder', icon: Sword, match: '/builder', always: true },
+/**
+ * Destinations that belong to no one game. Each system contributes its own on top of these
+ * (`GameSystemDefinition.navItems`), so switching the game swaps the builder and its companions
+ * and leaves the shared screens alone.
+ */
+const SHARED_NAV_ITEMS: GameSystemNavItem[] = [
   { to: '/', label: 'Home', icon: Home, match: '/', exact: true },
-  { to: '/characters', label: 'My Characters', icon: Users, match: '/characters' },
-  { to: '/content/import', label: 'Import', icon: Download, match: '/content' },
-  { to: '/homebrew', label: 'Homebrew', icon: FlaskConical, match: '/homebrew' },
-  { to: '/kob', label: 'Kids on Bikes', icon: Bike, match: '/kob' },
   { to: '/campaigns', label: 'Campaigns', icon: CalendarRange, match: '/campaign' },
   { to: '/dice', label: 'Dice', icon: Dices, match: '/dice' },
 ];
@@ -53,24 +43,30 @@ function DragonMark({ className }: Readonly<{ className?: string }>) {
 export function Layout({ children }: Readonly<LayoutProps>) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const routeSystem = getGameSystemForPath(location.pathname);
+  const preferredSystemId = useGameSystemStore((state) => state.preferredSystemId);
+  // The path wins where it names a system; the stored preference answers for the screens that
+  // belong to none of them, so the nav still offers the game you were last playing.
+  const activeSystem = resolveActiveGameSystem(location.pathname, preferredSystemId);
 
-  // A DOM write keyed off the route, not state mirrored into state: the theme store owns the
-  // palette, the router owns the path, and this tells the one about the other.
+  // A DOM write keyed off the resolved system, not state mirrored into state: the theme store
+  // owns the palette, the router owns the path, and this tells the one about the other. It is the
+  // *active* system rather than the route's, so the campaign and dice screens wear the colours of
+  // the game you are playing instead of dropping back to the default.
   useEffect(() => {
-    setRoutePalette(routeSystem?.id ?? null);
-  }, [routeSystem?.id]);
+    setRoutePalette(activeSystem.id);
+  }, [activeSystem.id]);
   const isFullBleedBuilderRoute = location.pathname.startsWith('/builder/ability-scores') || location.pathname.startsWith('/dice');
   const showExtendedNavigation = COMMUNITY_TESTING_MODE === false;
 
-  const items = showExtendedNavigation ? NAV_ITEMS : NAV_ITEMS.filter((item) => item.always);
-  const isActive = (item: NavItem) =>
+  const items = showExtendedNavigation
+    ? [...activeSystem.navItems, ...SHARED_NAV_ITEMS]
+    : activeSystem.navItems.slice(0, 1);
+  const isActive = (item: GameSystemNavItem) =>
     item.exact ? location.pathname === item.match : location.pathname.startsWith(item.match);
 
   // The header names the game you are in — "D&D Character Creator" over a Kids on Bikes sheet
-  // reads as the wrong app. Off any system's routes it falls back to the app's own name.
-  const brandLabel = routeSystem ? `${routeSystem.shortName} Character Creator` : 'TTRPG Character Creator';
-  const brandHref = routeSystem?.charactersPath ?? '/builder';
+  // reads as the wrong app.
+  const brandLabel = `${activeSystem.shortName} Character Creator`;
 
   const mainClassName = isFullBleedBuilderRoute
     ? 'w-full flex-1'
@@ -95,6 +91,9 @@ export function Layout({ children }: Readonly<LayoutProps>) {
                   {brandLabel}
                 </SheetTitle>
               </SheetHeader>
+              <div className="border-b p-3">
+                <GameSystemMenu activeSystem={activeSystem} onNavigate={() => setMenuOpen(false)} />
+              </div>
               <nav className="flex flex-col gap-1 overflow-y-auto p-3">
                 {items.map((item) => {
                   const Icon = item.icon;
@@ -116,10 +115,15 @@ export function Layout({ children }: Readonly<LayoutProps>) {
             </SheetContent>
           </Sheet>
 
-          <Link to={brandHref} className="flex min-w-0 items-center gap-2 lg:mr-6">
+          <Link to={activeSystem.homePath} className="flex min-w-0 items-center gap-2 lg:mr-4">
             <DragonMark className="h-6 w-6 shrink-0 text-primary" />
-            <span className="truncate text-base font-bold sm:text-lg">{brandLabel}</span>
+            {/* The name is the switcher's job below lg, where there is no room for both. */}
+            <span className="hidden truncate text-base font-bold sm:inline sm:text-lg">{brandLabel}</span>
           </Link>
+
+          <div className="hidden lg:block">
+            <GameSystemMenu activeSystem={activeSystem} />
+          </div>
 
           <nav className="hidden flex-1 items-center gap-1 lg:flex">
             {items.map((item) => {

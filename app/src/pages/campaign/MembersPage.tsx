@@ -16,6 +16,7 @@ import type { CampaignMember, CampaignPermissions, Invite } from '@/lib/api';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CampaignDefaultsCard } from '@/components/schedule/CampaignDefaultsCard';
 import { CampaignSourcesCard } from '@/components/schedule/CampaignSourcesCard';
 import { InviteSettingsDialog } from '@/components/schedule/InviteSettingsDialog';
 import { Input } from '@/components/ui/input';
@@ -323,6 +324,8 @@ export function MembersPage() {
         </CardContent>
       </Card>
 
+      <CampaignDefaultsCard campaign={campaign} canEdit={isOwner} onCampaignChange={upsertCampaign} />
+
       <CampaignSourcesCard campaign={campaign} canEdit={isOwner} />
 
       <Card>
@@ -378,6 +381,7 @@ export function MembersPage() {
         onOpenChange={(open) => setInviteDialog(open ? inviteDialog : null)}
         campaignId={campaignId}
         invite={inviteDialog?.invite ?? null}
+        campaignInviteDefaults={campaign?.default_invite_permissions ?? null}
         onSaved={handleInviteSaved}
       />
     </div>

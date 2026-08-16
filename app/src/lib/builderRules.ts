@@ -125,6 +125,8 @@ export interface AbilityScoreChoiceConfig {
   exclusiveGroupId?: string;
 }
 
+const normalizeName = (value: string) => value.toLowerCase().replaceAll(/[^a-z0-9]+/g, ' ').trim();
+
 const editionSourceIds = new Map<string, RulesEdition>([
   ['phb-2014', '2014'],
   ['basic-rules-2014', '2014'],
@@ -140,6 +142,27 @@ const editionSourceIds = new Map<string, RulesEdition>([
   ['basic-rules-2024', '2024'],
   ['mm-2024', '2024']
 ]);
+
+export const getRulesEdition = (sourceId?: string, sourceText?: string): RulesEdition => {
+  const resolvedSourceId = resolveSourceId(sourceId, sourceText);
+
+  if (resolvedSourceId) {
+    const edition = editionSourceIds.get(resolvedSourceId);
+    if (edition) {
+      return edition;
+    }
+  }
+
+  const normalizedSource = normalizeName(sourceText ?? '');
+  if (normalizedSource.includes('2024') || normalizedSource.includes('5 5')) {
+    return '2024';
+  }
+  if (normalizedSource.includes('2014') || normalizedSource.includes('5e') || normalizedSource.includes('player s handbook')) {
+    return '2014';
+  }
+
+  return 'unknown';
+};
 
 const featSelectionLevelsByClassId: Record<string, number[]> = {
   barbarian: [4, 8, 12, 16, 19],
@@ -275,7 +298,6 @@ const multiclassSpellSlotsTable: number[][] = [
   [4, 3, 3, 3, 3, 2, 2, 1, 1]
 ];
 
-const normalizeName = (value: string) => value.toLowerCase().replaceAll(/[^a-z0-9]+/g, ' ').trim();
 const slugify = (value: string) => value.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-').replaceAll(/^-+|-+$/g, '');
 const humanizeFallbackId = (value: string) => value.split('-').filter(Boolean).map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
 const quantityWords = new Map<string, number>([
@@ -422,6 +444,36 @@ export interface ToolProficiencyChoice {
   options: string[];
 }
 
+// The 2014 and 2024 books print the same tool under different names — "Dice Set" became "Dice",
+// "Playing Card Set" became "Playing Cards" — and a set keyed on the exact string offered both,
+// so "One type of gaming set" listed six options for four tools. Collapse the collection noun and
+// the plural so the two printings land on one key; distinct tools ("Dragonchess", "Three-Dragon
+// Ante") are untouched because only the trailing noun is dropped.
+const equipmentCollectionNouns = new Set(['set', 'sets', 'tools', 'supplies', 'utensils', 'kit', 'kits']);
+const singularizeWord = (word: string) => (word.length > 3 && word.endsWith('s') && !word.endsWith('ss') ? word.slice(0, -1) : word);
+
+export const getCanonicalEquipmentName = (name: string) => {
+  const words = name
+    .toLowerCase()
+    .replaceAll(/['’]s\b/g, '')
+    .replaceAll(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .split(' ')
+    .filter(Boolean);
+  const kept = words.filter((word) => !equipmentCollectionNouns.has(word)).map(singularizeWord);
+  // A tool actually named for its collection noun ("Tools") keeps it rather than becoming empty.
+  return (kept.length > 0 ? kept : words).join(' ');
+};
+
+/** How well a printing matches the edition the character is being built in. Highest wins. */
+const getEquipmentEditionRank = (entry: Equipment, preferredEdition: RulesEdition) => {
+  const edition = getRulesEdition(entry.sourceId, entry.source);
+  if (preferredEdition !== 'unknown' && edition === preferredEdition) return 3;
+  if (edition === '2024') return 2;
+  if (edition === 'unknown') return 1;
+  return 0;
+};
+
 export const getToolChoiceIdPrefix = (ownerKind: 'background' | 'class', ownerId: string) => `${ownerKind}:${ownerId}:tool`;
 
 export const isToolProficiencyChoiceLabel = (label: string) => {
@@ -431,18 +483,30 @@ export const isToolProficiencyChoiceLabel = (label: string) => {
 export const getToolProficiencyChoice = (
   label: string,
   slotId: string,
-  toolEquipment: Equipment[]
+  toolEquipment: Equipment[],
+  preferredEdition: RulesEdition = 'unknown'
 ): ToolProficiencyChoice | undefined => {
   const families = toolChoiceFamilyKeywords.filter((family) => family.pattern.test(label));
   if (families.length === 0 || !toolChoiceIntentPattern.test(label)) {
     return undefined;
   }
 
-  const options = Array.from(new Set(
-    toolEquipment
-      .filter((entry) => families.some((family) => family.category.test(entry.toolCategory ?? '')))
-      .map((entry) => entry.name)
-  )).sort((left, right) => left.localeCompare(right));
+  const preferredByName = new Map<string, Equipment>();
+  for (const entry of toolEquipment) {
+    if (!families.some((family) => family.category.test(entry.toolCategory ?? ''))) {
+      continue;
+    }
+
+    const key = getCanonicalEquipmentName(entry.name);
+    const current = preferredByName.get(key);
+    if (!current || getEquipmentEditionRank(entry, preferredEdition) > getEquipmentEditionRank(current, preferredEdition)) {
+      preferredByName.set(key, entry);
+    }
+  }
+
+  const options = Array.from(preferredByName.values())
+    .map((entry) => entry.name)
+    .sort((left, right) => left.localeCompare(right));
 
   if (options.length === 0) {
     return undefined;
@@ -995,27 +1059,6 @@ const hasNamedProficiency = (proficiencies: string[], equipment: Equipment | und
   return true;
 };
 
-export const getRulesEdition = (sourceId?: string, sourceText?: string): RulesEdition => {
-  const resolvedSourceId = resolveSourceId(sourceId, sourceText);
-
-  if (resolvedSourceId) {
-    const edition = editionSourceIds.get(resolvedSourceId);
-    if (edition) {
-      return edition;
-    }
-  }
-
-  const normalizedSource = normalizeName(sourceText ?? '');
-  if (normalizedSource.includes('2024') || normalizedSource.includes('5 5')) {
-    return '2024';
-  }
-  if (normalizedSource.includes('2014') || normalizedSource.includes('5e') || normalizedSource.includes('player s handbook')) {
-    return '2014';
-  }
-
-  return 'unknown';
-};
-
 export const getRulesEditionLabel = (sourceId?: string, sourceText?: string) => {
   const edition = getRulesEdition(sourceId, sourceText);
   if (edition === '2014') {
@@ -1141,6 +1184,71 @@ export const resolveCharacterClasses = ({
       return subclass ? { entry, cls, subclass } : { entry, cls };
     })
     .filter(isDefined);
+};
+
+/**
+ * A character stores whichever class id was current when it was saved, and merged class ids move
+ * as source packs improve — `getRuntimeClassById` is what resolves an older id back to the class
+ * it names. Matching a stored entry on the raw string instead silently drops the class: the
+ * Spells step reported "select a spellcasting class" for a level-4 Warlock and the Equipment step
+ * counted "0 class kits", both for a character whose class the Class step resolved perfectly well.
+ * Every read *and* write of a class entry goes through these.
+ */
+export const matchesCharacterClassEntry = (
+  entry: CharacterClass,
+  classId: string,
+  getClassById: (classId: string) => Class | undefined
+) => {
+  if (entry.classId === classId) {
+    return true;
+  }
+
+  const target = getClassById(classId);
+  return Boolean(target && getClassById(entry.classId)?.id === target.id);
+};
+
+export const findCharacterClassEntry = (
+  classes: CharacterClass[] | undefined,
+  classId: string,
+  getClassById: (classId: string) => Class | undefined
+) => (classes ?? []).find((entry) => matchesCharacterClassEntry(entry, classId, getClassById));
+
+/** Apply `updater` to the entry `classId` names; returning undefined removes it. */
+export const updateCharacterClassEntry = (
+  classes: CharacterClass[] | undefined,
+  classId: string,
+  getClassById: (classId: string) => Class | undefined,
+  updater: (entry: CharacterClass) => CharacterClass | undefined
+): CharacterClass[] => {
+  const next: CharacterClass[] = [];
+  for (const entry of classes ?? []) {
+    if (!matchesCharacterClassEntry(entry, classId, getClassById)) {
+      next.push(entry);
+      continue;
+    }
+
+    const updated = updater(entry);
+    if (updated) {
+      next.push(updated);
+    }
+  }
+
+  return next;
+};
+
+/**
+ * Rewrite stored class ids to the ids the content library uses now. Nothing else in the document
+ * changes, so a character still round-trips — this only repairs the pointer, which is what
+ * `getStableClassId` exists to keep still in the first place.
+ */
+export const normalizeCharacterClassIds = (
+  classes: CharacterClass[] | undefined,
+  getClassById: (classId: string) => Class | undefined
+): CharacterClass[] => {
+  return (classes ?? []).map((entry) => {
+    const cls = getClassById(entry.classId);
+    return cls && cls.id !== entry.classId ? { ...entry, classId: cls.id } : entry;
+  });
 };
 
 export const sortFeaturesByLevel = (features: Feature[]) => {

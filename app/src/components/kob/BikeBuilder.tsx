@@ -1,9 +1,11 @@
+import { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { getTrope, kob } from '@/data/gameSystems/kidsOnBikes/rules';
+import { suggestBikeName } from '@/data/gameSystems/kidsOnBikes/bikeNames';
+import { getBikeColor, getBikeUpgrade, getTrope, kob } from '@/data/gameSystems/kidsOnBikes/rules';
 import type { KobBikeOption } from '@/data/gameSystems/kidsOnBikes/types';
 import type { KobBike, KobCharacter } from '@/types/kob';
 import { cn } from '@/lib/utils';
@@ -59,6 +61,9 @@ function OptionGrid({
 export function BikeBuilder({ character, onChange }: Readonly<BikeBuilderProps>) {
   const trope = getTrope(character.tropeId);
   const suggestion = trope?.suggestedBikes.find((bike) => bike.age === character.age) ?? null;
+  // One salt per mount, so the suggestion differs between visits without re-rolling on every
+  // keystroke — `Math.random()` in a render body would do both.
+  const [nameSeed] = useState(() => Math.floor(Math.random() * 0xffffffff));
 
   const setBike = (patch: Partial<KobBike>) => onChange({ bike: { ...character.bike, ...patch } });
 
@@ -71,6 +76,13 @@ export function BikeBuilder({ character, onChange }: Readonly<BikeBuilderProps>)
     ? kob.bikes.upgrades.find((upgrade) => upgrade.name.toLowerCase() === suggestion.upgrade.toLowerCase())
     : undefined;
   const canTakeGift = Boolean(suggestedColor && suggestedUpgrade);
+
+  const chosenColor = getBikeColor(character.bike.colorId);
+  const chosenUpgrade = getBikeUpgrade(character.bike.upgradeId);
+  const namePlaceholder = useMemo(
+    () => suggestBikeName(chosenColor, chosenUpgrade, nameSeed),
+    [chosenColor, chosenUpgrade, nameSeed]
+  );
 
   return (
     <div className="space-y-6">
@@ -129,7 +141,7 @@ export function BikeBuilder({ character, onChange }: Readonly<BikeBuilderProps>)
             id="bike-name"
             value={character.bike.name}
             onChange={(event) => setBike({ name: event.target.value })}
-            placeholder="Silver Streak"
+            placeholder={namePlaceholder}
           />
         </div>
         <div className="space-y-1.5 md:col-span-2">

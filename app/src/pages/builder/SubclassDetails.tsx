@@ -10,7 +10,7 @@ import { FeatureOptionSelector } from '@/components/builder/FeatureOptionSelecto
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { ArrowLeft, Check } from 'lucide-react';
 import { toast } from 'sonner';
-import { sortFeaturesByLevel } from '@/lib/builderRules';
+import { findCharacterClassEntry, sortFeaturesByLevel, updateCharacterClassEntry } from '@/lib/builderRules';
 import { getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
 
 const getSourceLabel = (sourceId?: string, sourceText?: string) => {
@@ -30,7 +30,10 @@ export function SubclassDetails() {
 
   const cls = classId ? getRuntimeClassById(classId) : undefined;
   const subclass = classId && subclassId ? getRuntimeSubclass(classId, subclassId) : undefined;
-  const classEntry = builderState.character?.classes?.find((entry) => entry.classId === classId);
+  // Resolve the entry the same way the class itself resolves. A raw id match missed a character
+  // whose stored id predates the current pack, so the page claimed the class was not selected and
+  // left "Select Subclass" disabled next to a Current Class Level it could not read.
+  const classEntry = cls ? findCharacterClassEntry(builderState.character?.classes, cls.id, getRuntimeClassById) : undefined;
   const selectedFeatureChoices = builderState.character?.features || [];
   const unlocked = Boolean(cls && classEntry && classEntry.level >= cls.subclassLevel);
   const isSelected = classEntry?.subclassId === subclass?.id;
@@ -66,16 +69,12 @@ export function SubclassDetails() {
     }
 
     updateBuilderCharacter({
-      classes: (builderState.character?.classes ?? []).map((entry) => {
-        if (entry.classId !== cls.id) {
-          return entry;
-        }
-
-        return {
-          ...entry,
-          subclassId: subclass.id
-        };
-      })
+      classes: updateCharacterClassEntry(
+        builderState.character?.classes,
+        cls.id,
+        getRuntimeClassById,
+        (entry) => ({ ...entry, subclassId: subclass.id })
+      )
     });
 
     toast.success(`${subclass.name} selected`);

@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { Invite, InviteJoinResult, InvitePreview } from './types';
+import type { CampaignPermissions, Invite, InviteJoinResult, InvitePreview } from './types';
 
 export interface InviteWritePayload {
   expires_at?: string | null;
@@ -7,6 +7,12 @@ export interface InviteWritePayload {
   max_uses?: number | string | null;
   challenge_enabled?: boolean;
   challenge_min_score?: number;
+  /**
+   * What this link grants whoever joins on it. Omit the field entirely to leave the server's
+   * inheritance alone — on create that means "take the campaign's invite default", and sending an
+   * empty object instead is an explicit "grant nothing".
+   */
+  permissions?: CampaignPermissions;
 }
 
 export async function listInvites(campaignId: number): Promise<Invite[]> {

@@ -13,6 +13,7 @@ import { Plus, UserRoundPlus, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { listCharacters, parseAllowedSourceIds, setCharacterSeat } from '@/lib/api';
 import type { CampaignCharacterSummary, CharacterRecordSummary, Player } from '@/lib/api';
+import { DEFAULT_GAME_SYSTEM_ID, getGameSystem } from '@/data/gameSystems';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,6 +50,11 @@ export function PartyPage() {
 
   const campaign = useMemo(() => campaigns.find((c) => c.id === campaignId) ?? null, [campaigns, campaignId]);
   const allowedSourceIds = useMemo(() => parseAllowedSourceIds(campaign), [campaign]);
+  // A table plays one game, and only D&D 5e characters live on the server so far — the rest are
+  // still localStorage-only (NEXT_STEPS.md §4). Say which game this is rather than opening the
+  // wrong builder, and say what is missing rather than pretending the seat will work.
+  const system = getGameSystem(campaign?.system_id);
+  const systemHasServerCharacters = system.id === DEFAULT_GAME_SYSTEM_ID;
 
   /**
    * Start a character already scoped to this table. Seeding the source filter is the whole point —
@@ -56,6 +62,11 @@ export function PartyPage() {
    * than something every player has to be told separately.
    */
   const handleNewCharacter = () => {
+    if (!systemHasServerCharacters) {
+      navigate(system.builderPath);
+      return;
+    }
+
     resetBuilder();
     updateBuilderState({
       selectedSourceIds: allowedSourceIds,
@@ -84,20 +95,29 @@ export function PartyPage() {
         <div>
           <h2 className="text-xl font-semibold">Party</h2>
           <p className="text-sm text-muted-foreground">
-            Every character at this table.
+            Every character at this table. This campaign plays {system.name}.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={() => setAttaching(true)}>
-            <UserRoundPlus className="h-4 w-4" />
-            Attach a character
-          </Button>
+          {systemHasServerCharacters ? (
+            <Button variant="outline" onClick={() => setAttaching(true)}>
+              <UserRoundPlus className="h-4 w-4" />
+              Attach a character
+            </Button>
+          ) : null}
           <Button onClick={handleNewCharacter}>
             <Plus className="h-4 w-4" />
-            New character for this campaign
+            {systemHasServerCharacters ? 'New character for this campaign' : `New ${system.shortName} character`}
           </Button>
         </div>
       </div>
+
+      {systemHasServerCharacters ? null : (
+        <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+          {system.name} characters are stored in this browser only, so they cannot take a seat here
+          yet. The builder works — they just will not appear in this party until they sync.
+        </div>
+      )}
 
       {allowedSourceIds.length > 0 ? (
         <p className="text-xs text-muted-foreground">

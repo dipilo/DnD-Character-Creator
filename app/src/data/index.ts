@@ -24,5 +24,7 @@ export {
 	getRuntimeSpells,
 	getRuntimeSubclass,
 	getRuntimeSubclasses,
+	resolveClassById,
+	resolveSubclassById,
 	useContentLibrary
 } from './runtimeContent';

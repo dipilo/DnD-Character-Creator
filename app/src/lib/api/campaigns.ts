@@ -11,13 +11,33 @@ export async function listCampaigns(): Promise<Campaign[]> {
   return body.campaigns ?? [];
 }
 
-export async function createCampaign(name: string): Promise<Campaign> {
-  const body = await api.post<{ campaign: Campaign }>('/api/campaigns', { name });
+export async function createCampaign(name: string, systemId?: string): Promise<Campaign> {
+  const body = await api.post<{ campaign: Campaign }>('/api/campaigns', { name, system_id: systemId ?? null });
   return body.campaign;
 }
 
 export async function renameCampaign(campaignId: number, name: string): Promise<Campaign> {
   const body = await api.put<{ campaign: Campaign }>(`/api/campaigns/${campaignId}`, { name });
+  return body.campaign;
+}
+
+/** The game a table plays. Changing it changes which builder its "new character" button opens. */
+export async function setCampaignSystem(campaignId: number, systemId: string): Promise<Campaign> {
+  const body = await api.put<{ campaign: Campaign }>(`/api/campaigns/${campaignId}`, { system_id: systemId });
+  return body.campaign;
+}
+
+/**
+ * What a campaign grants people as they arrive. `member` covers every join; `invite` seeds new
+ * invite links, which can still carry a blob of their own.
+ */
+export async function setCampaignDefaultPermissions(
+  campaignId: number,
+  scope: 'member' | 'invite',
+  permissions: CampaignPermissions,
+): Promise<Campaign> {
+  const column = scope === 'member' ? 'default_member_permissions' : 'default_invite_permissions';
+  const body = await api.put<{ campaign: Campaign }>(`/api/campaigns/${campaignId}`, { [column]: permissions });
   return body.campaign;
 }
 
@@ -28,6 +48,21 @@ export async function renameCampaign(campaignId: number, name: string): Promise<
 export async function setCampaignSources(campaignId: number, sourceIds: string[]): Promise<Campaign> {
   const body = await api.put<{ campaign: Campaign }>(`/api/campaigns/${campaignId}`, { allowed_source_ids: sourceIds });
   return body.campaign;
+}
+
+/**
+ * Read a permission blob the server stored verbatim. Bad JSON reads as "grants nothing" rather
+ * than throwing inside a render — the same posture `parseAllowedSourceIds` takes below.
+ */
+export function parsePermissionBlob(blob: string | null | undefined): CampaignPermissions {
+  if (!blob) return {};
+  try {
+    const parsed: unknown = JSON.parse(blob);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as CampaignPermissions) : {};
+  } catch (e) {
+    console.warn('permission blob is not valid JSON', e instanceof Error ? e.message : e);
+    return {};
+  }
 }
 
 /**

@@ -1,5 +1,5 @@
 {
-  "requests": 153,
+  "requests": 170,
   "results": [
     {
       "name": "root",
@@ -210,13 +210,24 @@
           "allowed_source_ids": null,
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
+          "default_invite_permissions": null,
+          "default_member_permissions": null,
           "id": 1,
           "name": "Test Camp",
           "owner_user_id": 1,
-          "sort_index": 0
+          "sort_index": 0,
+          "system_id": "kids-on-bikes"
         },
         "campaign_code": "<volatile>",
         "ok": true
+      }
+    },
+    {
+      "name": "create-campaign-invalid-system",
+      "request": "POST /api/campaigns",
+      "status": 400,
+      "body": {
+        "error": "invalid_system_id"
       }
     },
     {
@@ -229,10 +240,13 @@
             "allowed_source_ids": null,
             "campaign_code": "<volatile>",
             "created_at": "<volatile>",
+            "default_invite_permissions": null,
+            "default_member_permissions": null,
             "id": 1,
             "name": "Test Camp",
             "owner_user_id": 1,
-            "sort_index": 0
+            "sort_index": 0,
+            "system_id": "kids-on-bikes"
           }
         ],
         "ok": true
@@ -255,10 +269,13 @@
           "allowed_source_ids": null,
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
+          "default_invite_permissions": null,
+          "default_member_permissions": null,
           "id": 1,
           "name": "Test Camp",
           "owner_user_id": 1,
-          "sort_index": 0
+          "sort_index": 0,
+          "system_id": "kids-on-bikes"
         },
         "ok": true
       }
@@ -272,10 +289,13 @@
           "allowed_source_ids": null,
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
+          "default_invite_permissions": null,
+          "default_member_permissions": null,
           "id": 1,
           "name": "Renamed Camp",
           "owner_user_id": 1,
-          "sort_index": 0
+          "sort_index": 0,
+          "system_id": "kids-on-bikes"
         },
         "ok": true
       }
@@ -1095,6 +1115,7 @@
           "expires_at": null,
           "id": 1,
           "max_uses": 3,
+          "permissions": null,
           "token": "<volatile>",
           "used_count": 0
         },
@@ -1119,6 +1140,7 @@
           "expires_at": null,
           "id": 1,
           "max_uses": 3,
+          "permissions": null,
           "token": "<volatile>",
           "used_count": 0
         },
@@ -1167,6 +1189,7 @@
             "expires_at": null,
             "id": 1,
             "max_uses": 3,
+            "permissions": null,
             "token": "<volatile>",
             "used_count": 0
           }
@@ -1188,6 +1211,7 @@
           "expires_at": null,
           "id": 1,
           "max_uses": 5,
+          "permissions": null,
           "token": "<volatile>",
           "used_count": 0
         },
@@ -1401,9 +1425,9 @@
     {
       "name": "unclaim-player",
       "request": "POST /api/campaigns/1/unclaim-player",
-      "status": 403,
+      "status": 200,
       "body": {
-        "error": "forbidden"
+        "ok": true
       }
     },
     {
@@ -2477,10 +2501,13 @@
           "allowed_source_ids": "[\"phb-2024\",\"basic-rules-2024\"]",
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
+          "default_invite_permissions": null,
+          "default_member_permissions": null,
           "id": 1,
           "name": "Renamed Camp",
           "owner_user_id": 1,
-          "sort_index": 0
+          "sort_index": 0,
+          "system_id": "kids-on-bikes"
         },
         "ok": true
       }
@@ -2518,6 +2545,90 @@
       }
     },
     {
+      "name": "set-campaign-system",
+      "request": "PUT /api/campaigns/1",
+      "status": 200,
+      "body": {
+        "campaign": {
+          "allowed_source_ids": "[\"phb-2024\",\"basic-rules-2024\"]",
+          "campaign_code": "<volatile>",
+          "created_at": "<volatile>",
+          "default_invite_permissions": null,
+          "default_member_permissions": null,
+          "id": 1,
+          "name": "Renamed Camp",
+          "owner_user_id": 1,
+          "sort_index": 0,
+          "system_id": "dnd-5e"
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "set-campaign-system-invalid",
+      "request": "PUT /api/campaigns/1",
+      "status": 400,
+      "body": {
+        "error": "invalid_system_id"
+      }
+    },
+    {
+      "name": "set-campaign-default-permissions",
+      "request": "PUT /api/campaigns/1",
+      "status": 200,
+      "body": {
+        "campaign": {
+          "allowed_source_ids": "[\"phb-2024\",\"basic-rules-2024\"]",
+          "campaign_code": "<volatile>",
+          "created_at": "<volatile>",
+          "default_invite_permissions": null,
+          "default_member_permissions": "{\"can_edit_self\":true,\"players_self_delete\":true}",
+          "id": 1,
+          "name": "Renamed Camp",
+          "owner_user_id": 1,
+          "sort_index": 0,
+          "system_id": "dnd-5e"
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "set-campaign-default-permissions-not-an-object",
+      "request": "PUT /api/campaigns/1",
+      "status": 400,
+      "body": {
+        "error": "permissions_must_be_an_object"
+      }
+    },
+    {
+      "name": "set-campaign-default-invite-permissions",
+      "request": "PUT /api/campaigns/1",
+      "status": 200,
+      "body": {
+        "campaign": {
+          "allowed_source_ids": "[\"phb-2024\",\"basic-rules-2024\"]",
+          "campaign_code": "<volatile>",
+          "created_at": "<volatile>",
+          "default_invite_permissions": "{\"can_manage_groups\":true}",
+          "default_member_permissions": "{\"can_edit_self\":true,\"players_self_delete\":true}",
+          "id": 1,
+          "name": "Renamed Camp",
+          "owner_user_id": 1,
+          "sort_index": 0,
+          "system_id": "dnd-5e"
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "set-campaign-defaults-as-member",
+      "request": "PUT /api/campaigns/1",
+      "status": 403,
+      "body": {
+        "error": "owner_required"
+      }
+    },
+    {
       "name": "campaigns-carry-allowed-sources",
       "request": "GET /api/campaigns",
       "status": 200,
@@ -2527,12 +2638,250 @@
             "allowed_source_ids": "[\"phb-2024\",\"basic-rules-2024\"]",
             "campaign_code": "<volatile>",
             "created_at": "<volatile>",
+            "default_invite_permissions": "{\"can_manage_groups\":true}",
+            "default_member_permissions": "{\"can_edit_self\":true,\"players_self_delete\":true}",
             "id": 1,
             "name": "Renamed Camp",
             "owner_user_id": 1,
-            "sort_index": 0
+            "sort_index": 0,
+            "system_id": "dnd-5e"
           }
         ],
+        "ok": true
+      }
+    },
+    {
+      "name": "create-campaign-with-defaults",
+      "request": "POST /api/campaigns",
+      "status": 200,
+      "body": {
+        "campaign": {
+          "allowed_source_ids": null,
+          "campaign_code": "<volatile>",
+          "created_at": "<volatile>",
+          "default_invite_permissions": null,
+          "default_member_permissions": null,
+          "id": 2,
+          "name": "Defaults Camp",
+          "owner_user_id": 1,
+          "sort_index": 0,
+          "system_id": null
+        },
+        "campaign_code": "<volatile>",
+        "ok": true
+      }
+    },
+    {
+      "name": "set-defaults-on-camp2",
+      "request": "PUT /api/campaigns/2",
+      "status": 200,
+      "body": {
+        "campaign": {
+          "allowed_source_ids": null,
+          "campaign_code": "<volatile>",
+          "created_at": "<volatile>",
+          "default_invite_permissions": "{\"can_manage_groups\":true}",
+          "default_member_permissions": "{\"can_edit_self\":true}",
+          "id": 2,
+          "name": "Defaults Camp",
+          "owner_user_id": 1,
+          "sort_index": 0,
+          "system_id": null
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "create-invite-inheriting-defaults",
+      "request": "POST /api/campaigns/2/invites",
+      "status": 200,
+      "body": {
+        "invite": {
+          "campaign_id": 2,
+          "challenge_enabled": 0,
+          "challenge_min_score": 200,
+          "created_at": "<volatile>",
+          "created_by_user_id": 1,
+          "expires_at": null,
+          "id": 1,
+          "max_uses": null,
+          "permissions": "{\"can_manage_groups\":true}",
+          "token": "<volatile>",
+          "used_count": 0
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "create-invite-with-own-permissions",
+      "request": "POST /api/campaigns/2/invites",
+      "status": 200,
+      "body": {
+        "invite": {
+          "campaign_id": 2,
+          "challenge_enabled": 0,
+          "challenge_min_score": 200,
+          "created_at": "<volatile>",
+          "created_by_user_id": 1,
+          "expires_at": null,
+          "id": 2,
+          "max_uses": null,
+          "permissions": "{\"can_create_players\":true}",
+          "token": "<volatile>",
+          "used_count": 0
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "join-camp2-on-inherited-invite",
+      "request": "POST /api/invites/join",
+      "status": 200,
+      "body": {
+        "campaign_id": 2,
+        "campaign_name": "Defaults Camp",
+        "ok": true
+      }
+    },
+    {
+      "name": "join-camp2-on-explicit-invite",
+      "request": "POST /api/invites/join",
+      "status": 200,
+      "body": {
+        "campaign_id": 2,
+        "campaign_name": "Defaults Camp",
+        "ok": true
+      }
+    },
+    {
+      "name": "camp2-members-carry-granted-permissions",
+      "request": "GET /api/campaigns/2/members",
+      "status": 200,
+      "body": {
+        "members": [
+          {
+            "campaign_id": 2,
+            "created_at": "<volatile>",
+            "id": 5,
+            "permissions": null,
+            "player_id": null,
+            "player_name": null,
+            "role": "owner",
+            "user_discord": null,
+            "user_id": 1,
+            "user_name": "alice"
+          },
+          {
+            "campaign_id": 2,
+            "created_at": "<volatile>",
+            "id": 6,
+            "permissions": "{\"can_manage_groups\":true}",
+            "player_id": null,
+            "player_name": null,
+            "role": "player",
+            "user_discord": null,
+            "user_id": 2,
+            "user_name": "bob"
+          },
+          {
+            "campaign_id": 2,
+            "created_at": "<volatile>",
+            "id": 7,
+            "permissions": "{\"can_create_players\":true}",
+            "player_id": null,
+            "player_name": null,
+            "role": "player",
+            "user_discord": null,
+            "user_id": 4,
+            "user_name": "Ellis"
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "join-camp2-by-id",
+      "request": "POST /api/campaigns/2/members",
+      "status": 200,
+      "body": {
+        "campaign": {
+          "allowed_source_ids": null,
+          "campaign_code": "<volatile>",
+          "created_at": "<volatile>",
+          "default_invite_permissions": "{\"can_manage_groups\":true}",
+          "default_member_permissions": "{\"can_edit_self\":true}",
+          "id": 2,
+          "name": "Defaults Camp",
+          "owner_user_id": 1,
+          "sort_index": 0,
+          "system_id": null
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "camp2-members-after-direct-join",
+      "request": "GET /api/campaigns/2/members",
+      "status": 200,
+      "body": {
+        "members": [
+          {
+            "campaign_id": 2,
+            "created_at": "<volatile>",
+            "id": 5,
+            "permissions": null,
+            "player_id": null,
+            "player_name": null,
+            "role": "owner",
+            "user_discord": null,
+            "user_id": 1,
+            "user_name": "alice"
+          },
+          {
+            "campaign_id": 2,
+            "created_at": "<volatile>",
+            "id": 6,
+            "permissions": "{\"can_manage_groups\":true}",
+            "player_id": null,
+            "player_name": null,
+            "role": "player",
+            "user_discord": null,
+            "user_id": 2,
+            "user_name": "bob"
+          },
+          {
+            "campaign_id": 2,
+            "created_at": "<volatile>",
+            "id": 7,
+            "permissions": "{\"can_create_players\":true}",
+            "player_id": null,
+            "player_name": null,
+            "role": "player",
+            "user_discord": null,
+            "user_id": 4,
+            "user_name": "Ellis"
+          },
+          {
+            "campaign_id": 2,
+            "created_at": "<volatile>",
+            "id": 8,
+            "permissions": "{\"can_edit_self\":true}",
+            "player_id": null,
+            "player_name": null,
+            "role": "player",
+            "user_discord": null,
+            "user_id": 3,
+            "user_name": "dara"
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "delete-camp2",
+      "request": "DELETE /api/campaigns/2",
+      "status": 200,
+      "body": {
         "ok": true
       }
     },

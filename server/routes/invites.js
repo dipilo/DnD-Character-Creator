@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('../db');
 const { getCachedQueryAsync, setCache } = require('../lib/cache');
 const { CHALLENGE_FEATURES_ENABLED, INVITE_CHALLENGE_TTL_MS, INVITE_PASS_TTL_MS, inviteChallengePassTokens, inviteChallengeSessions, makeFakeCaptchaText, pickRiddle, pruneInviteChallengeState } = require('../lib/inviteChallenge');
+const { normalisePermissions, resolveJoinPermissions } = require('../lib/permissions');
 const { genToken } = require('../lib/tokens');
 const { getCampaignMembership, isCampaignOwner, memberHasPermission, optionalAuth, requireAuth, requireCampaignAccess } = require('../middleware/auth');
 
@@ -19,6 +20,18 @@ function normalizeMinScore(value) {
   return Number.isNaN(parsed) || parsed < 1 ? 200 : parsed;
 }
 
+/**
+ * What an invite grants whoever joins on it. `null` is "no opinion" — the campaign's own default
+ * applies — so an invite that means to grant nothing has to store an explicit empty object rather
+ * than falling back to NULL, which is why this does not reuse `normalisePermissions` verbatim.
+ */
+function normalizeInvitePermissions(value) {
+  if (value === null || value === undefined || value === '') return null;
+  const normalised = normalisePermissions(value);
+  if (normalised.error) return null;
+  return normalised.value ?? '{}';
+}
+
 // The columns PATCH /api/invites/:id may write, and how each request value is normalised. A
 // table rather than one hasOwnProperty branch per column.
 const PATCHABLE_INVITE_FIELDS = [
@@ -27,6 +40,7 @@ const PATCHABLE_INVITE_FIELDS = [
   ['token', (v) => (v === '' ? null : v)],
   ['challenge_enabled', (v) => (v ? 1 : 0)],
   ['challenge_min_score', normalizeMinScore],
+  ['permissions', normalizeInvitePermissions],
 ];
 
 /** Owner, the invite's creator, or a member holding can_create_invites. */
@@ -41,19 +55,26 @@ async function canManageInvites(user, campaignId, invite = null) {
 // Create an invite token for a campaign (owner or member with permission)
 router.post('/api/campaigns/:campaignId/invites', requireCampaignAccess(), async (req, res) => {
   try {
-    const { expires_at, max_uses, challenge_enabled, challenge_min_score } = req.body || {};
+    const { expires_at, max_uses, challenge_enabled, challenge_min_score, permissions } = req.body || {};
     const user = req.user;
     if (!await canManageInvites(user, req.campaign.id)) return res.status(403).json({ error: 'forbidden' });
 
+    // With nothing said, the link inherits the campaign's default for invited arrivals — which is
+    // itself null on a campaign that has not set one, so the behaviour is unchanged by default.
+    const invitePermissions = Object.hasOwn(req.body ?? {}, 'permissions')
+      ? normalizeInvitePermissions(permissions)
+      : (req.campaign.default_invite_permissions ?? null);
+
     const token = genToken(32);
-    const info = await db.run('INSERT INTO invites(token,campaign_id,created_by_user_id,expires_at,max_uses,challenge_enabled,challenge_min_score) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    const info = await db.run('INSERT INTO invites(token,campaign_id,created_by_user_id,expires_at,max_uses,challenge_enabled,challenge_min_score,permissions) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       token,
       req.campaign.id,
       user?.id ?? null,
       expires_at || null,
       normalizeMaxUses(max_uses),
       challenge_enabled ? 1 : 0,
-      normalizeMinScore(challenge_min_score)
+      normalizeMinScore(challenge_min_score),
+      invitePermissions
     );
     const row = await db.get('SELECT * FROM invites WHERE id = ?', info.lastInsertRowid);
     res.json({ ok: true, invite: row });
@@ -87,10 +108,21 @@ router.post('/api/invites/join', optionalAuth, async (req, res) => {
     // they held an invite for. Identity now comes from the session or not at all.
     const user = req.user;
 
+    // What the joiner is granted: the invite's own blob when it has one, the campaign's default
+    // for arrivals otherwise. Resolved before the transaction so a bad blob cannot half-apply.
+    const campaign = await db.get('SELECT * FROM campaigns WHERE id = ?', inv.campaign_id);
+    const granted = resolveJoinPermissions(campaign, inv);
+    const grantedBlob = Object.keys(granted).length > 0 ? JSON.stringify(granted) : null;
+
     await db.transaction(async (trx) => {
       if (user) {
         const exists = await trx.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ?', inv.campaign_id, user.id);
-        if (!exists) await trx.run('INSERT INTO campaign_members(campaign_id,user_id,role) VALUES (?, ?, ?)', inv.campaign_id, user.id, 'player');
+        if (!exists) {
+          await trx.run(
+            'INSERT INTO campaign_members(campaign_id,user_id,role,permissions) VALUES (?, ?, ?, ?)',
+            inv.campaign_id, user.id, 'player', grantedBlob,
+          );
+        }
       }
 
       // increment used_count
@@ -98,7 +130,7 @@ router.post('/api/invites/join', optionalAuth, async (req, res) => {
     });
 
     // include campaign name for client convenience
-    const camp = await db.get('SELECT id, name FROM campaigns WHERE id = ?', inv.campaign_id);
+    const camp = campaign ? { id: campaign.id, name: campaign.name } : null;
     res.json({ ok: true, campaign_id: inv.campaign_id, campaign_name: camp ? camp.name : null });
   } catch (e) {
     console.error('POST /api/invites/join error', e);

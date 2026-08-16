@@ -190,15 +190,19 @@ export function KobBuilderPage() {
       </Card>
 
       <Tabs defaultValue="trope">
-        <div className="scroll-strip -mx-1 px-1">
-          <TabsList className="w-max">
-            {TABS.map((tab) => (
-              <TabsTrigger key={tab.value} value={tab.value} className="min-h-11">
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </div>
+        {/* `TabsTrigger` is `flex-1 min-w-0` with a centred label, so a label wider than its share
+            is clipped at *both* ends — "Strengths & Flaw" and "Finishing touches" rendered as
+            "engths & F" and "lishing touc" running into each other. `w-max` did not save it: the
+            base `max-w-full` clamps the list to the viewport and the triggers shrink anyway. Let
+            each trigger keep its natural width and let the list scroll, as the sheet and the class
+            detail tabs already do. */}
+        <TabsList className="w-full justify-start overscroll-x-contain [&>*]:flex-none">
+          {TABS.map((tab) => (
+            <TabsTrigger key={tab.value} value={tab.value} className="min-h-11">
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
         <TabsContent value="trope" className="space-y-6 pt-4">
           <section className="space-y-3">

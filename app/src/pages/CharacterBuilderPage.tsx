@@ -4,9 +4,10 @@ import { useCharacterStore } from '@/store/characterStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { ChevronLeft, ChevronRight, Swords } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Swords, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { getRuntimeClassById } from '@/data';
+import { getRuntimeClassById, getRuntimeSubclass } from '@/data';
+import { updateCharacterClassEntry } from '@/lib/builderRules';
 
 const classDetailTabLabels = {
   features: 'Features',
@@ -14,6 +15,23 @@ const classDetailTabLabels = {
   proficiencies: 'Proficiencies',
   spellcasting: 'Spellcasting'
 } as const;
+
+/**
+ * What the Class Levels card says under a class name. A subclass chosen above the class's current
+ * level is kept rather than dropped — lowering a level while trying things out should not throw a
+ * choice away — so the card says out loud that it is not active yet.
+ */
+function describeSubclassLine(
+  cls: ReturnType<typeof getRuntimeClassById>,
+  subclass: ReturnType<typeof getRuntimeSubclass>,
+  level: number
+) {
+  if (!cls) return 'Class not in the current content library';
+  if (subclass) {
+    return level >= cls.subclassLevel ? subclass.name : `${subclass.name} — unlocks at level ${cls.subclassLevel}`;
+  }
+  return level >= cls.subclassLevel ? 'No subclass chosen' : `Subclass unlocks at level ${cls.subclassLevel}`;
+}
 
 const builderSteps = [
   { id: 'species', name: 'Species', path: '/builder/species' },
@@ -116,6 +134,19 @@ export function CharacterBuilderPage() {
       entry.classId === classId ? { ...entry, level: Math.max(1, Math.min(20, level)) } : entry
     );
     updateBuilderCharacter({ classes: updatedClasses });
+  };
+
+  const handleRemoveClass = (classId: string, className?: string) => {
+    updateBuilderCharacter({
+      classes: updateCharacterClassEntry(builderState.character?.classes, classId, getRuntimeClassById, () => undefined)
+    });
+    setClassLevelDrafts((current) => {
+      if (!(classId in current)) return current;
+      const next = { ...current };
+      delete next[classId];
+      return next;
+    });
+    toast.success(`${className ?? 'Class'} removed`);
   };
 
   const commitClassLevelChange = (classId: string) => {
@@ -247,13 +278,31 @@ export function CharacterBuilderPage() {
             <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {(builderState.character?.classes || []).map((entry) => {
                 const classData = getRuntimeClassById(entry.classId);
+                const subclass = entry.subclassId ? getRuntimeSubclass(entry.classId, entry.subclassId) : undefined;
+                const subclassLine = describeSubclassLine(classData, subclass, entry.level);
                 return (
                   <div key={entry.classId} className="space-y-2 rounded-lg border p-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-medium">{classData?.name || entry.classId}</span>
-                      <Button variant="ghost" size="sm" onClick={() => navigate(`/builder/class/${entry.classId}`)}>
-                        Details
-                      </Button>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">{classData?.name || entry.classId}</p>
+                        {/* The subclass belongs on this card: it is chosen two steps away and there
+                            was nothing here that said which one a class was carrying. */}
+                        <p className="truncate text-xs text-muted-foreground">{subclassLine}</p>
+                      </div>
+                      <div className="flex shrink-0 items-center">
+                        <Button variant="ghost" size="sm" onClick={() => navigate(`/builder/class/${entry.classId}`)}>
+                          Details
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground hover:text-destructive"
+                          aria-label={`Remove ${classData?.name || entry.classId}`}
+                          onClick={() => handleRemoveClass(entry.classId, classData?.name)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-muted-foreground">Level</span>

@@ -5,6 +5,7 @@ import {
   deriveAbilityScoreBonuses,
   deriveCharacterHitPoints,
   extractSelectedProficiencies,
+  normalizeCharacterClassIds,
   resolveAbilityScoreEntryState,
   resolveBackgroundGrantedFeat,
   resolveCharacterClasses
@@ -291,8 +292,12 @@ export const useCharacterStore = create<CharacterState>()(
           ? getRuntimeSpeciesVariant(character.speciesId, character.variantId)
           : undefined;
         const background = character.backgroundId ? getRuntimeBackgroundById(character.backgroundId) : undefined;
+        // Repair stored class ids first: a character saved against an older printing keeps that
+        // printing's id, and every step that resolves a class by exact id then behaves as though
+        // the character had no class at all.
+        const classes = normalizeCharacterClassIds(character.classes, getRuntimeClassById);
         const resolvedClasses = resolveCharacterClasses({
-          classes: character.classes ?? [],
+          classes,
           getClassById: getRuntimeClassById,
           getSubclassById: getRuntimeSubclass
         });
@@ -305,6 +310,7 @@ export const useCharacterStore = create<CharacterState>()(
             editingCharacterId: character.id,
             character: {
               ...character,
+              classes,
               // The sheet stores merged proficiencies; the builder needs the player's own picks.
               proficiencies: extractSelectedProficiencies({
                 character,

@@ -11,7 +11,15 @@ import {
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { createInvite, updateInvite, type Invite, type InviteWritePayload } from '@/lib/api';
+import { PermissionToggles } from '@/components/schedule/PermissionToggles';
+import {
+  createInvite,
+  parsePermissionBlob,
+  updateInvite,
+  type CampaignPermissions,
+  type Invite,
+  type InviteWritePayload,
+} from '@/lib/api';
 
 interface InviteSettingsDialogProps {
   open: boolean;
@@ -19,6 +27,8 @@ interface InviteSettingsDialogProps {
   campaignId: number;
   /** The invite being edited, or null to create a new one. */
   invite: Invite | null;
+  /** The campaign's `default_invite_permissions`, which a new link starts from. */
+  campaignInviteDefaults: string | null;
   onSaved: (invite: Invite) => void;
 }
 
@@ -48,11 +58,16 @@ function expiryFromChoice(choice: string): string | null {
  * The inner form is remounted by a `key` on the dialog rather than seeding its fields from an
  * effect — the same rule `PlayerEditorDialog` follows.
  */
-function InviteForm({ campaignId, invite, onSaved, onOpenChange }: Readonly<Omit<InviteSettingsDialogProps, 'open'>>) {
+function InviteForm({ campaignId, invite, campaignInviteDefaults, onSaved, onOpenChange }: Readonly<Omit<InviteSettingsDialogProps, 'open'>>) {
   const [maxUses, setMaxUses] = useState(String(invite?.max_uses ?? 1));
   // An existing invite's expiry is a timestamp, not one of the spans, so editing defaults to
   // leaving it alone unless a new span is chosen.
   const [expiry, setExpiry] = useState(invite ? 'keep' : 'never');
+  // A new link starts from the campaign's default for invites — the server applies the same thing
+  // when nothing is sent, so showing it here is the truth rather than a guess.
+  const [permissions, setPermissions] = useState<CampaignPermissions>(() =>
+    parsePermissionBlob(invite ? invite.permissions : campaignInviteDefaults),
+  );
   const [busy, setBusy] = useState(false);
 
   const currentExpiry = invite?.expires_at ? new Date(invite.expires_at).toLocaleString() : 'never';
@@ -61,7 +76,7 @@ function InviteForm({ campaignId, invite, onSaved, onOpenChange }: Readonly<Omit
     event.preventDefault();
     if (busy) return;
     setBusy(true);
-    const payload: InviteWritePayload = { max_uses: Number.parseInt(maxUses, 10) };
+    const payload: InviteWritePayload = { max_uses: Number.parseInt(maxUses, 10), permissions };
     if (expiry !== 'keep') payload.expires_at = expiryFromChoice(expiry);
     try {
       const saved = invite ? await updateInvite(invite.id, payload) : await createInvite(campaignId, payload);
@@ -115,6 +130,16 @@ function InviteForm({ campaignId, invite, onSaved, onOpenChange }: Readonly<Omit
         </Select>
       </div>
 
+      <div className="space-y-3">
+        <div>
+          <p className="text-sm font-medium">Whoever joins on this link gets</p>
+          <p className="text-xs text-muted-foreground">
+            Overrides the campaign&apos;s default for invited members.
+          </p>
+        </div>
+        <PermissionToggles idPrefix="invite-permission" value={permissions} onChange={setPermissions} />
+      </div>
+
       <DialogFooter>
         <Button type="button" variant="ghost" className="min-h-11" onClick={() => onOpenChange(false)}>
           Cancel
@@ -127,7 +152,7 @@ function InviteForm({ campaignId, invite, onSaved, onOpenChange }: Readonly<Omit
   );
 }
 
-export function InviteSettingsDialog({ open, onOpenChange, campaignId, invite, onSaved }: Readonly<InviteSettingsDialogProps>) {
+export function InviteSettingsDialog({ open, onOpenChange, campaignId, invite, campaignInviteDefaults, onSaved }: Readonly<InviteSettingsDialogProps>) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -141,6 +166,7 @@ export function InviteSettingsDialog({ open, onOpenChange, campaignId, invite, o
           key={invite?.id ?? 'new'}
           campaignId={campaignId}
           invite={invite}
+          campaignInviteDefaults={campaignInviteDefaults}
           onSaved={onSaved}
           onOpenChange={onOpenChange}
         />

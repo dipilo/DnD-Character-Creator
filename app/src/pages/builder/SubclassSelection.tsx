@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { Check } from 'lucide-react';
 import { toast } from 'sonner';
-import { resolveCharacterClasses, sortFeaturesByLevel } from '@/lib/builderRules';
+import { resolveCharacterClasses, sortFeaturesByLevel, updateCharacterClassEntry } from '@/lib/builderRules';
 import { getDescriptionPreview } from '@/lib/contentPresentation';
 
 const getSourceLabel = (sourceId?: string, sourceText?: string) => {
@@ -45,17 +45,15 @@ export function SubclassSelection() {
   }
 
   const handleSelectSubclass = (classId: string, subclassId: string) => {
+    // `classId` is the *resolved* class's id, which is not always the id the entry was stored
+    // with — matching on the raw string wrote nothing and the card stayed on the old subclass.
     updateBuilderCharacter({
-      classes: (builderState.character?.classes ?? []).map((entry) => {
-        if (entry.classId !== classId) {
-          return entry;
-        }
-
-        return {
-          ...entry,
-          subclassId
-        };
-      })
+      classes: updateCharacterClassEntry(
+        builderState.character?.classes,
+        classId,
+        getRuntimeClassById,
+        (entry) => ({ ...entry, subclassId })
+      )
     });
 
     const selectedSubclass = getRuntimeSubclass(classId, subclassId);
@@ -236,8 +234,16 @@ export function SubclassSelection() {
                     </div>
                   </ScrollArea>
                 ) : (
-                  <div className="rounded-lg border bg-muted/30 p-4 text-sm text-muted-foreground">
-                    {cls.name} does not choose a subclass until level {cls.subclassLevel}.
+                  <div className="space-y-2 rounded-lg border bg-muted/30 p-4 text-sm text-muted-foreground">
+                    <p>{cls.name} does not choose a subclass until level {cls.subclassLevel}.</p>
+                    {/* A subclass picked at a higher level is kept when the level comes back down —
+                        dropping it silently loses a choice — so say that it is parked, not active. */}
+                    {subclass ? (
+                      <p>
+                        <strong className="text-foreground">{subclass.name}</strong> is saved for this class and
+                        takes effect at level {cls.subclassLevel}.
+                      </p>
+                    ) : null}
                   </div>
                 )}
               </CardContent>

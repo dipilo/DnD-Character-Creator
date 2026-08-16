@@ -6,6 +6,7 @@ const { campaignCharacterSummary } = require('../lib/characters');
 const { publicPlayer } = require('../lib/players');
 const { createSession, publicUser } = require('../lib/sessions');
 const { genToken } = require('../lib/tokens');
+const { normalisePermissions, parsePermissions } = require('../lib/permissions');
 const { cleanupOrphanedUser, isCampaignOwner, memberHasPermission, optionalAuth, requireAuth, requireCampaignAccess } = require('../middleware/auth');
 
 const router = express.Router();
@@ -17,7 +18,14 @@ router.post('/api/campaigns', requireAuth, async (req, res) => {
   try {
     const user = req.user;
     const name = req.body?.name ? String(req.body.name).trim() : 'New Campaign';
-    const info = await db.run('INSERT INTO campaigns(name, owner_user_id) VALUES (?, ?)', name, user.id);
+    // A campaign is created for one game, and the creator's builder is already in one — the client
+    // sends it rather than every table silently becoming a D&D table.
+    const systemId = normaliseSystemId(req.body?.system_id);
+    if (systemId.error) return res.status(400).json({ error: systemId.error });
+    const info = await db.run(
+      'INSERT INTO campaigns(name, owner_user_id, system_id) VALUES (?, ?, ?)',
+      name, user.id, systemId.value,
+    );
     const created = await db.get('SELECT * FROM campaigns WHERE id = ?', info.lastInsertRowid);
     // add campaign_members entry for owner
     await db.run('INSERT INTO campaign_members(campaign_id, user_id, role) VALUES (?, ?, ?)', created.id, user.id, 'owner');
@@ -68,8 +76,11 @@ router.post('/api/campaigns/:campaignId/add-self', requireAuth, async (req, res)
     // create a player with user's username as default name and link it
     const info = await db.run('INSERT INTO players (name, discord, timezone, notes, campaign_id) VALUES (?, ?, ?, ?, ?)', user.username || ('user'+user.id), '', '', '', campaignId);
     const created = await db.get('SELECT * FROM players WHERE id = ?', info.lastInsertRowid);
-    // link membership (user -> player)
-    await db.run('INSERT OR IGNORE INTO campaign_members (campaign_id, user_id, player_id, role) VALUES (?, ?, ?, ?)', campaignId, user.id, created.id, 'player');
+    // link membership (user -> player), with the campaign's default grant for arrivals
+    await db.run(
+      'INSERT OR IGNORE INTO campaign_members (campaign_id, user_id, player_id, role, permissions) VALUES (?, ?, ?, ?, ?)',
+      campaignId, user.id, created.id, 'player', camp.default_member_permissions ?? null,
+    );
     res.json({ ok: true, player: publicPlayer(created) });
   } catch (e) {
     console.error('/api/campaigns/:campaignId/add-self', e);
@@ -114,12 +125,28 @@ function normaliseAllowedSourceIds(value) {
   return { value: ids.length > 0 ? JSON.stringify(ids) : null };
 }
 
+/**
+ * The game a table plays. Same posture as `allowed_source_ids`: the registry of systems is the
+ * client's (`app/src/data/gameSystems.ts`), so this bounds the shape and interprets nothing —
+ * adding a system must not need a server deploy. NULL means "whatever the client defaults to".
+ */
+function normaliseSystemId(value) {
+  if (value === null || value === undefined || value === '') return { value: null };
+  if (typeof value !== 'string' || !/^[a-z0-9][a-z0-9-]{0,63}$/.test(value)) {
+    return { error: 'invalid_system_id' };
+  }
+  return { value };
+}
+
 const CAMPAIGN_UPDATABLE_COLUMNS = [
   ['name', (value) => {
     const name = typeof value === 'string' ? value.trim() : '';
     return name ? { value: name } : { error: 'name required' };
   }],
   ['allowed_source_ids', normaliseAllowedSourceIds],
+  ['system_id', normaliseSystemId],
+  ['default_member_permissions', normalisePermissions],
+  ['default_invite_permissions', normalisePermissions],
 ];
 
 // Update a campaign (owner only): rename it, or set the sources its table plays with. One table of
@@ -316,9 +343,12 @@ router.post('/api/campaigns/:campaignId/members', requireAuth, async (req, res) 
     const existingMember = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ?', campaignId, user.id);
     if (existingMember) return res.status(400).json({ error: 'already_member' });
     
-    // Add user as a campaign member
-    await db.run('INSERT INTO campaign_members (campaign_id, user_id, role) VALUES (?, ?, ?)', campaignId, user.id, 'player');
-    
+    // Add user as a campaign member, holding whatever the campaign grants arrivals by default.
+    await db.run(
+      'INSERT INTO campaign_members (campaign_id, user_id, role, permissions) VALUES (?, ?, ?, ?)',
+      campaignId, user.id, 'player', campaign.default_member_permissions ?? null,
+    );
+
     res.json({ ok: true, campaign });
   } catch (e) {
     console.error('POST /api/campaigns/:campaignId/members', e);
@@ -379,10 +409,18 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
     // Use cached query for campaign validation
     const cacheKey = `campaign_${campaignId}`;
     const campaign = await getCachedQueryAsync(cacheKey, async () => {
-      return await db.get('SELECT id, name FROM campaigns WHERE id = ?', campaignId);
+      return await db.get('SELECT id, name, default_member_permissions FROM campaigns WHERE id = ?', campaignId);
     });
-    
+
     if (!campaign) return res.status(404).json({ error: 'campaign_not_found' });
+    // Claiming a seat creates a campaign-scoped account whose only reason to exist is that seat, so
+    // editing and releasing it are a floor the campaign's defaults are layered on top of — without
+    // them the new account can see the roster and change nothing on its own row.
+    const claimPermissions = JSON.stringify({
+      ...parsePermissions(campaign.default_member_permissions),
+      can_unclaim: true,
+      can_edit_self: true,
+    });
 
     const user = req.user;
     if (user) {
@@ -400,7 +438,7 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
           }
           
           // Link user to campaign_members with player_id
-          await trx.run('INSERT OR IGNORE INTO campaign_members(campaign_id,user_id,player_id,role) VALUES (?, ?, ?, ?)', campaignId, user.id, playerId, 'player');
+          await trx.run('INSERT OR IGNORE INTO campaign_members(campaign_id,user_id,player_id,role,permissions) VALUES (?, ?, ?, ?, ?)', campaignId, user.id, playerId, 'player', claimPermissions);
           
           // Update Discord ID if available
           if (user.discord_id) {
@@ -423,8 +461,8 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
             user.discord_id || null);
           
           // Link user to new player
-          await trx.run('INSERT INTO campaign_members(campaign_id,user_id,player_id,role) VALUES (?, ?, ?, ?)',
-            campaignId, user.id, info.lastInsertRowid, 'player');
+          await trx.run('INSERT INTO campaign_members(campaign_id,user_id,player_id,role,permissions) VALUES (?, ?, ?, ?, ?)',
+            campaignId, user.id, info.lastInsertRowid, 'player', claimPermissions);
           
           // Return new player object
           const newPlayer = await trx.get('SELECT * FROM players WHERE id = ?', info.lastInsertRowid);
@@ -458,8 +496,7 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
     const uInfo = await db.run('INSERT INTO users(username, password_hash) VALUES (?, ?)', pname, (plain ? hash : null));
     const newUser = await db.get('SELECT * FROM users WHERE id = ?', uInfo.lastInsertRowid);
     // Link the user to this campaign and player. If no password was provided, we'll treat this account as campaign-scoped
-    const perms = JSON.stringify({ can_unclaim: true, can_edit_self: true });
-    await db.run('INSERT INTO campaign_members(campaign_id,user_id,player_id,role,permissions) VALUES (?, ?, ?, ?, ?)', campaignId, newUser.id, newPid, 'player', perms);
+    await db.run('INSERT INTO campaign_members(campaign_id,user_id,player_id,role,permissions) VALUES (?, ?, ?, ?, ?)', campaignId, newUser.id, newPid, 'player', claimPermissions);
   const created = await db.get('SELECT * FROM players WHERE id = ?', newPid);
   const claimedRow = await db.get('SELECT user_id FROM campaign_members WHERE player_id = ? AND campaign_id = ? AND user_id IS NOT NULL LIMIT 1', newPid, campaignId);
   const playerOut = { ...created, claimed_user_id: claimedRow ? claimedRow.user_id : null, is_claimed: Boolean(claimedRow?.user_id) || Boolean(created.password_hash) || Boolean(created.discord_id) };
@@ -480,9 +517,9 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
   // create a user record representing the claimant; if password provided, store it on users too
   const uInfo = await db.run('INSERT INTO users(username, password_hash) VALUES (?, ?)', name || ('player' + playerId), (plain ? hash : null));
   const newUser = await db.get('SELECT * FROM users WHERE id = ?', uInfo.lastInsertRowid);
-  // If no password was provided, this is a campaign-scoped account; store a minimal permission set on campaign_members
-  const perms = JSON.stringify({ can_unclaim: true, can_edit_self: true });
-  await db.run('INSERT INTO campaign_members(campaign_id,user_id,player_id,role,permissions) VALUES (?, ?, ?, ?, ?)', campaignId, newUser.id, playerId, 'player', perms);
+  // If no password was provided, this is a campaign-scoped account; it still gets the campaign's
+  // default grant on top of the self-service floor.
+  await db.run('INSERT INTO campaign_members(campaign_id,user_id,player_id,role,permissions) VALUES (?, ?, ?, ?, ?)', campaignId, newUser.id, playerId, 'player', claimPermissions);
   const createdP = await db.get('SELECT * FROM players WHERE id = ?', playerId);
   const claimedR = await db.get('SELECT user_id FROM campaign_members WHERE player_id = ? AND campaign_id = ? AND user_id IS NOT NULL LIMIT 1', playerId, campaignId);
   const playerOutFinal = { ...createdP, claimed_user_id: claimedR ? claimedR.user_id : null, is_claimed: Boolean(claimedR?.user_id) || Boolean(createdP.password_hash) || Boolean(createdP.discord_id) };

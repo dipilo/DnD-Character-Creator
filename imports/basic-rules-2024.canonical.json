@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2024 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-08-05T01:53:07.273Z",
+    "importedAt": "2026-08-16T22:12:30.068Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -16063,8 +16063,11 @@
           "unit": "gp"
         },
         "weight": 4,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d8",
         "damageType": "Slashing",
+        "versatileDamage": "1d10",
         "properties": [
           "Versatile"
         ],
@@ -16135,6 +16138,8 @@
           "unit": "gp"
         },
         "weight": 1,
+        "weaponCategory": "martial",
+        "weaponType": "ranged",
         "damage": "1",
         "damageType": "Piercing",
         "properties": [
@@ -16469,6 +16474,8 @@
           "unit": "sp"
         },
         "weight": 2,
+        "weaponCategory": "simple",
+        "weaponType": "melee",
         "damage": "1d4",
         "damageType": "Bludgeoning",
         "properties": [
@@ -16569,6 +16576,8 @@
           "unit": "gp"
         },
         "weight": 1,
+        "weaponCategory": "simple",
+        "weaponType": "melee",
         "damage": "1d4",
         "damageType": "Piercing",
         "properties": [
@@ -16591,6 +16600,8 @@
           "unit": "gp"
         },
         "weight": 0.25,
+        "weaponCategory": "simple",
+        "weaponType": "ranged",
         "damage": "1d4",
         "damageType": "Piercing",
         "properties": [
@@ -16722,6 +16733,8 @@
           "unit": "gp"
         },
         "weight": 2,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d8",
         "damageType": "Bludgeoning",
         "properties": [],
@@ -16781,6 +16794,8 @@
           "unit": "gp"
         },
         "weight": 6,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d10",
         "damageType": "Slashing",
         "properties": [
@@ -16830,6 +16845,8 @@
           "unit": "gp"
         },
         "weight": 7,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d12",
         "damageType": "Slashing",
         "properties": [
@@ -16851,6 +16868,8 @@
           "unit": "sp"
         },
         "weight": 10,
+        "weaponCategory": "simple",
+        "weaponType": "melee",
         "damage": "1d8",
         "damageType": "Bludgeoning",
         "properties": [
@@ -16871,6 +16890,8 @@
           "unit": "gp"
         },
         "weight": 6,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "2d6",
         "damageType": "Slashing",
         "properties": [
@@ -16892,6 +16913,8 @@
           "unit": "gp"
         },
         "weight": 6,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d10",
         "damageType": "Slashing",
         "properties": [
@@ -16931,6 +16954,8 @@
           "unit": "gp"
         },
         "weight": 2,
+        "weaponCategory": "martial",
+        "weaponType": "ranged",
         "damage": "1d6",
         "damageType": "Piercing",
         "properties": [
@@ -16954,6 +16979,8 @@
           "unit": "gp"
         },
         "weight": 2,
+        "weaponCategory": "simple",
+        "weaponType": "melee",
         "damage": "1d6",
         "damageType": "Slashing",
         "properties": [
@@ -16988,6 +17015,8 @@
           "unit": "gp"
         },
         "weight": 18,
+        "weaponCategory": "martial",
+        "weaponType": "ranged",
         "damage": "1d10",
         "damageType": "Piercing",
         "properties": [
@@ -17108,6 +17137,8 @@
           "unit": "gp"
         },
         "weight": 2,
+        "weaponCategory": "simple",
+        "weaponType": "melee",
         "damage": "1d6",
         "damageType": "Piercing",
         "properties": [
@@ -17181,6 +17212,8 @@
           "unit": "gp"
         },
         "weight": 6,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d10",
         "damageType": "Piercing",
         "properties": [
@@ -17258,6 +17291,8 @@
           "unit": "gp"
         },
         "weight": 5,
+        "weaponCategory": "simple",
+        "weaponType": "ranged",
         "damage": "1d8",
         "damageType": "Piercing",
         "properties": [
@@ -17281,6 +17316,8 @@
           "unit": "gp"
         },
         "weight": 2,
+        "weaponCategory": "simple",
+        "weaponType": "melee",
         "damage": "1d4",
         "damageType": "Bludgeoning",
         "properties": [
@@ -17315,6 +17352,8 @@
           "unit": "gp"
         },
         "weight": 2,
+        "weaponCategory": "martial",
+        "weaponType": "ranged",
         "damage": "1d8",
         "damageType": "Piercing",
         "properties": [
@@ -17338,8 +17377,11 @@
           "unit": "gp"
         },
         "weight": 3,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d8",
         "damageType": "Slashing",
+        "versatileDamage": "1d10",
         "properties": [
           "Versatile"
         ],
@@ -17386,6 +17428,8 @@
           "unit": "gp"
         },
         "weight": 2,
+        "weaponCategory": "simple",
+        "weaponType": "melee",
         "damage": "1d6",
         "damageType": "Bludgeoning",
         "properties": [],
@@ -17470,6 +17514,8 @@
           "unit": "gp"
         },
         "weight": 10,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "2d6",
         "damageType": "Bludgeoning",
         "properties": [
@@ -17491,6 +17537,8 @@
           "unit": "gp"
         },
         "weight": 4,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d8",
         "damageType": "Piercing",
         "properties": []
@@ -17506,6 +17554,8 @@
           "unit": "gp"
         },
         "weight": 10,
+        "weaponCategory": "martial",
+        "weaponType": "ranged",
         "damage": "1d12",
         "damageType": "Piercing",
         "properties": [
@@ -17678,6 +17728,8 @@
           "unit": "gp"
         },
         "weight": 6,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d10",
         "damageType": "Piercing",
         "properties": [
@@ -17700,6 +17752,8 @@
           "unit": "gp"
         },
         "weight": 3,
+        "weaponCategory": "martial",
+        "weaponType": "ranged",
         "damage": "1d10",
         "damageType": "Piercing",
         "properties": [
@@ -17858,8 +17912,11 @@
           "unit": "sp"
         },
         "weight": 4,
+        "weaponCategory": "simple",
+        "weaponType": "melee",
         "damage": "1d6",
         "damageType": "Bludgeoning",
+        "versatileDamage": "1d8",
         "properties": [
           "Versatile"
         ],
@@ -17904,6 +17961,8 @@
           "unit": "gp"
         },
         "weight": 2,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d8",
         "damageType": "Piercing",
         "properties": [
@@ -18048,6 +18107,8 @@
           "unit": "gp"
         },
         "weight": 3,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d6",
         "damageType": "Slashing",
         "properties": [
@@ -18098,6 +18159,8 @@
           "unit": "gp"
         },
         "weight": 2,
+        "weaponCategory": "simple",
+        "weaponType": "ranged",
         "damage": "1d6",
         "damageType": "Piercing",
         "properties": [
@@ -18120,6 +18183,8 @@
           "unit": "gp"
         },
         "weight": 2,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d6",
         "damageType": "Piercing",
         "properties": [
@@ -18154,6 +18219,8 @@
           "unit": "gp"
         },
         "weight": 2,
+        "weaponCategory": "simple",
+        "weaponType": "melee",
         "damage": "1d4",
         "damageType": "Slashing",
         "properties": [
@@ -18187,6 +18254,8 @@
           "unit": "sp"
         },
         "weight": 0,
+        "weaponCategory": "simple",
+        "weaponType": "ranged",
         "damage": "1d4",
         "damageType": "Piercing",
         "properties": [
@@ -18222,8 +18291,11 @@
           "unit": "gp"
         },
         "weight": 2,
+        "weaponCategory": "simple",
+        "weaponType": "melee",
         "damage": "1d6",
         "damageType": "Piercing",
+        "versatileDamage": "1d8",
         "properties": [
           "Thrown",
           "Versatile"
@@ -18446,8 +18518,11 @@
           "unit": "gp"
         },
         "weight": 4,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d6",
         "damageType": "Piercing",
+        "versatileDamage": "1d8",
         "properties": [
           "Thrown",
           "Versatile"
@@ -18507,8 +18582,11 @@
           "unit": "gp"
         },
         "weight": 5,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d8",
         "damageType": "Bludgeoning",
+        "versatileDamage": "1d10",
         "properties": [
           "Versatile"
         ],
@@ -18527,8 +18605,11 @@
           "unit": "gp"
         },
         "weight": 2,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d8",
         "damageType": "Piercing",
+        "versatileDamage": "1d10",
         "properties": [
           "Versatile"
         ],
@@ -18574,6 +18655,8 @@
           "unit": "gp"
         },
         "weight": 3,
+        "weaponCategory": "martial",
+        "weaponType": "melee",
         "damage": "1d4",
         "damageType": "Slashing",
         "properties": [

@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2014 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-08-05T01:53:06.004Z",
+    "importedAt": "2026-08-16T22:12:15.844Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -14117,6 +14117,7 @@
         "weaponType": "melee",
         "damage": "1d6",
         "damageType": "Bludgeoning",
+        "versatileDamage": "1d8",
         "properties": [
           "Versatile",
           "Monk"
@@ -14163,6 +14164,7 @@
         "weaponType": "melee",
         "damage": "1d6",
         "damageType": "Piercing",
+        "versatileDamage": "1d8",
         "properties": [
           "Thrown",
           "Versatile",
@@ -14283,6 +14285,7 @@
         "weaponType": "melee",
         "damage": "1d8",
         "damageType": "Slashing",
+        "versatileDamage": "1d10",
         "properties": [
           "Versatile"
         ],
@@ -14442,6 +14445,7 @@
         "weaponType": "melee",
         "damage": "1d8",
         "damageType": "Slashing",
+        "versatileDamage": "1d10",
         "properties": [
           "Versatile"
         ],
@@ -14600,6 +14604,7 @@
         "weaponType": "melee",
         "damage": "1d6",
         "damageType": "Piercing",
+        "versatileDamage": "1d8",
         "properties": [
           "Thrown",
           "Versatile"
@@ -14643,6 +14648,7 @@
         "weaponType": "melee",
         "damage": "1d8",
         "damageType": "Bludgeoning",
+        "versatileDamage": "1d10",
         "properties": [
           "Versatile"
         ],

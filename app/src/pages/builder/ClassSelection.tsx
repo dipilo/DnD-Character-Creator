@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCharacterStore } from '@/store/characterStore';
-import { useContentLibrary } from '@/data';
+import { resolveClassById, useContentLibrary } from '@/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,7 +26,7 @@ export function ClassSelection() {
   const selectedClasses = useMemo<SelectedClassWithLevel[]>(() => {
     return (builderState.character?.classes || [])
       .map((entry) => {
-        const cls = classes.find((candidate) => candidate.id === entry.classId);
+        const cls = resolveClassById(classes, entry.classId);
         return cls ? { cls, level: entry.level } : undefined;
       })
       .filter((entry): entry is SelectedClassWithLevel => Boolean(entry));

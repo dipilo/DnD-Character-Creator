@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useCharacterStore } from '@/store/characterStore';
-import { useContentLibrary } from '@/data';
+import { resolveClassById, resolveSubclassById, useContentLibrary } from '@/data';
 import { SourceFilterBar } from '@/components/SourceFilterBar';
 import { sourceMatchesSelection } from '@/data/librarySources';
 import { Button } from '@/components/ui/button';
@@ -38,12 +38,12 @@ export function SpellsSelectionPage() {
   const { classes, spells } = useContentLibrary();
 
   const selectedClasses = useMemo<SelectedClassWithLevel[]>(() => {
+    // Canonical lookup, not an exact id match: a character holding an older class id otherwise
+    // reads as having no spellcasting class at all and the step says "select a spellcasting class".
     return resolveCharacterClasses({
       classes: builderState.character?.classes ?? [],
-      getClassById: (classId) => classes.find((candidate) => candidate.id === classId),
-      getSubclassById: (classId, subclassId) => {
-        return classes.find((candidate) => candidate.id === classId)?.subclasses.find((candidate) => candidate.id === subclassId);
-      }
+      getClassById: (classId) => resolveClassById(classes, classId),
+      getSubclassById: (classId, subclassId) => resolveSubclassById(classes, classId, subclassId)
     }).map(({ entry, cls, subclass }) => ({
       cls,
       level: entry.level,

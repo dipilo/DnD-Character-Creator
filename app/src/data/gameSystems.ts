@@ -6,6 +6,9 @@
  * component branches on a system id, and nothing about a system is spelled out in a page.
  */
 
+import { Bike, Download, FlaskConical, Sword, Users } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+
 export type GameSystemId = 'dnd-5e' | 'kids-on-bikes';
 
 /**
@@ -38,6 +41,24 @@ export interface GameSystemTheme {
   light: ThemeTokens;
 }
 
+/**
+ * A destination in the main nav that belongs to one system.
+ *
+ * These live here rather than in `Layout` because a system's routes are the registry's to state:
+ * switching the active game swaps the whole set, and a nav list written out in a component would
+ * be the second place a system is described.
+ */
+export interface GameSystemNavItem {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+  /** Prefix the route must start with to read as active; exact match when `exact` is set. */
+  match: string;
+  exact?: boolean;
+  /** One line for the home page's cards. The nav shows the label alone. */
+  description?: string;
+}
+
 export interface GameSystemDefinition {
   id: GameSystemId;
   /** Full title, used in headings and the system picker. */
@@ -45,15 +66,21 @@ export interface GameSystemDefinition {
   /** Fits in a header next to the logo on a phone. */
   shortName: string;
   tagline: string;
+  /** Icon for the system picker. */
+  icon: LucideIcon;
   /** Route the builder for this system lives under. */
   builderPath: string;
   /** Route the character list for this system lives at. */
   charactersPath: string;
+  /** Where the picker lands when this system is chosen. */
+  homePath: string;
   /**
    * Every route prefix that belongs to this system. The theme follows these, so a sheet and a
    * character list count, not just the builder.
    */
   routePrefixes: string[];
+  /** This system's own nav destinations, shown while it is the active game. */
+  navItems: GameSystemNavItem[];
   /** False while a system is still being built out — it stays visible but is not selectable. */
   available: boolean;
   theme: GameSystemTheme;
@@ -65,9 +92,41 @@ export const GAME_SYSTEMS: Record<GameSystemId, GameSystemDefinition> = {
     name: 'Dungeons & Dragons 5th Edition',
     shortName: 'D&D 5e',
     tagline: 'Species, class, background — the full 2014 and 2024 rule sets.',
+    icon: Sword,
     builderPath: '/builder',
     charactersPath: '/characters',
-    routePrefixes: ['/builder', '/characters', '/character/'],
+    homePath: '/builder',
+    routePrefixes: ['/builder', '/characters', '/character/', '/content', '/homebrew'],
+    navItems: [
+      {
+        to: '/builder',
+        label: 'Builder',
+        icon: Sword,
+        match: '/builder',
+        description: 'Select species, class, background, ability scores, spells, and equipment.',
+      },
+      {
+        to: '/characters',
+        label: 'My Characters',
+        icon: Users,
+        match: '/characters',
+        description: 'Open, edit, or export the characters you have already saved.',
+      },
+      {
+        to: '/content/import',
+        label: 'Import',
+        icon: Download,
+        match: '/content',
+        description: 'Load source books from local JSON into your library.',
+      },
+      {
+        to: '/homebrew',
+        label: 'Homebrew',
+        icon: FlaskConical,
+        match: '/homebrew',
+        description: 'Make your own species, classes, spells, feats, and monsters.',
+      },
+    ],
     available: true,
     theme: {
       label: 'Dungeons & Dragons',
@@ -99,9 +158,22 @@ export const GAME_SYSTEMS: Record<GameSystemId, GameSystemDefinition> = {
     name: 'Kids on Bikes',
     shortName: 'Kids on Bikes',
     tagline: 'Small towns, strange happenings, and a bike to get away on.',
+    icon: Bike,
     builderPath: '/kob/builder',
     charactersPath: '/kob',
+    homePath: '/kob',
     routePrefixes: ['/kob'],
+    // One destination, because that is all this system has: `/kob` lists the characters and is
+    // where a new one is started. Nothing here pretends to a screen that does not exist.
+    navItems: [
+      {
+        to: '/kob',
+        label: 'Characters',
+        icon: Users,
+        match: '/kob',
+        description: 'Trope, age, Strengths and a Flaw — then the bike. Open one or start another.',
+      },
+    ],
     available: true,
     theme: {
       // Eighties VHS: magenta against cyan over a violet-tinted night.

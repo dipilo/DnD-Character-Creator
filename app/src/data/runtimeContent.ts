@@ -1097,6 +1097,7 @@ const enrichEquipment = (primary: Equipment, fallback?: Equipment): Equipment =>
   toolCategory: primary.toolCategory ?? fallback?.toolCategory,
   damage: primary.damage ?? fallback?.damage,
   damageType: primary.damageType ?? fallback?.damageType,
+  versatileDamage: primary.versatileDamage ?? fallback?.versatileDamage,
   properties: choosePreferredArray(primary.properties, fallback?.properties),
   range: primary.range ?? fallback?.range,
   armorCategory: primary.armorCategory ?? fallback?.armorCategory,
@@ -1324,19 +1325,29 @@ export const getRuntimeSpeciesVariant = (speciesId: string, variantId: string) =
 // same class instead of dropping the character's class entirely.
 const getEditionFromClassId = (id: string) => (/^(basic-rules|phb)-2024-/.test(id) ? '2024' : '2014');
 
-export const getRuntimeClassById = (id: string) => {
-  const runtimeClasses = getRuntimeClasses();
-  const exactMatch = runtimeClasses.find((entry) => entry.id === id);
+/**
+ * The same resolution against a caller-supplied list, for pages that already hold the class list
+ * from `useContentLibrary` — they get the canonical lookup without having to name a second,
+ * invisible dependency on the content store.
+ */
+export const resolveClassById = (classes: Class[], id: string) => {
+  const exactMatch = classes.find((entry) => entry.id === id);
   if (exactMatch) {
     return exactMatch;
   }
 
   const canonicalKey = getCanonicalClassKey(id);
   const edition = getEditionFromClassId(id);
-  return runtimeClasses.find((entry) => {
+  return classes.find((entry) => {
     return getClassKeyFromClass(entry) === canonicalKey && getRulesEdition(entry.sourceId, entry.source) === edition;
   });
 };
+
+export const resolveSubclassById = (classes: Class[], classId: string, subclassId: string) => {
+  return resolveClassById(classes, classId)?.subclasses.find((entry) => entry.id === subclassId);
+};
+
+export const getRuntimeClassById = (id: string) => resolveClassById(getRuntimeClasses(), id);
 
 export const getRuntimeSubclass = (classId: string, subclassId: string) => {
   return getRuntimeClassById(classId)?.subclasses.find((entry) => entry.id === subclassId);

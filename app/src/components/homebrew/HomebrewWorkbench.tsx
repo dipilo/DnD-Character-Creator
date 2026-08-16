@@ -1128,7 +1128,9 @@ export function HomebrewWorkbench() {
 
   return (
     <Tabs defaultValue="backgrounds" className="space-y-4">
-      <TabsList className="flex h-auto w-full justify-start whitespace-nowrap">
+      {/* Eight labels never share a phone's width; without `flex-none` each one is centre-clipped
+          into an unreadable fragment rather than the list scrolling. */}
+      <TabsList className="flex h-auto w-full justify-start overscroll-x-contain whitespace-nowrap [&>*]:flex-none">
         <TabsTrigger value="backgrounds">Backgrounds</TabsTrigger>
         <TabsTrigger value="species">Species</TabsTrigger>
         <TabsTrigger value="classes">Classes</TabsTrigger>

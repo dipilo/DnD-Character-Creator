@@ -118,7 +118,10 @@ const steps = [
   { name: 'get-user-missing', method: 'GET', path: '/api/users/9999', headers: () => asUser('alice') },
 
   { name: 'create-campaign-unauthenticated', method: 'POST', path: '/api/campaigns', body: { name: 'Nope' } },
-  { name: 'create-campaign', method: 'POST', path: '/api/campaigns', headers: () => asUser('alice'), body: { name: 'Test Camp' }, capture: (j) => { ctx.camp = j.campaign?.id; } },
+  { name: 'create-campaign', method: 'POST', path: '/api/campaigns', headers: () => asUser('alice'), body: { name: 'Test Camp', system_id: 'kids-on-bikes' }, capture: (j) => { ctx.camp = j.campaign?.id; } },
+  // The server bounds the shape of a system id and interprets nothing else about it, exactly as
+  // it treats allowed_source_ids — adding a system must never need a server deploy.
+  { name: 'create-campaign-invalid-system', method: 'POST', path: '/api/campaigns', headers: () => asUser('alice'), body: { name: 'Bad System', system_id: 'Not A System' } },
   { name: 'list-campaigns', method: 'GET', path: '/api/campaigns', headers: () => asUser('alice') },
   { name: 'campaign-by-unknown-code', method: 'GET', path: '/api/campaigns/code/not-a-code' },
   { name: 'regenerate-code', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/regenerate-code`, headers: () => asUser('alice') },
@@ -282,7 +285,31 @@ const steps = [
   { name: 'set-campaign-sources-not-an-array', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice'), body: { allowed_source_ids: 'phb-2024' } },
   { name: 'update-campaign-nothing-to-update', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice'), body: {} },
   { name: 'set-campaign-sources-as-member', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('ellis'), body: { allowed_source_ids: [] } },
+  { name: 'set-campaign-system', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice'), body: { system_id: 'dnd-5e' } },
+  { name: 'set-campaign-system-invalid', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice'), body: { system_id: 'NOT VALID' } },
+  // Unknown flags are dropped rather than stored: a permission nobody can see is one nobody can
+  // revoke either.
+  { name: 'set-campaign-default-permissions', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice'), body: { default_member_permissions: { can_edit_self: true, players_self_delete: true, not_a_real_flag: true } } },
+  { name: 'set-campaign-default-permissions-not-an-object', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice'), body: { default_member_permissions: 'can_edit_self' } },
+  { name: 'set-campaign-default-invite-permissions', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice'), body: { default_invite_permissions: { can_manage_groups: true } } },
+  { name: 'set-campaign-defaults-as-member', method: 'PUT', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('ellis'), body: { default_member_permissions: { can_delete_players: true } } },
   { name: 'campaigns-carry-allowed-sources', method: 'GET', path: '/api/campaigns', headers: () => asUser('alice') },
+
+  // What a joiner is granted. A second campaign, because the first one's members joined before it
+  // had any defaults — and that is the point: the defaults apply on the way in, not retroactively.
+  { name: 'create-campaign-with-defaults', method: 'POST', path: '/api/campaigns', headers: () => asUser('alice'), body: { name: 'Defaults Camp' }, capture: (j) => { ctx.camp2 = j.campaign?.id; } },
+  { name: 'set-defaults-on-camp2', method: 'PUT', path: () => `/api/campaigns/${ctx.camp2}`, headers: () => asUser('alice'), body: { default_member_permissions: { can_edit_self: true }, default_invite_permissions: { can_manage_groups: true } } },
+  // No `permissions` in the body, so the link takes the campaign's default for invited arrivals.
+  { name: 'create-invite-inheriting-defaults', method: 'POST', path: () => `/api/campaigns/${ctx.camp2}/invites`, headers: () => asUser('alice'), body: {}, capture: (j) => { ctx.invite2Token = j.invite?.token; ctx.invite2Id = j.invite?.id; if (ctx.invite2Token) masked.push(ctx.invite2Token); } },
+  // An explicit blob overrides it, including the empty one that means "grant nothing".
+  { name: 'create-invite-with-own-permissions', method: 'POST', path: () => `/api/campaigns/${ctx.camp2}/invites`, headers: () => asUser('alice'), body: { permissions: { can_create_players: true } }, capture: (j) => { ctx.invite3Token = j.invite?.token; if (ctx.invite3Token) masked.push(ctx.invite3Token); } },
+  { name: 'join-camp2-on-inherited-invite', method: 'POST', path: '/api/invites/join', headers: () => asUser('bob'), body: () => ({ token: ctx.invite2Token }) },
+  { name: 'join-camp2-on-explicit-invite', method: 'POST', path: '/api/invites/join', headers: () => asUser('ellis'), body: () => ({ token: ctx.invite3Token }) },
+  { name: 'camp2-members-carry-granted-permissions', method: 'GET', path: () => `/api/campaigns/${ctx.camp2}/members`, headers: () => asUser('alice') },
+  // Joining by id is the other door in, and it takes the campaign's member default too.
+  { name: 'join-camp2-by-id', method: 'POST', path: () => `/api/campaigns/${ctx.camp2}/members`, headers: () => asUser('dara') },
+  { name: 'camp2-members-after-direct-join', method: 'GET', path: () => `/api/campaigns/${ctx.camp2}/members`, headers: () => asUser('alice') },
+  { name: 'delete-camp2', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp2}`, headers: () => asUser('alice') },
 
   { name: 'delete-player', method: 'DELETE', path: () => `/api/players/${ctx.cora}`, headers: () => asUser('alice') },
   { name: 'delete-campaign', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp}`, headers: () => asUser('alice') },

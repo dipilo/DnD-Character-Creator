@@ -36,7 +36,8 @@ import {
   resolveCharacterEquipment,
   sortFeaturesByLevel
 } from '@/lib/builderRules';
-import { deriveSheetVitals } from '@/lib/sheetDerivations';
+import { deriveAttacks, deriveSheetVitals } from '@/lib/sheetDerivations';
+import { SheetAttacksPanel } from '@/components/character/SheetAttacksPanel';
 import { SheetVitalsPanel } from '@/components/character/SheetVitalsPanel';
 import type { AbilityScores, Character } from '@/types/dnd';
 
@@ -253,6 +254,15 @@ export function CharacterSheetView({ character, actions, leading, note }: Readon
     });
   }, [derivedProficiencies, displayedAbilityScores, resolvedClasses, species, totalLevel]);
 
+  const attacks = useMemo(() => {
+    return deriveAttacks({
+      equipment: resolvedEquipment,
+      abilityScores: displayedAbilityScores,
+      proficiencyBonus: vitals.proficiencyBonus,
+      weaponProficiencies: derivedProficiencies.weapons
+    });
+  }, [derivedProficiencies.weapons, displayedAbilityScores, resolvedEquipment, vitals.proficiencyBonus]);
+
   const classSummary = resolvedClasses
     .map(({ entry, cls, subclass }) => {
       const label = `${cls.name} ${entry.level}`;
@@ -357,6 +367,8 @@ export function CharacterSheetView({ character, actions, leading, note }: Readon
           </div>
 
           <SheetVitalsPanel vitals={vitals} />
+
+          <SheetAttacksPanel attacks={attacks} />
 
           <Card>
             <CardHeader>

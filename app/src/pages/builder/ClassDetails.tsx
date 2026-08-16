@@ -13,7 +13,7 @@ import { ToolProficiencyChoices } from '@/components/builder/ToolProficiencyChoi
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { ArrowLeft, Check, Shield, Sword, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { canMixClassEditions, getRulesEditionLabel, getToolChoiceIdPrefix, sortFeaturesByLevel, type SelectedClassWithLevel } from '@/lib/builderRules';
+import { canMixClassEditions, findCharacterClassEntry, getRulesEditionLabel, getToolChoiceIdPrefix, sortFeaturesByLevel, updateCharacterClassEntry, type SelectedClassWithLevel } from '@/lib/builderRules';
 import { getDescriptionPreview } from '@/lib/contentPresentation';
 import { getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
 
@@ -43,9 +43,7 @@ export function ClassDetails() {
   // whichever id the class list is showing now. Matching on the raw id alone silently missed the
   // entry, so the page fell back to level 1 and showed only 1st-level features next to a
   // Subclasses tab that lists every level — resolve through the class the id actually points at.
-  const classEntry = builderState.character?.classes?.find((entry) => {
-    return entry.classId === classId || (cls && getRuntimeClassById(entry.classId)?.id === cls.id);
-  });
+  const classEntry = cls ? findCharacterClassEntry(builderState.character?.classes, cls.id, getRuntimeClassById) : undefined;
   const isSelected = !!classEntry;
   const selectedSubclass = classEntry?.subclassId ? getRuntimeSubclass(cls?.id ?? '', classEntry.subclassId) : undefined;
   const characterLevel = classEntry?.level || 1;
@@ -90,14 +88,20 @@ export function ClassDetails() {
 
   const setClassEntry = (updater: (current: NonNullable<typeof classEntry>) => NonNullable<typeof classEntry> | undefined) => {
     const existing = builderState.character?.classes || [];
-    const nextEntry = classEntry
-      ? updater({ ...classEntry, classId: cls.id })
-      : updater({ classId: cls.id, level: 1, hitDiceUsed: 0 });
+    if (!classEntry) {
+      const created = updater({ classId: cls.id, level: 1, hitDiceUsed: 0 });
+      updateBuilderCharacter({ classes: created ? [...existing, created] : existing });
+      return;
+    }
 
-    // Drop the entry under whichever id it was stored with, then re-add it under the current one.
-    const nextClasses = existing.filter((entry) => entry !== classEntry && entry.classId !== cls.id);
-    if (nextEntry) nextClasses.push(nextEntry);
-    updateBuilderCharacter({ classes: nextClasses });
+    // Rewrite in place. Dropping the entry and pushing it back moved a multiclass character's
+    // first class to the end of the list, and the first entry is the one that gets a full hit die
+    // at 1st level — the max HP changed for nothing but opening this page.
+    updateBuilderCharacter({
+      classes: updateCharacterClassEntry(existing, cls.id, getRuntimeClassById, (entry) =>
+        updater({ ...entry, classId: cls.id })
+      )
+    });
   };
 
   const handleSelectClass = () => {

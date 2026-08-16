@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useCharacterStore } from '@/store/characterStore';
-import { useContentLibrary } from '@/data';
+import { resolveClassById, useContentLibrary } from '@/data';
 import { getSourceFileById } from '@/data/sourceFiles';
 import { SourceFilterBar } from '@/components/SourceFilterBar';
 import { sourceMatchesSelection } from '@/data/librarySources';
@@ -151,7 +151,7 @@ export function FeatsSelectionPage() {
   const selectedClasses = useMemo<SelectedClassWithLevel[]>(() => {
     return (builderState.character?.classes || [])
       .map((entry) => {
-        const cls = classes.find((candidate) => candidate.id === entry.classId);
+        const cls = resolveClassById(classes, entry.classId);
         return cls ? { cls, level: entry.level } : undefined;
       })
       .filter((entry): entry is SelectedClassWithLevel => Boolean(entry));
