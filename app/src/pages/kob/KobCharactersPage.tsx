@@ -24,7 +24,7 @@ export function KobCharactersPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl short:text-xl">Kids on Bikes</h1>
           <p className="text-muted-foreground short:hidden">
-            Small towns, strange happenings, and a bike to get away on.
+            A Collaborative Storytelling RPG set in small towns with big adventure!
           </p>
         </div>
         <Button onClick={startNew} className="min-h-11">
