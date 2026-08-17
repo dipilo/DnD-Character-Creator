@@ -9,14 +9,21 @@ import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, FileDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { getCharacter } from '@/lib/api';
-import type { CharacterRecord } from '@/lib/api';
+import type { CharacterRecord, StoredCharacterDocument } from '@/lib/api';
 import { CharacterSheetView } from '@/components/character/CharacterSheetView';
+import { KobSheetView } from '@/components/kob/KobSheetView';
+import { DEFAULT_GAME_SYSTEM_ID, getGameSystem } from '@/data/gameSystems';
+import type { KobCharacter } from '@/types/kob';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { exportCharacterToFillablePdf } from '@/lib/characterPdf';
 import { useAuthStore } from '@/store/authStore';
 import { useCampaignId } from '@/pages/campaign/useCampaignData';
+
+/** A document with no `systemId` predates the second system, so it is a D&D one. */
+const isKobDocument = (document: StoredCharacterDocument): document is KobCharacter =>
+  (document as KobCharacter).systemId === 'kids-on-bikes';
 
 interface FetchResult {
   key: string;
@@ -80,6 +87,26 @@ export function CampaignCharacterPage() {
 
   const character = fresh.record.data;
   const isOwn = fresh.record.user_id === userId;
+  const note = isOwn
+    ? null
+    : <Badge variant="outline" className="mt-2">Read-only — this sheet belongs to another player</Badge>;
+
+  // Which system's sheet to render is the document's own answer, not the campaign's: the campaign's
+  // system is a default and a label, never a filter, so a row could legitimately be either.
+  if (isKobDocument(character)) {
+    return (
+      <KobSheetView
+        character={character}
+        leading={backToParty}
+        note={note}
+        actions={isOwn ? (
+          <Button asChild variant="outline">
+            <Link to={getGameSystem('kids-on-bikes').sheetPath(character.id)}>Open in my characters</Link>
+          </Button>
+        ) : null}
+      />
+    );
+  }
 
   const handleExportPDF = async () => {
     try {
@@ -95,12 +122,12 @@ export function CampaignCharacterPage() {
     <CharacterSheetView
       character={character}
       leading={backToParty}
-      note={isOwn ? null : <Badge variant="outline" className="mt-2">Read-only — this sheet belongs to another player</Badge>}
+      note={note}
       actions={(
         <>
           {isOwn ? (
             <Button asChild variant="outline">
-              <Link to={`/character/${character.id}`}>Open in my characters</Link>
+              <Link to={getGameSystem(DEFAULT_GAME_SYSTEM_ID).sheetPath(character.id)}>Open in my characters</Link>
             </Button>
           ) : null}
           <Button variant="outline" onClick={handleExportPDF}>

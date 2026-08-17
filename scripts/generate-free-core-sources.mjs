@@ -260,6 +260,21 @@ const getToolCategory = (entry) => {
     .find((name) => name && toolCategoryNames.has(name));
 };
 
+// Spellcasting foci are named by family in a class kit ("an arcane focus"), so the family has to
+// travel with the item or the builder has nothing to offer. 2014 states it as `gear_category`,
+// 2024 lists it among `equipment_categories` — the same shape change that hit tools and weapons.
+const gearCategoryNames = new Set(['Arcane Foci', 'Druidic Foci', 'Holy Symbols']);
+
+const getGearCategory = (entry) => {
+  if (gearCategoryNames.has(entry.gear_category?.name)) {
+    return entry.gear_category.name;
+  }
+
+  return (entry.equipment_categories ?? [])
+    .map((category) => category?.name)
+    .find((name) => name && gearCategoryNames.has(name));
+};
+
 // The same shape change hit weapons: 2014 states `weapon_category` ("Martial") and `weapon_range`
 // ("Melee") outright, 2024 states neither and lists "Martial Melee Weapons" among its
 // `equipment_categories`. Without these two the 2024 printings carried no category at all, so a
@@ -826,6 +841,9 @@ export const createPack = async ({ edition, sourceId, label, category, includeCo
         // "Artisan's Tools" / "Gaming Sets" / "Musical Instruments" — what a proficiency phrased
         // as "one type of gaming set" is actually choosing between.
         toolCategory: getToolCategory(entry),
+        // "Arcane Foci" / "Druidic Foci" / "Holy Symbols" — what a starting-equipment line phrased
+        // as "an arcane focus" is actually choosing between.
+        gearCategory: getGearCategory(entry),
         damage: entry.damage?.damage_dice,
         damageType: entry.damage?.damage_type?.name,
         // Versatile's larger die. The property name alone says a weapon *has* a two-handed line

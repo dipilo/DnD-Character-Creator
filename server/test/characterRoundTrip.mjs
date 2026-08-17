@@ -44,7 +44,15 @@ const character = {
   spells: [{ spellId: 'hex', prepared: true, alwaysPrepared: false }],
   feats: ['alert'],
   features: [{ featureId: 'pact-boon', optionId: 'pact-of-the-tome' }],
-  hp: { current: 33, maximum: 38, temporary: 0 },
+  hp: { current: 33, maximum: 38, temporary: 5 },
+  // Play state, written by the sheet rather than the builder. It is part of the same document, so
+  // it has to survive the trip and has to survive being rebuilt by the Review step.
+  deathSaves: { successes: 1, failures: 2 },
+  inspiration: true,
+  exhaustion: 2,
+  conditions: ['Frightened', 'Prone'],
+  spellSlotsUsed: [1, 0, 2],
+  pactSlotsUsed: [0, 1],
   personality: { traits: 'Quiet', ideals: 'Knowledge', bonds: 'My tome', flaws: 'Curiosity', appearance: 'Tall', backstory: 'Long' },
   appearance: { age: '124', height: "5'9\"", weight: '130 lb', eyes: 'grey', skin: 'pale', hair: 'black' },
   faction: { name: 'The Whispered', symbolImageDataUrl: 'data:image/png;base64,iVBORw0KGgo=' },
@@ -57,6 +65,42 @@ const character = {
   updatedAt: '2026-08-13T10:00:00.000Z',
 };
 
+/**
+ * A Kids on Bikes character. `/api/characters` is one collection per account rather than one per
+ * game, so a second system's document has to survive the same trip byte for byte — that is the
+ * whole reason a KoB character can hold a campaign seat. The server interprets neither shape.
+ */
+const kobCharacter = {
+  id: '6c2a1f77-11d4-4a8b-9f30-2b7c5e8a41d9',
+  systemId: 'kids-on-bikes',
+  schemaVersion: 1,
+  firstName: 'Marla',
+  lastName: 'Okonkwo',
+  pronouns: 'they/them',
+  description: 'Always carrying a tape recorder.',
+  tropeId: 'nosy-neighbor',
+  age: 'Teen',
+  fromScratch: false,
+  statDice: { brains: 'd10', brawn: 'd4', fight: 'd6', flight: 'd8', charm: 'd12', grit: 'd6' },
+  strengthIds: ['fast-talker', 'skilled-at'],
+  skilledAt: 'picking locks',
+  flawId: null,
+  customFlaw: 'Cannot leave a question unanswered.',
+  motivation: 'Prove the sightings were real.',
+  fear: 'Being disbelieved.',
+  obligations: 'Paper route every morning.',
+  knacks: ['Knows every shortcut in town'],
+  backpack: 'Tape recorder, spare batteries, a map with pins.',
+  tropeAnswers: ['The Hendersons.', 'Because nobody else was looking.'],
+  bike: { colorId: 'red', upgradeId: 'basket', name: 'Scoop', origin: 'Handed down.', favoriteMemory: 'The storm drain.' },
+  relationships: [{ id: 'r1', who: 'Danny', connection: 'Neighbour', kind: 'positive', question: 'What do you owe them?', answer: 'A tape.' }],
+  bondedActions: [{ actionId: 'cover-me', customName: '', withCharacter: 'Danny', backstory: 'Three summers.' }],
+  adversityTokens: 5,
+  notes: 'Session 2: the lights again.',
+  createdAt: '2026-08-02T09:00:00.000Z',
+  updatedAt: '2026-08-14T09:00:00.000Z',
+};
+
 /** The fields loadCharacterIntoBuilder needs; named so a failure says which one was dropped. */
 const builderChoiceFields = [
   'abilityScoreChoiceModes',
@@ -67,6 +111,12 @@ const builderChoiceFields = [
   'abilityScoreMethod',
   'rolledScores',
   'rolledScoreAssignments',
+  'deathSaves',
+  'inspiration',
+  'exhaustion',
+  'conditions',
+  'spellSlotsUsed',
+  'pactSlotsUsed',
 ];
 
 // One cookie jar per simulated device: the same account signed in twice, which is what "open it on
@@ -129,6 +179,25 @@ async function scenario() {
 
   const missing = builderChoiceFields.filter((field) => JSON.stringify(roundTripped?.[field]) !== JSON.stringify(character[field]));
   check('every builder choice field survived', missing.length === 0, missing.join(', '));
+
+  // A second system's document in the same collection. Both come back from one list, which is why
+  // the sync layer routes each record to its own cache by the document's `systemId`.
+  const kobCreated = await call('a', 'POST', '/api/characters', {
+    id: kobCharacter.id,
+    name: 'Marla Okonkwo',
+    summary: 'Teen Nosy Neighbor',
+    data: kobCharacter,
+  });
+  check('a Kids on Bikes document is accepted', kobCreated.status === 201, kobCreated.status);
+
+  const bothListed = await call('b', 'GET', '/api/characters');
+  check('both systems list from one collection', bothListed.json.characters?.length === 2, bothListed.json.characters?.length);
+
+  const kobFetched = await call('b', 'GET', `/api/characters/${kobCharacter.id}`);
+  const kobRoundTripped = kobFetched.json.character?.data;
+  const kobIdentical = JSON.stringify(kobRoundTripped) === JSON.stringify(kobCharacter);
+  check('the Kids on Bikes document is byte-identical', kobIdentical, kobIdentical ? '' : JSON.stringify(kobRoundTripped).slice(0, 300));
+  check('its systemId survives the trip', kobRoundTripped?.systemId === 'kids-on-bikes', kobRoundTripped?.systemId);
 
   // Device B edits it; device A still believes in version 1.
   const edited = { ...character, name: 'Ysolde Vane the Unseen', updatedAt: '2026-08-13T12:00:00.000Z' };

@@ -1,4 +1,13 @@
 import type { Character } from '@/types/dnd';
+import type { KobCharacter } from '@/types/kob';
+
+/**
+ * What `/api/characters` can be asked to hold. The server treats `data` as opaque JSON, so a row is
+ * whichever system's document was written into it — discriminated by `systemId`, which is why
+ * `KobCharacter` carries one. `Character` has none: a document without the field is a D&D one,
+ * written before there was a second system.
+ */
+export type StoredCharacterDocument = Character | KobCharacter;
 
 /** The public profile the server returns. There is no token here and no id the client echoes back. */
 export interface AuthUser {
@@ -35,7 +44,7 @@ export interface CharacterRecordSummary {
  * a stored document failed to parse.
  */
 export interface CharacterRecord extends CharacterRecordSummary {
-  data: Character | null;
+  data: StoredCharacterDocument | null;
 }
 
 export interface CharacterWritePayload {
@@ -46,7 +55,15 @@ export interface CharacterWritePayload {
   campaign_id?: number | null;
   player_id?: number | null;
   schema_version?: number;
-  data: Character;
+  data: StoredCharacterDocument;
+}
+
+/** One row of the sign-in upload offer, named and summarised by the cache that holds it. */
+export interface CharacterImportEntry {
+  id: string;
+  name: string;
+  summary: string;
+  data: StoredCharacterDocument;
 }
 
 export interface CharacterImportResult {

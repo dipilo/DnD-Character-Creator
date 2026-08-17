@@ -20,11 +20,15 @@ import { Search, Sword } from 'lucide-react';
 import { toast } from 'sonner';
 import { canEquipSelection, getRulesEdition, resolveCharacterEquipment } from '@/lib/builderRules';
 import { dedupeByNamePreferringEdition } from '@/lib/contentSelection';
+import {
+  getEquipmentChoiceCount,
+  getEquipmentChoiceFamily,
+  getStartingWeaponRule,
+  type WeaponCategory,
+  type WeaponType
+} from '@/lib/startingEquipment';
 
 type EquipmentSortMode = 'name' | 'type' | 'cost-asc' | 'weight-asc' | 'source';
-type WeaponCategory = 'simple' | 'martial';
-type WeaponType = 'melee' | 'ranged';
-type StartingWeaponRule = { category: WeaponCategory; type?: WeaponType };
 type EquipmentEntry = NonNullable<ReturnType<typeof useContentLibrary>['equipment']>[number];
 type ClassEntry = NonNullable<ReturnType<typeof useContentLibrary>['classes']>[number];
 type EquipmentSelectionRecord = { equipmentId: string; quantity: number; equipped: boolean };
@@ -77,21 +81,6 @@ function getEquipmentSelectionQuantity(option: EquipmentOption) {
   return implicitQuantityWords[wordMatch[1].toLowerCase()] ?? 1;
 }
 
-const weaponRuleByOptionName: Record<string, StartingWeaponRule> = {
-  'a simple weapon': { category: 'simple' },
-  'any simple weapon': { category: 'simple' },
-  'a simple melee weapon': { category: 'simple', type: 'melee' },
-  'any simple melee weapon': { category: 'simple', type: 'melee' },
-  'a simple ranged weapon': { category: 'simple', type: 'ranged' },
-  'any simple ranged weapon': { category: 'simple', type: 'ranged' },
-  'a martial weapon': { category: 'martial' },
-  'any martial weapon': { category: 'martial' },
-  'a martial melee weapon': { category: 'martial', type: 'melee' },
-  'any martial melee weapon': { category: 'martial', type: 'melee' },
-  'a martial ranged weapon': { category: 'martial', type: 'ranged' },
-  'any martial ranged weapon': { category: 'martial', type: 'ranged' }
-};
-
 const weaponClassificationByName: Record<string, { category: WeaponCategory; type: WeaponType }> = {
   club: { category: 'simple', type: 'melee' },
   dagger: { category: 'simple', type: 'melee' },
@@ -135,12 +124,23 @@ const weaponClassificationByName: Record<string, { category: WeaponCategory; typ
 };
 
 const getEquipmentSearchText = (entry: EquipmentEntry) => `${entry.name} ${entry.description ?? ''}`.toLowerCase();
-const isMusicalInstrument = (entry: EquipmentEntry) => entry.type === 'tool' && /musical instrument/i.test(getEquipmentSearchText(entry));
-const isGamingSet = (entry: EquipmentEntry) => entry.type === 'tool' && (/gaming set/i.test(getEquipmentSearchText(entry)) || /dice set|playing card set/i.test(entry.name));
-const isArtisanTool = (entry: EquipmentEntry) => entry.type === 'tool' && /(tools|supplies|utensils)/i.test(entry.name);
-const isHolySymbol = (entry: EquipmentEntry) => /holy symbol/i.test(getEquipmentSearchText(entry));
-const isArcaneFocus = (entry: EquipmentEntry) => /arcane focus/i.test(getEquipmentSearchText(entry));
-const isDruidicFocus = (entry: EquipmentEntry) => /druidic focus/i.test(getEquipmentSearchText(entry));
+// The family a source states outright always wins. The text tests behind it are the fallback for
+// packs parsed out of HTML, which carry no category field — the 2024 SRD's Lute and Crystal have
+// empty descriptions, so a description-only read tagged neither.
+const hasCategory = (entry: EquipmentEntry, pattern: RegExp) =>
+  pattern.test(entry.toolCategory ?? '') || pattern.test(entry.gearCategory ?? '');
+const isMusicalInstrument = (entry: EquipmentEntry) =>
+  hasCategory(entry, /musical instrument/i) || (entry.type === 'tool' && /musical instrument/i.test(getEquipmentSearchText(entry)));
+const isGamingSet = (entry: EquipmentEntry) =>
+  hasCategory(entry, /gaming set/i) || (entry.type === 'tool' && (/gaming set/i.test(getEquipmentSearchText(entry)) || /dice set|playing card set/i.test(entry.name)));
+const isArtisanTool = (entry: EquipmentEntry) =>
+  hasCategory(entry, /artisan/i) || (entry.type === 'tool' && !entry.toolCategory && /(tools|supplies|utensils)/i.test(entry.name));
+const isHolySymbol = (entry: EquipmentEntry) =>
+  hasCategory(entry, /holy symbol/i) || /holy symbol/i.test(getEquipmentSearchText(entry));
+const isArcaneFocus = (entry: EquipmentEntry) =>
+  hasCategory(entry, /arcane foc/i) || /arcane focus/i.test(getEquipmentSearchText(entry));
+const isDruidicFocus = (entry: EquipmentEntry) =>
+  hasCategory(entry, /druidic foc/i) || /druidic focus/i.test(getEquipmentSearchText(entry));
 
 function getEquipmentSemanticTags(entry: EquipmentEntry) {
   const tags = new Set<string>();
@@ -196,10 +196,6 @@ function getEquipmentSemanticTags(entry: EquipmentEntry) {
   return Array.from(tags);
 }
 
-function getStartingWeaponRule(option: EquipmentOption) {
-  return weaponRuleByOptionName[normalizeName(option.name)] ?? null;
-}
-
 function classifyWeapon(entry: EquipmentEntry) {
   if (entry.weaponCategory && entry.weaponType) {
     return { category: entry.weaponCategory, type: entry.weaponType };
@@ -247,70 +243,43 @@ function dedupeEquipmentByName(
   return Array.from(preferredEntries.values());
 }
 
-function getMatchingWeapons(
-  option: EquipmentOption,
-  availableEquipment: NonNullable<ReturnType<typeof useContentLibrary>['equipment']>,
+/**
+ * Everything the catalogue offers for one unresolved starting-equipment line — a weapon named by
+ * category, or an item named by family. One function for both, because the class kit and the
+ * background package print the same kinds of phrase and should offer the same lists.
+ */
+function getChoiceCandidates(
+  optionName: string,
+  availableEquipment: EquipmentEntry[],
   preferredEdition: ReturnType<typeof getRulesEdition>
-) {
-  const rule = getStartingWeaponRule(option);
-  if (!rule) {
+): EquipmentEntry[] {
+  const weaponRule = getStartingWeaponRule(optionName);
+  const family = getEquipmentChoiceFamily(optionName);
+
+  let matches: (entry: EquipmentEntry) => boolean;
+  if (weaponRule) {
+    matches = (entry) => {
+      const classification = classifyWeapon(entry);
+      return classification?.category === weaponRule.category
+        && (!weaponRule.type || classification.type === weaponRule.type);
+    };
+  } else if (family) {
+    matches = (entry) => getEquipmentSemanticTags(entry).includes(family.tag);
+  } else {
     return [];
   }
 
   return dedupeEquipmentByName(availableEquipment, preferredEdition)
-    .filter((entry) => {
-      const classification = classifyWeapon(entry);
-      return classification?.category === rule.category
-        && (!rule.type || classification.type === rule.type);
-    })
+    .filter((entry) => matches(entry))
     .sort((left, right) => left.name.localeCompare(right.name));
 }
 
 function getChoiceEquipmentCandidates(
   option: EquipmentOption,
-  availableEquipment: NonNullable<ReturnType<typeof useContentLibrary>['equipment']>,
+  availableEquipment: EquipmentEntry[],
   preferredEdition: ReturnType<typeof getRulesEdition>
 ) {
-  const normalizedOptionName = normalizeName(option.name);
-  const dedupedEquipment = dedupeEquipmentByName(availableEquipment, preferredEdition);
-
-  if (normalizedOptionName.includes('musical instrument')) {
-    return dedupedEquipment
-      .filter(isMusicalInstrument)
-      .sort((left, right) => left.name.localeCompare(right.name));
-  }
-
-  if (normalizedOptionName.includes('gaming set')) {
-    return dedupedEquipment
-      .filter(isGamingSet)
-      .sort((left, right) => left.name.localeCompare(right.name));
-  }
-
-  if (normalizedOptionName.includes('artisan') && normalizedOptionName.includes('tool')) {
-    return dedupedEquipment
-      .filter(isArtisanTool)
-      .sort((left, right) => left.name.localeCompare(right.name));
-  }
-
-  if (normalizedOptionName.includes('holy symbol')) {
-    return dedupedEquipment
-      .filter(isHolySymbol)
-      .sort((left, right) => left.name.localeCompare(right.name));
-  }
-
-  if (normalizedOptionName.includes('arcane focus')) {
-    return dedupedEquipment
-      .filter(isArcaneFocus)
-      .sort((left, right) => left.name.localeCompare(right.name));
-  }
-
-  if (normalizedOptionName.includes('druidic focus')) {
-    return dedupedEquipment
-      .filter(isDruidicFocus)
-      .sort((left, right) => left.name.localeCompare(right.name));
-  }
-
-  return [];
+  return getChoiceCandidates(option.name, availableEquipment, preferredEdition);
 }
 
 function getEmbeddedChoiceEquipmentOption(option: EquipmentOption) {
@@ -333,6 +302,125 @@ function getEmbeddedChoiceEquipmentOption(option: EquipmentOption) {
   return null;
 }
 
+/**
+ * One line inside a starting-equipment option, and what it still leaves open.
+ *
+ * A 2014 line like "Leather armor, any simple weapon, and two daggers" now arrives as an option
+ * with three `contents`; a 2024 kit always did. Either way each part becomes a slot, and a slot
+ * whose text names a category or a family ("any simple weapon", "an arcane focus") carries the
+ * candidates for it. `picks` is how many separate items the slot grants — "Two martial weapons" is
+ * two choices, not one item twice.
+ */
+interface StartingEquipmentSlot {
+  /** Stable within the option, so a stored selection survives a reordering of the group. */
+  key: string;
+  label: string;
+  quantity: number;
+  /**
+   * The count to print in front of the label, which is only the one the source stated as a
+   * separate field. "Two daggers" already says two; prefixing the derived quantity as well
+   * rendered it as "2 Two daggers".
+   */
+  displayCount?: number;
+  picks: number;
+  candidates: EquipmentEntry[];
+}
+
+// `--` cannot occur inside a slug (slugify collapses runs of punctuation), so it safely separates
+// a slot's key from the index of the pick when a slot grants more than one item.
+const PICK_SEPARATOR = '--';
+
+function buildStartingEquipmentSlots(
+  option: EquipmentOption,
+  availableEquipment: EquipmentEntry[],
+  preferredEdition: ReturnType<typeof getRulesEdition>
+): StartingEquipmentSlot[] {
+  const parts = option.contents?.length ? option.contents : [option];
+
+  return parts.map((part) => {
+    const candidates = getChoiceCandidates(part.name, availableEquipment, preferredEdition);
+    const picks = candidates.length > 0 ? getEquipmentChoiceCount(part.name) : 1;
+    return {
+      key: option.contents?.length ? slugify(part.name) : slugify(option.name),
+      label: part.name,
+      // A slot that grants several picks grants one item each; the count was the pick count.
+      quantity: picks > 1 ? 1 : getEquipmentSelectionQuantity(part),
+      displayCount: part.count,
+      picks,
+      candidates
+    };
+  });
+}
+
+/** The key a single pick is stored under. Single-pick slots keep the bare key they always used. */
+function getPickKey(slot: StartingEquipmentSlot, pickIndex: number) {
+  return slot.picks > 1 ? `${slot.key}${PICK_SEPARATOR}${pickIndex + 1}` : slot.key;
+}
+
+function getSlotEquipmentId(
+  prefix: string,
+  option: EquipmentOption,
+  slot: StartingEquipmentSlot,
+  pickIndex: number,
+  resolvedEquipmentId?: string
+) {
+  const optionSlug = slugify(option.name);
+  const pickKey = getPickKey(slot, pickIndex);
+  // An option with no contents and a single pick keeps its original three-segment id, so a
+  // character saved before slots existed still resolves.
+  const base = option.contents?.length || slot.picks > 1
+    ? `${prefix}${optionSlug}::${pickKey}`
+    : `${prefix}${optionSlug}`;
+
+  return resolvedEquipmentId ? `${base}::${resolvedEquipmentId}` : base;
+}
+
+/** The chosen item for each pick, read back out of the ids already stored. */
+function readSlotResolutions(option: EquipmentOption, selectedEquipmentIds: string[]) {
+  const optionSlug = slugify(option.name);
+  const resolutions: Record<string, string> = {};
+
+  selectedEquipmentIds.forEach((equipmentId) => {
+    const parts = equipmentId.split('::');
+    if (parts[2] !== optionSlug) {
+      return;
+    }
+
+    if (parts.length >= 5) {
+      resolutions[parts[3]] = parts[4];
+      return;
+    }
+
+    // Four segments mean either a bundled part with nothing chosen yet, or the legacy shape where
+    // the fourth segment is the chosen item for an option that has no contents.
+    if (parts.length === 4 && !option.contents?.length) {
+      resolutions[optionSlug] = parts[3];
+    }
+  });
+
+  return resolutions;
+}
+
+function buildOptionSelections(
+  prefix: string,
+  option: EquipmentOption,
+  slots: StartingEquipmentSlot[],
+  resolutions: Record<string, string>
+): EquipmentSelectionRecord[] {
+  return slots.flatMap((slot) =>
+    Array.from({ length: slot.picks }, (_, pickIndex) => ({
+      equipmentId: getSlotEquipmentId(prefix, option, slot, pickIndex, resolutions[getPickKey(slot, pickIndex)]),
+      quantity: slot.quantity,
+      equipped: false
+    }))
+  );
+}
+
+/**
+ * A group with a single option is a grant, not a choice, so it is written onto the character as
+ * soon as the step opens. Any pick inside it stays unresolved until the player makes it — a
+ * pending choice is still a grant.
+ */
 function getAutomaticStartingEquipmentSelections(
   selectedClasses: ClassEntry[],
   currentEquipment: EquipmentSelectionRecord[],
@@ -348,34 +436,18 @@ function getAutomaticStartingEquipmentSelections(
         return;
       }
 
-      const option = group[0];
-      if (getMatchingWeapons(option, availableEquipment, classEdition).length > 0) {
-        return;
-      }
-
       const prefix = `${cls.id}::${groupIndex}::`;
       if (currentEquipment.some((entry) => entry.equipmentId.startsWith(prefix))) {
         return;
       }
 
-      const bundledOptions = option.contents ?? [option];
-      bundledOptions.forEach((bundledOption) => {
-        selections.push({
-          equipmentId: option.contents?.length
-            ? `${prefix}${slugify(option.name)}::${slugify(bundledOption.name)}`
-            : `${prefix}${slugify(option.name)}`,
-          quantity: getEquipmentSelectionQuantity(bundledOption),
-          equipped: false
-        });
-      });
+      const option = group[0];
+      const slots = buildStartingEquipmentSlots(option, availableEquipment, classEdition);
+      selections.push(...buildOptionSelections(prefix, option, slots, {}));
     });
   });
 
   return selections;
-}
-
-function getResolvedEquipmentId(equipmentId?: string) {
-  return equipmentId?.split('::')[3];
 }
 
 function getSelectedBackgroundEquipmentId(equipmentId?: string) {
@@ -388,14 +460,85 @@ function getSelectedBackgroundResolvedEquipmentId(equipmentId?: string) {
   return parts[0] === 'background' ? parts[4] : undefined;
 }
 
+interface SlotChooserProps {
+  option: EquipmentOption;
+  slot: StartingEquipmentSlot;
+  pickIndex: number;
+  value?: string;
+  onChange: (pickKey: string, equipmentId: string) => void;
+}
+
+function SlotChooser({ option, slot, pickIndex, value, onChange }: Readonly<SlotChooserProps>) {
+  const pickKey = getPickKey(slot, pickIndex);
+  const label = slot.picks > 1 ? `${slot.label} (${pickIndex + 1} of ${slot.picks})` : slot.label;
+
+  return (
+    <div className="space-y-1.5">
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
+      <Select value={value ?? ''} onValueChange={(next) => onChange(pickKey, next)}>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Choose the item" />
+        </SelectTrigger>
+        <SelectContent>
+          {slot.candidates.map((entry) => (
+            <SelectItem key={`${slugify(option.name)}-${pickKey}-${entry.id}`} value={entry.id}>
+              {entry.name} ({entry.source})
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
+interface OptionSlotsProps {
+  option: EquipmentOption;
+  slots: StartingEquipmentSlot[];
+  resolutions: Record<string, string>;
+  onChange: (pickKey: string, equipmentId: string) => void;
+}
+
+/** The contents of one option: fixed parts as text, open parts as selectors. */
+function OptionSlots({ option, slots, resolutions, onChange }: Readonly<OptionSlotsProps>) {
+  const fixedSlots = slots.filter((slot) => slot.candidates.length === 0);
+  const openSlots = slots.filter((slot) => slot.candidates.length > 0);
+  const showFixedList = fixedSlots.length > 0 && Boolean(option.contents?.length);
+
+  return (
+    <>
+      {showFixedList ? (
+        <div className="rounded-lg border border-border/70 bg-muted/20 p-3 text-xs text-muted-foreground">
+          {fixedSlots.map((slot) => (
+            <div key={slot.key}>
+              {slot.displayCount ? `${slot.displayCount} ` : ''}{slot.label}
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {openSlots.map((slot) =>
+        Array.from({ length: slot.picks }, (_, pickIndex) => (
+          <SlotChooser
+            key={getPickKey(slot, pickIndex)}
+            option={option}
+            slot={slot}
+            pickIndex={pickIndex}
+            value={resolutions[getPickKey(slot, pickIndex)]}
+            onChange={onChange}
+          />
+        ))
+      )}
+    </>
+  );
+}
+
 interface StartingEquipmentGroupProps {
   classId: string;
   group: EquipmentOption[];
   groupIndex: number;
   selectedEquipmentIds: string[];
-  availableEquipment: NonNullable<ReturnType<typeof useContentLibrary>['equipment']>;
+  availableEquipment: EquipmentEntry[];
   preferredEdition: ReturnType<typeof getRulesEdition>;
-  onSelect: (classId: string, groupIndex: number, option: EquipmentOption, resolvedEquipmentId?: string) => void;
+  onSelect: (classId: string, groupIndex: number, option: EquipmentOption, resolutions: Record<string, string>) => void;
   onClear: (classId: string, groupIndex: number) => void;
 }
 
@@ -409,121 +552,64 @@ function StartingEquipmentGroup({
   onSelect,
   onClear
 }: Readonly<StartingEquipmentGroupProps>) {
-  const [expandedOptionId, setExpandedOptionId] = useState<string | null>(selectedEquipmentIds[0]?.split('::').slice(0, 3).join('::') ?? null);
-  const fixedOption = group.length === 1 ? group[0] : undefined;
-  const isFixedGroup = fixedOption
-    ? getMatchingWeapons(fixedOption, availableEquipment, preferredEdition).length === 0 && (fixedOption.contents?.length ?? 0) === 0
-    : false;
+  const [expandedOptionSlug, setExpandedOptionSlug] = useState<string | null>(selectedEquipmentIds[0]?.split('::')[2] ?? null);
+  const isGrant = group.length === 1;
 
-  if (fixedOption && isFixedGroup) {
-    return (
-      <div className="rounded-lg border p-3">
-        <p className="mb-2 text-sm font-medium">Included</p>
-        <div className="rounded-lg border border-border bg-muted/30 p-3">
-          <div className="font-medium">{fixedOption.count ? `${fixedOption.count} ` : ''}{fixedOption.name}</div>
-          <p className="mt-1 text-xs text-muted-foreground">Added automatically as part of this class kit.</p>
-        </div>
-      </div>
-    );
-  }
-
-  const handleOptionToggle = (classId: string, groupIndex: number, option: EquipmentOption, optionId: string, active: boolean, hasChooser: boolean) => {
+  const handleToggle = (option: EquipmentOption, optionSlug: string, active: boolean) => {
     if (active) {
       onClear(classId, groupIndex);
-      setExpandedOptionId((current) => (current === optionId ? null : current));
+      setExpandedOptionSlug((current) => (current === optionSlug ? null : current));
       return;
     }
 
-    if (hasChooser) {
-      setExpandedOptionId((current) => (current === optionId ? null : optionId));
-      return;
-    }
-
-    onSelect(classId, groupIndex, option);
+    // Take the option now and leave its picks pending: the items around the choice are granted
+    // either way, and nothing else records that this branch of the group was the one taken.
+    setExpandedOptionSlug(optionSlug);
+    onSelect(classId, groupIndex, option, {});
   };
 
   return (
     <div className="rounded-lg border p-3">
-      <p className="mb-2 text-sm font-medium">Choose one</p>
+      <p className="mb-2 text-sm font-medium">{isGrant ? 'Included' : 'Choose one'}</p>
       <div className="flex flex-wrap gap-2">
         {group.map((option) => {
-          const optionId = `${classId}::${groupIndex}::${slugify(option.name)}`;
-          const active = selectedEquipmentIds.some((entry) => entry.startsWith(optionId));
-          const matchingWeapons = getMatchingWeapons(option, availableEquipment, preferredEdition);
-          const selectedEquipmentId = selectedEquipmentIds.find((entry) => entry.startsWith(optionId));
-          const resolvedEquipmentId = getResolvedEquipmentId(selectedEquipmentId);
-          const showWeaponChooser = matchingWeapons.length > 0 && (active || expandedOptionId === optionId);
-          const bundledOptions = option.contents ?? [];
-          let optionContent;
-
-          if (matchingWeapons.length > 0) {
-            optionContent = (
-              <div className="space-y-3">
-                <Button
-                  variant={active || showWeaponChooser ? 'default' : 'outline'}
-                  size="sm"
-                  className="w-full justify-start text-left"
-                  onClick={() => handleOptionToggle(classId, groupIndex, option, optionId, active, true)}
-                >
-                  {option.name}
-                </Button>
-                {active && <Badge variant="default">Selected</Badge>}
-                {showWeaponChooser && (
-                  <Select
-                    value={active ? resolvedEquipmentId : ''}
-                    onValueChange={(value) => onSelect(classId, groupIndex, option, value)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Choose the weapon" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {matchingWeapons.map((entry) => (
-                        <SelectItem key={`${optionId}-${entry.id}`} value={entry.id}>
-                          {entry.name} ({entry.source})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              </div>
-            );
-          } else if (bundledOptions.length > 0) {
-            optionContent = (
-              <div className="space-y-3">
-                <Button
-                  variant={active ? 'default' : 'outline'}
-                  size="sm"
-                  className="w-full justify-start text-left"
-                  onClick={() => handleOptionToggle(classId, groupIndex, option, optionId, active, false)}
-                >
-                  {option.name}
-                </Button>
-                {active ? <Badge variant="default">Selected</Badge> : null}
-                <div className="rounded-lg border border-border/70 bg-muted/20 p-3 text-xs text-muted-foreground">
-                  {bundledOptions.map((entry) => (
-                    <div key={`${optionId}-${entry.name}`}>
-                      {entry.count ? `${entry.count} ` : ''}{entry.name}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          } else {
-            optionContent = (
-              <Button
-                variant={active ? 'default' : 'outline'}
-                size="sm"
-                className="w-full justify-start text-left"
-                onClick={() => handleOptionToggle(classId, groupIndex, option, optionId, active, false)}
-              >
-                {option.name}
-              </Button>
-            );
-          }
+          const optionSlug = slugify(option.name);
+          const optionPrefix = `${classId}::${groupIndex}::${optionSlug}`;
+          const active = selectedEquipmentIds.some((entry) => entry === optionPrefix || entry.startsWith(`${optionPrefix}::`));
+          const slots = buildStartingEquipmentSlots(option, availableEquipment, preferredEdition);
+          const resolutions = readSlotResolutions(option, selectedEquipmentIds);
+          const hasChooser = slots.some((slot) => slot.candidates.length > 0);
+          const showSlots = active || expandedOptionSlug === optionSlug;
+          const handleResolutionChange = (pickKey: string, equipmentId: string) => {
+            onSelect(classId, groupIndex, option, { ...resolutions, [pickKey]: equipmentId });
+          };
 
           return (
-            <div key={optionId} className={`w-full rounded-lg border p-3 sm:w-auto sm:min-w-[16rem] ${active ? 'border-primary bg-primary/5' : 'border-border'}`}>
-              {optionContent}
+            <div
+              key={optionSlug}
+              className={`w-full rounded-lg border p-3 sm:w-auto sm:min-w-[16rem] ${active ? 'border-primary bg-primary/5' : 'border-border'}`}
+            >
+              <div className="space-y-3">
+                {isGrant ? (
+                  <div className="font-medium">{option.count ? `${option.count} ` : ''}{option.name}</div>
+                ) : (
+                  <Button
+                    variant={active ? 'default' : 'outline'}
+                    size="sm"
+                    className="w-full justify-start text-left"
+                    onClick={() => handleToggle(option, optionSlug, active)}
+                  >
+                    {option.name}
+                  </Button>
+                )}
+                {active && !isGrant ? <Badge variant="default">Selected</Badge> : null}
+                {showSlots ? (
+                  <OptionSlots option={option} slots={slots} resolutions={resolutions} onChange={handleResolutionChange} />
+                ) : null}
+                {isGrant && !hasChooser ? (
+                  <p className="text-xs text-muted-foreground">Added automatically as part of this class kit.</p>
+                ) : null}
+              </div>
             </div>
           );
         })}
@@ -648,34 +734,20 @@ export function EquipmentSelectionPage() {
     toast.success('Equipment state updated');
   };
 
-  const selectStartingEquipment = (classId: string, groupIndex: number, option: EquipmentOption, resolvedEquipmentId?: string) => {
-    if (getStartingWeaponRule(option) && !resolvedEquipmentId) {
-      toast.error('Choose the specific weapon for that starting equipment option.');
-      return;
-    }
+  const selectStartingEquipment = (
+    classId: string,
+    groupIndex: number,
+    option: EquipmentOption,
+    resolutions: Record<string, string>
+  ) => {
+    const cls = selectedClasses.find((entry) => entry.id === classId);
+    const availableEquipment = equipment.filter((entry) => sourceMatchesSelection(entry.source, entry.sourceId, selectedSourceIds));
+    const slots = buildStartingEquipmentSlots(option, availableEquipment, getRulesEdition(cls?.sourceId, cls?.source));
 
     const prefix = `${classId}::${groupIndex}::`;
-    const nextEquipment = (builderState.character?.equipment || []).filter((entry) => !entry.equipmentId.startsWith(prefix));
-
-    if (option.contents?.length) {
-      option.contents.forEach((entry) => {
-        nextEquipment.push({
-          equipmentId: `${prefix}${slugify(option.name)}::${slugify(entry.name)}`,
-          quantity: getEquipmentSelectionQuantity(entry),
-          equipped: false
-        });
-      });
-    } else {
-      const equipmentId = resolvedEquipmentId
-        ? `${prefix}${slugify(option.name)}::${resolvedEquipmentId}`
-        : `${prefix}${slugify(option.name)}`;
-
-      nextEquipment.push({
-        equipmentId,
-        quantity: getEquipmentSelectionQuantity(option),
-        equipped: false
-      });
-    }
+    const nextEquipment = (builderState.character?.equipment || [])
+      .filter((entry) => !entry.equipmentId.startsWith(prefix))
+      .concat(buildOptionSelections(prefix, option, slots, resolutions));
 
     updateBuilderCharacter({ equipment: nextEquipment });
     toast.success('Starting equipment updated');

@@ -8,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { DiceScene, type DiceSceneHandle, type DiceSceneResult } from '@/components/dice/DiceScene';
+import { useDicePreferencesStore } from '@/store/dicePreferencesStore';
 import { toast } from 'sonner';
 import type { AbilityScores, BuilderState } from '@/types/dnd';
 import {
@@ -96,6 +97,8 @@ export function AbilityScoresPage() {
   const [diceReady, setDiceReady] = useState(false);
   const [diceError, setDiceError] = useState<string | null>(null);
   const [diceSoundEnabled, setDiceSoundEnabled] = useState(true);
+  const show3dDice = useDicePreferencesStore((state) => state.show3dDice);
+  const setShow3dDice = useDicePreferencesStore((state) => state.setShow3dDice);
   const [rollingDice, setRollingDice] = useState(false);
   const diceSceneRef = useRef<DiceSceneHandle | null>(null);
   const diceClearTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -183,6 +186,10 @@ export function AbilityScoresPage() {
     [rolledAssignments, rolledValues.length]
   );
   const rolledAssignmentPending = rolledValues.length > 0 && !rolledComplete;
+  let diceStatusLabel = 'Instant rolls';
+  if (show3dDice) {
+    diceStatusLabel = diceReady ? 'Dice ready' : 'Initializing dice';
+  }
   let rollButtonLabel = 'Roll 4d6 (Drop Lowest)';
   if (rollingDice) {
     rollButtonLabel = 'Rolling 24d6...';
@@ -433,7 +440,7 @@ export function AbilityScoresPage() {
 
   return (
     <div className={isRolledMode ? 'space-y-6 pb-6' : 'space-y-6'}>
-      {isRolledMode && (
+      {isRolledMode && show3dDice && (
         <>
           <div
             aria-hidden
@@ -592,7 +599,7 @@ export function AbilityScoresPage() {
             <CardHeader className="space-y-4">
               <div className="flex flex-wrap gap-2">
                 <Badge variant="secondary">4d6 Drop Lowest</Badge>
-                <Badge variant="outline">{diceReady ? 'Dice ready' : 'Initializing dice'}</Badge>
+                <Badge variant="outline">{diceStatusLabel}</Badge>
                 <Badge variant="outline">{Object.keys(rolledAssignments).length}/6 assigned</Badge>
               </div>
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -606,8 +613,15 @@ export function AbilityScoresPage() {
                   <Button onClick={() => void handleRoll()} disabled={rollingDice}>
                     {rollButtonLabel}
                   </Button>
-                  <Button type="button" variant="outline" onClick={() => setDiceSoundEnabled((current) => !current)}>
-                    {diceSoundEnabled ? 'Sound On' : 'Sound Off'}
+                  {show3dDice ? (
+                    <Button type="button" variant="outline" onClick={() => setDiceSoundEnabled((current) => !current)}>
+                      {diceSoundEnabled ? 'Sound On' : 'Sound Off'}
+                    </Button>
+                  ) : null}
+                  {/* Re-rolling a spread is the thing this page is for, and each 3D throw costs a
+                      few seconds of physics. The preference is the roller's, so both agree. */}
+                  <Button type="button" variant="outline" onClick={() => setShow3dDice(!show3dDice)} aria-pressed={show3dDice}>
+                    {show3dDice ? '3D Dice: On' : '3D Dice: Off'}
                   </Button>
                 </div>
               </div>

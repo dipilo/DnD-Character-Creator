@@ -13,7 +13,8 @@ import { Plus, UserRoundPlus, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { listCharacters, parseAllowedSourceIds, setCharacterSeat } from '@/lib/api';
 import type { CampaignCharacterSummary, CharacterRecordSummary, Player } from '@/lib/api';
-import { DEFAULT_GAME_SYSTEM_ID, getGameSystem } from '@/data/gameSystems';
+import { DEFAULT_GAME_SYSTEM_ID, getGameSystem, type GameSystemId } from '@/data/gameSystems';
+import { getStoreHolding } from '@/store/documentStores';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,6 +32,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { useAuthStore } from '@/store/authStore';
 import { useCampaignStore } from '@/store/campaignStore';
 import { useCharacterStore } from '@/store/characterStore';
+import { useKobCharacterStore } from '@/store/kobCharacterStore';
 import { playerLabel, useCampaignCharacters, useCampaignId, useRoster } from '@/pages/campaign/useCampaignData';
 
 const UNSEATED = 'unseated';
@@ -44,26 +46,38 @@ export function PartyPage() {
   const { players } = useRoster(campaignId);
   const resetBuilder = useCharacterStore((state) => state.resetBuilder);
   const updateBuilderState = useCharacterStore((state) => state.updateBuilderState);
+  const createKobCharacter = useKobCharacterStore((state) => state.createCharacter);
+  const setKobPendingSeat = useKobCharacterStore((state) => state.setPendingSeat);
 
   const [attaching, setAttaching] = useState(false);
   const { characters, loading, error, reload } = useCampaignCharacters(campaignId);
 
   const campaign = useMemo(() => campaigns.find((c) => c.id === campaignId) ?? null, [campaigns, campaignId]);
   const allowedSourceIds = useMemo(() => parseAllowedSourceIds(campaign), [campaign]);
-  // A table plays one game, and only D&D 5e characters live on the server so far — the rest are
-  // still localStorage-only (NEXT_STEPS.md §4). Say which game this is rather than opening the
-  // wrong builder, and say what is missing rather than pretending the seat will work.
+  // A table plays one game. Every system's characters are stored server-side now — one collection,
+  // discriminated by the document's own `systemId` — so the only thing the system decides here is
+  // which builder "new character" opens.
   const system = getGameSystem(campaign?.system_id);
-  const systemHasServerCharacters = system.id === DEFAULT_GAME_SYSTEM_ID;
+  const usesBuilderState = system.id === DEFAULT_GAME_SYSTEM_ID;
 
   /**
    * Start a character already scoped to this table. Seeding the source filter is the whole point —
    * the campaign's own agreement about which books are in play becomes the builder's default rather
    * than something every player has to be told separately.
+   *
+   * Either way the seat is recorded as an *intent*: the character has only just been created
+   * locally and may not have synced, and the builder has to work signed out (Phase 5).
    */
   const handleNewCharacter = () => {
-    if (!systemHasServerCharacters) {
-      navigate(system.builderPath);
+    if (!usesBuilderState) {
+      const character = createKobCharacter();
+      setKobPendingSeat(character.id, { campaignId, playerId: membership?.player_id ?? null });
+      navigate(`${system.builderPath}/${character.id}`);
+      if (campaign?.name) {
+        toast.message(`New ${system.shortName} character for ${campaign.name}`, {
+          description: 'It appears in this party once it syncs.',
+        });
+      }
       return;
     }
 
@@ -99,27 +113,18 @@ export function PartyPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {systemHasServerCharacters ? (
-            <Button variant="outline" onClick={() => setAttaching(true)}>
-              <UserRoundPlus className="h-4 w-4" />
-              Attach a character
-            </Button>
-          ) : null}
+          <Button variant="outline" onClick={() => setAttaching(true)}>
+            <UserRoundPlus className="h-4 w-4" />
+            Attach a character
+          </Button>
           <Button onClick={handleNewCharacter}>
             <Plus className="h-4 w-4" />
-            {systemHasServerCharacters ? 'New character for this campaign' : `New ${system.shortName} character`}
+            New character for this campaign
           </Button>
         </div>
       </div>
 
-      {systemHasServerCharacters ? null : (
-        <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
-          {system.name} characters are stored in this browser only, so they cannot take a seat here
-          yet. The builder works — they just will not appear in this party until they sync.
-        </div>
-      )}
-
-      {allowedSourceIds.length > 0 ? (
+      {usesBuilderState && allowedSourceIds.length > 0 ? (
         <p className="text-xs text-muted-foreground">
           New characters start filtered to this campaign's {allowedSourceIds.length} allowed source
           {allowedSourceIds.length === 1 ? '' : 's'}.
@@ -186,6 +191,8 @@ export function PartyPage() {
         campaignId={campaignId}
         open={attaching}
         players={players}
+        systemId={system.id}
+        systemName={system.name}
         defaultPlayerId={membership?.player_id ?? null}
         alreadyAttached={characters.map((c) => c.id)}
         onOpenChange={setAttaching}
@@ -202,6 +209,9 @@ interface AttachCharacterDialogProps {
   campaignId: number;
   open: boolean;
   players: Player[];
+  /** The campaign's game. A table plays one, so only its characters are offered a seat. */
+  systemId: GameSystemId;
+  systemName: string;
   defaultPlayerId: number | null;
   alreadyAttached: string[];
   onOpenChange: (open: boolean) => void;
@@ -217,6 +227,8 @@ function AttachCharacterDialog({
   campaignId,
   open,
   players,
+  systemId,
+  systemName,
   defaultPlayerId,
   alreadyAttached,
   onOpenChange,
@@ -229,6 +241,8 @@ function AttachCharacterDialog({
     <AttachCharacterForm
       campaignId={campaignId}
       players={players}
+      systemId={systemId}
+      systemName={systemName}
       defaultPlayerId={defaultPlayerId}
       alreadyAttached={alreadyAttached}
       onOpenChange={onOpenChange}
@@ -240,6 +254,8 @@ function AttachCharacterDialog({
 function AttachCharacterForm({
   campaignId,
   players,
+  systemId,
+  systemName,
   defaultPlayerId,
   alreadyAttached,
   onOpenChange,
@@ -268,7 +284,14 @@ function AttachCharacterForm({
   }, []);
 
   const attached = new Set(alreadyAttached);
-  const available = (mine ?? []).filter((character) => !attached.has(character.id));
+  // A row's system is not on the summary, so it is read from whichever local cache holds the id.
+  // These are the signed-in account's own characters, so a synced one is always in one of them; an
+  // id neither holds has not been pulled yet and is offered rather than hidden.
+  const available = (mine ?? []).filter((character) => {
+    if (attached.has(character.id)) return false;
+    const holder = getStoreHolding(character.id);
+    return !holder || holder.systemId === systemId;
+  });
 
   const handleAttach = async () => {
     if (!characterId) return;
@@ -298,7 +321,7 @@ function AttachCharacterForm({
   } else if (available.length === 0) {
     body = (
       <p className="text-sm text-muted-foreground">
-        {error ?? 'Every character you have synced is already at this table. Characters have to sync before they can take a seat.'}
+        {error ?? `Every ${systemName} character you have synced is already at this table. Characters have to sync before they can take a seat.`}
       </p>
     );
   } else {

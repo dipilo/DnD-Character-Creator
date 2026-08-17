@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useId, useImperativeHandle, useRef, useState } from 'react';
 import DiceBox from '@3d-dice/dice-box';
 import { DiceAudioController } from '@/lib/diceAudio';
+import { expandDiceNotation as parseNotationDice, type DiceRollResult } from '@/lib/diceNotation';
 
 export const AVAILABLE_DICE_THEMES = ['default'] as const;
 
@@ -12,11 +13,7 @@ function getResolvedTheme(theme: string) {
   return AVAILABLE_DICE_THEMES.includes(theme as (typeof AVAILABLE_DICE_THEMES)[number]) ? theme : 'default';
 }
 
-export type DiceSceneResult = {
-  value?: number;
-  sides?: number;
-  modifier?: number;
-};
+export type DiceSceneResult = DiceRollResult;
 
 export interface DiceSceneHandle {
   clear: () => void;
@@ -49,24 +46,8 @@ const EXPANDABLE_SIDES = new Set([4, 6, 8, 10, 12, 20, 100]);
 // Expand "4d6" / "1d20+3" into a flat list of die sides. Returns null when the
 // notation can't be expanded confidently, so the caller keeps the plain roll.
 function expandDiceNotation(notation: string): number[] | null {
-  const matches = [...notation.matchAll(/(\d+)\s*[dD]\s*(\d+|%)/g)];
-  if (matches.length === 0) {
-    return null;
-  }
-
-  const dice: number[] = [];
-  for (const match of matches) {
-    const qty = Number.parseInt(match[1], 10);
-    const sides = match[2] === '%' ? 100 : Number.parseInt(match[2], 10);
-    if (!Number.isInteger(qty) || qty < 1 || !EXPANDABLE_SIDES.has(sides)) {
-      return null;
-    }
-    for (let index = 0; index < qty; index += 1) {
-      dice.push(sides);
-    }
-  }
-
-  return dice.length > 0 && dice.length <= 100 ? dice : null;
+  const dice = parseNotationDice(notation);
+  return dice?.every((sides) => EXPANDABLE_SIDES.has(sides)) ? dice : null;
 }
 
 // Fisher-Yates shuffle. A deterministic comparator keeps Sonar happy while still

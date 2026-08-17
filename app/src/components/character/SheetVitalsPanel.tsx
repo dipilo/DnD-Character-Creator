@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ABILITY_ABBREVIATIONS,
@@ -28,10 +27,11 @@ function Stat({ label, value, hint }: Readonly<{ label: string; value: string; h
 export function SheetVitalsPanel({ vitals }: Readonly<{ vitals: SheetVitals }>) {
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      {/* No proficiency bonus here: the headline card row above it already leads with one, and two
+          copies of the same number read as two different stats. */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <Stat label="Initiative" value={formatModifier(vitals.initiative)} />
         <Stat label="Speed" value={`${vitals.speed} ft`} />
-        <Stat label="Prof. Bonus" value={formatModifier(vitals.proficiencyBonus)} />
         <Stat label="Passive Perc." value={String(vitals.passivePerception)} />
         <Stat label="Passive Inv." value={String(vitals.passiveInvestigation)} />
         <Stat label="Passive Ins." value={String(vitals.passiveInsight)} />
@@ -106,48 +106,31 @@ export function SheetVitalsPanel({ vitals }: Readonly<{ vitals: SheetVitals }>) 
         </Card>
       </div>
 
-      {vitals.hitDice.length > 0 || vitals.spellcasting.length > 0 ? (
-        <div className="grid gap-4 lg:grid-cols-2">
-          {vitals.hitDice.length > 0 ? (
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Hit Dice</CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-wrap gap-2">
-                {vitals.hitDice.map((entry) => (
-                  <Badge key={entry.className} variant="secondary" className="text-sm">
-                    {entry.count}{entry.die} · {entry.className}
-                  </Badge>
-                ))}
-              </CardContent>
-            </Card>
-          ) : null}
-
-          {vitals.spellcasting.length > 0 ? (
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Spellcasting</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {vitals.spellcasting.map((entry) => (
-                  <div key={entry.className} className="flex flex-wrap items-center justify-between gap-2 text-sm">
-                    <span className="font-medium">
-                      {entry.className}
-                      <span className="ml-2 text-xs uppercase text-muted-foreground">
-                        {ABILITY_ABBREVIATIONS[entry.ability]}
-                      </span>
-                    </span>
-                    <span className="tabular-nums text-muted-foreground">
-                      Save DC <span className="font-semibold text-foreground">{entry.saveDc}</span>
-                      {' · '}
-                      Attack <span className="font-semibold text-foreground">{formatModifier(entry.attackBonus)}</span>
-                    </span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          ) : null}
-        </div>
+      {/* Hit dice are not here: they are spendable, so they live on the resources panel with the
+          spell slots rather than being printed twice, once as a number you cannot change. */}
+      {vitals.spellcasting.length > 0 ? (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Spellcasting</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {vitals.spellcasting.map((entry) => (
+              <div key={entry.className} className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                <span className="font-medium">
+                  {entry.className}
+                  <span className="ml-2 text-xs uppercase text-muted-foreground">
+                    {ABILITY_ABBREVIATIONS[entry.ability]}
+                  </span>
+                </span>
+                <span className="tabular-nums text-muted-foreground">
+                  Save DC <span className="font-semibold text-foreground">{entry.saveDc}</span>
+                  {' · '}
+                  Attack <span className="font-semibold text-foreground">{formatModifier(entry.attackBonus)}</span>
+                </span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
       ) : null}
     </div>
   );

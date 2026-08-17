@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2014 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-08-16T22:12:15.844Z",
+    "importedAt": "2026-08-17T03:00:06.833Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -849,7 +849,17 @@
           [
             {
               "name": "An explorer’s pack and four javelins",
-              "type": "pack"
+              "type": "pack",
+              "contents": [
+                {
+                  "name": "An explorer’s pack",
+                  "type": "pack"
+                },
+                {
+                  "name": "Four javelins",
+                  "type": "gear"
+                }
+              ]
             }
           ]
         ],
@@ -1034,8 +1044,8 @@
         "equipmentOptions": [
           [
             {
-              "name": "A rapier,",
-              "type": "gear"
+              "name": "A rapier",
+              "type": "weapon"
             },
             {
               "name": "A longsword",
@@ -1069,7 +1079,17 @@
           [
             {
               "name": "Leather armor and a dagger",
-              "type": "armor"
+              "type": "armor",
+              "contents": [
+                {
+                  "name": "Leather armor",
+                  "type": "armor"
+                },
+                {
+                  "name": "A dagger",
+                  "type": "weapon"
+                }
+              ]
             }
           ]
         ],
@@ -1189,7 +1209,7 @@
           ],
           [
             {
-              "name": "Scale mail,",
+              "name": "Scale mail",
               "type": "armor"
             },
             {
@@ -1204,7 +1224,18 @@
           [
             {
               "name": "A light crossbow and 20 bolts",
-              "type": "weapon"
+              "type": "weapon",
+              "contents": [
+                {
+                  "name": "A light crossbow",
+                  "type": "weapon"
+                },
+                {
+                  "name": "Bolts",
+                  "type": "gear",
+                  "count": 20
+                }
+              ]
             },
             {
               "name": "Any simple weapon",
@@ -1224,7 +1255,17 @@
           [
             {
               "name": "A shield and a holy symbol",
-              "type": "armor"
+              "type": "armor",
+              "contents": [
+                {
+                  "name": "A shield",
+                  "type": "armor"
+                },
+                {
+                  "name": "A holy symbol",
+                  "type": "gear"
+                }
+              ]
             }
           ]
         ],
@@ -1384,7 +1425,21 @@
           [
             {
               "name": "Leather armor, an explorer’s pack, and a druidic focus",
-              "type": "pack"
+              "type": "pack",
+              "contents": [
+                {
+                  "name": "Leather armor",
+                  "type": "armor"
+                },
+                {
+                  "name": "An explorer’s pack",
+                  "type": "pack"
+                },
+                {
+                  "name": "A druidic focus",
+                  "type": "gear"
+                }
+              ]
             }
           ]
         ],
@@ -1484,13 +1539,38 @@
             },
             {
               "name": "Leather armor, longbow, and 20 arrows",
-              "type": "armor"
+              "type": "armor",
+              "contents": [
+                {
+                  "name": "Leather armor",
+                  "type": "armor"
+                },
+                {
+                  "name": "Longbow",
+                  "type": "weapon"
+                },
+                {
+                  "name": "Arrows",
+                  "type": "gear",
+                  "count": 20
+                }
+              ]
             }
           ],
           [
             {
               "name": "A martial weapon and a shield",
-              "type": "armor"
+              "type": "armor",
+              "contents": [
+                {
+                  "name": "A martial weapon",
+                  "type": "weapon"
+                },
+                {
+                  "name": "A shield",
+                  "type": "armor"
+                }
+              ]
             },
             {
               "name": "Two martial weapons",
@@ -1500,7 +1580,18 @@
           [
             {
               "name": "A light crossbow and 20 bolts",
-              "type": "weapon"
+              "type": "weapon",
+              "contents": [
+                {
+                  "name": "A light crossbow",
+                  "type": "weapon"
+                },
+                {
+                  "name": "Bolts",
+                  "type": "gear",
+                  "count": 20
+                }
+              ]
             },
             {
               "name": "Two handaxes",
@@ -1849,7 +1940,17 @@
           [
             {
               "name": "A martial weapon and a shield",
-              "type": "armor"
+              "type": "armor",
+              "contents": [
+                {
+                  "name": "A martial weapon",
+                  "type": "weapon"
+                },
+                {
+                  "name": "A shield",
+                  "type": "armor"
+                }
+              ]
             },
             {
               "name": "Two martial weapons",
@@ -1879,7 +1980,17 @@
           [
             {
               "name": "Chain mail and a holy symbol",
-              "type": "armor"
+              "type": "armor",
+              "contents": [
+                {
+                  "name": "Chain mail",
+                  "type": "armor"
+                },
+                {
+                  "name": "A holy symbol",
+                  "type": "gear"
+                }
+              ]
             }
           ]
         ],
@@ -2074,7 +2185,17 @@
           [
             {
               "name": "A longbow and a quiver of 20 arrows",
-              "type": "weapon"
+              "type": "weapon",
+              "contents": [
+                {
+                  "name": "A longbow",
+                  "type": "weapon"
+                },
+                {
+                  "name": "A quiver of 20 arrows",
+                  "type": "gear"
+                }
+              ]
             }
           ]
         ],
@@ -2227,7 +2348,17 @@
           [
             {
               "name": "A shortbow and quiver of 20 arrows",
-              "type": "weapon"
+              "type": "weapon",
+              "contents": [
+                {
+                  "name": "A shortbow",
+                  "type": "weapon"
+                },
+                {
+                  "name": "Quiver of 20 arrows",
+                  "type": "gear"
+                }
+              ]
             },
             {
               "name": "A shortsword",
@@ -2236,7 +2367,7 @@
           ],
           [
             {
-              "name": "A burglar’s pack,",
+              "name": "A burglar’s pack",
               "type": "pack"
             },
             {
@@ -2251,7 +2382,21 @@
           [
             {
               "name": "Leather armor, two daggers, and thieves’ tools",
-              "type": "armor"
+              "type": "armor",
+              "contents": [
+                {
+                  "name": "Leather armor",
+                  "type": "armor"
+                },
+                {
+                  "name": "Two daggers",
+                  "type": "gear"
+                },
+                {
+                  "name": "Thieves’ tools",
+                  "type": "tool"
+                }
+              ]
             }
           ]
         ],
@@ -2560,7 +2705,18 @@
           [
             {
               "name": "A light crossbow and 20 bolts",
-              "type": "weapon"
+              "type": "weapon",
+              "contents": [
+                {
+                  "name": "A light crossbow",
+                  "type": "weapon"
+                },
+                {
+                  "name": "Bolts",
+                  "type": "gear",
+                  "count": 20
+                }
+              ]
             },
             {
               "name": "Any simple weapon",
@@ -5667,7 +5823,18 @@
           [
             {
               "name": "A light crossbow and 20 bolts",
-              "type": "weapon"
+              "type": "weapon",
+              "contents": [
+                {
+                  "name": "A light crossbow",
+                  "type": "weapon"
+                },
+                {
+                  "name": "Bolts",
+                  "type": "gear",
+                  "count": 20
+                }
+              ]
             },
             {
               "name": "Any simple weapon",
@@ -5697,7 +5864,21 @@
           [
             {
               "name": "Leather armor, any simple weapon, and two daggers",
-              "type": "armor"
+              "type": "armor",
+              "contents": [
+                {
+                  "name": "Leather armor",
+                  "type": "armor"
+                },
+                {
+                  "name": "Any simple weapon",
+                  "type": "weapon"
+                },
+                {
+                  "name": "Two daggers",
+                  "type": "gear"
+                }
+              ]
             }
           ]
         ],
@@ -15168,6 +15349,7 @@
         },
         "weight": 1,
         "description": "A holy symbol is a representation of a god or pantheon. It might be an amulet depicting a symbol representing a deity, the same symbol carefully engraved or inlaid as an emblem on a shield, or a tiny box holding a fragment of a sacred relic. Appendix B lists the symbols commonly associated with many gods in the multiverse. A cleric or paladin can use a holy symbol as a spellcasting focus. To use the symbol in this way, the caster must hold it in hand, wear it visibly, or bear it on a shield.",
+        "gearCategory": "Holy Symbols",
         "properties": []
       },
       {
@@ -15196,6 +15378,7 @@
         },
         "weight": 1,
         "description": "An arcane focus is a special item--an orb, a crystal, a rod, a specially constructed staff, a wand-like length of wood, or some similar item--designed to channel the power of arcane spells. A sorcerer, warlock, or wizard can use such an item as a spellcasting focus.",
+        "gearCategory": "Arcane Foci",
         "properties": []
       },
       {
@@ -15210,6 +15393,7 @@
         },
         "weight": 3,
         "description": "An arcane focus is a special item--an orb, a crystal, a rod, a specially constructed staff, a wand-like length of wood, or some similar item--designed to channel the power of arcane spells. A sorcerer, warlock, or wizard can use such an item as a spellcasting focus.",
+        "gearCategory": "Arcane Foci",
         "properties": []
       },
       {
@@ -15224,6 +15408,7 @@
         },
         "weight": 2,
         "description": "An arcane focus is a special item--an orb, a crystal, a rod, a specially constructed staff, a wand-like length of wood, or some similar item--designed to channel the power of arcane spells. A sorcerer, warlock, or wizard can use such an item as a spellcasting focus.",
+        "gearCategory": "Arcane Foci",
         "properties": []
       },
       {
@@ -15238,6 +15423,7 @@
         },
         "weight": 4,
         "description": "An arcane focus is a special item--an orb, a crystal, a rod, a specially constructed staff, a wand-like length of wood, or some similar item--designed to channel the power of arcane spells. A sorcerer, warlock, or wizard can use such an item as a spellcasting focus.",
+        "gearCategory": "Arcane Foci",
         "properties": []
       },
       {
@@ -15252,6 +15438,7 @@
         },
         "weight": 1,
         "description": "An arcane focus is a special item--an orb, a crystal, a rod, a specially constructed staff, a wand-like length of wood, or some similar item--designed to channel the power of arcane spells. A sorcerer, warlock, or wizard can use such an item as a spellcasting focus.",
+        "gearCategory": "Arcane Foci",
         "properties": []
       },
       {
@@ -15588,6 +15775,7 @@
         },
         "weight": 0,
         "description": "A druidic focus might be a sprig of mistletoe or holly, a wand or scepter made of yew or another special wood, a staff drawn whole out of a living tree, or a totem object incorporating feathers, fur, bones, and teeth from sacred animals. A druid can use such an object as a spellcasting focus.",
+        "gearCategory": "Druidic Foci",
         "properties": []
       },
       {
@@ -15602,6 +15790,7 @@
         },
         "weight": 0,
         "description": "A druidic focus might be a sprig of mistletoe or holly, a wand or scepter made of yew or another special wood, a staff drawn whole out of a living tree, or a totem object incorporating feathers, fur, bones, and teeth from sacred animals. A druid can use such an object as a spellcasting focus.",
+        "gearCategory": "Druidic Foci",
         "properties": []
       },
       {
@@ -15616,6 +15805,7 @@
         },
         "weight": 4,
         "description": "A druidic focus might be a sprig of mistletoe or holly, a wand or scepter made of yew or another special wood, a staff drawn whole out of a living tree, or a totem object incorporating feathers, fur, bones, and teeth from sacred animals. A druid can use such an object as a spellcasting focus.",
+        "gearCategory": "Druidic Foci",
         "properties": []
       },
       {
@@ -15630,6 +15820,7 @@
         },
         "weight": 1,
         "description": "A druidic focus might be a sprig of mistletoe or holly, a wand or scepter made of yew or another special wood, a staff drawn whole out of a living tree, or a totem object incorporating feathers, fur, bones, and teeth from sacred animals. A druid can use such an object as a spellcasting focus.",
+        "gearCategory": "Druidic Foci",
         "properties": []
       },
       {
@@ -15644,6 +15835,7 @@
         },
         "weight": 0,
         "description": "A holy symbol is a representation of a god or pantheon. It might be an amulet depicting a symbol representing a deity, the same symbol carefully engraved or inlaid as an emblem on a shield, or a tiny box holding a fragment of a sacred relic. Appendix B lists the symbols commonly associated with many gods in the multiverse. A cleric or paladin can use a holy symbol as a spellcasting focus. To use the symbol in this way, the caster must hold it in hand, wear it visibly, or bear it on a shield.",
+        "gearCategory": "Holy Symbols",
         "properties": []
       },
       {
@@ -16201,6 +16393,7 @@
         },
         "weight": 2,
         "description": "A holy symbol is a representation of a god or pantheon. It might be an amulet depicting a symbol representing a deity, the same symbol carefully engraved or inlaid as an emblem on a shield, or a tiny box holding a fragment of a sacred relic. Appendix B lists the symbols commonly associated with many gods in the multiverse. A cleric or paladin can use a holy symbol as a spellcasting focus. To use the symbol in this way, the caster must hold it in hand, wear it visibly, or bear it on a shield.",
+        "gearCategory": "Holy Symbols",
         "properties": []
       },
       {

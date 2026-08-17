@@ -31,6 +31,7 @@ import {
   deriveCharacterProficiencies,
   getActiveFeatures,
   getCharacterProficiencyBonus,
+  getSpellcastingRulesSummary,
   resolveBackgroundGrantedFeat,
   resolveCharacterClasses,
   resolveCharacterEquipment,
@@ -38,6 +39,10 @@ import {
 } from '@/lib/builderRules';
 import { deriveAttacks, deriveSheetVitals } from '@/lib/sheetDerivations';
 import { SheetAttacksPanel } from '@/components/character/SheetAttacksPanel';
+import { SheetEquipmentPanel } from '@/components/character/SheetEquipmentPanel';
+import { SheetHitPointsPanel } from '@/components/character/SheetHitPointsPanel';
+import { SheetResourcesPanel, type HitDicePool } from '@/components/character/SheetResourcesPanel';
+import { SheetSpellsPanel } from '@/components/character/SheetSpellsPanel';
 import { SheetVitalsPanel } from '@/components/character/SheetVitalsPanel';
 import type { AbilityScores, Character } from '@/types/dnd';
 
@@ -71,10 +76,16 @@ interface CharacterSheetViewProps {
   leading?: ReactNode;
   /** Shown under the title. Used to say whose sheet this is when it is not the reader's. */
   note?: ReactNode;
+  /**
+   * The whole write surface. Omitting it is what makes this read-only, which is how a campaign-mate
+   * renders someone else's sheet through the same component. Every tracker and every equipment or
+   * spell edit hands back a patch; the page decides what to do with it.
+   */
+  onChange?: (patch: Partial<Character>) => void;
 }
 
-export function CharacterSheetView({ character, actions, leading, note }: Readonly<CharacterSheetViewProps>) {
-  const { backgrounds, equipment, feats } = useContentLibrary();
+export function CharacterSheetView({ character, actions, leading, note, onChange }: Readonly<CharacterSheetViewProps>) {
+  const { backgrounds, equipment, feats, spells: spellCatalogue } = useContentLibrary();
 
   const species = getRuntimeSpeciesById(character.speciesId);
   const variant = character.variantId ? getRuntimeSpeciesVariant(character.speciesId, character.variantId) : undefined;
@@ -89,7 +100,17 @@ export function CharacterSheetView({ character, actions, leading, note }: Readon
   }, [character.classes]);
 
   const selectedSpells = useMemo(() => {
-    return character.spells.map((entry) => getRuntimeSpellById(entry.spellId) ?? { id: entry.spellId, name: humanizeFallbackId(entry.spellId) });
+    return character.spells.map((entry) => {
+      const spell = getRuntimeSpellById(entry.spellId);
+      return {
+        id: entry.spellId,
+        name: spell?.name ?? humanizeFallbackId(entry.spellId),
+        level: spell?.level,
+        school: spell?.school,
+        prepared: entry.prepared,
+        alwaysPrepared: entry.alwaysPrepared
+      };
+    });
   }, [character.spells]);
 
   const featData = useMemo(() => {
@@ -230,6 +251,10 @@ export function CharacterSheetView({ character, actions, leading, note }: Readon
       previousHp: character.hp,
       getClassById: getRuntimeClassById
     });
+  const characterWithResolvedHp = useMemo(
+    () => (character.hp === displayedHp ? character : { ...character, hp: displayedHp }),
+    [character, displayedHp]
+  );
 
   const derivedArmor = useMemo(() => {
     return deriveArmorClass({
@@ -263,14 +288,38 @@ export function CharacterSheetView({ character, actions, leading, note }: Readon
     });
   }, [derivedProficiencies.weapons, displayedAbilityScores, resolvedEquipment, vitals.proficiencyBonus]);
 
+  const spellcastingRules = useMemo(() => {
+    return getSpellcastingRulesSummary({
+      selectedClasses: resolvedClasses.map(({ entry, cls, subclass }) => ({
+        cls,
+        level: entry.level,
+        subclassId: entry.subclassId,
+        subclass
+      })),
+      abilityScores: displayedAbilityScores,
+      selectedSpells: character.spells,
+      getSpellById: getRuntimeSpellById
+    });
+  }, [character.spells, displayedAbilityScores, resolvedClasses]);
+
+  const hitDicePools = useMemo<HitDicePool[]>(() => {
+    return resolvedClasses
+      .filter(({ cls }) => cls.hitDie > 0)
+      .map(({ cls, entry }) => ({
+        classId: entry.classId,
+        className: cls.name,
+        die: `d${cls.hitDie}`,
+        total: entry.level,
+        used: Math.min(entry.hitDiceUsed ?? 0, entry.level)
+      }));
+  }, [resolvedClasses]);
+
   const classSummary = resolvedClasses
     .map(({ entry, cls, subclass }) => {
       const label = `${cls.name} ${entry.level}`;
       return subclass ? `${label} (${subclass.name})` : label;
     })
     .join(' / ');
-  const equippedSelections = resolvedEquipment.filter((entry) => entry.equipped);
-  const carriedSelections = resolvedEquipment.filter((entry) => !entry.equipped);
   const abilityBonusFor = (ability: keyof AbilityScores) =>
     character.abilityScoreBonuses?.[ability] ?? derivedAbilityBonuses[ability] ?? 0;
 
@@ -327,44 +376,44 @@ export function CharacterSheetView({ character, actions, leading, note }: Readon
             </CardContent>
           </Card>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground">Hit Points</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">{displayedHp.current}/{displayedHp.maximum}</p>
-                {displayedHp.temporary > 0 && (
-                  <Badge variant="outline" className="mt-1">+{displayedHp.temporary} temp</Badge>
-                )}
-              </CardContent>
-            </Card>
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+            <SheetHitPointsPanel character={characterWithResolvedHp} onChange={onChange} />
 
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground">Armor Class</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">{derivedArmor.value}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{derivedArmor.source}</p>
-                {!derivedArmor.proficient && (
-                  <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
-                    Current armor is equipped without matching proficiency.
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-muted-foreground">Armor Class</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-3xl font-bold">{derivedArmor.value}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{derivedArmor.source}</p>
+                  {!derivedArmor.proficient && (
+                    <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+                      Current armor is equipped without matching proficiency.
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground">Proficiency Bonus</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">+{proficiencyBonus}</p>
-                <p className="mt-1 text-xs text-muted-foreground">Level {totalLevel}</p>
-              </CardContent>
-            </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-muted-foreground">Proficiency Bonus</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-3xl font-bold">+{proficiencyBonus}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Level {totalLevel}</p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
+
+          <SheetResourcesPanel
+            character={character}
+            hitDice={hitDicePools}
+            slotsByLevel={spellcastingRules.slotsByLevel}
+            pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
+            onChange={onChange}
+          />
 
           <SheetVitalsPanel vitals={vitals} />
 
@@ -480,59 +529,21 @@ export function CharacterSheetView({ character, actions, leading, note }: Readon
             </Card>
           )}
 
-          {selectedSpells.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Spells</CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-wrap gap-2">
-                {selectedSpells.map((spell) => (
-                  <Badge key={spell.id} variant="secondary">{spell.name}</Badge>
-                ))}
-              </CardContent>
-            </Card>
-          )}
+          <SheetSpellsPanel
+            character={character}
+            spells={selectedSpells}
+            catalogue={spellCatalogue}
+            onChange={onChange}
+          />
         </TabsContent>
 
         <TabsContent value="equipment" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Current Loadout</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h4 className="mb-2 font-medium">Equipped</h4>
-                {equippedSelections.length > 0 ? (
-                  <div className="space-y-2">
-                    {equippedSelections.map((entry) => (
-                      <div key={entry.equipmentId} className="flex items-center justify-between rounded border p-2">
-                        <span>{entry.name}</span>
-                        <Badge>Equipped</Badge>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">Nothing equipped.</p>
-                )}
-              </div>
-              <Separator />
-              <div>
-                <h4 className="mb-2 font-medium">Carried</h4>
-                {carriedSelections.length > 0 ? (
-                  <div className="space-y-2">
-                    {carriedSelections.map((entry) => (
-                      <div key={entry.equipmentId} className="flex items-center justify-between rounded border p-2">
-                        <span>{entry.name}</span>
-                        <Badge variant="outline">Carried</Badge>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">No extra carried equipment.</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <SheetEquipmentPanel
+            character={character}
+            selections={resolvedEquipment}
+            catalogue={equipment}
+            onChange={onChange}
+          />
 
           {background && (
             <Card>

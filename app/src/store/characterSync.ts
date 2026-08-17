@@ -5,9 +5,13 @@
 // another device wrote, pushes what this one changed, honours deletions in both directions, and
 // never resolves a conflict by throwing an edit away.
 //
-// It imports `characterStore` and `characterStore` does not import it. That direction is
-// deliberate: the store stays a plain document cache, and sync watches it from outside rather
-// than being called from inside every mutation.
+// It imports the document stores and no store imports it. That direction is deliberate: a store
+// stays a plain document cache, and sync watches it from outside rather than being called from
+// inside every mutation.
+//
+// `/api/characters` is one collection per account rather than one per game, so a pass sees every
+// system's documents together and routes each to its own cache — that is what `documentStores.ts`
+// is for, and it is why a Kids on Bikes character can hold a campaign seat.
 import { create } from 'zustand';
 import {
   ApiError,
@@ -22,9 +26,13 @@ import {
   setCharacterSeat,
   updateCharacter as updateRemoteCharacter,
 } from '@/lib/api';
-import { describeCharacter } from '@/lib/characterSummary';
-import { useCharacterStore } from '@/store/characterStore';
-import type { Character } from '@/types/dnd';
+import {
+  DOCUMENT_STORES,
+  getStoreForDocument,
+  getStoreHolding,
+  type DocumentStoreAdapter,
+  type StoredDocument,
+} from '@/store/documentStores';
 import { toast } from 'sonner';
 
 export type SyncStatus = 'idle' | 'syncing' | 'offline' | 'error';
@@ -58,7 +66,11 @@ export const useCharacterSyncStore = create<CharacterSyncState>()(() => ({
 }));
 
 const setSyncState = (patch: Partial<CharacterSyncState>) => useCharacterSyncStore.setState(patch);
-const store = () => useCharacterStore.getState();
+
+/** Every locally-held document, paired with the cache that holds it. */
+function localEntries(): Array<{ store: DocumentStoreAdapter; document: StoredDocument }> {
+  return DOCUMENT_STORES.flatMap((store) => store.characters().map((document) => ({ store, document })));
+}
 
 /**
  * Turned on when a session is established and off when it ends; sign-out leaves the cache alone.
@@ -70,16 +82,12 @@ export function setSyncEnabled(enabled: boolean): void {
     setSyncState({ enabled: false, status: 'idle', unsyncedIds: [], error: null });
     return;
   }
-  const { characters, syncMeta } = store();
   setSyncState({
     enabled: true,
-    unsyncedIds: characters.filter((c) => syncMeta[c.id]?.version == null).map((c) => c.id),
+    unsyncedIds: localEntries()
+      .filter(({ store, document }) => store.syncMeta()[document.id]?.version == null)
+      .map(({ document }) => document.id),
   });
-}
-
-/** The document as the server should store it: its own id wins over whatever the copy carried. */
-function withId(character: Character, id: string): Character {
-  return character.id === id ? character : { ...character, id };
 }
 
 function describe(error: unknown): string {
@@ -93,12 +101,13 @@ function describe(error: unknown): string {
  * replace the object rather than mutating it, so reference equality answers "was this edited while
  * the request was in flight?" — the window in which sync could otherwise lose an edit.
  */
-function unchangedSince(id: string, snapshot: Character | undefined): boolean {
-  return store().characters.find((c) => c.id === id) === snapshot;
+function unchangedSince(store: DocumentStoreAdapter, id: string, snapshot: StoredDocument | undefined): boolean {
+  return store.find(id) === snapshot;
 }
 
 async function pullCharacter(id: string): Promise<void> {
-  const before = store().characters.find((c) => c.id === id);
+  const holder = getStoreHolding(id);
+  const before = holder?.find(id);
   const record = await getRemoteCharacter(id);
   if (!record?.data) {
     console.warn('character', id, 'came back from the server without a readable document');
@@ -106,17 +115,21 @@ async function pullCharacter(id: string): Promise<void> {
   }
   // Edited here while the fetch was in the air: keep the local edit. It is dirty, so the next pass
   // pushes it, and the server answers 409 — which keeps both copies rather than dropping one.
-  if (!unchangedSince(id, before)) return;
-  store().applyRemoteCharacter(withId(record.data, record.id), record.version);
+  if (holder && !unchangedSince(holder, id, before)) return;
+
+  const store = getStoreForDocument(record.data);
+  // A document whose system changed underneath us would otherwise sit in two caches at once.
+  if (holder && holder !== store) holder.forget(id);
+  store.applyRemote(store.withId(record.data, record.id), record.version);
 }
 
 /**
  * Both copies changed. The server's copy keeps the id, and the local edit is kept as a separate
  * character rather than discarded — the user decides which one to keep, not the sync layer.
  */
-async function resolveConflict(id: string): Promise<void> {
-  const local = store().characters.find((c) => c.id === id);
-  const knownVersion = store().syncMeta[id]?.version ?? null;
+async function resolveConflict(store: DocumentStoreAdapter, id: string): Promise<void> {
+  const local = store.find(id);
+  const knownVersion = store.syncMeta()[id]?.version ?? null;
   let record;
   try {
     record = await getRemoteCharacter(id);
@@ -127,7 +140,7 @@ async function resolveConflict(id: string): Promise<void> {
       // the id belongs to somebody else — keep the character and let the pass report a failure.
       // Deleting it here would destroy a sheet on the strength of a 404.
       if (knownVersion != null) {
-        store().forgetCharacter(id);
+        store.forget(id);
         return;
       }
       throw new Error(`character id ${id} is already taken by another account`);
@@ -136,21 +149,18 @@ async function resolveConflict(id: string): Promise<void> {
   }
   if (!record.data) return;
 
-  const server = withId(record.data, record.id);
+  const serverStore = getStoreForDocument(record.data);
+  const server = serverStore.withId(record.data, record.id);
   const differs = Boolean(local) && JSON.stringify(local) !== JSON.stringify(server);
-  store().applyRemoteCharacter(server, record.version);
+  if (serverStore !== store) store.forget(id);
+  serverStore.applyRemote(server, record.version);
 
   if (differs && local) {
-    const copy: Character = {
-      ...local,
-      id: crypto.randomUUID(),
-      name: `${local.name} (conflict copy)`,
-      updatedAt: new Date().toISOString(),
-    };
-    store().addCharacter(copy);
+    const copy = store.conflictCopy(local);
+    store.add(copy);
     setSyncState({ conflictIds: [...useCharacterSyncStore.getState().conflictIds, copy.id] });
     // Keeping the edit but saying nothing would look like the edit was lost.
-    toast.message(`${server.name} was edited on another device`, {
+    toast.message(`${serverStore.nameOf(server)} was edited on another device`, {
       description: 'That version was kept. Your changes are saved beside it as a conflict copy.',
     });
   }
@@ -166,46 +176,45 @@ async function resolveConflict(id: string): Promise<void> {
  * session are the two exceptions — both are "not now" rather than "no", so the intent survives them
  * and the next pass tries again.
  */
-async function applyPendingSeat(id: string): Promise<void> {
-  const pending = store().pendingSeats[id];
+async function applyPendingSeat(store: DocumentStoreAdapter, id: string): Promise<void> {
+  const pending = store.pendingSeats()[id];
   if (!pending) return;
   try {
     await setCharacterSeat(id, { campaign_id: pending.campaignId, player_id: pending.playerId });
-    store().setPendingSeat(id, null);
+    store.setPendingSeat(id, null);
   } catch (e) {
     if (isOffline(e)) return;
     if (isUnauthorized(e)) throw e;
     console.warn('could not seat character', id, describe(e));
-    store().setPendingSeat(id, null);
+    store.setPendingSeat(id, null);
   }
 }
 
 /** Send one local character to the server. Returns false when the request never landed. */
-export async function pushCharacter(id: string): Promise<boolean> {
-  const state = store();
-  const character = state.characters.find((c) => c.id === id);
+export async function pushCharacter(store: DocumentStoreAdapter, id: string): Promise<boolean> {
+  const character = store.find(id);
   if (!character) return true;
-  const meta = state.syncMeta[id];
+  const meta = store.syncMeta()[id];
 
   try {
     // `summary` is the denormalised display line the party view lists by; it has to ride along on
     // every write or a campaign-mate sees a stale level after a level-up.
-    const payload = { name: character.name, summary: describeCharacter(character), data: character };
+    const payload = { name: store.nameOf(character), summary: store.describe(character), data: character };
     if (meta?.version == null) {
       const created = await createCharacter({ id, ...payload });
-      store().markCharacterSynced(id, created.version, !unchangedSince(id, character));
+      store.markSynced(id, created.version, !unchangedSince(store, id, character));
     } else {
       const updated = await updateRemoteCharacter(id, meta.version, payload);
-      store().markCharacterSynced(id, updated.version, !unchangedSince(id, character));
+      store.markSynced(id, updated.version, !unchangedSince(store, id, character));
     }
-    await applyPendingSeat(id);
+    await applyPendingSeat(store, id);
     return true;
   } catch (e) {
     if (isOffline(e)) return false;
     // An update that 404s is a character we had a version for and the server no longer has:
     // deleted from another device between the list and this write.
     if (e instanceof ApiError && e.status === 404 && meta?.version != null) {
-      store().forgetCharacter(id);
+      store.forget(id);
       return true;
     }
     // A create refused by a tombstone is the opposite situation — the id is spoken for but this
@@ -214,7 +223,7 @@ export async function pushCharacter(id: string): Promise<boolean> {
       throw new Error(`character id ${id} was deleted on the server and cannot be re-created`);
     }
     if (isConflict(e)) {
-      await resolveConflict(id);
+      await resolveConflict(store, id);
       return true;
     }
     throw e;
@@ -223,19 +232,21 @@ export async function pushCharacter(id: string): Promise<boolean> {
 
 /** Tell the server about characters deleted here. A 404 means it already agrees. */
 async function flushPendingDeletes(): Promise<boolean> {
-  // Safe to iterate without copying: clearPendingDelete replaces the array rather than splicing it.
-  const pending = store().pendingDeletes;
-  for (const id of pending) {
-    try {
-      await deleteRemoteCharacter(id);
-      store().clearPendingDelete(id);
-    } catch (e) {
-      if (isOffline(e)) return false;
-      if (e instanceof ApiError && e.status === 404) {
-        store().clearPendingDelete(id);
-        continue;
+  for (const store of DOCUMENT_STORES) {
+    // Safe to iterate without copying: clearPendingDelete replaces the array rather than splicing.
+    const pending = store.pendingDeletes();
+    for (const id of pending) {
+      try {
+        await deleteRemoteCharacter(id);
+        store.clearPendingDelete(id);
+      } catch (e) {
+        if (isOffline(e)) return false;
+        if (e instanceof ApiError && e.status === 404) {
+          store.clearPendingDelete(id);
+          continue;
+        }
+        throw e;
       }
-      throw e;
     }
   }
   return true;
@@ -266,23 +277,26 @@ async function reconcile(): Promise<string[]> {
 
   // Safe to iterate without copying: every store action here replaces the array rather than
   // mutating the one being walked.
-  const localCharacters = store().characters;
-  for (const character of localCharacters) {
-    const meta = store().syncMeta[character.id];
-    const record = remoteById.get(character.id);
+  for (const { store, document } of localEntries()) {
+    const meta = store.syncMeta()[document.id];
+    const record = remoteById.get(document.id);
     if (!record) {
-      await attempt(character.id, () => reconcileMissingRemote(character.id, meta?.version ?? null, awaitingOffer, unsyncedIds), failures);
+      await attempt(
+        document.id,
+        () => reconcileMissingRemote(store, document.id, meta?.version ?? null, awaitingOffer, unsyncedIds),
+        failures,
+      );
       continue;
     }
-    if (meta?.dirty) await attempt(character.id, () => pushCharacter(character.id), failures);
-    else if (meta?.version !== record.version) await attempt(character.id, () => pullCharacter(character.id), failures);
+    if (meta?.dirty) await attempt(document.id, () => pushCharacter(store, document.id), failures);
+    else if (meta?.version !== record.version) await attempt(document.id, () => pullCharacter(document.id), failures);
     // A seat recorded while offline, or against a character that was already in step with the
     // server, has no push to ride along with. `pushCharacter` clears it, so this finds nothing when
     // one of the branches above already ran.
-    if (store().pendingSeats[character.id]) await attempt(character.id, () => applyPendingSeat(character.id), failures);
+    if (store.pendingSeats()[document.id]) await attempt(document.id, () => applyPendingSeat(store, document.id), failures);
   }
 
-  const localIds = new Set(store().characters.map((c) => c.id));
+  const localIds = new Set(localEntries().map(({ document }) => document.id));
   for (const record of remote) {
     if (!localIds.has(record.id)) await attempt(record.id, () => pullCharacter(record.id), failures);
   }
@@ -296,16 +310,22 @@ async function reconcile(): Promise<string[]> {
  * device, waiting for the upload offer, or new here and never sent. Only the first is destructive,
  * and it is the only one where the server has a version on record.
  */
-async function reconcileMissingRemote(id: string, knownVersion: number | null, awaitingOffer: Set<string>, unsyncedIds: string[]): Promise<void> {
+async function reconcileMissingRemote(
+  store: DocumentStoreAdapter,
+  id: string,
+  knownVersion: number | null,
+  awaitingOffer: Set<string>,
+  unsyncedIds: string[],
+): Promise<void> {
   if (knownVersion != null) {
-    store().forgetCharacter(id);
+    store.forget(id);
     return;
   }
   if (awaitingOffer.has(id)) {
     unsyncedIds.push(id);
     return;
   }
-  await pushCharacter(id);
+  await pushCharacter(store, id);
 }
 
 /** Undelivered deletes mean the connection went; a failed character means the server said no. */
@@ -358,15 +378,23 @@ async function runSync(): Promise<void> {
  */
 export async function uploadLocalCharacters(): Promise<{ imported: number; skipped: number }> {
   const offered = new Set(useCharacterSyncStore.getState().unsyncedIds);
-  const characters = store().characters.filter((c) => offered.has(c.id));
-  if (characters.length === 0) return { imported: 0, skipped: 0 };
-  const sentById = new Map(characters.map((c) => [c.id, c]));
+  const entries = localEntries().filter(({ document }) => offered.has(document.id));
+  if (entries.length === 0) return { imported: 0, skipped: 0 };
+  const byId = new Map(entries.map(({ store, document }) => [document.id, { store, document }]));
 
   setSyncState({ uploading: true });
   try {
-    const result = await importCharacters(characters);
+    const result = await importCharacters(
+      entries.map(({ store, document }) => ({
+        id: document.id,
+        name: store.nameOf(document),
+        summary: store.describe(document),
+        data: document,
+      })),
+    );
     for (const id of result.imported) {
-      store().markCharacterSynced(id, 1, !unchangedSince(id, sentById.get(id)));
+      const entry = byId.get(id);
+      entry?.store.markSynced(id, 1, !unchangedSince(entry.store, id, entry.document));
       offered.delete(id);
     }
     // Drop them from the offer immediately rather than waiting for the pass below to say so; the
@@ -381,8 +409,8 @@ export async function uploadLocalCharacters(): Promise<{ imported: number; skipp
 }
 
 // Pushing on every keystroke-sized store write would be one request per character per edit, so
-// changes are coalesced. The watcher is the only thing that reacts to local mutations; the store
-// itself knows nothing about the network.
+// changes are coalesced. The watcher is the only thing that reacts to local mutations; the stores
+// themselves know nothing about the network.
 const PUSH_DEBOUNCE_MS = 1200;
 let pushTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -396,16 +424,19 @@ function schedulePush(): void {
 }
 
 function hasOutstandingWork(): boolean {
-  const state = store();
-  if (state.pendingDeletes.length > 0) return true;
-  return state.characters.some((c) => state.syncMeta[c.id]?.dirty);
+  return DOCUMENT_STORES.some((store) => {
+    if (store.pendingDeletes().length > 0) return true;
+    const meta = store.syncMeta();
+    return store.characters().some((document) => meta[document.id]?.dirty);
+  });
 }
 
-/** Watch the cache for local changes and push them. Returns the unsubscribe. */
+/** Watch every cache for local changes and push them. Returns the unsubscribe. */
 export function startCharacterSyncWatcher(): () => void {
-  return useCharacterStore.subscribe((state, previous) => {
+  const unsubscribes = DOCUMENT_STORES.map((store) => store.subscribe(() => {
     if (!useCharacterSyncStore.getState().enabled) return;
-    if (state.characters === previous.characters && state.syncMeta === previous.syncMeta && state.pendingDeletes === previous.pendingDeletes) return;
     if (hasOutstandingWork()) schedulePush();
-  });
+  }));
+
+  return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
 }

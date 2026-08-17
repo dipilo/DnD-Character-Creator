@@ -1336,6 +1336,39 @@ const parseClassEquipmentOptions = (equipmentText) => {
 const equipmentChoiceMarkerPattern = /\(([a-z])\)\s*/gi;
 const capitalizeFirst = (value) => (value ? value[0].toUpperCase() + value.slice(1) : value);
 
+// "Leather armor, any simple weapon, and two daggers" is three grants printed as one line. The
+// 2024 chapters already ship each kit as a list of contents, and the app resolves, equips and
+// prices contents one by one — so a 2014 line that lists several items has to arrive the same
+// shape, or the leather armor never reaches the AC calculation and the weapon is never chosen.
+const splitCompoundEquipmentText = (value) => {
+  const parts = splitEquipmentList(value)
+    .flatMap((entry) => entry.split(/\s+and\s+/i))
+    .map((entry) => entry.replace(/^and\s+/i, '').trim())
+    .filter(Boolean);
+
+  return parts.length > 1 ? parts : [];
+};
+
+const parseCompoundEquipmentOption = (segment) => {
+  const option = parseEquipmentOptionText(segment);
+  if (!option) {
+    return option;
+  }
+
+  const parts = splitCompoundEquipmentText(segment);
+  if (parts.length < 2) {
+    return option;
+  }
+
+  const contents = parts
+    .map((part) => parseEquipmentOptionText(part))
+    .filter(Boolean)
+    // "20 bolts" parses to a count plus "bolts"; the leading capital belongs to the remainder.
+    .map((entry) => ({ ...entry, name: capitalizeFirst(entry.name) }));
+
+  return contents.length > 1 ? { ...option, contents } : option;
+};
+
 const parseBasicRulesEquipmentBullets = (classBlockContent) => {
   const equipmentSection = [...collectHeadingBlocks(classBlockContent, 3), ...collectHeadingBlocks(classBlockContent, 4)]
     .find((entry) => /^equipment$/i.test(entry.title));
@@ -1354,8 +1387,10 @@ const parseBasicRulesEquipmentBullets = (classBlockContent) => {
         : [item];
 
       return segments
-        .map((segment) => capitalizeFirst(segment.replace(/[,;]?\s*\bor\s*$/i, '').trim()))
-        .map((segment) => parseEquipmentOptionText(segment))
+        // The "(a) … , (b) … , or (c) …" split leaves each option holding the separator that
+        // followed it, which is how "A rapier," reached the app with its comma attached.
+        .map((segment) => capitalizeFirst(segment.replace(/[,;]?\s*\bor\s*$/i, '').replace(/[,;]\s*$/, '').trim()))
+        .map((segment) => parseCompoundEquipmentOption(segment))
         .filter(Boolean);
     })
     .filter((group) => group.length > 0);
@@ -2849,7 +2884,7 @@ const splitTopLevelAlternatives = (value) => {
 const parseBulletEquipmentGroups = (items) => {
   return items
     .map((item) => splitTopLevelAlternatives(item)
-      .map((entry) => parseEquipmentOptionText(entry))
+      .map((entry) => parseCompoundEquipmentOption(entry))
       .filter(Boolean))
     .filter((group) => group.length > 0);
 };

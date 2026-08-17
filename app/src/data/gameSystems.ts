@@ -72,6 +72,11 @@ export interface GameSystemDefinition {
   builderPath: string;
   /** Route the character list for this system lives at. */
   charactersPath: string;
+  /**
+   * Where one saved character's sheet lives. A function because the two systems nest it
+   * differently, and because the party view has to link to either without knowing which.
+   */
+  sheetPath: (characterId: string) => string;
   /** Where the picker lands when this system is chosen. */
   homePath: string;
   /**
@@ -95,6 +100,7 @@ export const GAME_SYSTEMS: Record<GameSystemId, GameSystemDefinition> = {
     icon: Sword,
     builderPath: '/builder',
     charactersPath: '/characters',
+    sheetPath: (characterId) => `/character/${characterId}`,
     homePath: '/builder',
     routePrefixes: ['/builder', '/characters', '/character/', '/content', '/homebrew'],
     navItems: [
@@ -161,6 +167,7 @@ export const GAME_SYSTEMS: Record<GameSystemId, GameSystemDefinition> = {
     icon: Bike,
     builderPath: '/kob/builder',
     charactersPath: '/kob',
+    sheetPath: (characterId) => `/kob/character/${characterId}`,
     homePath: '/kob',
     routePrefixes: ['/kob'],
     // One destination, because that is all this system has: `/kob` lists the characters and is

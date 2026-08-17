@@ -7,8 +7,9 @@ import type { DerivedCharacterProficiencies } from '@/lib/builderRules';
  * scores, spell save DC — none of which the sheet showed before.
  *
  * All of it is derived. Nothing here is state: a value a player *changes* during play (current hit
- * points, death saves, spent slots) belongs on the `Character` document, and is deliberately not
- * invented here. See KIDS_ON_BIKES.md / SHEET_PARITY.md for the tracker work that needs those.
+ * points, death saves, spent slots) lives on the `Character` document and is manipulated by
+ * `lib/sheetPlayState.ts`. Keep the two apart — a derivation that reads spent slots, or a tracker
+ * that recomputes a modifier, is how the two halves start disagreeing.
  */
 
 export const ABILITY_ORDER: ReadonlyArray<keyof AbilityScores> = [

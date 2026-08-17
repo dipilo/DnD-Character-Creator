@@ -5,9 +5,9 @@ import { ABILITY_ABBREVIATIONS, formatModifier, type DerivedAttack } from '@/lib
 /**
  * Every equipped weapon with its to-hit and its damage (NEXT_STEPS.md §5.4).
  *
- * Read-only, like the rest of the sheet: `CharacterSheetView` performs no writes, which is what
- * lets a campaign-mate render a fetched character through the same code. Ammunition counts and
- * "where did I throw that dagger" are state, and are deliberately not modelled here.
+ * Purely derived, so it needs no write surface of its own: change what is equipped on the Equipment
+ * tab and these rows follow. Ammunition counts and "where did I throw that dagger" are state, and
+ * are deliberately not modelled here.
  */
 export function SheetAttacksPanel({ attacks }: Readonly<{ attacks: DerivedAttack[] }>) {
   return (

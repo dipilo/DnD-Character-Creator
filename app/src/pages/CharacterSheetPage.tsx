@@ -5,16 +5,17 @@ import { ArrowLeft, FileDown, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { CharacterSheetView } from '@/components/character/CharacterSheetView';
 import { exportCharacterToFillablePdf } from '@/lib/characterPdf';
+import type { Character } from '@/types/dnd';
 
 /**
  * One of your own characters, out of the local cache. The sheet itself is `CharacterSheetView`,
- * shared with the campaign party view (MERGE_PLAN.md Phase 5) — this page is the lookup and the
- * actions that only the owner gets.
+ * shared with the campaign party view (MERGE_PLAN.md Phase 5) — this page is the lookup, the
+ * actions that only the owner gets, and the one place the sheet's edits are written.
  */
 export function CharacterSheetPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getCharacter, deleteCharacter, loadCharacterIntoBuilder } = useCharacterStore();
+  const { getCharacter, deleteCharacter, loadCharacterIntoBuilder, updateCharacter } = useCharacterStore();
 
   const character = id ? getCharacter(id) : undefined;
 
@@ -46,6 +47,15 @@ export function CharacterSheetPage() {
     }
   };
 
+  /**
+   * The sheet's write path. Every tracker and every equipment or spell edit arrives as a patch,
+   * which is applied to the stored document — so `syncMeta` marks it dirty and the sync layer
+   * pushes it, exactly as a save from the builder would.
+   */
+  const handleChange = (patch: Partial<Character>) => {
+    updateCharacter({ ...character, ...patch, updatedAt: new Date().toISOString() });
+  };
+
   const handleExportPDF = async () => {
     try {
       await exportCharacterToFillablePdf(character);
@@ -59,6 +69,7 @@ export function CharacterSheetPage() {
   return (
     <CharacterSheetView
       character={character}
+      onChange={handleChange}
       leading={(
         <Button variant="outline" size="sm" onClick={() => navigate('/characters')}>
           <ArrowLeft className="mr-2 h-4 w-4" />

@@ -220,6 +220,12 @@ export interface Equipment {
   // Tool properties: which family a "one type of <x>" proficiency choice draws from,
   // e.g. "Artisan's Tools", "Gaming Sets", "Musical Instruments".
   toolCategory?: string;
+  /**
+   * The gear family a starting-equipment line can name instead of an item — "Arcane Foci",
+   * "Druidic Foci", "Holy Symbols". 2014 states it as `gear_category`, 2024 lists it among
+   * `equipment_categories`; without it "an arcane focus" has no candidates to offer.
+   */
+  gearCategory?: string;
   damage?: string;
   damageType?: string;
   /** Versatile's two-handed die, when the source states one. Never inferred from the die size. */
@@ -344,6 +350,23 @@ export interface Character {
     maximum: number;
     temporary: number;
   };
+  /*
+   * Play state — what a player changes at the table rather than in the builder. It lives on the
+   * document like everything else, so it round-trips through `loadCharacterIntoBuilder` and the
+   * server, and a campaign-mate opening the sheet sees the same numbers.
+   */
+  deathSaves?: { successes: number; failures: number };
+  inspiration?: boolean;
+  /** 0–6; the 2014 and 2024 rules disagree on what a level does, not on how many there are. */
+  exhaustion?: number;
+  conditions?: string[];
+  /**
+   * Slots spent, indexed by slot level - 1 to match `slotsByLevel`. Character-level rather than
+   * per class because a multiclass caster has one shared pool — which is exactly what
+   * `getSpellcastingRulesSummary` computes. Pact slots are the separate pool the Warlock keeps.
+   */
+  spellSlotsUsed?: number[];
+  pactSlotsUsed?: number[];
   personality?: {
     traits: string;
     ideals: string;

@@ -11,18 +11,14 @@ import {
   resolveCharacterClasses
 } from '@/lib/builderRules';
 import type { Character, CharacterSummary, BuilderState, BuilderStep, AbilityScores } from '@/types/dnd';
+import type { CharacterSyncMeta, PendingSeat } from '@/store/syncTypes';
 
 /**
  * What the server knows about one locally-held character (MERGE_PLAN.md Phase 2). localStorage is
- * a cache now rather than the record, and this is the bookkeeping that makes it one: `version` is
- * the server version last seen — null means the character has never been uploaded — and `dirty`
- * means the local copy has edits the server has not accepted yet.
+ * a cache now rather than the record, and `CharacterSyncMeta` is the bookkeeping that makes it one.
+ * It is shared with the Kids on Bikes store, which is reconciled by the same sync pass.
  */
-export interface CharacterSyncMeta {
-  version: number | null;
-  dirty: boolean;
-  syncedAt?: string;
-}
+export type { CharacterSyncMeta };
 
 interface CharacterState {
   characters: Character[];
@@ -40,7 +36,7 @@ interface CharacterState {
    * server-side yet — sync applies it after the create lands, and keeps it until then, so the
    * builder still works offline and signed out.
    */
-  pendingSeats: Record<string, { campaignId: number; playerId: number | null }>;
+  pendingSeats: Record<string, PendingSeat>;
   /** When the "upload your local characters" offer was last declined, so it is asked once. */
   uploadPromptDismissedAt: string | null;
 
@@ -56,7 +52,7 @@ interface CharacterState {
   applyRemoteCharacter: (character: Character, version: number) => void;
   forgetCharacter: (id: string) => void;
   clearPendingDelete: (id: string) => void;
-  setPendingSeat: (id: string, seat: { campaignId: number; playerId: number | null } | null) => void;
+  setPendingSeat: (id: string, seat: PendingSeat | null) => void;
   dismissUploadPrompt: () => void;
 
   // Builder state

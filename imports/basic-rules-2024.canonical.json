@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2024 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-08-16T22:12:30.068Z",
+    "importedAt": "2026-08-17T03:00:12.739Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -15958,6 +15958,7 @@
           "unit": "gp"
         },
         "weight": 1,
+        "gearCategory": "Holy Symbols",
         "properties": []
       },
       {
@@ -16563,6 +16564,7 @@
           "unit": "gp"
         },
         "weight": 1,
+        "gearCategory": "Arcane Foci",
         "properties": []
       },
       {
@@ -16720,6 +16722,7 @@
           "unit": "gp"
         },
         "weight": 0,
+        "gearCategory": "Holy Symbols",
         "properties": []
       },
       {
@@ -17632,6 +17635,7 @@
           "unit": "gp"
         },
         "weight": 3,
+        "gearCategory": "Arcane Foci",
         "properties": []
       },
       {
@@ -17914,6 +17918,7 @@
         "weight": 4,
         "weaponCategory": "simple",
         "weaponType": "melee",
+        "gearCategory": "Arcane Foci",
         "damage": "1d6",
         "damageType": "Bludgeoning",
         "versatileDamage": "1d8",
@@ -17996,6 +18001,7 @@
           "unit": "gp"
         },
         "weight": 2,
+        "gearCategory": "Holy Symbols",
         "properties": []
       },
       {
@@ -18038,6 +18044,7 @@
           "unit": "gp"
         },
         "weight": 2,
+        "gearCategory": "Arcane Foci",
         "properties": []
       },
       {
@@ -18370,6 +18377,7 @@
           "unit": "gp"
         },
         "weight": 0,
+        "gearCategory": "Druidic Foci",
         "properties": []
       },
       {
@@ -18396,6 +18404,7 @@
           "unit": "gp"
         },
         "weight": 4,
+        "gearCategory": "Arcane Foci",
         "properties": []
       },
       {
@@ -18569,6 +18578,7 @@
           "unit": "gp"
         },
         "weight": 1,
+        "gearCategory": "Arcane Foci",
         "properties": []
       },
       {
@@ -18692,6 +18702,7 @@
           "unit": "gp"
         },
         "weight": 1,
+        "gearCategory": "Druidic Foci",
         "properties": []
       }
     ],

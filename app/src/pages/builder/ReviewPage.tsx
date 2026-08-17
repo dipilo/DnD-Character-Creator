@@ -314,6 +314,14 @@ export function ReviewPage() {
       feats: Array.from(new Set([...(grantedBackgroundFeat ? [grantedBackgroundFeat.id] : []), ...(character.feats || [])])),
       features: character.features || [],
       hp: derivedHp,
+      // Play state is the character's, not the builder's. Rebuilding the document without it would
+      // clear a party's death saves and spent slots the moment somebody opened the Review step.
+      deathSaves: character.deathSaves,
+      inspiration: character.inspiration,
+      exhaustion: character.exhaustion,
+      conditions: character.conditions,
+      spellSlotsUsed: character.spellSlotsUsed,
+      pactSlotsUsed: character.pactSlotsUsed,
       personality: character.personality,
       appearance: character.appearance,
       faction: character.faction,

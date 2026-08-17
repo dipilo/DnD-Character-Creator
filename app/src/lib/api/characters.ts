@@ -1,14 +1,13 @@
 import { api } from './client';
 import type {
   CampaignCharacterSummary,
+  CharacterImportEntry,
   CharacterImportResult,
   CharacterRecord,
   CharacterRecordSummary,
   CharacterSeat,
   CharacterWritePayload,
 } from './types';
-import { describeCharacter } from '@/lib/characterSummary';
-import type { Character } from '@/types/dnd';
 
 /**
  * Characters stored server-side (MERGE_PLAN.md Phase 2). Listing returns summaries only: the
@@ -66,14 +65,12 @@ export async function deleteCharacter(id: string): Promise<void> {
   await api.delete(`/api/characters/${encodeURIComponent(id)}`);
 }
 
-/** The one-time upload offered when someone signs in with characters already in localStorage. */
-export async function importCharacters(characters: Character[]): Promise<CharacterImportResult> {
-  return await api.post<CharacterImportResult>('/api/characters/import', {
-    characters: characters.map((character) => ({
-      id: character.id,
-      name: character.name,
-      summary: describeCharacter(character),
-      data: character,
-    })),
-  });
+/**
+ * The one-time upload offered when someone signs in with characters already in localStorage.
+ *
+ * Entries arrive already named and summarised, because only the owning system's cache knows how to
+ * do either — a Kids on Bikes document has no `name` field and no character level.
+ */
+export async function importCharacters(entries: CharacterImportEntry[]): Promise<CharacterImportResult> {
+  return await api.post<CharacterImportResult>('/api/characters/import', { characters: entries });
 }

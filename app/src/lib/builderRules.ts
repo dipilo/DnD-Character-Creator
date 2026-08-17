@@ -19,6 +19,7 @@ import type {
   Subclass
 } from '@/types/dnd';
 import { resolveSourceId } from '@/data/librarySources';
+import { isEquipmentChoiceOption } from '@/lib/startingEquipment';
 
 export type RulesEdition = '2014' | '2024' | 'unknown';
 
@@ -316,6 +317,13 @@ const quantityWords = new Map<string, number>([
   ['twenty', 20]
 ]);
 const replaceEquipmentChoicePlaceholder = (label: string, resolvedName: string) => {
+  // "Any simple weapon" is the whole label, so splicing into it leaves the phrase the player was
+  // trying to replace. The picked weapon *is* the item — say so, and let the source label carry
+  // the provenance.
+  if (isEquipmentChoiceOption(label)) {
+    return resolvedName;
+  }
+
   const replacedChoiceGroup = label.replace(/Choose\s+1\s+from\s+[^,]+/i, resolvedName);
   if (replacedChoiceGroup !== label) {
     return replacedChoiceGroup;
@@ -327,6 +335,26 @@ const replaceEquipmentChoicePlaceholder = (label: string, resolvedName: string) 
   }
 
   return `${label} (${resolvedName})`;
+};
+
+/**
+ * The bundled part an id's fourth segment names. A slot that grants several picks appends
+ * `--<n>` to its slug (the Equipment step's `PICK_SEPARATOR`), so match the bare slug too — the
+ * two picks of "Two martial weapons" are the same line of the kit.
+ */
+const findBundledEquipmentOption = (
+  option: { contents?: Array<{ name: string; type: string }> } | undefined,
+  childSlug: string | undefined
+) => {
+  if (!option?.contents?.length || !childSlug) {
+    return undefined;
+  }
+
+  const bareSlug = childSlug.replace(/--\d+$/, '');
+  return option.contents.find((candidate) => {
+    const candidateSlug = slugify(candidate.name);
+    return candidateSlug === childSlug || candidateSlug === bareSlug;
+  });
 };
 
 const stripQuantityPrefix = (value: string) => {
@@ -392,8 +420,14 @@ const resolveReferencedEquipmentItem = ({
   getEquipmentById: (equipmentId: string) => Equipment | undefined;
   findEquipmentByName?: (equipmentName: string) => Equipment | undefined;
 }) => {
+  // The fourth id segment is a chosen equipment id for some shapes and a bundled part's slug for
+  // others, so a miss here is not a failure — fall through to the name lookup rather than
+  // returning nothing, which is what left every 2024 kit item unresolved (no AC, no attacks).
   if (resolvedItemId) {
-    return getEquipmentById(resolvedItemId);
+    const byId = getEquipmentById(resolvedItemId);
+    if (byId) {
+      return byId;
+    }
   }
 
   if (!optionName || !findEquipmentByName) {
@@ -1596,28 +1630,41 @@ export const resolveCharacterEquipment = ({
       const groupIndex = Number(parts[1]);
       const optionSlug = parts[2];
       const childSlug = parts[3];
-      const resolvedItemId = parts[4] ?? parts[3];
       const cls = getClassById(classId);
       const option = Number.isFinite(groupIndex)
         ? cls?.equipmentOptions[groupIndex]?.find((candidate) => slugify(candidate.name) === optionSlug)
         : undefined;
-      const bundledEntry = option?.contents?.find((candidate) => slugify(candidate.name) === childSlug);
+      const bundledEntry = findBundledEquipmentOption(option, childSlug);
+      const optionLabel = bundledEntry?.name ?? option?.name;
+      // Only a five-segment id — or the older four-segment shape on an option with no contents —
+      // carries an item the player picked. On an option that *has* contents the fourth segment is
+      // the part's own slug, and reading it as a pick relabelled every fixed grant.
+      const chosenItemId = parts[4] ?? (option?.contents?.length ? undefined : parts[3]);
       const resolvedItem = resolveReferencedEquipmentItem({
-        optionName: bundledEntry?.name ?? option?.name,
-        resolvedItemId,
+        optionName: optionLabel,
+        resolvedItemId: chosenItemId,
         getEquipmentById,
         findEquipmentByName
       });
+      const sourceLabel = cls?.name ? `${cls.name} Starting Equipment` : 'Starting Equipment';
 
       if (resolvedItem) {
+        let resolvedName = resolvedItem.name;
+        if (optionLabel) {
+          // A line the player resolved shows what they picked, not the phrase they picked it from.
+          resolvedName = chosenItemId && getEquipmentById(chosenItemId)
+            ? replaceEquipmentChoicePlaceholder(optionLabel, resolvedItem.name)
+            : optionLabel;
+        }
+
         return {
           equipmentId: entry.equipmentId,
           quantity: entry.quantity,
           equipped: entry.equipped,
-          name: bundledEntry?.name ?? option?.name ?? resolvedItem.name,
+          name: resolvedName,
           type: resolvedItem.type,
           item: resolvedItem,
-          sourceLabel: cls?.name ? `${cls.name} Starting Equipment` : 'Starting Equipment'
+          sourceLabel
         };
       }
 
@@ -1625,9 +1672,9 @@ export const resolveCharacterEquipment = ({
         equipmentId: entry.equipmentId,
         quantity: entry.quantity,
         equipped: entry.equipped,
-        name: bundledEntry?.name ?? option?.name ?? humanizeFallbackId(childSlug || optionSlug || entry.equipmentId),
+        name: optionLabel ?? humanizeFallbackId(childSlug || optionSlug || entry.equipmentId),
         type: bundledEntry?.type ?? option?.type ?? 'gear',
-        sourceLabel: cls?.name ? `${cls.name} Starting Equipment` : 'Starting Equipment'
+        sourceLabel
       };
     }
 
