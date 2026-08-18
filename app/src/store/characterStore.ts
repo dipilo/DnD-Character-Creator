@@ -11,6 +11,7 @@ import {
   resolveCharacterClasses
 } from '@/lib/builderRules';
 import type { Character, CharacterSummary, BuilderState, BuilderStep, AbilityScores } from '@/types/dnd';
+import { dndContent } from '@/data/contentResolvers';
 import type { CharacterSyncMeta, PendingSeat } from '@/store/syncTypes';
 
 /**
@@ -237,17 +238,17 @@ export const useCharacterStore = create<CharacterState>()(
       updateBuilderCharacter: (updates) => {
         set((state) => {
           const nextCharacter = { ...state.builderState.character, ...updates };
-          const species = nextCharacter.speciesId ? getRuntimeSpeciesById(nextCharacter.speciesId) : undefined;
+          const species = nextCharacter.speciesId ? dndContent().getRuntimeSpeciesById(nextCharacter.speciesId) : undefined;
           const variant = nextCharacter.speciesId && nextCharacter.variantId
-            ? getRuntimeSpeciesVariant(nextCharacter.speciesId, nextCharacter.variantId)
+            ? dndContent().getRuntimeSpeciesVariant(nextCharacter.speciesId, nextCharacter.variantId)
             : undefined;
-          const background = nextCharacter.backgroundId ? getRuntimeBackgroundById(nextCharacter.backgroundId) : undefined;
-          const grantedBackgroundFeat = resolveBackgroundGrantedFeat(background, getRuntimeFeats());
+          const background = nextCharacter.backgroundId ? dndContent().getRuntimeBackgroundById(nextCharacter.backgroundId) : undefined;
+          const grantedBackgroundFeat = resolveBackgroundGrantedFeat(background, dndContent().getRuntimeFeats());
           const selectedFeats = Array.from(new Set([
             ...(grantedBackgroundFeat ? [grantedBackgroundFeat.id] : []),
             ...(nextCharacter.feats ?? [])
           ]))
-            .map((featId) => getRuntimeFeatById(featId))
+            .map((featId) => dndContent().getRuntimeFeatById(featId))
             .filter((feat): feat is NonNullable<typeof feat> => Boolean(feat));
 
           nextCharacter.abilityScoreBonuses = deriveAbilityScoreBonuses({
@@ -265,7 +266,7 @@ export const useCharacterStore = create<CharacterState>()(
             classes: nextCharacter.classes ?? [],
             abilityScores: totalAbilityScores,
             previousHp: nextCharacter.hp,
-            getClassById: getRuntimeClassById
+            getClassById: dndContent().getRuntimeClassById
           });
 
           return {
@@ -283,19 +284,19 @@ export const useCharacterStore = create<CharacterState>()(
           return false;
         }
 
-        const species = character.speciesId ? getRuntimeSpeciesById(character.speciesId) : undefined;
+        const species = character.speciesId ? dndContent().getRuntimeSpeciesById(character.speciesId) : undefined;
         const variant = character.speciesId && character.variantId
-          ? getRuntimeSpeciesVariant(character.speciesId, character.variantId)
+          ? dndContent().getRuntimeSpeciesVariant(character.speciesId, character.variantId)
           : undefined;
-        const background = character.backgroundId ? getRuntimeBackgroundById(character.backgroundId) : undefined;
+        const background = character.backgroundId ? dndContent().getRuntimeBackgroundById(character.backgroundId) : undefined;
         // Repair stored class ids first: a character saved against an older printing keeps that
         // printing's id, and every step that resolves a class by exact id then behaves as though
         // the character had no class at all.
-        const classes = normalizeCharacterClassIds(character.classes, getRuntimeClassById);
+        const classes = normalizeCharacterClassIds(character.classes, dndContent().getRuntimeClassById);
         const resolvedClasses = resolveCharacterClasses({
           classes,
-          getClassById: getRuntimeClassById,
-          getSubclassById: getRuntimeSubclass
+          getClassById: dndContent().getRuntimeClassById,
+          getSubclassById: dndContent().getRuntimeSubclass
         });
         const abilityScoreEntry = resolveAbilityScoreEntryState(character);
 
@@ -342,21 +343,11 @@ export const useCharacterStore = create<CharacterState>()(
   )
 );
 
-import {
-  getRuntimeBackgroundById,
-  getRuntimeClassById,
-  getRuntimeFeatById,
-  getRuntimeFeats,
-  getRuntimeSpeciesById,
-  getRuntimeSpeciesVariant,
-  getRuntimeSubclass
-} from '@/data';
-
 export const useCharacterSummaries = (): CharacterSummary[] => {
   const { characters } = useCharacterStore();
   
   return characters.map((char) => {
-    const speciesData = getRuntimeSpeciesById(char.speciesId);
+    const speciesData = dndContent().getRuntimeSpeciesById(char.speciesId);
     
     const totalLevel = char.classes?.reduce((sum, c) => sum + c.level, 0) || 1;
     
@@ -366,7 +357,7 @@ export const useCharacterSummaries = (): CharacterSummary[] => {
       avatar: char.portrait?.imageDataUrl || char.avatar,
       speciesName: speciesData?.name || 'Unknown Species',
       classSummary: char.classes?.map(c => {
-        const cls = getRuntimeClassById(c.classId);
+        const cls = dndContent().getRuntimeClassById(c.classId);
         return `${cls?.name || 'Unknown'} ${c.level}`;
       }).join(' / ') || 'No Class',
       level: totalLevel,

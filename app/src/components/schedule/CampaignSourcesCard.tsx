@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { SourceFilterBar } from '@/components/SourceFilterBar';
 import { getContentSourceLabel } from '@/data/librarySources';
+import { getGameSystem } from '@/data/gameSystems';
 import { useCampaignStore } from '@/store/campaignStore';
 
 interface CampaignSourcesCardProps {
@@ -32,6 +33,10 @@ export function CampaignSourcesCard({ campaign, canEdit }: Readonly<CampaignSour
   const [saving, setSaving] = useState(false);
 
   if (!campaign) return null;
+  // A campaign belongs to one game, and only some games have a library to choose from. Kids on
+  // Bikes is a single core rulebook, so this card offered a D&D book list on a table that can
+  // never use one. The registry answers it, so a third system does not need this file edited.
+  if (!getGameSystem(campaign.system_id).hasSelectableSources) return null;
 
   const stored = parseAllowedSourceIds(campaign);
   const selected = draft ?? stored;

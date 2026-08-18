@@ -124,7 +124,7 @@ export function PartyPage() {
         </div>
       </div>
 
-      {usesBuilderState && allowedSourceIds.length > 0 ? (
+      {system.hasSelectableSources && allowedSourceIds.length > 0 ? (
         <p className="text-xs text-muted-foreground">
           New characters start filtered to this campaign's {allowedSourceIds.length} allowed source
           {allowedSourceIds.length === 1 ? '' : 's'}.

@@ -10,7 +10,6 @@
  * Direction still holds: this module imports the stores and no store imports it.
  */
 import { DEFAULT_GAME_SYSTEM_ID, type GameSystemId } from '@/data/gameSystems';
-import { describeCharacter } from '@/lib/characterSummary';
 import { describeKobCharacter, fullName } from '@/data/gameSystems/kidsOnBikes/rules';
 import { useCharacterStore } from '@/store/characterStore';
 import { useKobCharacterStore } from '@/store/kobCharacterStore';
@@ -36,8 +35,15 @@ export interface DocumentStoreAdapter<T extends StoredDocument = StoredDocument>
   setPendingSeat: (id: string, seat: PendingSeat | null) => void;
   /** The row's `name` column, which is what a list falls back to when there is no summary. */
   nameOf: (document: T) => string;
-  /** The denormalised display line the party view lists by. */
-  describe: (document: T) => string;
+  /**
+   * The denormalised display line the party view lists by.
+   *
+   * Async because resolving a D&D character's species and class names needs the whole content
+   * library, and a static import of it here put all 23 source packs — 5.75 MB — into the boot
+   * graph: `main.tsx` starts the sync watcher, which imports this module. Every page paid for it,
+   * including the ones with no D&D content on them at all. Both call sites already await.
+   */
+  describe: (document: T) => Promise<string>;
   /** The document as the server should store it: the row's id wins over whatever the copy carried. */
   withId: (document: T, id: string) => T;
   /** A copy kept aside when both sides changed. Never overwrites, never discards. */
@@ -64,7 +70,10 @@ const dndAdapter: DocumentStoreAdapter<Character> = {
   clearPendingDelete: (id) => dndStore().clearPendingDelete(id),
   setPendingSeat: (id, seat) => dndStore().setPendingSeat(id, seat),
   nameOf: (document) => document.name,
-  describe: (document) => describeCharacter(document),
+  describe: async (document) => {
+    const { describeCharacter } = await import('@/lib/characterSummary');
+    return describeCharacter(document);
+  },
   withId: (document, id) => (document.id === id ? document : { ...document, id }),
   conflictCopy: (document) => ({
     ...document,
@@ -98,7 +107,7 @@ const kobAdapter: DocumentStoreAdapter<KobCharacter> = {
   clearPendingDelete: (id) => kobStore().clearPendingDelete(id),
   setPendingSeat: (id, seat) => kobStore().setPendingSeat(id, seat),
   nameOf: (document) => fullName(document) || 'Unnamed',
-  describe: (document) => describeKobCharacter(document),
+  describe: (document) => Promise.resolve(describeKobCharacter(document)),
   withId: (document, id) => (document.id === id ? document : { ...document, id }),
   conflictCopy: (document) => ({
     ...document,

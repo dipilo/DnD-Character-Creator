@@ -88,6 +88,16 @@ export interface GameSystemDefinition {
   navItems: GameSystemNavItem[];
   /** False while a system is still being built out — it stays visible but is not selectable. */
   available: boolean;
+  /**
+   * Whether this system's content comes from a library of separately selectable books.
+   *
+   * D&D does: a campaign agrees which of ~20 source packs are in play and that seeds the builder's
+   * filter. Kids on Bikes is a single core rulebook, so a campaign has nothing to choose between
+   * and "Sources in play" was an empty control offering a D&D book list on a Kids on Bikes table.
+   * It is a capability rather than an id check because CLAUDE.md rules out branching on a system id
+   * — a third system declares its own answer here instead of editing the campaign screens.
+   */
+  hasSelectableSources: boolean;
   theme: GameSystemTheme;
 }
 
@@ -134,6 +144,7 @@ export const GAME_SYSTEMS: Record<GameSystemId, GameSystemDefinition> = {
       },
     ],
     available: true,
+    hasSelectableSources: true,
     theme: {
       label: 'Dungeons & Dragons',
       // The book red, dropped in luminance for a dark surface so large fills stay readable.
@@ -182,6 +193,7 @@ export const GAME_SYSTEMS: Record<GameSystemId, GameSystemDefinition> = {
       },
     ],
     available: true,
+    hasSelectableSources: false,
     theme: {
       // Eighties VHS: magenta against cyan over a violet-tinted night.
       label: 'Kids on Bikes',

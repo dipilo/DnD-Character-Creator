@@ -62,19 +62,18 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
+        // A manual chunk is a promise that the chunk is worth naming, and Rollup keeps it whole:
+        // naming a package here can promote it out of a lazy route's subtree into a *static* import
+        // of the entry. That is how `@3d-dice/dice-box` (2.6 MB) came to be modulepreloaded by
+        // `index.html` on every page load, though only `/dice` and the ability-score roller mount
+        // it and nothing in `src` imports it outside those lazy routes. Left unnamed, Rollup splits
+        // it correctly. After touching this, measure `dist/index.html`'s modulepreload list — chunk
+        // sizes alone do not show what boot actually pays for.
         manualChunks(id) {
           const normalizedId = id.replaceAll('\\', '/');
 
           if (normalizedId.includes('/src/data/sourceFiles/')) {
             return `source-${path.basename(normalizedId, path.extname(normalizedId))}`;
-          }
-
-          if (normalizedId.includes('/node_modules/@3d-dice/dice-box/')) {
-            return 'vendor-dice-box';
-          }
-
-          if (normalizedId.includes('/node_modules/@babylonjs/')) {
-            return 'vendor-babylon';
           }
 
           if (normalizedId.includes('/node_modules/react/') || normalizedId.includes('/node_modules/react-dom/') || normalizedId.includes('/node_modules/react-router')) {

@@ -199,7 +199,7 @@ export async function pushCharacter(store: DocumentStoreAdapter, id: string): Pr
   try {
     // `summary` is the denormalised display line the party view lists by; it has to ride along on
     // every write or a campaign-mate sees a stale level after a level-up.
-    const payload = { name: store.nameOf(character), summary: store.describe(character), data: character };
+    const payload = { name: store.nameOf(character), summary: await store.describe(character), data: character };
     if (meta?.version == null) {
       const created = await createCharacter({ id, ...payload });
       store.markSynced(id, created.version, !unchangedSince(store, id, character));
@@ -385,12 +385,12 @@ export async function uploadLocalCharacters(): Promise<{ imported: number; skipp
   setSyncState({ uploading: true });
   try {
     const result = await importCharacters(
-      entries.map(({ store, document }) => ({
+      await Promise.all(entries.map(async ({ store, document }) => ({
         id: document.id,
         name: store.nameOf(document),
-        summary: store.describe(document),
+        summary: await store.describe(document),
         data: document,
-      })),
+      }))),
     );
     for (const id of result.imported) {
       const entry = byId.get(id);
