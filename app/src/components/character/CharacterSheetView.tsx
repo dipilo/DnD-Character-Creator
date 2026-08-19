@@ -38,6 +38,8 @@ import {
   sortFeaturesByLevel
 } from '@/lib/builderRules';
 import { deriveAttacks, deriveSheetVitals } from '@/lib/sheetDerivations';
+import { modifierNotation } from '@/lib/diceNotation';
+import { rollOnScreen } from '@/store/diceTrayStore';
 import { SheetAttacksPanel } from '@/components/character/SheetAttacksPanel';
 import { SheetEquipmentPanel } from '@/components/character/SheetEquipmentPanel';
 import { SheetHitPointsPanel } from '@/components/character/SheetHitPointsPanel';
@@ -357,8 +359,20 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
                 {Object.entries(displayedAbilityScores).map(([ability, score]) => {
                   const mod = calculateModifier(score);
                   const bonus = abilityBonusFor(ability as keyof AbilityScores);
+                  const abilityLabel = ability.charAt(0).toUpperCase() + ability.slice(1);
                   return (
-                    <div key={ability} className="rounded-lg border p-2 text-center sm:p-4">
+                    <button
+                      key={ability}
+                      type="button"
+                      className="rounded-lg border p-2 text-center transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:p-4"
+                      onClick={() =>
+                        void rollOnScreen({
+                          notation: modifierNotation(20, mod),
+                          label: `${abilityLabel} check`,
+                          detail: 'd20 check',
+                        })
+                      }
+                    >
                       <p className="mb-1 text-xs uppercase text-muted-foreground">{ability}</p>
                       <p className="text-2xl font-bold sm:text-3xl">{score}</p>
                       <Badge variant={mod >= 0 ? 'default' : 'secondary'} className="mt-1">
@@ -369,7 +383,7 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
                           Base {character.abilityScores[ability as keyof AbilityScores]}, bonus {formatModifier(bonus)}
                         </p>
                       )}
-                    </div>
+                    </button>
                   );
                 })}
               </div>
@@ -412,6 +426,7 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
             hitDice={hitDicePools}
             slotsByLevel={spellcastingRules.slotsByLevel}
             pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
+            constitutionModifier={calculateModifier(displayedAbilityScores.constitution)}
             onChange={onChange}
           />
 

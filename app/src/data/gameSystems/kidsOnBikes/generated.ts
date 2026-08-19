@@ -12,11 +12,10 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
     "systemId": "kids-on-bikes",
     "label": "Kids on Bikes (2nd Edition)",
     "source": "Obsidian vault notes",
-    "importedAt": "2026-08-14",
+    "importedAt": "2026-08-18",
     "warnings": [
-      "Trope \"Dedicated Farmer\": stat cell reads \"Charms\"; read as Charm.",
-      "Trope \"Aspiring Wannabe\": stat cell reads \"Brawns\"; read as Brawn.",
-      "Trope tables name colors the appendices do not define: While, Yellow"
+      "Trope tables name colors the appendices do not define: While, Yellow",
+      "Playing The Game: Lucky Breaks has a heading but no text in the vault."
     ]
   },
   "stats": [
@@ -2048,6 +2047,82 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
       {
         "roll": 20,
         "question": "You know that this character is interested in getting to know you. How did you find that out?"
+      }
+    ]
+  },
+  "playRules": {
+    "sections": [
+      {
+        "id": "stat-checks",
+        "name": "Stat Checks",
+        "paragraphs": [
+          "When you do something that runs the risk of failure, the GM will have you make a Stat Check. You'll let the GM know what you want to do and agree on a stat that you'll use. Then, they'll set a numerical difficulty for the action and let you know what it is.",
+          "If you roll the maximum value of the die, you get a Lucky Break—meaning that you reroll the die and add the maximum value that you rolled the first time to the new roll. You can get multiple Lucky Breaks on a single check.",
+          "After rolling, you and any players whose characters are with you may spend Adversity Tokens to increase your result."
+        ]
+      },
+      {
+        "id": "failing-a-roll",
+        "name": "Failing A Roll",
+        "paragraphs": [
+          "Failing a roll gives you an Adversity Token, which you can use to succeed when you really need it or to activate your character's Strengths."
+        ]
+      },
+      {
+        "id": "adversity-tokens",
+        "name": "Adversity Tokens",
+        "paragraphs": [
+          "Adversity Tokens (or AT) can be used to improve subsequent rolls, activate Strengths, or, with the GM's permission, ignore your Fears."
+        ]
+      },
+      {
+        "id": "lucky-breaks",
+        "name": "Lucky Breaks",
+        "paragraphs": []
+      }
+    ],
+    "difficulties": [
+      {
+        "range": "20 or greater",
+        "minimum": 20,
+        "maximum": null,
+        "explanation": "A task at which only the most incredible could even possibly succeed—but if they succeed, it will be one of the most impressive things a character has ever done. This is a nearly guaranteed failure.\n*Examples: Lifting a car off of someone trapped under it; solving a nearly impossible math problem just by glancing at it.*"
+      },
+      {
+        "range": "17 to 19",
+        "minimum": 17,
+        "maximum": 19,
+        "explanation": "A task where success would be incredible and impressive. This, too, is a nearly guaranteed failure.\n*Examples: Talking a police officer out of arresting you when you have clearly broken the law and have no relationship with the officer; breaking a school record in track.*"
+      },
+      {
+        "range": "13 to 16",
+        "minimum": 13,
+        "maximum": 16,
+        "explanation": "A task where success is extraordinary—but decidedly possible for those who are truly skilled at it.\n*Examples: Doing a flying side kick into the center of a wildly swinging punching bag; withstanding a police interrogation.*"
+      },
+      {
+        "range": "10 to 12",
+        "minimum": 10,
+        "maximum": 12,
+        "explanation": "A task where success is impressive—but unsurprising for those skilled at it.\n*Examples: A strong person prying open a heavy, locked door; a computer whiz repairing a computer quickly under pressure.*"
+      },
+      {
+        "range": "7 to 9",
+        "minimum": 7,
+        "maximum": 9,
+        "explanation": "A task where success is almost certain for those very skilled at it—but not for those who aren’t.\n*Examples: Convincing the principal that it wasn’t you and your friends who started the cafeteria food fight; running a message from one end of a building to the other in a very short time.*"
+      },
+      {
+        "range": "3 to 6",
+        "minimum": 3,
+        "maximum": 6,
+        "explanation": "A task where success is likely for all but those who aren’t skilled or have a low stat in that field.\n*Examples: Throwing a good punch into punching bag; a character silently withstanding a verbal berating.*"
+      },
+      {
+        "range": "1 or 2",
+        "minimum": 1,
+        "maximum": 2,
+        "explanation": "A task where success is nearly guaranteed, except in extreme cases.\n*Examples: A character lifting a 10-pound weight over their head; a character reciting a multiplication table.*"
       }
     ]
   }

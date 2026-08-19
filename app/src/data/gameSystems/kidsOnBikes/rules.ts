@@ -3,6 +3,8 @@ import type {
   KobAgeRules,
   KobBikeOption,
   KobDie,
+  KobDifficultyBand,
+  KobRuleSection,
   KobStatId,
   KobStrength,
   KobTrope,
@@ -109,6 +111,23 @@ export function needsSkilledAt(character: Pick<KobCharacter, 'age' | 'strengthId
   const free = freeStrengthForAge(character.age);
   if (free?.id === 'skilled-at') return true;
   return character.strengthIds.includes('skilled-at');
+}
+
+/** One `#` section of the play rules, by its slug. */
+export function getPlayRuleSection(id: string): KobRuleSection | null {
+  return kob.playRules.sections.find((section) => section.id === id) ?? null;
+}
+
+/**
+ * The difficulty band a rolled total lands in, read off the imported table rather than a scale
+ * written into the sheet. Null when the total is below the lowest band the table states.
+ */
+export function difficultyBandFor(total: number): KobDifficultyBand | null {
+  return (
+    kob.playRules.difficulties.find(
+      (band) => total >= band.minimum && (band.maximum === null || total <= band.maximum),
+    ) ?? null
+  );
 }
 
 /** The two questions a trope asks, so the builder can render exactly as many answer fields. */

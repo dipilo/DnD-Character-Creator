@@ -197,6 +197,92 @@ function readStrengthEligibility(description) {
 // ---------------------------------------------------------------------------------------------
 
 /**
+ * The play rules: what a Stat Check is, the Lucky Break, what failing a roll gives you, and the
+ * difficulty table. The app rolls dice, so the numbers a result is read against have to come from
+ * the note rather than from a table typed into a component.
+ *
+ * The note writes its prose as blockquotes and its difficulties as one table, both under `#`
+ * headings.
+ */
+function parsePlayRules(text) {
+  const lines = stripFrontmatter(text).split(/\r?\n/);
+  const sections = [];
+  const difficulties = [];
+
+  let current = null;
+  for (const line of lines) {
+    const heading = /^#\s+(?<name>.+?)\s*$/.exec(line);
+    if (heading) {
+      const name = cleanCell(heading.groups.name);
+      current = { id: slugify(name), name, paragraphs: [] };
+      sections.push(current);
+      continue;
+    }
+
+    const quoted = /^>\s?(?<body>.*)$/.exec(line);
+    if (quoted && current) {
+      const body = dropSectionPointers(stripBlockId(cleanCell(quoted.groups.body)));
+      if (body) current.paragraphs.push(body);
+      continue;
+    }
+
+    const cells = tableCells(line);
+    if (cells.length >= 2) {
+      const band = readDifficultyBand(cells[0], cells[1]);
+      if (band) difficulties.push(band);
+    }
+  }
+
+  const empty = sections.filter((section) => section.paragraphs.length === 0).map((section) => section.name);
+  if (empty.length > 0) {
+    warn(`Playing The Game: ${empty.join(', ')} ${empty.length === 1 ? 'has' : 'have'} a heading but no text in the vault.`);
+  }
+  if (difficulties.length === 0) warn('Playing The Game: no difficulty bands parsed.');
+
+  return { sections, difficulties };
+}
+
+/**
+ * `[[#Lucky Breaks]]` is a link between headings of one note, and the app shows every section at
+ * once, so the sentence that carries it navigates nowhere. Drop the sentence, not just the link —
+ * "For more details, see ." is worse than either.
+ */
+function dropSectionPointers(text) {
+  return text
+    .replaceAll(/\s*(?:For more(?:\s+\w+)*, )?see "#[^"]*\.?"\.?/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+/**
+ * "20 or greater", "13 to 16", "1 or 2" — the bounds are what lets a rolled total be read against
+ * the table. A band whose wording does not state them is reported, never guessed at.
+ */
+function readDifficultyBand(rangeCell, explanationCell) {
+  const range = cleanCell(rangeCell);
+  const explanation = cleanCell(explanationCell);
+  if (!range || !explanation || /^-+$/.test(range) || /^difficul/i.test(range)) return null;
+
+  const orGreater = /^(\d+)\s+or\s+(?:greater|more|higher)$/i.exec(range);
+  if (orGreater) {
+    return { range, minimum: Number.parseInt(orGreater[1], 10), maximum: null, explanation };
+  }
+
+  const span = /^(\d+)\s+(?:to|-|–)\s+(\d+)$/i.exec(range);
+  if (span) {
+    return { range, minimum: Number.parseInt(span[1], 10), maximum: Number.parseInt(span[2], 10), explanation };
+  }
+
+  const either = /^(\d+)\s+or\s+(\d+)$/i.exec(range);
+  if (either) {
+    return { range, minimum: Number.parseInt(either[1], 10), maximum: Number.parseInt(either[2], 10), explanation };
+  }
+
+  warn(`Playing The Game: difficulty band "${range}" states no bounds this import can read.`);
+  return null;
+}
+
+/**
  * Age is mechanical, not flavour: it grants a Strength for free, may forbid one, and adds +1 to
  * two named stats. The Character Creation note states all three in one paragraph per age, so the
  * paragraph is the record — a table in the app would be the same rule written twice.
@@ -531,6 +617,7 @@ function main() {
   const negativeNote = readNote(vault, 'Appendices', 'Relationship Questions for a Character You Know (Negative).md');
   const strangerNote = readNote(vault, 'Appendices', 'Relationship Questions for a Character You Don\u2019t Know.md');
   const creationNote = readNote(vault, 'Character Creation.md');
+  const playNote = readNote(vault, 'Playing The Game.md');
 
   const tropes = tropesNote ? parseTropes(tropesNote) : [];
   const rawStrengths = strengthsNote ? parseBulletEntries(strengthsNote, { label: 'Strengths' }) : [];
@@ -567,6 +654,7 @@ function main() {
     bikes,
     bondedActions,
     relationshipQuestions,
+    playRules: playNote ? parsePlayRules(playNote) : { sections: [], difficulties: [] },
   };
 
   fs.mkdirSync(path.dirname(OUTPUT), { recursive: true });
@@ -577,6 +665,7 @@ function main() {
     `  ${tropes.length} tropes, ${strengths.length} strengths, ${flaws.length} flaws, ` +
       `${bikes.colors.length} bike colours, ${bikes.upgrades.length} upgrades, ` +
       `${bondedActions.length} bonded actions, ` +
+      `${data.playRules.sections.length} play-rule sections, ${data.playRules.difficulties.length} difficulty bands, ` +
       `${relationshipQuestions.positive.length}/${relationshipQuestions.negative.length}/${relationshipQuestions.stranger.length} relationship questions`,
   );
   if (warnings.length > 0) {

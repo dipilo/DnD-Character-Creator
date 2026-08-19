@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { DEFAULT_DICE_COLOR, type DiceColorMode } from '@/components/dice/DiceScene';
+import { DEFAULT_DICE_COLOR, type DiceColorMode } from '@/components/dice/diceOptions';
 
 interface DicePreferencesState {
   theme: string;

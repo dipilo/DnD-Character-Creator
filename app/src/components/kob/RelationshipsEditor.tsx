@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { kob } from '@/data/gameSystems/kidsOnBikes/rules';
 import type { KobRelationshipQuestion } from '@/data/gameSystems/kidsOnBikes/types';
+import { useCharacterPartyMates, type PartyMate } from '@/hooks/useCharacterPartyMates';
+import { rollOnScreen } from '@/store/diceTrayStore';
 import type { KobCharacter, KobRelationship } from '@/types/kob';
 
 interface RelationshipsEditorProps {
@@ -19,20 +21,26 @@ const QUESTION_KINDS: ReadonlyArray<{ value: KobRelationship['kind']; label: str
   { value: 'stranger', label: "Someone you don't know" },
 ];
 
+/** The option value that means "not one of the party's characters". */
+const FREE_TEXT_VALUE = 'free-text';
+
 function questionsFor(kind: KobRelationship['kind']): KobRelationshipQuestion[] {
   return kob.relationshipQuestions[kind];
 }
 
-/** The rules select a question by rolling a d20 against the list. */
-function rollQuestion(kind: KobRelationship['kind']): string {
-  const list = questionsFor(kind);
-  if (list.length === 0) return '';
-  const roll = Math.floor(Math.random() * list.length);
-  return list[roll].question;
+/** The list numbers its own entries, so a rolled result selects by that number, not by position. */
+function questionForRoll(list: KobRelationshipQuestion[], roll: number): string | undefined {
+  return (list.find((entry) => entry.roll === roll) ?? list[roll - 1])?.question;
+}
+
+function describeMate(mate: PartyMate): string {
+  const played = mate.playerName ?? mate.ownerName;
+  return played ? `${mate.name} — ${played}` : mate.name;
 }
 
 export function RelationshipsEditor({ character, onChange }: Readonly<RelationshipsEditorProps>) {
   const relationships = character.relationships;
+  const { mates } = useCharacterPartyMates(character.id);
 
   const update = (id: string, patch: Partial<KobRelationship>) => {
     onChange({
@@ -40,10 +48,41 @@ export function RelationshipsEditor({ character, onChange }: Readonly<Relationsh
     });
   };
 
+  /**
+   * The rules pick a question by rolling against the list, so the tray throws the die the list is
+   * as long as and the result selects the entry — the number on screen is the one that chose it.
+   */
+  const rollQuestion = async (entry: KobRelationship) => {
+    const list = questionsFor(entry.kind);
+    if (list.length === 0) return;
+
+    const outcome = await rollOnScreen({
+      notation: `1d${list.length}`,
+      label: 'Relationship question',
+      detail: QUESTION_KINDS.find((kind) => kind.value === entry.kind)?.label,
+      describeOutcome: (settled) => questionForRoll(list, settled.total) ?? null,
+    });
+
+    const question = questionForRoll(list, outcome.total);
+    if (question) update(entry.id, { question });
+  };
+
+  /** Picking a party-mate fills the name and keeps the pointer; going back to free text drops it. */
+  const selectMate = (entry: KobRelationship, value: string) => {
+    if (value === FREE_TEXT_VALUE) {
+      update(entry.id, { withCharacterId: null });
+      return;
+    }
+
+    const mate = mates.find((candidate) => candidate.id === value);
+    if (mate) update(entry.id, { withCharacterId: mate.id, who: mate.name });
+  };
+
   const add = () => {
     const entry: KobRelationship = {
       id: crypto.randomUUID(),
       who: '',
+      withCharacterId: null,
       connection: '',
       kind: 'positive',
       question: '',
@@ -74,102 +113,137 @@ export function RelationshipsEditor({ character, onChange }: Readonly<Relationsh
         </p>
       ) : null}
 
-      {relationships.map((entry) => (
-        <div key={entry.id} className="space-y-3 rounded-lg border p-3">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor={`rel-who-${entry.id}`}>Who</Label>
-              <Input
-                id={`rel-who-${entry.id}`}
-                value={entry.who}
-                onChange={(event) => update(entry.id, { who: event.target.value })}
-                placeholder="Oswald"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor={`rel-connection-${entry.id}`}>How you know them</Label>
-              <Input
-                id={`rel-connection-${entry.id}`}
-                value={entry.connection}
-                onChange={(event) => update(entry.id, { connection: event.target.value })}
-                placeholder="Neighbours since forever"
-              />
-            </div>
-          </div>
+      {relationships.map((entry) => {
+        const linkedMate = entry.withCharacterId
+          ? mates.find((mate) => mate.id === entry.withCharacterId)
+          : undefined;
 
-          <div className="flex flex-wrap items-end gap-2">
-            <div className="min-w-48 flex-1 space-y-1.5">
-              <Label htmlFor={`rel-kind-${entry.id}`}>Question list</Label>
-              <Select
-                value={entry.kind}
-                onValueChange={(value) =>
-                  update(entry.id, { kind: value as KobRelationship['kind'], question: '' })
+        return (
+          <div key={entry.id} className="space-y-3 rounded-lg border p-3">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor={`rel-who-${entry.id}`}>Who</Label>
+                {mates.length > 0 ? (
+                  <Select
+                    value={entry.withCharacterId ?? FREE_TEXT_VALUE}
+                    onValueChange={(value) => selectMate(entry, value)}
+                  >
+                    <SelectTrigger id={`rel-mate-${entry.id}`} className="h-11 w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={FREE_TEXT_VALUE}>Someone else — type a name</SelectItem>
+                      {mates.map((mate) => (
+                        <SelectItem key={mate.id} value={mate.id}>
+                          {describeMate(mate)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : null}
+                {/* The linked character keeps its own name; only a free-text relationship is typed.
+                    A pointer at a character that has since left the party still shows the name that
+                    was recorded, rather than blanking the field. */}
+                {entry.withCharacterId ? (
+                  <p className="text-xs text-muted-foreground">
+                    {linkedMate
+                      ? `Linked to ${linkedMate.name}${linkedMate.summary ? ` · ${linkedMate.summary}` : ''}`
+                      : `Linked to ${entry.who || 'a character'}, who is no longer at this table.`}
+                  </p>
+                ) : (
+                  <Input
+                    id={`rel-who-${entry.id}`}
+                    value={entry.who}
+                    onChange={(event) => update(entry.id, { who: event.target.value })}
+                    placeholder="Oswald"
+                  />
+                )}
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor={`rel-connection-${entry.id}`}>How you know them</Label>
+                <Input
+                  id={`rel-connection-${entry.id}`}
+                  value={entry.connection}
+                  onChange={(event) => update(entry.id, { connection: event.target.value })}
+                  placeholder="Neighbours since forever"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-end gap-2">
+              <div className="min-w-48 flex-1 space-y-1.5">
+                <Label htmlFor={`rel-kind-${entry.id}`}>Question list</Label>
+                <Select
+                  value={entry.kind}
+                  onValueChange={(value) =>
+                    update(entry.id, { kind: value as KobRelationship['kind'], question: '' })
+                  }
+                >
+                  <SelectTrigger id={`rel-kind-${entry.id}`} className="h-11 w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {QUESTION_KINDS.map((kind) => (
+                      <SelectItem key={kind.value} value={kind.value}>
+                        {kind.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                className="min-h-11"
+                onClick={() => void rollQuestion(entry)}
+              >
+                <Dices className="h-4 w-4" />
+                Roll a question
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="min-h-11"
+                aria-label="Remove this relationship"
+                onClick={() =>
+                  onChange({ relationships: relationships.filter((other) => other.id !== entry.id) })
                 }
               >
-                <SelectTrigger id={`rel-kind-${entry.id}`} className="h-11 w-full">
-                  <SelectValue />
+                <Trash2 className="h-4 w-4 text-destructive" />
+              </Button>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor={`rel-question-${entry.id}`}>Question</Label>
+              <Select
+                value={entry.question}
+                onValueChange={(value) => update(entry.id, { question: value })}
+              >
+                <SelectTrigger id={`rel-question-${entry.id}`} className="h-auto min-h-11 w-full">
+                  <SelectValue placeholder="Roll, or choose one" />
                 </SelectTrigger>
                 <SelectContent>
-                  {QUESTION_KINDS.map((kind) => (
-                    <SelectItem key={kind.value} value={kind.value}>
-                      {kind.label}
+                  {questionsFor(entry.kind).map((question) => (
+                    <SelectItem key={question.roll} value={question.question}>
+                      {question.roll}. {question.question}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            <Button
-              type="button"
-              variant="secondary"
-              className="min-h-11"
-              onClick={() => update(entry.id, { question: rollQuestion(entry.kind) })}
-            >
-              <Dices className="h-4 w-4" />
-              Roll a question
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="min-h-11"
-              aria-label="Remove this relationship"
-              onClick={() =>
-                onChange({ relationships: relationships.filter((other) => other.id !== entry.id) })
-              }
-            >
-              <Trash2 className="h-4 w-4 text-destructive" />
-            </Button>
-          </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor={`rel-question-${entry.id}`}>Question</Label>
-            <Select
-              value={entry.question}
-              onValueChange={(value) => update(entry.id, { question: value })}
-            >
-              <SelectTrigger id={`rel-question-${entry.id}`} className="h-auto min-h-11 w-full">
-                <SelectValue placeholder="Roll, or choose one" />
-              </SelectTrigger>
-              <SelectContent>
-                {questionsFor(entry.kind).map((question) => (
-                  <SelectItem key={question.roll} value={question.question}>
-                    {question.roll}. {question.question}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="space-y-1.5">
+              <Label htmlFor={`rel-answer-${entry.id}`}>Your answer</Label>
+              <Textarea
+                id={`rel-answer-${entry.id}`}
+                value={entry.answer}
+                onChange={(event) => update(entry.id, { answer: event.target.value })}
+              />
+            </div>
           </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor={`rel-answer-${entry.id}`}>Your answer</Label>
-            <Textarea
-              id={`rel-answer-${entry.id}`}
-              value={entry.answer}
-              onChange={(event) => update(entry.id, { answer: event.target.value })}
-            />
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

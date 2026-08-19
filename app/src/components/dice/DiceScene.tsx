@@ -2,8 +2,7 @@ import { forwardRef, useEffect, useId, useImperativeHandle, useRef, useState } f
 import DiceBox from '@3d-dice/dice-box';
 import { DiceAudioController } from '@/lib/diceAudio';
 import { expandDiceNotation as parseNotationDice, type DiceRollResult } from '@/lib/diceNotation';
-
-export const AVAILABLE_DICE_THEMES = ['default'] as const;
+import { AVAILABLE_DICE_THEMES, DEFAULT_DICE_COLOR, type DiceColorMode } from '@/components/dice/diceOptions';
 
 // Distinguishes each DiceBox instance's canvas so that a torn-down instance only
 // removes its own canvas, never a live sibling created during a remount race.
@@ -21,10 +20,6 @@ export interface DiceSceneHandle {
   roll: (notation: string) => Promise<DiceSceneResult[]>;
 }
 
-// dice-box's built-in default color; the "color" material of the default theme
-// is tinted with this hex value.
-export const DEFAULT_DICE_COLOR = '#2e8555';
-
 // Vibrant, visually distinct pool used when each die is colored independently.
 export const DEFAULT_DICE_PALETTE = [
   '#2e8555',
@@ -36,8 +31,6 @@ export const DEFAULT_DICE_PALETTE = [
   '#14b8a6',
   '#eab308'
 ] as const;
-
-export type DiceColorMode = 'single' | 'random' | 'random-any';
 
 // Sides we can safely expand into per-die groups. Anything else (fate dice,
 // exotic notation) falls back to a single-color roll so we never mis-parse.

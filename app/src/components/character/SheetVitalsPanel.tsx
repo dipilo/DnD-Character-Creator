@@ -4,33 +4,61 @@ import {
   formatModifier,
   type SheetVitals,
 } from '@/lib/sheetDerivations';
+import { modifierNotation } from '@/lib/diceNotation';
+import { rollOnScreen } from '@/store/diceTrayStore';
 import { cn } from '@/lib/utils';
 
-/** One boxed number, the way a play sheet leads with them. */
-function Stat({ label, value, hint }: Readonly<{ label: string; value: string; hint?: string }>) {
-  return (
-    <div className="rounded-lg border bg-card p-3 text-center">
+/** One boxed number, the way a play sheet leads with them. Rollable when a d20 check exists for it. */
+function Stat({
+  label,
+  value,
+  hint,
+  roll,
+}: Readonly<{ label: string; value: string; hint?: string; roll?: { label: string; modifier: number } }>) {
+  const body = (
+    <>
       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
       <p className="mt-1 text-2xl font-bold tabular-nums">{value}</p>
       {hint ? <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p> : null}
-    </div>
+    </>
+  );
+
+  if (!roll) {
+    return <div className="rounded-lg border bg-card p-3 text-center">{body}</div>;
+  }
+
+  return (
+    <button
+      type="button"
+      className="min-h-11 rounded-lg border bg-card p-3 text-center transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      onClick={() => void rollOnScreen({ notation: modifierNotation(20, roll.modifier), label: roll.label })}
+    >
+      {body}
+    </button>
   );
 }
 
 /**
  * Initiative, speed, the passive scores, saving throws and the skill table.
  *
- * Everything here is derived from the character document — no value on this panel is editable,
- * because none of them are things a player changes. The trackers that *are* (current HP, death
- * saves, spent slots) need document fields first; see SHEET_PARITY.md.
+ * Everything here is derived from the character document — no value is editable, because none of
+ * them are things a player changes. Rolling one is not editing it: a check goes to the shared dice
+ * tray and writes nothing back, which is why a read-only party view can roll from it too.
  */
 export function SheetVitalsPanel({ vitals }: Readonly<{ vitals: SheetVitals }>) {
+  const rollCheck = (label: string, modifier: number) =>
+    void rollOnScreen({ notation: modifierNotation(20, modifier), label, detail: 'd20 check' });
+
   return (
     <div className="space-y-4">
       {/* No proficiency bonus here: the headline card row above it already leads with one, and two
           copies of the same number read as two different stats. */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        <Stat label="Initiative" value={formatModifier(vitals.initiative)} />
+        <Stat
+          label="Initiative"
+          value={formatModifier(vitals.initiative)}
+          roll={{ label: 'Initiative', modifier: vitals.initiative }}
+        />
         <Stat label="Speed" value={`${vitals.speed} ft`} />
         <Stat label="Passive Perc." value={String(vitals.passivePerception)} />
         <Stat label="Passive Inv." value={String(vitals.passiveInvestigation)} />
@@ -44,12 +72,16 @@ export function SheetVitalsPanel({ vitals }: Readonly<{ vitals: SheetVitals }>) 
           </CardHeader>
           <CardContent className="space-y-1">
             {vitals.saves.map((save) => (
-              <div
+              <button
                 key={save.ability}
+                type="button"
                 className={cn(
-                  'flex items-center justify-between rounded px-2 py-1.5 text-sm',
+                  'flex min-h-11 w-full items-center justify-between rounded px-2 py-1.5 text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
                   save.proficient && 'bg-accent',
                 )}
+                onClick={() =>
+                  rollCheck(`${save.ability.charAt(0).toUpperCase()}${save.ability.slice(1)} save`, save.modifier)
+                }
               >
                 <span className="flex items-center gap-2">
                   <span
@@ -62,7 +94,7 @@ export function SheetVitalsPanel({ vitals }: Readonly<{ vitals: SheetVitals }>) 
                   <span className="capitalize">{save.ability}</span>
                 </span>
                 <span className="font-semibold tabular-nums">{formatModifier(save.modifier)}</span>
-              </div>
+              </button>
             ))}
           </CardContent>
         </Card>
@@ -76,12 +108,14 @@ export function SheetVitalsPanel({ vitals }: Readonly<{ vitals: SheetVitals }>) 
                 name onto a second line. */}
             <div className="grid gap-x-6 gap-y-1 sm:grid-cols-2">
               {vitals.skills.map((skill) => (
-                <div
+                <button
                   key={skill.name}
+                  type="button"
                   className={cn(
-                    'flex items-center justify-between gap-2 rounded px-2 py-1.5 text-sm',
+                    'flex min-h-11 w-full items-center justify-between gap-2 rounded px-2 py-1.5 text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
                     skill.proficient && 'bg-accent',
                   )}
+                  onClick={() => rollCheck(skill.name, skill.modifier)}
                 >
                   <span className="flex min-w-0 items-center gap-2">
                     <span
@@ -99,7 +133,7 @@ export function SheetVitalsPanel({ vitals }: Readonly<{ vitals: SheetVitals }>) 
                   <span className="shrink-0 font-semibold tabular-nums">
                     {formatModifier(skill.modifier)}
                   </span>
-                </div>
+                </button>
               ))}
             </div>
           </CardContent>
@@ -122,10 +156,17 @@ export function SheetVitalsPanel({ vitals }: Readonly<{ vitals: SheetVitals }>) 
                     {ABILITY_ABBREVIATIONS[entry.ability]}
                   </span>
                 </span>
-                <span className="tabular-nums text-muted-foreground">
-                  Save DC <span className="font-semibold text-foreground">{entry.saveDc}</span>
-                  {' · '}
-                  Attack <span className="font-semibold text-foreground">{formatModifier(entry.attackBonus)}</span>
+                <span className="flex flex-wrap items-center gap-2 tabular-nums text-muted-foreground">
+                  <span>
+                    Save DC <span className="font-semibold text-foreground">{entry.saveDc}</span>
+                  </span>
+                  <button
+                    type="button"
+                    className="min-h-11 rounded px-2 transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                    onClick={() => rollCheck(`${entry.className} spell attack`, entry.attackBonus)}
+                  >
+                    Attack <span className="font-semibold text-foreground">{formatModifier(entry.attackBonus)}</span>
+                  </button>
                 </span>
               </div>
             ))}

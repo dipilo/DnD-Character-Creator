@@ -72,6 +72,27 @@ export function setDeathSave(character: Character, kind: keyof DeathSaves, count
   return { deathSaves: { ...saves, [kind]: clamp(count, 0, MAX_DEATH_SAVES) } };
 }
 
+/**
+ * Record a rolled death save. A natural 20 is back on your feet with 1 hit point and a natural 1
+ * costs two failures, so the roll cannot simply be turned into a `setDeathSave` by the caller.
+ */
+export function applyDeathSaveRoll(character: Character, roll: number): Partial<Character> {
+  const saves = getDeathSaves(character);
+
+  if (roll >= 20) {
+    return {
+      deathSaves: EMPTY_DEATH_SAVES,
+      hp: { ...character.hp, current: Math.max(1, character.hp.current) }
+    };
+  }
+
+  if (roll >= 10) {
+    return { deathSaves: { ...saves, successes: clamp(saves.successes + 1, 0, MAX_DEATH_SAVES) } };
+  }
+
+  return { deathSaves: { ...saves, failures: clamp(saves.failures + (roll <= 1 ? 2 : 1), 0, MAX_DEATH_SAVES) } };
+}
+
 /** Spend or restore one class's hit dice. `delta` is +1 for spending, -1 for getting one back. */
 export function adjustHitDice(character: Character, classId: string, delta: number): Partial<Character> {
   return {

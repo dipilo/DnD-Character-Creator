@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AVAILABLE_DICE_THEMES, DiceScene, type DiceSceneHandle, type DiceSceneResult } from '@/components/dice/DiceScene';
+import { DiceScene, type DiceSceneHandle, type DiceSceneResult } from '@/components/dice/DiceScene';
+import { AVAILABLE_DICE_THEMES } from '@/components/dice/diceOptions';
 import { DiceAppearanceControls } from '@/components/dice/DiceAppearanceControls';
 import { DICE_PALETTE_COLORS } from '@/components/dice/dicePalette';
 import { useDicePreferencesStore } from '@/store/dicePreferencesStore';

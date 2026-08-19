@@ -450,6 +450,46 @@ function getAutomaticStartingEquipmentSelections(
   return selections;
 }
 
+type BackgroundEntry = NonNullable<ReturnType<typeof useContentLibrary>['backgrounds']>[number];
+
+/**
+ * The background's fixed lines, granted the same way a single-option class group is. Before this
+ * they were printed as prose and written nowhere, so a bedroll or a set of common clothes never
+ * reached the loadout, the armour-class calculation or the attacks panel.
+ */
+function getAutomaticBackgroundEquipmentSelections(
+  background: BackgroundEntry | undefined,
+  currentEquipment: EquipmentSelectionRecord[],
+  availableEquipment: EquipmentEntry[]
+) {
+  if (!background) {
+    return [];
+  }
+
+  const backgroundEdition = getRulesEdition(background.sourceId, background.source);
+  const selections: EquipmentSelectionRecord[] = [];
+
+  background.equipment.forEach((item, groupIndex) => {
+    // Both shapes are pending choices, and a pending choice is the player's to resolve.
+    if (item.alternatives?.length || getChoiceCandidates(item.name, availableEquipment, backgroundEdition).length > 0) {
+      return;
+    }
+
+    const prefix = `background::${background.id}::${groupIndex}::`;
+    if (currentEquipment.some((entry) => entry.equipmentId.startsWith(prefix))) {
+      return;
+    }
+
+    selections.push({
+      equipmentId: `${prefix}${slugify(item.name)}`,
+      quantity: getEquipmentSelectionQuantity(item),
+      equipped: false
+    });
+  });
+
+  return selections;
+}
+
 function getSelectedBackgroundEquipmentId(equipmentId?: string) {
   const parts = equipmentId?.split('::') ?? [];
   return parts[0] === 'background' ? parts[3] : undefined;
@@ -640,7 +680,10 @@ export function EquipmentSelectionPage() {
 
   useEffect(() => {
     const currentEquipment = builderState.character?.equipment || [];
-    const automaticSelections = getAutomaticStartingEquipmentSelections(selectedClasses, currentEquipment, equipment);
+    const automaticSelections = [
+      ...getAutomaticStartingEquipmentSelections(selectedClasses, currentEquipment, equipment),
+      ...getAutomaticBackgroundEquipmentSelections(background, currentEquipment, equipment)
+    ];
 
     if (automaticSelections.length === 0) {
       return;
@@ -649,7 +692,7 @@ export function EquipmentSelectionPage() {
     updateBuilderCharacter({
       equipment: [...currentEquipment, ...automaticSelections]
     });
-  }, [builderState.character?.equipment, equipment, selectedClasses, updateBuilderCharacter]);
+  }, [background, builderState.character?.equipment, equipment, selectedClasses, updateBuilderCharacter]);
 
   const equipmentTypes = useMemo(
     () => Array.from(new Set([...equipment.map((entry) => entry.type), ...semanticEquipmentFilters])).sort((left, right) => left.localeCompare(right)),
@@ -846,6 +889,9 @@ export function EquipmentSelectionPage() {
       <Card>
         <CardHeader>
           <CardTitle>Background Equipment</CardTitle>
+          <CardDescription>
+            Choose from each multiple-choice line. Fixed background items are included automatically.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {background ? (
@@ -954,8 +1000,9 @@ export function EquipmentSelectionPage() {
                 }
 
                 return (
-                  <div key={`${item.name}-${groupIndex}`} className="rounded-lg border p-3 text-sm text-muted-foreground">
-                    • {item.count ? `${item.count} ` : ''}{item.name}
+                  <div key={`${item.name}-${groupIndex}`} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3 text-sm text-muted-foreground">
+                    <span>• {item.count ? `${item.count} ` : ''}{item.name}</span>
+                    <Badge variant="outline">In your loadout</Badge>
                   </div>
                 );
               })}

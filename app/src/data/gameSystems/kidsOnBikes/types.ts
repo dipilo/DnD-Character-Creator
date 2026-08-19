@@ -104,6 +104,28 @@ export interface KobAgeRules {
   text: string;
 }
 
+/** One `#` heading of `Playing The Game.md`, with the blockquoted rule text under it. */
+export interface KobRuleSection {
+  id: string;
+  name: string;
+  paragraphs: string[];
+}
+
+/** One row of the difficulty table, with the bounds its wording states. */
+export interface KobDifficultyBand {
+  /** As printed: "20 or greater", "13 to 16", "1 or 2". */
+  range: string;
+  minimum: number;
+  /** Null for the open-ended top band. */
+  maximum: number | null;
+  explanation: string;
+}
+
+export interface KobPlayRules {
+  sections: KobRuleSection[];
+  difficulties: KobDifficultyBand[];
+}
+
 export interface KobContentMeta {
   systemId: string;
   label: string;
@@ -124,4 +146,5 @@ export interface KidsOnBikesContent {
   bikes: KobBikes;
   bondedActions: KobBondedAction[];
   relationshipQuestions: KobRelationshipQuestions;
+  playRules: KobPlayRules;
 }

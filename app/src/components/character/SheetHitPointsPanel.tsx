@@ -3,6 +3,7 @@
 // `onChange`, which is absent on the read-only party view, and then the panel renders as it always
 // did (numbers, no buttons).
 import { useState } from 'react';
+import { Dices } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +14,7 @@ import {
   MAX_DEATH_SAVES,
   MAX_EXHAUSTION,
   applyDamage,
+  applyDeathSaveRoll,
   applyHealing,
   getDeathSaves,
   isDying,
@@ -21,6 +23,7 @@ import {
   setTemporaryHitPoints,
   toggleCondition
 } from '@/lib/sheetPlayState';
+import { rollOnScreen } from '@/store/diceTrayStore';
 import { cn } from '@/lib/utils';
 import type { Character } from '@/types/dnd';
 
@@ -74,6 +77,14 @@ export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPo
   const [amount, setAmount] = useState('');
   const hp = character.hp;
   const deathSaves = getDeathSaves(character);
+
+  /** The tray reports the natural die, which is what the 20-and-1 special cases key off. */
+  const rollDeathSave = async () => {
+    const outcome = await rollOnScreen({ notation: '1d20', label: 'Death save', detail: 'DC 10' });
+    if (outcome.natural !== null) {
+      onChange?.(applyDeathSaveRoll(character, outcome.natural));
+    }
+  };
   const dying = isDying(character);
   const conditions = character.conditions ?? [];
   const exhaustion = character.exhaustion ?? 0;
@@ -146,7 +157,21 @@ export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPo
 
         {dying || deathSaves.successes > 0 || deathSaves.failures > 0 ? (
           <div className="space-y-2 rounded-lg border p-3">
-            <p className="text-sm font-medium">Death Saves</p>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm font-medium">Death Saves</p>
+              {onChange ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="min-h-11"
+                  onClick={() => void rollDeathSave()}
+                >
+                  <Dices className="h-4 w-4" />
+                  Roll
+                </Button>
+              ) : null}
+            </div>
             <DeathSaveRow
               label="Successes"
               count={deathSaves.successes}

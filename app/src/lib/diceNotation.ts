@@ -83,6 +83,16 @@ export function rollDiceNotation(notation: string): DiceRollResult[] | null {
   );
 }
 
+/**
+ * The notation a modified roll is thrown with — `1d20+3`, or a bare `1d20` when the modifier is
+ * zero, because "+0" on the tray reads as a bonus the character does not have.
+ */
+export function modifierNotation(sides: number, modifier: number, quantity = 1): string {
+  const base = `${quantity}d${sides}`;
+  if (modifier === 0) return base;
+  return modifier > 0 ? `${base}+${modifier}` : `${base}${modifier}`;
+}
+
 /** The number to show under Total: the dice that settled, plus the notation's own modifier. */
 export function totalDiceResults(results: DiceRollResult[], modifier: number): number {
   return results.reduce((sum, result) => sum + (result.value ?? 0), 0) + modifier;

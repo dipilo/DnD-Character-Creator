@@ -71,6 +71,12 @@ export interface KobRelationship {
   id: string;
   /** The other character, by name — they may not exist in this app at all. */
   who: string;
+  /**
+   * The party-mate this relationship points at, when it is one. A pointer, not the name: the other
+   * player may rename their character, and `who` keeps working for someone who is not in the app.
+   * Null on a relationship typed by hand, and on every one written before this field existed.
+   */
+  withCharacterId?: string | null;
   /** How the two know each other, in the player's words. */
   connection: string;
   /** Which question list the answer came from. */

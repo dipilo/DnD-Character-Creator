@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AccountMenu } from '@/components/auth/AccountMenu';
 import { AppearanceMenu } from '@/components/AppearanceMenu';
+import { DiceTray } from '@/components/dice/DiceTray';
 import { GameSystemMenu } from '@/components/GameSystemMenu';
 import type { GameSystemNavItem } from '@/data/gameSystems';
 import { resolveActiveGameSystem, useGameSystemStore } from '@/store/gameSystemStore';
@@ -149,6 +150,9 @@ export function Layout({ children }: Readonly<LayoutProps>) {
       <main className={mainClassName}>
         {children}
       </main>
+
+      {/* One surface for every roll the app makes; it renders nothing until something rolls. */}
+      <DiceTray />
 
       <footer className="pb-safe mt-auto border-t py-4 sm:py-6">
         <div className="mx-auto w-full max-w-7xl px-4 text-center text-xs text-muted-foreground">

@@ -4,6 +4,8 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { modifierNotation, parseDiceNotation } from '@/lib/diceNotation';
+import { rollOnScreen } from '@/store/diceTrayStore';
 import {
   adjustHitDice,
   applyLongRest,
@@ -29,6 +31,8 @@ interface SheetResourcesPanelProps {
   /** Slots per level, indexed by level - 1, exactly as `getSpellcastingRulesSummary` reports them. */
   slotsByLevel: number[];
   pactSlotsByLevel: number[];
+  /** Added to a spent hit die, the way the rules add it. Omitted where the sheet has not derived it. */
+  constitutionModifier?: number;
   onChange?: (patch: Partial<Character>) => void;
 }
 
@@ -74,8 +78,23 @@ export function SheetResourcesPanel({
   hitDice,
   slotsByLevel,
   pactSlotsByLevel,
+  constitutionModifier = 0,
   onChange
 }: Readonly<SheetResourcesPanelProps>) {
+  // Spending a hit die is spending it *to roll it*, so the die goes to the tray with the same
+  // click that marks it used. The healing itself stays the player's to apply: the rules let a
+  // short rest be interrupted, and the panel does not know whether this one finished.
+  const spendHitDie = (pool: HitDicePool) => {
+    onChange?.(adjustHitDice(character, pool.classId, 1));
+    const sides = parseDiceNotation(pool.die)?.groups[0]?.sides;
+    if (sides) {
+      void rollOnScreen({
+        notation: modifierNotation(sides, constitutionModifier),
+        label: `${pool.className} hit die`,
+        detail: 'Hit points regained on a short rest'
+      });
+    }
+  };
   const hasSlots = slotsByLevel.some((count) => count > 0) || pactSlotsByLevel.some((count) => count > 0);
   if (hitDice.length === 0 && !hasSlots) {
     return null;
@@ -112,9 +131,9 @@ export function SheetResourcesPanel({
                       variant="outline"
                       className="min-h-11"
                       disabled={pool.used >= pool.total}
-                      onClick={() => onChange(adjustHitDice(character, pool.classId, 1))}
+                      onClick={() => spendHitDie(pool)}
                     >
-                      Spend
+                      Spend &amp; roll
                     </Button>
                   </div>
                 ) : null}

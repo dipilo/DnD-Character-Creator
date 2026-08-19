@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { AVAILABLE_DICE_THEMES } from '@/components/dice/DiceScene';
+import { AVAILABLE_DICE_THEMES } from '@/components/dice/diceOptions';
 import { DICE_COLOR_SWATCHES } from '@/components/dice/dicePalette';
 import { useDicePreferencesStore } from '@/store/dicePreferencesStore';
 

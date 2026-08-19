@@ -7,7 +7,9 @@
 // It reads no store and performs no writes. `onChange` is the whole write surface, and its absence
 // is what makes the party view read-only.
 import type { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { Minus, Plus } from 'lucide-react';
+import { getGameSystem } from '@/data/gameSystems';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,6 +22,7 @@ import {
   getAgeRules,
   getBikeColor,
   getBikeUpgrade,
+  getPlayRuleSection,
   getStrength,
   getTrope,
   kob,
@@ -131,6 +134,9 @@ export function KobSheetView({ character, actions, leading, note, onChange }: Re
   const flaw = character.customFlaw || kob.flaws.find((entry) => entry.id === character.flawId)?.name || '';
   const questions = tropeQuestions(character.tropeId);
   const knacks = character.knacks.filter((knack) => knack.trim());
+  // The Lucky Break is the reason a stat is a button; the rule is quoted from the vault, never
+  // paraphrased here.
+  const statCheckRule = getPlayRuleSection('stat-checks')?.paragraphs[1] ?? null;
   const setTokens = (value: number) => onChange?.({ adversityTokens: Math.max(0, value) });
 
   return (
@@ -195,8 +201,9 @@ export function KobSheetView({ character, actions, leading, note, onChange }: Re
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Stats</CardTitle>
         </CardHeader>
-        <CardContent>
-          <StatSpread statDice={character.statDice} age={character.age} />
+        <CardContent className="space-y-3">
+          <StatSpread statDice={character.statDice} age={character.age} rollable />
+          {statCheckRule ? <p className="text-xs text-muted-foreground">{statCheckRule}</p> : null}
         </CardContent>
       </Card>
 
@@ -252,7 +259,18 @@ export function KobSheetView({ character, actions, leading, note, onChange }: Re
                 <div key={relationship.id} className="space-y-1">
                   {index > 0 ? <Separator className="mb-3" /> : null}
                   <p className="font-medium">
-                    {relationship.who || 'Someone'}
+                    {/* A relationship pointed at a party-mate opens their sheet; the route is the
+                        registry's, because this system does not spell another's out. */}
+                    {relationship.withCharacterId ? (
+                      <Link
+                        className="underline underline-offset-4 hover:text-brand"
+                        to={getGameSystem(character.systemId).sheetPath(relationship.withCharacterId)}
+                      >
+                        {relationship.who || 'Someone'}
+                      </Link>
+                    ) : (
+                      relationship.who || 'Someone'
+                    )}
                     {relationship.connection ? (
                       <span className="ml-2 text-sm font-normal text-muted-foreground">
                         {relationship.connection}
