@@ -18,11 +18,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { ConsentSheetPanel } from '@/components/kob/ConsentSheetPanel';
 import { StatSpread } from '@/components/kob/StatSpread';
 import {
+  bondedActionName,
   freeStrengthForAge,
   fullName,
   getAgeRules,
   getBikeColor,
   getBikeUpgrade,
+  getBondedAction,
   getPlayRuleSection,
   getStrength,
   getTrope,
@@ -40,6 +42,52 @@ function Field({ label, value }: Readonly<{ label: string; value: string }>) {
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
       <p className="mt-0.5 whitespace-pre-wrap text-sm">{value}</p>
     </div>
+  );
+}
+
+/**
+ * A Bonded Action is agreed between two players, so it prints the pair and the shared history
+ * they wrote — the mechanical line comes from the appendix, never from what was typed.
+ */
+function BondedActionsCard({ character }: Readonly<{ character: KobCharacter }>) {
+  return (
+    <Card className="lg:col-span-2">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base">Bonded Actions</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {character.bondedActions.map((entry, index) => {
+          const action = getBondedAction(entry.actionId);
+          const name = bondedActionName(entry) || 'Unnamed Bonded Action';
+          const withWhom = entry.withCharacter || 'someone';
+          return (
+            <div key={entry.id} className="space-y-1">
+              {index > 0 ? <Separator className="mb-3" /> : null}
+              <p className="font-medium">
+                {name}
+                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                  with{' '}
+                  {entry.withCharacterId ? (
+                    <Link
+                      className="underline underline-offset-4 hover:text-brand"
+                      to={getGameSystem(character.systemId).sheetPath(entry.withCharacterId)}
+                    >
+                      {withWhom}
+                    </Link>
+                  ) : (
+                    withWhom
+                  )}
+                </span>
+              </p>
+              {action ? <p className="text-sm text-muted-foreground">{action.description}</p> : null}
+              {entry.backstory.trim() ? (
+                <p className="whitespace-pre-wrap text-sm">{entry.backstory}</p>
+              ) : null}
+            </div>
+          );
+        })}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -289,6 +337,8 @@ export function KobSheetView({ character, actions, leading, note, onChange }: Re
             </CardContent>
           </Card>
         ) : null}
+
+        {character.bondedActions.length > 0 ? <BondedActionsCard character={character} /> : null}
 
         {questions.length > 0 && character.tropeAnswers.some((answer) => answer?.trim()) ? (
           <Card className="lg:col-span-2">

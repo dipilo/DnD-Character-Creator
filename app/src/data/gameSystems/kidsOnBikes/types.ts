@@ -54,6 +54,20 @@ export interface KobBondedAction {
   description: string;
 }
 
+/** An Obsidian callout, with the `+`/`-` the note wrote after its marker. */
+export interface KobCallout {
+  kind: string;
+  defaultOpen: boolean;
+  paragraphs: string[];
+}
+
+export interface KobBondedActions {
+  /** What a Bonded Action is, from Character Creation's own section. */
+  intro: string[];
+  callouts: KobCallout[];
+  actions: KobBondedAction[];
+}
+
 export interface KobRelationshipQuestion {
   /** The d20 result that selects this question. */
   roll: number;
@@ -144,7 +158,7 @@ export interface KidsOnBikesContent {
   strengths: KobStrength[];
   flaws: KobFlaw[];
   bikes: KobBikes;
-  bondedActions: KobBondedAction[];
+  bondedActions: KobBondedActions;
   relationshipQuestions: KobRelationshipQuestions;
   playRules: KobPlayRules;
 }

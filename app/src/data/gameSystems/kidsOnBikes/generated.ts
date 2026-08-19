@@ -12,7 +12,7 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
     "systemId": "kids-on-bikes",
     "label": "Kids on Bikes (2nd Edition)",
     "source": "Obsidian vault notes",
-    "importedAt": "2026-08-18",
+    "importedAt": "2026-08-19",
     "warnings": [
       "Trope tables name colors the appendices do not define: While, Yellow",
       "Playing The Game: Lucky Breaks has a heading but no text in the vault."
@@ -1725,83 +1725,106 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
       }
     ]
   },
-  "bondedActions": [
-    {
-      "id": "best-frenemies",
-      "name": "Best Frenemies",
-      "description": "After one of you succeeds on a roll and brags about their success, the other gets +3 on their next roll. If they succeed and brag, the first character gets +3 on their next roll, then the bonuses end."
-    },
-    {
-      "id": "calming-presence",
-      "name": "Calming Presence",
-      "description": "When one of you is exposed to a Fear, the other can talk them down, allowing them to ignore any impacts of that Fear."
-    },
-    {
-      "id": "deep-thinkers",
-      "name": "Deep Thinkers",
-      "description": "When making a relevant Brains check together, use either character’s roll, then add an additional +3 to that roll."
-    },
-    {
-      "id": "friends-cant",
-      "name": "Friends’ Cant",
-      "description": "As long as you and this character can communicate in writing or verbally, you can pass information to the other without anyone else understanding your meaning."
-    },
-    {
-      "id": "heavy-lifters",
-      "name": "Heavy Lifters",
-      "description": "When making a relevant Brawn check together, use either character’s roll, then add an additional +3 to that roll."
-    },
-    {
-      "id": "helpful-mentorship",
-      "name": "Helpful Mentorship",
-      "description": "When the mentee in the relationship fails a roll, the mentor can offer advice. If they do, both characters gain 2 AT."
-    },
-    {
-      "id": "known-location",
-      "name": "Known Location",
-      "description": "Either character can intuit the location of the other, regardless of how improbable their location is and regardless of how little information the other has."
-    },
-    {
-      "id": "mind-readers",
-      "name": "Mind Readers",
-      "description": "By making eye contact, both characters can, within reason, communicate what they’re thinking to each other."
-    },
-    {
-      "id": "no-look-pass",
-      "name": "No-Look Pass",
-      "description": "One character may throw the other player an object that both can easily lift, and the other character can catch it without looking and without making a check."
-    },
-    {
-      "id": "relay-team",
-      "name": "Relay Team",
-      "description": "When making a relevant Flight check together, use either character’s roll, then add an additional +3 to that roll."
-    },
-    {
-      "id": "standup-comedians",
-      "name": "Standup Comedians",
-      "description": "The two characters can, within reason, keep the attention of a crowd by being incredibly funny together."
-    },
-    {
-      "id": "sweet-talkers",
-      "name": "Sweet Talkers",
-      "description": "When making a relevant Charm check together, use either character’s roll, then add an additional +3 to that roll."
-    },
-    {
-      "id": "sworn-protector",
-      "name": "Sworn Protector",
-      "description": "Either character can suffer the effects of the other character’s failed check to protect them."
-    },
-    {
-      "id": "tag-team",
-      "name": "Tag Team",
-      "description": "When making a relevant Fight check together, use either character’s roll, then add an additional +3 to that roll."
-    },
-    {
-      "id": "tough-cookies",
-      "name": "Tough Cookies",
-      "description": "When making a relevant Grit check together, use either character’s roll, then add an additional +3 to that roll."
-    }
-  ],
+  "bondedActions": {
+    "intro": [
+      "After answering relationship questions, you and another character who know each other very well may agree to have your characters have a Bonded Action. This benefit enables the two of you, once per session, to do something together that you’ve practiced many times before.",
+      "This practice will allow you to make collaborative checks more easily. Narratively, after selecting this Bonded Action, the two of you explain the backstory of these shared experiences, giving at least three meaningful experiences you’ve had together related to it and any other details you would like.",
+      "Your relationships with other characters will change and grow as the campaign goes on. Between arcs, you’ll have the chance to gain new Bonded Actions, change existing ones, or, if a relationship has become less close, end ones you have."
+    ],
+    "callouts": [
+      {
+        "kind": "tip",
+        "defaultOpen": true,
+        "paragraphs": [
+          "If you don’t see one in the chart that would make sense for you and another character, talk to them and the GM and make up a new one."
+        ]
+      },
+      {
+        "kind": "example",
+        "defaultOpen": false,
+        "paragraphs": [
+          "For example, while Isabella doesn’t have an especially close relationship with either of the other characters, Kalsang and Oswald do. With Kalsang being older and a mentor figure to Oswald, Helpful Mentorship could make sense. They also think that Friends’ Cant could work, since they’ve read and talked about so many fantasy novels. They decide that this is the most interesting to them, establishing that they can communicate information through references to books that they’ve both read and inside jokes that they have about characters and events in those texts. Even if someone has also read The Hobbit, they won’t know the shorthand that they’ve developed over the years."
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "best-frenemies",
+        "name": "Best Frenemies",
+        "description": "After one of you succeeds on a roll and brags about their success, the other gets +3 on their next roll. If they succeed and brag, the first character gets +3 on their next roll, then the bonuses end."
+      },
+      {
+        "id": "calming-presence",
+        "name": "Calming Presence",
+        "description": "When one of you is exposed to a Fear, the other can talk them down, allowing them to ignore any impacts of that Fear."
+      },
+      {
+        "id": "deep-thinkers",
+        "name": "Deep Thinkers",
+        "description": "When making a relevant Brains check together, use either character’s roll, then add an additional +3 to that roll."
+      },
+      {
+        "id": "friends-cant",
+        "name": "Friends’ Cant",
+        "description": "As long as you and this character can communicate in writing or verbally, you can pass information to the other without anyone else understanding your meaning."
+      },
+      {
+        "id": "heavy-lifters",
+        "name": "Heavy Lifters",
+        "description": "When making a relevant Brawn check together, use either character’s roll, then add an additional +3 to that roll."
+      },
+      {
+        "id": "helpful-mentorship",
+        "name": "Helpful Mentorship",
+        "description": "When the mentee in the relationship fails a roll, the mentor can offer advice. If they do, both characters gain 2 AT."
+      },
+      {
+        "id": "known-location",
+        "name": "Known Location",
+        "description": "Either character can intuit the location of the other, regardless of how improbable their location is and regardless of how little information the other has."
+      },
+      {
+        "id": "mind-readers",
+        "name": "Mind Readers",
+        "description": "By making eye contact, both characters can, within reason, communicate what they’re thinking to each other."
+      },
+      {
+        "id": "no-look-pass",
+        "name": "No-Look Pass",
+        "description": "One character may throw the other player an object that both can easily lift, and the other character can catch it without looking and without making a check."
+      },
+      {
+        "id": "relay-team",
+        "name": "Relay Team",
+        "description": "When making a relevant Flight check together, use either character’s roll, then add an additional +3 to that roll."
+      },
+      {
+        "id": "standup-comedians",
+        "name": "Standup Comedians",
+        "description": "The two characters can, within reason, keep the attention of a crowd by being incredibly funny together."
+      },
+      {
+        "id": "sweet-talkers",
+        "name": "Sweet Talkers",
+        "description": "When making a relevant Charm check together, use either character’s roll, then add an additional +3 to that roll."
+      },
+      {
+        "id": "sworn-protector",
+        "name": "Sworn Protector",
+        "description": "Either character can suffer the effects of the other character’s failed check to protect them."
+      },
+      {
+        "id": "tag-team",
+        "name": "Tag Team",
+        "description": "When making a relevant Fight check together, use either character’s roll, then add an additional +3 to that roll."
+      },
+      {
+        "id": "tough-cookies",
+        "name": "Tough Cookies",
+        "description": "When making a relevant Grit check together, use either character’s roll, then add an additional +3 to that roll."
+      }
+    ]
+  },
   "relationshipQuestions": {
     "positive": [
       {

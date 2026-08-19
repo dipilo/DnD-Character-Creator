@@ -2,6 +2,7 @@ import { kidsOnBikesContent } from './generated';
 import type {
   KobAgeRules,
   KobBikeOption,
+  KobBondedAction,
   KobDie,
   KobDifficultyBand,
   KobRuleSection,
@@ -9,7 +10,7 @@ import type {
   KobStrength,
   KobTrope,
 } from './types';
-import type { KobCharacter } from '@/types/kob';
+import type { KobBondedActionEntry, KobCharacter } from '@/types/kob';
 
 /**
  * Everything the builder and the sheet need to know about Kids on Bikes, derived from the
@@ -53,6 +54,15 @@ export function getAgeRules(age: string | null | undefined): KobAgeRules | null 
 
 export function getStrength(strengthId: string): KobStrength | null {
   return kob.strengths.find((strength) => strength.id === strengthId) ?? null;
+}
+
+export function getBondedAction(actionId: string): KobBondedAction | null {
+  return kob.bondedActions.actions.find((action) => action.id === actionId) ?? null;
+}
+
+/** The name to print for a pair's Bonded Action: the appendix's, or the one they invented. */
+export function bondedActionName(entry: KobBondedActionEntry): string {
+  return getBondedAction(entry.actionId)?.name ?? entry.customName.trim();
 }
 
 export function getBikeColor(colorId: string): KobBikeOption | null {

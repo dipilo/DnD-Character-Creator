@@ -1,4 +1,4 @@
-import { useMemo, useState, type ComponentProps, type KeyboardEvent } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentProps, type KeyboardEvent } from "react"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
@@ -36,6 +36,35 @@ interface ComboboxInputProps extends Readonly<Omit<ComponentProps<typeof Input>,
   readonly onSelect?: (value: string) => void
 }
 
+/** Below this the list is not worth showing on the near side; flip to the other one instead. */
+const MIN_LIST_HEIGHT = 120
+const MAX_LIST_HEIGHT = 224
+const LIST_GAP = 8
+
+interface ListPlacement {
+  readonly above: boolean
+  readonly maxHeight: number
+}
+
+const DEFAULT_PLACEMENT: ListPlacement = { above: false, maxHeight: MAX_LIST_HEIGHT }
+
+/**
+ * Where the suggestion list fits, read from the *visual* viewport — the one an on-screen keyboard
+ * shrinks. Sizing it to a constant put most of the list behind the keyboard on a phone, which
+ * reads as a list that cannot be scrolled rather than one that was never on screen.
+ */
+function placementFor(anchor: HTMLElement | null): ListPlacement {
+  if (!anchor) return DEFAULT_PLACEMENT
+  const rect = anchor.getBoundingClientRect()
+  const viewport = window.visualViewport
+  const top = viewport?.offsetTop ?? 0
+  const bottom = top + (viewport?.height ?? window.innerHeight)
+  const room = { below: bottom - rect.bottom - LIST_GAP, above: rect.top - top - LIST_GAP }
+  const above = room.below < MIN_LIST_HEIGHT && room.above > room.below
+  const available = above ? room.above : room.below
+  return { above, maxHeight: Math.max(MIN_LIST_HEIGHT, Math.min(MAX_LIST_HEIGHT, Math.round(available))) }
+}
+
 export function ComboboxInput({
   value,
   onChange,
@@ -51,6 +80,15 @@ export function ComboboxInput({
 }: ComboboxInputProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(0)
+  const [placement, setPlacement] = useState<ListPlacement>(DEFAULT_PLACEMENT)
+  const anchorRef = useRef<HTMLDivElement>(null)
+
+  const measure = useCallback(() => {
+    const next = placementFor(anchorRef.current)
+    setPlacement((current) =>
+      current.above === next.above && current.maxHeight === next.maxHeight ? current : next,
+    )
+  }, [])
 
   const options = useMemo(
     () =>
@@ -75,6 +113,29 @@ export function ComboboxInput({
   }, [options, active, alreadyChosen, maxSuggestions]);
 
   const showDropdown = isOpen && filteredSuggestions.length > 0;
+
+  // The keyboard opens *after* the focus that opened the list, so the measurement that matters
+  // arrives as a visualViewport resize. Subscribing only — nothing is set from the effect body.
+  useEffect(() => {
+    if (!showDropdown) return;
+    const viewport = window.visualViewport;
+    viewport?.addEventListener("resize", measure);
+    viewport?.addEventListener("scroll", measure);
+    window.addEventListener("resize", measure);
+    window.addEventListener("scroll", measure, true);
+    return () => {
+      viewport?.removeEventListener("resize", measure);
+      viewport?.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("scroll", measure, true);
+    };
+  }, [showDropdown, measure]);
+
+  const openList = () => {
+    setIsOpen(true);
+    setHighlightedIndex(0);
+    measure();
+  };
 
   const commitSuggestion = ({ value: option }: ComboboxOption) => {
     if (onSelect) {
@@ -107,17 +168,16 @@ export function ComboboxInput({
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={anchorRef}>
       <Input
         {...inputProps}
         value={value}
         onChange={(event) => {
           onChange(event.target.value);
-          setIsOpen(true);
-          setHighlightedIndex(0);
+          openList();
         }}
         onFocus={(event) => {
-          setIsOpen(true);
+          openList();
           onFocus?.(event);
         }}
         onBlur={(event) => {
@@ -132,7 +192,15 @@ export function ComboboxInput({
         className={className}
       />
       {showDropdown ? (
-        <ul className="absolute z-50 mt-1 max-h-56 w-full overflow-auto rounded-md border border-input bg-popover p-1 text-popover-foreground shadow-md">
+        <ul
+          // `touch-action` and the contained overscroll keep a drag on the list scrolling the list,
+          // rather than handing the gesture to the dialog or the page behind it.
+          style={{ maxHeight: placement.maxHeight }}
+          className={cn(
+            "absolute z-50 w-full touch-pan-y overscroll-contain overflow-y-auto rounded-md border border-input bg-popover p-1 text-popover-foreground shadow-md",
+            placement.above ? "bottom-full mb-1" : "top-full mt-1",
+          )}
+        >
           {filteredSuggestions.map((option, index) => {
             const isHighlighted = index === highlightedIndex;
             return (
@@ -140,7 +208,7 @@ export function ComboboxInput({
                 <button
                   type="button"
                   className={cn(
-                    "w-full rounded-sm px-2 py-1.5 text-left text-sm",
+                    "flex w-full flex-col justify-center rounded-sm px-2 py-1.5 text-left text-sm coarse:min-h-11",
                     isHighlighted ? "bg-accent text-accent-foreground" : "hover:bg-accent hover:text-accent-foreground"
                   )}
                   onMouseDown={(event) => event.preventDefault()}

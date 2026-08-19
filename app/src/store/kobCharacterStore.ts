@@ -106,7 +106,12 @@ function withDefaults(character: KobCharacter): KobCharacter {
     bike: { ...base.bike, ...(character.bike ?? {}) },
     knacks: character.knacks?.length ? character.knacks : base.knacks,
     relationships: character.relationships ?? [],
-    bondedActions: character.bondedActions ?? [],
+    bondedActions: (character.bondedActions ?? []).map((entry) => ({
+      ...entry,
+      // Entries written before the pair became a pointer carry neither field.
+      id: entry.id || crypto.randomUUID(),
+      withCharacterId: entry.withCharacterId ?? null,
+    })),
     consent: { ...base.consent, ...(character.consent ?? {}) },
   };
 }

@@ -106,11 +106,15 @@ export interface KobRelationship {
 }
 
 export interface KobBondedActionEntry {
+  id: string;
   /** Bonded action id from the appendix, or '' when the pair invented one. */
   actionId: string;
   /** The invented action's name, when `actionId` is empty. */
   customName: string;
+  /** The other character's display name — what survives when they leave the table. */
   withCharacter: string;
+  /** The party-mate this is bonded with, when it is one. A pointer, never the name. */
+  withCharacterId: string | null;
   /** The three shared experiences the rules ask the pair to describe. */
   backstory: string;
 }

@@ -255,6 +255,18 @@ function dropSectionPointers(text) {
 }
 
 /**
+ * `[[Another Note]]` is the same dead end one note over: the app has no screen for the note, and
+ * `cleanCell` would leave its title reading as prose. Cut the whole sentence, before that strip.
+ */
+function dropNotePointers(raw) {
+  return raw
+    .split(/(?<=[.!?])\s+/)
+    .filter((sentence) => !/\[\[[^\]#]/.test(sentence))
+    .join(' ')
+    .trim();
+}
+
+/**
  * "20 or greater", "13 to 16", "1 or 2" — the bounds are what lets a rolled total be read against
  * the table. A band whose wording does not state them is reported, never guessed at.
  */
@@ -330,6 +342,60 @@ function parseAges(text) {
       text: paragraph,
     };
   });
+}
+
+// ---------------------------------------------------------------------------------------------
+// Bonded Actions
+// ---------------------------------------------------------------------------------------------
+
+/**
+ * What a Bonded Action is, and the tip that a pair may invent one, are stated in Character
+ * Creation's own section — the appendix only lists the fifteen. Obsidian's `+`/`-` on a callout
+ * is the note saying whether it opens expanded, so the sheet does not have to decide.
+ */
+function parseBondedActionRules(text) {
+  const lines = stripFrontmatter(text).split(/\r?\n/);
+  const intro = [];
+  const callouts = [];
+  let inSection = false;
+  let callout = null;
+
+  for (const line of lines) {
+    const heading = /^#+\s+(?<name>.+?)\s*$/.exec(line);
+    if (heading) {
+      if (inSection) break;
+      inSection = cleanCell(heading.groups.name).toLowerCase() === 'bonded actions';
+      continue;
+    }
+    if (!inSection) continue;
+
+    const quoted = /^>\s?(?<body>.*)$/.exec(line);
+    if (!quoted) {
+      callout = null;
+      continue;
+    }
+
+    const marker = /^\[!(?<kind>[a-z]+)\](?<fold>[+-])?\s*$/i.exec(quoted.groups.body.trim());
+    if (marker) {
+      callout = {
+        kind: marker.groups.kind.toLowerCase(),
+        defaultOpen: marker.groups.fold !== '-',
+        paragraphs: [],
+      };
+      callouts.push(callout);
+      continue;
+    }
+
+    const body = cleanCell(dropNotePointers(stripBlockId(quoted.groups.body)));
+    if (!body) continue;
+    if (callout) callout.paragraphs.push(body);
+    else intro.push(body);
+  }
+
+  if (!inSection) warn('Character Creation.md: no "Bonded Actions" section found.');
+  else if (intro.length === 0) warn('Bonded Actions: the section has a heading but no rules text.');
+
+  return { intro, callouts: callouts.filter((entry) => entry.paragraphs.length > 0) };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -627,7 +693,10 @@ function main() {
   }));
   const flaws = flawsNote ? parseBulletEntries(flawsNote, { label: 'Flaws' }) : [];
   const bikes = bikesNote ? parseBikeTables(bikesNote) : { colors: [], upgrades: [] };
-  const bondedActions = bondedNote ? parseBulletEntries(bondedNote, { label: 'Bonded Actions' }) : [];
+  const bondedActions = {
+    ...(creationNote ? parseBondedActionRules(creationNote) : { intro: [], callouts: [] }),
+    actions: bondedNote ? parseBulletEntries(bondedNote, { label: 'Bonded Actions' }) : [],
+  };
 
   const relationshipQuestions = {
     positive: positiveNote ? parseNumberedQuestions(positiveNote, { label: 'Positive questions' }) : [],
@@ -664,7 +733,7 @@ function main() {
   console.log(
     `  ${tropes.length} tropes, ${strengths.length} strengths, ${flaws.length} flaws, ` +
       `${bikes.colors.length} bike colours, ${bikes.upgrades.length} upgrades, ` +
-      `${bondedActions.length} bonded actions, ` +
+      `${bondedActions.actions.length} bonded actions, ` +
       `${data.playRules.sections.length} play-rule sections, ${data.playRules.difficulties.length} difficulty bands, ` +
       `${relationshipQuestions.positive.length}/${relationshipQuestions.negative.length}/${relationshipQuestions.stranger.length} relationship questions`,
   );

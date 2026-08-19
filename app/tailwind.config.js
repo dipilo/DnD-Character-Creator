@@ -11,6 +11,8 @@ export default {
       // titles, header height, hero padding) gets out of the way there.
       screens: {
         short: { raw: '(max-height: 500px)' },
+        // Touch: 44px targets, and no hover to lean on. Declared last so it wins over `sm:`/`lg:`.
+        coarse: { raw: '(pointer: coarse)' },
       },
       colors: {
         border: "hsl(var(--border))",

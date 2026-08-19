@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { BikeBuilder } from '@/components/kob/BikeBuilder';
+import { BondedActionsEditor } from '@/components/kob/BondedActionsEditor';
 import { FinishingTouches } from '@/components/kob/FinishingTouches';
 import { RelationshipsEditor } from '@/components/kob/RelationshipsEditor';
 import { StatSpread } from '@/components/kob/StatSpread';
@@ -262,8 +264,10 @@ export function KobBuilderPage() {
           <BikeBuilder character={character} onChange={patch} />
         </TabsContent>
 
-        <TabsContent value="relationships" className="pt-4">
+        <TabsContent value="relationships" className="space-y-8 pt-4">
           <RelationshipsEditor character={character} onChange={patch} />
+          <Separator />
+          <BondedActionsEditor character={character} onChange={patch} />
         </TabsContent>
       </Tabs>
     </div>
