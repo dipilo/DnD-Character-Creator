@@ -30,11 +30,49 @@ export interface CharacterRecordSummary {
    * written before Phase 5, which simply list by name.
    */
   summary: string | null;
+  /**
+   * Who may open this sheet. A row written before the column reads as `'campaign'`, because
+   * attaching a character to a campaign was already the act of sharing it.
+   */
+  visibility: CharacterVisibility;
   schema_version: number;
   /** Bumped by the server on every write. Send the one you last saw or the write is refused. */
   version: number;
   created_at: string | null;
   updated_at: string | null;
+}
+
+/**
+ * The D&D Beyond-shaped choice, and the only thing that decides who a share link lets in:
+ * `private` is the owner plus whoever they named, `campaign` adds the members of the campaign the
+ * character is attached to, `public` adds anyone holding the link, signed in or not.
+ */
+export type CharacterVisibility = 'private' | 'campaign' | 'public';
+
+/** What the owner may grant, and to whom. */
+export type CharacterGrantSubject = 'user' | 'campaign_owner';
+export type CharacterGrantAccess = 'view' | 'edit';
+
+export interface CharacterGrant {
+  id: number;
+  character_id: string;
+  subject_type: CharacterGrantSubject;
+  subject_id: number;
+  access: CharacterGrantAccess;
+  created_at: string | null;
+  /** "Ada" or "GM of Curse of Strahd" — a list of bare ids is not one anyone can revoke. */
+  label: string;
+}
+
+/**
+ * A character's sharing state, readable and writable by its owner alone. `share_token` is a
+ * credential: it is minted on first read and rotating it is what revokes every link already sent.
+ */
+export interface CharacterSharing {
+  character_id: string;
+  visibility: CharacterVisibility;
+  share_token: string | null;
+  grants: CharacterGrant[];
 }
 
 /**
@@ -44,6 +82,13 @@ export interface CharacterRecordSummary {
  * a stored document failed to parse.
  */
 export interface CharacterRecord extends CharacterRecordSummary {
+  /**
+   * Whether the reader owns this row, and whether they may write it. Both are a courtesy — the
+   * server checks again on every write — but `is_owner` is what gates anything that is not the
+   * document: the seat, the visibility, the grant list and deletion stay with the owner.
+   */
+  is_owner: boolean;
+  can_edit: boolean;
   data: StoredCharacterDocument | null;
 }
 
@@ -91,6 +136,12 @@ export interface CharacterSeat {
 export interface CampaignCharacterSummary extends CharacterRecordSummary {
   owner_name: string | null;
   player_name: string | null;
+  /**
+   * A character its owner has made private still holds its seat and still fills a line here — they
+   * put it there — but the sheet behind it does not open. Read this before linking to one.
+   */
+  can_read: boolean;
+  can_edit: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -127,6 +178,12 @@ export interface Campaign {
    * an invited arrival and someone joining with the campaign code are not the same audience.
    */
   default_invite_permissions: string | null;
+  /**
+   * Whether this table asks its players to let the GM edit their characters. It is the ask and not
+   * the answer: each member's reply lives on their own membership row, which the owner cannot
+   * write. Stored 0/1.
+   */
+  requests_character_edit: number | null;
 }
 
 /**
@@ -152,6 +209,12 @@ export interface CampaignMember {
   role: string | null;
   /** JSON, as stored. Parse with `parsePermissions` rather than at each call site. */
   permissions: string | null;
+  /**
+   * This member's own answer to the campaign's ask: 1 lets whoever runs the table edit every
+   * character they seat here, including ones built later. Theirs to set and nobody else's — which
+   * is why it is a column of its own rather than a flag in `permissions`.
+   */
+  character_edit_consent: number | null;
   created_at: string | null;
   user_discord: string | null;
   user_name: string | null;
@@ -295,7 +358,11 @@ export interface Invite {
 export interface InvitePreview {
   ok: true;
   invite: Invite;
-  campaign: Pick<Campaign, 'id' | 'name'> | null;
+  /**
+   * `requests_character_edit` rides along so the landing page can put the question before someone
+   * joins rather than after. It is only the ask; the answer is the joiner's, and absent means no.
+   */
+  campaign: Pick<Campaign, 'id' | 'name' | 'requests_character_edit'> | null;
 }
 
 export interface InviteJoinResult {

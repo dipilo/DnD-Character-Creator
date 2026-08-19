@@ -24,6 +24,7 @@ const LEGACY_COLUMNS = {
     ['system_id', 'TEXT'],
     ['default_member_permissions', 'TEXT'],
     ['default_invite_permissions', 'TEXT'],
+    ['requests_character_edit', 'INTEGER DEFAULT 0'],
   ],
   players: [
     ['discord', 'TEXT'],
@@ -61,6 +62,7 @@ const LEGACY_COLUMNS = {
     ['role', "TEXT DEFAULT 'player'"],
     ['permissions', 'TEXT'],
     ['created_at', "TEXT DEFAULT (datetime('now'))"],
+    ['character_edit_consent', 'INTEGER DEFAULT 0'],
   ],
   invites: [
     ['token', 'TEXT'],
@@ -98,9 +100,11 @@ const LEGACY_COLUMNS = {
     ['params_json', 'TEXT'],
     ['result_json', 'TEXT'],
   ],
-  // Phase 5 added `summary` to a table Phase 2 had already shipped.
+  // Phase 5 added `summary` to a table Phase 2 had already shipped; sharing added the two after it.
   characters: [
     ['summary', 'TEXT'],
+    ['visibility', 'TEXT'],
+    ['share_token', 'TEXT'],
   ],
 };
 
@@ -176,6 +180,7 @@ async function ensureSchema(db) {
     system_id TEXT,
     default_member_permissions TEXT,
     default_invite_permissions TEXT,
+    requests_character_edit INTEGER DEFAULT 0,
     FOREIGN KEY(owner_user_id) REFERENCES users(id)
   )`);
 
@@ -190,6 +195,12 @@ async function ensureSchema(db) {
   // Builder characters (MERGE_PLAN.md Phase 2). Created after `players` because it references it:
   // a CREATE TABLE naming a table that does not exist yet is only an error once foreign keys are
   // enforced, which is exactly the kind of difference between two deployments worth not having.
+  //
+  // `visibility` is who may read the sheet: 'private', 'campaign' (the members of the campaign it
+  // is attached to) or 'public' (anyone holding the link, signed in or not). NULL is a row written
+  // before the column, which read as campaign-visible the moment it was attached — so NULL is
+  // 'campaign', not 'private', or attaching would silently stop sharing. `share_token` is minted on
+  // demand and rotating it is what revokes every link already handed out.
   //
   // The id is the uuid the builder already mints client-side, so a character keeps one identity
   // across localStorage and the server. `name` and `summary` ("Level 5 Elf Wizard 5") are
@@ -206,6 +217,8 @@ async function ensureSchema(db) {
     player_id INTEGER,
     name TEXT,
     summary TEXT,
+    visibility TEXT,
+    share_token TEXT,
     data TEXT NOT NULL,
     schema_version INTEGER DEFAULT 1,
     version INTEGER DEFAULT 1,
@@ -215,6 +228,27 @@ async function ensureSchema(db) {
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(campaign_id) REFERENCES campaigns(id),
     FOREIGN KEY(player_id) REFERENCES players(id)
+  )`);
+
+  // Who else may open or edit one character, granted by its owner and revocable by them alone.
+  //
+  // `subject_type` says what `subject_id` names: 'user' is one account, 'campaign_owner' is
+  // whoever runs that campaign (a seat, not a person — the grant survives the campaign changing
+  // hands). A campaign-wide consent is deliberately *not* stored here: it applies to every
+  // character its holder seats at that table, including ones built later, so it lives on
+  // `campaign_members.character_edit_consent` instead.
+  //
+  // `access` is 'view' or 'edit'. An edit grant is over the *document* only — the seat, the
+  // visibility, the grants themselves and deletion stay the owner's.
+  await db.run(`CREATE TABLE IF NOT EXISTS character_grants (
+    id INTEGER PRIMARY KEY,
+    character_id TEXT NOT NULL,
+    subject_type TEXT NOT NULL,
+    subject_id INTEGER NOT NULL,
+    access TEXT NOT NULL DEFAULT 'view',
+    created_at TEXT DEFAULT (datetime('now')),
+    UNIQUE(character_id, subject_type, subject_id),
+    FOREIGN KEY(character_id) REFERENCES characters(id)
   )`);
 
   await db.run(`CREATE TABLE IF NOT EXISTS availability (
@@ -235,6 +269,7 @@ async function ensureSchema(db) {
     role TEXT DEFAULT 'player',
     permissions TEXT,
     created_at TEXT DEFAULT (datetime('now')),
+    character_edit_consent INTEGER DEFAULT 0,
     FOREIGN KEY(campaign_id) REFERENCES campaigns(id),
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(player_id) REFERENCES players(id)
@@ -326,6 +361,11 @@ async function ensureSchema(db) {
   // the `data` JSON, which is read whole and never queried into.
   await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_characters_user ON characters(user_id)', ['user_id'], 'characters');
   await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_characters_campaign ON characters(campaign_id)', ['campaign_id'], 'characters');
+  // The share token is a credential and the only way in through a share link, so it has to resolve
+  // to at most one row.
+  await safeCreateIndex('CREATE UNIQUE INDEX IF NOT EXISTS idx_characters_share_token ON characters(share_token)', ['share_token'], 'characters');
+  await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_character_grants_character ON character_grants(character_id)', ['character_id'], 'character_grants');
+  await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_character_grants_subject ON character_grants(subject_type, subject_id)', ['subject_id'], 'character_grants');
 }
 
 module.exports = { ensureSchema };

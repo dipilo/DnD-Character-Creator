@@ -10,6 +10,7 @@ const MyCharactersPage = lazy(() => import('@/pages/MyCharactersPage').then((mod
 const HomebrewHubPage = lazy(() => import('@/pages/HomebrewHubPage').then((module) => ({ default: module.HomebrewHubPage })));
 const CharacterBuilderPage = lazy(() => import('@/pages/CharacterBuilderPage').then((module) => ({ default: module.CharacterBuilderPage })));
 const CharacterSheetPage = lazy(() => import('@/pages/CharacterSheetPage').then((module) => ({ default: module.CharacterSheetPage })));
+const SharedCharacterPage = lazy(() => import('@/pages/SharedCharacterPage').then((module) => ({ default: module.SharedCharacterPage })));
 const SpeciesSelection = lazy(() => import('@/pages/builder/SpeciesSelection').then((module) => ({ default: module.SpeciesSelection })));
 const SpeciesDetails = lazy(() => import('@/pages/builder/SpeciesDetails').then((module) => ({ default: module.SpeciesDetails })));
 const ClassSelection = lazy(() => import('@/pages/builder/ClassSelection').then((module) => ({ default: module.ClassSelection })));
@@ -83,6 +84,9 @@ function App() {
                 <Route path="review" element={<ReviewPage />} />
               </Route>
               <Route path="/character/:id" element={<CharacterSheetPage />} />
+              {/* Outside every guard, like the invite landing page and for the same reason: a
+                  public character is readable signed out, and that is what `public` means. */}
+              <Route path="/shared/:token" element={<SharedCharacterPage />} />
 
               <Route path="/kob" element={<KobCharactersPage />} />
               <Route path="/kob/builder" element={<KobCharactersPage />} />

@@ -6,6 +6,8 @@ import type { InvitePreview } from '@/lib/api';
 import { AuthDialog } from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuthStore } from '@/store/authStore';
 import { useCampaignStore } from '@/store/campaignStore';
@@ -32,6 +34,9 @@ export function InviteLandingPage() {
   const [error, setError] = useState<string | null>(null);
   const [joining, setJoining] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  // The table's ask, answered before joining rather than after. Off by default: consent that is
+  // pre-ticked is not consent.
+  const [editConsent, setEditConsent] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -50,7 +55,7 @@ export function InviteLandingPage() {
     }
     setJoining(true);
     try {
-      const result = await joinWithInvite(token);
+      const result = await joinWithInvite(token, editConsent);
       await loadCampaigns();
       toast.success(`Joined ${result.campaign_name ?? 'the campaign'}`);
       navigate(`/campaign/${result.campaign_id}/roster`);
@@ -86,6 +91,23 @@ export function InviteLandingPage() {
               Joining needs an account so the campaign knows who you are. Creating one takes a
               username and a password.
             </p>
+          ) : null}
+          {preview?.campaign?.requests_character_edit ? (
+            <div className="mt-4 flex items-start gap-3 rounded-lg border p-3">
+              <Checkbox
+                id="invite-character-edit-consent"
+                checked={editConsent}
+                onCheckedChange={(checked) => setEditConsent(checked === true)}
+                className="mt-0.5"
+              />
+              <Label htmlFor="invite-character-edit-consent" className="cursor-pointer font-normal">
+                <span className="block font-medium">Let the GM edit my characters here</span>
+                <span className="block text-xs text-muted-foreground">
+                  {campaignName} asks for this. It covers the characters you seat at this table, now and later —
+                  never the ones you keep elsewhere. You can change your mind on the Party page at any time.
+                </span>
+              </Label>
+            </div>
           ) : null}
         </CardContent>
         <CardFooter className="gap-2">

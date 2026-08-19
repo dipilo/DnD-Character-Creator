@@ -114,13 +114,20 @@ router.post('/api/invites/join', optionalAuth, async (req, res) => {
     const granted = resolveJoinPermissions(campaign, inv);
     const grantedBlob = Object.keys(granted).length > 0 ? JSON.stringify(granted) : null;
 
+    // The joiner's own answer to `campaigns.requests_character_edit`, asked on the landing page and
+    // answered here so the ask and the arrival are one step. Absent means no, and it stays theirs
+    // to change afterwards — the owner can never write it.
+    const consent = req.body?.character_edit_consent ? 1 : 0;
+
     await db.transaction(async (trx) => {
       if (user) {
         const exists = await trx.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ?', inv.campaign_id, user.id);
-        if (!exists) {
+        if (exists) {
+          if (consent) await trx.run('UPDATE campaign_members SET character_edit_consent = 1 WHERE id = ?', exists.id);
+        } else {
           await trx.run(
-            'INSERT INTO campaign_members(campaign_id,user_id,role,permissions) VALUES (?, ?, ?, ?)',
-            inv.campaign_id, user.id, 'player', grantedBlob,
+            'INSERT INTO campaign_members(campaign_id,user_id,role,permissions,character_edit_consent) VALUES (?, ?, ?, ?, ?)',
+            inv.campaign_id, user.id, 'player', grantedBlob, consent,
           );
         }
       }
@@ -147,7 +154,7 @@ router.get('/api/invites/:token', setCache, async (req, res) => {
     const result = await getCachedQueryAsync(cacheKey, async () => {
       const inv = await db.get('SELECT * FROM invites WHERE token = ?', token);
       if (!inv) return null;
-      const camp = await db.get('SELECT id, name FROM campaigns WHERE id = ?', inv.campaign_id);
+      const camp = await db.get('SELECT id, name, requests_character_edit FROM campaigns WHERE id = ?', inv.campaign_id);
       return { invite: inv, campaign: camp };
     });
     if (!result || !result.invite) {

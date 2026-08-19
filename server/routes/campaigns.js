@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const db = require('../db');
 const { getCachedQueryAsync, setCache } = require('../lib/cache');
+const { resolveCharacterAccess } = require('../lib/characterAccess');
 const { campaignCharacterSummary } = require('../lib/characters');
 const { publicPlayer } = require('../lib/players');
 const { createSession, publicUser } = require('../lib/sessions');
@@ -147,6 +148,9 @@ const CAMPAIGN_UPDATABLE_COLUMNS = [
   ['system_id', normaliseSystemId],
   ['default_member_permissions', normaliseDefaultPermissions],
   ['default_invite_permissions', normaliseDefaultPermissions],
+  // The ask, not the answer: it puts the question in front of anyone joining and changes nothing
+  // on its own. Each member's reply lives on their own row, where the owner cannot write it.
+  ['requests_character_edit', (value) => ({ value: value ? 1 : 0 })],
 ];
 
 // Update a campaign (owner only): rename it, or set the sources its table plays with. One table of
@@ -192,6 +196,8 @@ router.delete('/api/campaigns/:campaignId', requireCampaignAccess('owner'), asyn
       // A character belongs to a user, not to a campaign (MERGE_PLAN.md §9): deleting the campaign
       // gives up the seat, it does not destroy someone's sheet.
       await trx.run('UPDATE characters SET campaign_id = NULL, player_id = NULL WHERE campaign_id = ?', cid);
+      // A grant naming this campaign's GM has nobody left to resolve to, so it goes with it.
+      await trx.run("DELETE FROM character_grants WHERE subject_type = 'campaign_owner' AND subject_id = ?", cid);
       await trx.run('DELETE FROM campaigns WHERE id = ?', cid);
     });
     // cleanup any users that were only scoped to this campaign (no password and no remaining campaign_members)
@@ -322,9 +328,36 @@ router.get('/api/campaigns/:campaignId/characters', requireCampaignAccess(), asy
       WHERE ch.campaign_id = ? AND ch.deleted_at IS NULL
       ORDER BY ch.updated_at DESC, ch.id ASC
     `, req.campaign.id);
-    res.json({ ok: true, characters: rows.map((row) => campaignCharacterSummary(row)) });
+    const characters = [];
+    for (const row of rows) {
+      characters.push(campaignCharacterSummary(row, await resolveCharacterAccess(req.user, row)));
+    }
+    res.json({ ok: true, characters });
   } catch (e) {
     console.error('GET /api/campaigns/:campaignId/characters', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+/**
+ * A member's answer to "may the GM edit my characters at this table?".
+ *
+ * It is written by its holder and by nobody else — deliberately its own column rather than a flag
+ * in `campaign_members.permissions`, because that blob is the owner's to edit and this is the one
+ * grant an owner must not be able to give themselves. Consent covers every character its holder
+ * seats here, including ones built later, which is why it is not a row in `character_grants`.
+ */
+router.put('/api/campaigns/:campaignId/character-edit-consent', requireCampaignAccess(), async (req, res) => {
+  try {
+    const consent = req.body?.consent ? 1 : 0;
+    await db.run(
+      'UPDATE campaign_members SET character_edit_consent = ? WHERE campaign_id = ? AND user_id = ?',
+      consent, req.campaign.id, req.user.id,
+    );
+    const membership = await readMembership(db, req.campaign.id, req.user.id);
+    res.json({ ok: true, membership });
+  } catch (e) {
+    console.error('PUT /api/campaigns/:campaignId/character-edit-consent', e);
     res.status(500).json({ error: e.message });
   }
 });

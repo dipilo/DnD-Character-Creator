@@ -1,4 +1,4 @@
-import type { Background, Class, Equipment, Feature, FeatureOption, Feat, Monster, Species, SpeciesVariant, Spell, Subclass } from '@/types/dnd';
+import type { Background, Class, Equipment, Feature, FeatureOption, Feat, Monster, Species, SpeciesVariant, Spell, SpellcastingProgression, Subclass } from '@/types/dnd';
 import { backgrounds as staticBackgrounds } from './backgrounds';
 import { classes as staticClasses } from './classes';
 import { species as staticSpecies } from './species';
@@ -35,6 +35,62 @@ const mergeDynamicBucket = <T extends { id: string }>(baseEntries: T[], bucket: 
   return mergeCollectionsById(baseEntries, getStoreBucket(bucket) as T[]);
 };
 
+// The merged library is derived from module-level packs and the content store, so it can only
+// change when the store does. Recomputing per call put a full merge of every pack behind every
+// `getRuntimeSpellById`, and `useContentLibrary` did all eight of them on each render.
+const runtimeCache = new Map<string, unknown>();
+let cachedImportedPacks: unknown;
+let cachedHomebrewLibrary: unknown;
+let runtimeCachePrimed = false;
+
+const dropStaleRuntimeCache = () => {
+  const { importedPacks, homebrewLibrary } = useContentStore.getState();
+  if (runtimeCachePrimed && importedPacks === cachedImportedPacks && homebrewLibrary === cachedHomebrewLibrary) {
+    return;
+  }
+
+  runtimeCache.clear();
+  cachedImportedPacks = importedPacks;
+  cachedHomebrewLibrary = homebrewLibrary;
+  runtimeCachePrimed = true;
+};
+
+const memoizeRuntime = <T>(key: string, compute: () => T) => (): T => {
+  dropStaleRuntimeCache();
+  if (!runtimeCache.has(key)) {
+    runtimeCache.set(key, compute());
+  }
+
+  return runtimeCache.get(key) as T;
+};
+
+/** An id index over one memoized collection, so a lookup stops being a scan of the whole library. */
+const memoizeRuntimeIndex = <T extends { id: string }>(key: string, getEntries: () => T[]) => (id: string): T | undefined => {
+  dropStaleRuntimeCache();
+  let index = runtimeCache.get(key) as Map<string, T> | undefined;
+  if (!index) {
+    index = new Map(getEntries().map((entry) => [entry.id, entry]));
+    runtimeCache.set(key, index);
+  }
+
+  return index.get(id);
+};
+
+/** The same, for a lookup whose miss falls back to a canonical scan: a miss is cached too. */
+const memoizeRuntimeResolver = <T>(key: string, resolve: (id: string) => T | undefined) => (id: string): T | undefined => {
+  dropStaleRuntimeCache();
+  let resolved = runtimeCache.get(key) as Map<string, T | undefined> | undefined;
+  if (!resolved) {
+    resolved = new Map<string, T | undefined>();
+    runtimeCache.set(key, resolved);
+  }
+  if (!resolved.has(id)) {
+    resolved.set(id, resolve(id));
+  }
+
+  return resolved.get(id);
+};
+
 const normalizeIdentifier = (value: string) => value.toLowerCase().replaceAll(/[^a-z0-9]+/g, ' ').trim();
 const classIdPrefixPattern = /^(basic rules|player s handbook|phb)\s+(2014|2024)\s+/;
 const getCanonicalClassKey = (value: string) => normalizeIdentifier(value).replace(classIdPrefixPattern, '');
@@ -57,6 +113,23 @@ const choosePreferredText = (primary?: string, fallback?: string) => {
   return fallback;
 };
 const choosePreferredArray = <T,>(primary?: T[], fallback?: T[]) => (primary && primary.length > 0 ? primary : (fallback ?? []));
+/**
+ * The same rule as `choosePreferredCount`, one level up: a `spellcasting` object that parsed no
+ * slot table is not a reason to drop one that did. Taking the whole object from whichever candidate
+ * won left the 2014 Bard, Sorcerer, Wizard and Ranger with no spell slots at all — the parsed pack
+ * states their casting ability and stops, and `??` kept the one without the table.
+ */
+const choosePreferredSpellcasting = (primary?: SpellcastingProgression, fallback?: SpellcastingProgression) => {
+  if (!primary) return fallback;
+  if (!fallback) return primary;
+  return {
+    ...fallback,
+    ...primary,
+    cantripsKnown: choosePreferredArray(primary.cantripsKnown, fallback.cantripsKnown),
+    spellsKnown: choosePreferredArray(primary.spellsKnown, fallback.spellsKnown),
+    spellSlots: choosePreferredArray(primary.spellSlots, fallback.spellSlots),
+  } satisfies SpellcastingProgression;
+};
 const choosePreferredNumber = (primary?: number, fallback?: number) => primary ?? fallback;
 // Counts are "unset" at 0, not at undefined: a source pack that parsed no skill choices reports
 // `skillCount: 0`, and `??` happily keeps that zero, which left the merged class offering
@@ -982,7 +1055,7 @@ const enrichClass = (primary: Class, fallback?: Class): Class => {
     skillChoices: choosePreferredArray(primary.skillChoices, fallback?.skillChoices),
     skillCount: primary.skillCount || fallback?.skillCount || 0,
     features: mergeFeatureCollections(primary.features, fallback?.features),
-    spellcasting: primary.spellcasting ?? fallback?.spellcasting,
+    spellcasting: choosePreferredSpellcasting(primary.spellcasting, fallback?.spellcasting),
     equipmentOptions: choosePreferredArray(primary.equipmentOptions, equipmentSupplement ?? fallback?.equipmentOptions),
     startingGold: choosePreferredNumber(primary.startingGold, fallback?.startingGold)
   } satisfies Class;
@@ -1029,7 +1102,7 @@ const mergeClassCandidates = (candidates: Class[]) => {
       features: mergeFeatureCollections(current.features, candidate.features),
       subclasses: mergeCollectionsById(current.subclasses, candidate.subclasses),
       subclassLevel: choosePreferredCount(current.subclassLevel, candidate.subclassLevel),
-      spellcasting: current.spellcasting ?? candidate.spellcasting,
+      spellcasting: choosePreferredSpellcasting(current.spellcasting, candidate.spellcasting),
       equipmentOptions: choosePreferredArray(current.equipmentOptions, candidate.equipmentOptions),
       startingGold: choosePreferredNumber(current.startingGold, candidate.startingGold)
     } satisfies Class;
@@ -1224,7 +1297,7 @@ const getSpeciesFallbackLookupKey = (species: Species) => {
   return `${getCanonicalSpeciesKey(species)}::${getRulesEdition(species.sourceId, species.source)}`;
 };
 
-export const getRuntimeSpecies = () => {
+export const getRuntimeSpecies = memoizeRuntime('species', () => {
   const mergedSpecies = mergeDynamicBucket(runtimeStaticSpecies, 'species');
   const fallbackSpecies = runtimeStaticSpecies.reduce<Record<string, Species>>((groups, species) => {
     const key = getSpeciesFallbackLookupKey(species);
@@ -1250,16 +1323,16 @@ export const getRuntimeSpecies = () => {
 
     return enrichSpecies(species, fallbackSpecies[getSpeciesFallbackLookupKey(species)], combinedSupplement);
   });
-};
+});
 
-export const getRuntimeSubclasses = () => {
+export const getRuntimeSubclasses = memoizeRuntime('subclasses', () => {
   return mergeSubclassCandidatesById([
     ...staticSubclasses(),
     ...getStoreBucket('subclasses')
   ]);
-};
+});
 
-export const getRuntimeClasses = () => {
+export const getRuntimeClasses = memoizeRuntime('classes', () => {
   const mergedClasses = mergeClassCollections(
     mergeDynamicBucket(runtimeStaticClasses, 'classes').map(withInheritedSubclassSources)
   );
@@ -1277,7 +1350,7 @@ export const getRuntimeClasses = () => {
   // a zero hit die; drop those so they never appear as broken, unbuildable options.
   const buildableClasses = enrichedClasses.filter((cls) => cls.hitDie > 0);
   return mergeSubclassCollections(buildableClasses, getRuntimeSubclasses());
-};
+});
 
 // Backgrounds share names across editions (Acolyte, Criminal, ...), so the fallback key
 // is edition-scoped for the same reason as species.
@@ -1285,20 +1358,20 @@ const getBackgroundFallbackLookupKey = (background: Background) => {
   return `${getCanonicalBackgroundKey(background)}::${getRulesEdition(background.sourceId, background.source)}`;
 };
 
-export const getRuntimeBackgrounds = () => {
+export const getRuntimeBackgrounds = memoizeRuntime('backgrounds', () => {
   const mergedBackgrounds = mergeDynamicBucket(runtimeStaticBackgrounds, 'backgrounds');
   const fallbackBackgrounds = runtimeStaticBackgrounds.reduce<Record<string, Background>>((groups, background) => {
     groups[getBackgroundFallbackLookupKey(background)] = background;
     return groups;
   }, {});
   return mergedBackgrounds.map((background) => enrichBackground(background, fallbackBackgrounds[getBackgroundFallbackLookupKey(background)]));
-};
+});
 
-export const getRuntimeSpells = () => mergeDynamicBucket(staticSpells(), 'spells').map(sanitizeSpell);
+export const getRuntimeSpells = memoizeRuntime('spells', () => mergeDynamicBucket(staticSpells(), 'spells').map(sanitizeSpell));
 
-export const getRuntimeFeats = () => mergeDynamicBucket(staticFeats(), 'feats').map(sanitizeFeat);
+export const getRuntimeFeats = memoizeRuntime('feats', () => mergeDynamicBucket(staticFeats(), 'feats').map(sanitizeFeat));
 
-export const getRuntimeEquipment = () => {
+export const getRuntimeEquipment = memoizeRuntime('equipment', () => {
   const mergedEquipment = mergeDynamicBucket(staticEquipment(), 'equipment');
   const fallbackEquipment = staticEquipment().reduce<Record<string, Equipment>>((groups, entry) => {
     const key = getCanonicalEquipmentKey(entry);
@@ -1310,11 +1383,11 @@ export const getRuntimeEquipment = () => {
   }, {});
 
   return mergedEquipment.map((entry) => enrichEquipment(entry, fallbackEquipment[getCanonicalEquipmentKey(entry)]));
-};
+});
 
-export const getRuntimeMonsters = () => mergeDynamicBucket(staticMonsters(), 'monsters').map(sanitizeMonster);
+export const getRuntimeMonsters = memoizeRuntime('monsters', () => mergeDynamicBucket(staticMonsters(), 'monsters').map(sanitizeMonster));
 
-export const getRuntimeSpeciesById = (id: string) => getRuntimeSpecies().find((entry) => entry.id === id);
+export const getRuntimeSpeciesById = memoizeRuntimeIndex('species:index', getRuntimeSpecies);
 
 export const getRuntimeSpeciesVariant = (speciesId: string, variantId: string) => {
   return getRuntimeSpeciesById(speciesId)?.variants?.find((variant) => variant.id === variantId);
@@ -1347,34 +1420,40 @@ export const resolveSubclassById = (classes: Class[], classId: string, subclassI
   return resolveClassById(classes, classId)?.subclasses.find((entry) => entry.id === subclassId);
 };
 
-export const getRuntimeClassById = (id: string) => resolveClassById(getRuntimeClasses(), id);
+export const getRuntimeClassById = memoizeRuntimeResolver('classes:resolved', (id) => resolveClassById(getRuntimeClasses(), id));
 
 export const getRuntimeSubclass = (classId: string, subclassId: string) => {
   return getRuntimeClassById(classId)?.subclasses.find((entry) => entry.id === subclassId);
 };
 
-export const getRuntimeBackgroundById = (id: string) => getRuntimeBackgrounds().find((entry) => entry.id === id);
+export const getRuntimeBackgroundById = memoizeRuntimeIndex('backgrounds:index', getRuntimeBackgrounds);
 
-export const getRuntimeSpellById = (id: string) => getRuntimeSpells().find((entry) => entry.id === id);
+export const getRuntimeSpellById = memoizeRuntimeIndex('spells:index', getRuntimeSpells);
 
-export const getRuntimeFeatById = (id: string) => getRuntimeFeats().find((entry) => entry.id === id);
+export const getRuntimeFeatById = memoizeRuntimeIndex('feats:index', getRuntimeFeats);
 
-export const getRuntimeEquipmentById = (id: string) => getRuntimeEquipment().find((entry) => entry.id === id);
+export const getRuntimeEquipmentById = memoizeRuntimeIndex('equipment:index', getRuntimeEquipment);
 
-export const getRuntimeMonsterById = (id: string) => getRuntimeMonsters().find((entry) => entry.id === id);
+export const getRuntimeMonsterById = memoizeRuntimeIndex('monsters:index', getRuntimeMonsters);
+
+/**
+ * The whole library as one memoized object, so a consumer's `useMemo` on `equipment` or
+ * `backgrounds` survives a re-render that changed only the character.
+ */
+const getRuntimeLibrary = memoizeRuntime('library', () => ({
+  species: getRuntimeSpecies(),
+  classes: getRuntimeClasses(),
+  subclasses: getRuntimeSubclasses(),
+  backgrounds: getRuntimeBackgrounds(),
+  spells: getRuntimeSpells(),
+  feats: getRuntimeFeats(),
+  equipment: getRuntimeEquipment(),
+  monsters: getRuntimeMonsters()
+}));
 
 export const useContentLibrary = () => {
   useContentStore((state) => state.importedPacks);
   useContentStore((state) => state.homebrewLibrary);
 
-  return {
-    species: getRuntimeSpecies(),
-    classes: getRuntimeClasses(),
-    subclasses: getRuntimeSubclasses(),
-    backgrounds: getRuntimeBackgrounds(),
-    spells: getRuntimeSpells(),
-    feats: getRuntimeFeats(),
-    equipment: getRuntimeEquipment(),
-    monsters: getRuntimeMonsters()
-  };
+  return getRuntimeLibrary();
 };

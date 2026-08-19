@@ -44,6 +44,9 @@ export async function previewInvite(token: string): Promise<InvitePreview> {
  * accept a `discord_id` in the body, which let an anonymous caller join any Discord user to the
  * campaign, so identity now comes from the cookie or not at all.
  */
-export async function joinWithInvite(token: string): Promise<InviteJoinResult> {
-  return await api.post<InviteJoinResult>('/api/invites/join', { token });
+export async function joinWithInvite(token: string, characterEditConsent = false): Promise<InviteJoinResult> {
+  return await api.post<InviteJoinResult>('/api/invites/join', {
+    token,
+    character_edit_consent: characterEditConsent,
+  });
 }

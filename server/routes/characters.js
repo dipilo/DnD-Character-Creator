@@ -6,8 +6,10 @@
 const express = require('express');
 const crypto = require('node:crypto');
 const db = require('../db');
+const { characterVisibility, listGrants, normaliseVisibility, resolveCharacterAccess } = require('../lib/characterAccess');
 const { characterSummary, publicCharacter, serializeDocument } = require('../lib/characters');
-const { canUserModifyPlayer, getCampaignMembership, holdsPlayerSeat, requireAuth } = require('../middleware/auth');
+const { genToken } = require('../lib/tokens');
+const { canUserModifyPlayer, getCampaignMembership, holdsPlayerSeat, optionalAuth, requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -15,6 +17,9 @@ const router = express.Router();
 // localStorage, so the server accepts the client's id instead of assigning its own. Constrain it
 // to something id-shaped: it lands in URLs and in a primary key.
 const ID_PATTERN = /^[A-Za-z0-9_-]{1,100}$/;
+
+// `genToken` mints 24 alphanumerics; the bound is wide enough to survive that length changing.
+const SHARE_TOKEN_PATTERN = /^[A-Za-z0-9_-]{8,128}$/;
 
 function isValidId(id) {
   return typeof id === 'string' && ID_PATTERN.test(id);
@@ -27,22 +32,15 @@ async function findOwnedCharacter(userId, id) {
 }
 
 /**
- * Fetch a row the caller may *read* (MERGE_PLAN.md Phase 5).
+ * What the caller may do with a row, or null when it should read as absent (MERGE_PLAN.md Phase 5
+ * plus sharing). Every rule lives in `lib/characterAccess.js`; this is the id check in front of it.
  *
- * Attaching a character to a campaign is the act of sharing it: the campaign's members can read it
- * from then on, which is what makes a party view and a roster of real sheets possible. Nothing else
- * widens — an unattached character stays invisible, and invisible here means **404 rather than
- * 403**, because a 403 would confirm the id exists. Writes are unaffected; they still go through
- * `findOwnedCharacter`.
+ * Invisible still means **404 rather than 403**, because a 403 would confirm the id exists.
  */
-async function findReadableCharacter(user, id) {
+async function resolveAccess(user, id) {
   if (!isValidId(id)) return null;
   const row = await db.get('SELECT * FROM characters WHERE id = ?', id);
-  if (!row || row.deleted_at) return null;
-  if (Number(row.user_id) === Number(user.id)) return row;
-  if (row.campaign_id == null) return null;
-  const membership = await getCampaignMembership(user.id, row.campaign_id);
-  return membership ? row : null;
+  return await resolveCharacterAccess(user, row);
 }
 
 /**
@@ -103,9 +101,9 @@ router.get('/api/characters', requireAuth, async (req, res) => {
 
 router.get('/api/characters/:id', requireAuth, async (req, res) => {
   try {
-    const row = await findReadableCharacter(req.user, req.params.id);
-    if (!row) return res.status(404).json({ error: 'character_not_found' });
-    res.json({ ok: true, character: publicCharacter(row) });
+    const access = await resolveAccess(req.user, req.params.id);
+    if (!access) return res.status(404).json({ error: 'character_not_found' });
+    res.json({ ok: true, character: publicCharacter(access.row, access) });
   } catch (e) {
     console.error('GET /api/characters/:id', e);
     res.status(500).json({ error: e.message });
@@ -145,41 +143,61 @@ router.post('/api/characters', requireAuth, async (req, res) => {
   }
 });
 
-// Update one character. `version` is the version the client last saw; a mismatch means the sheet
-// was edited somewhere else since, and the write is refused with the server's copy attached rather
-// than silently clobbering the other device's edit.
+/**
+ * Update one character. `version` is the version the client last saw; a mismatch means the sheet
+ * was edited somewhere else since, and the write is refused with the server's copy attached rather
+ * than silently clobbering the other device's edit.
+ *
+ * An edit grant reaches this route, but only the *document*: the seat is the owner's act of
+ * sharing, so a granted editor sending `campaign_id` or `player_id` is told no rather than quietly
+ * ignored. Someone who may read but not write gets 403 — they already know the id exists, so there
+ * is nothing left for a 404 to protect.
+ */
 router.put('/api/characters/:id', requireAuth, async (req, res) => {
   try {
     const body = req.body || {};
-    const row = await findOwnedCharacter(req.user.id, req.params.id);
-    if (!row || row.deleted_at) return res.status(404).json({ error: 'character_not_found' });
+    const access = await resolveAccess(req.user, req.params.id);
+    if (!access) return res.status(404).json({ error: 'character_not_found' });
+    if (!access.canEdit) return res.status(403).json({ error: 'character_not_editable' });
+    const row = access.row;
 
     const expected = normaliseId(body.version);
     if (expected === null) return res.status(400).json({ error: 'version_required' });
     if (expected !== Number(row.version)) {
-      return res.status(409).json({ error: 'version_conflict', character: publicCharacter(row) });
+      return res.status(409).json({ error: 'version_conflict', character: publicCharacter(row, access) });
     }
 
     const doc = serializeDocument(body.data, body.name, body.summary);
     if (doc.error) return res.status(doc.error === 'data_too_large' ? 413 : 400).json({ error: doc.error });
 
-    const scope = await resolveScope(req.user, body, row);
+    const scope = await resolveWriteScope(req.user, body, access);
     if (scope.error) return res.status(scope.status).json({ error: scope.error });
 
     await db.run(
       `UPDATE characters SET campaign_id = ?, player_id = ?, name = ?, summary = ?, data = ?, schema_version = ?, version = version + 1, updated_at = ?
-        WHERE id = ? AND user_id = ? AND version = ?`,
+        WHERE id = ? AND version = ?`,
       scope.campaignId, scope.playerId, doc.name, doc.summary, doc.text,
       normaliseSchemaVersion(body.schema_version ?? row.schema_version),
-      new Date().toISOString(), row.id, req.user.id, expected,
+      new Date().toISOString(), row.id, expected,
     );
     const updated = await db.get('SELECT * FROM characters WHERE id = ?', row.id);
-    res.json({ ok: true, character: publicCharacter(updated) });
+    res.json({ ok: true, character: publicCharacter(updated, access) });
   } catch (e) {
     console.error('PUT /api/characters/:id', e);
     res.status(500).json({ error: e.message });
   }
 });
+
+/** The seat an update lands on: the owner's to move, and nobody else's to touch. */
+async function resolveWriteScope(user, body, access) {
+  if (access.isOwner) return await resolveScope(user, body, access.row);
+
+  const movesSeat = ['campaign_id', 'player_id'].some((field) => {
+    return Object.hasOwn(body, field) && normaliseId(body[field]) !== (access.row[field] ?? null);
+  });
+  if (movesSeat) return { error: 'seat_is_owner_only', status: 403 };
+  return { campaignId: access.row.campaign_id ?? null, playerId: access.row.player_id ?? null };
+}
 
 /**
  * Seat a character at a campaign table, or take it off one (MERGE_PLAN.md Phase 5).
@@ -229,7 +247,15 @@ router.delete('/api/characters/:id', requireAuth, async (req, res) => {
     if (!row) return res.status(404).json({ error: 'character_not_found' });
     if (row.deleted_at) return res.json({ ok: true, already_deleted: true });
     const now = new Date().toISOString();
-    await db.run('UPDATE characters SET deleted_at = ?, updated_at = ?, version = version + 1 WHERE id = ?', now, now, row.id);
+    await db.transaction(async (trx) => {
+      // Sharing does not survive a deletion. The tombstone already reads as absent, but dropping
+      // the token and the grants is what makes that true for anyone still holding a link.
+      await trx.run('DELETE FROM character_grants WHERE character_id = ?', row.id);
+      await trx.run(
+        'UPDATE characters SET deleted_at = ?, updated_at = ?, share_token = NULL, version = version + 1 WHERE id = ?',
+        now, now, row.id,
+      );
+    });
     res.json({ ok: true });
   } catch (e) {
     console.error('DELETE /api/characters/:id', e);
@@ -282,6 +308,175 @@ async function importOne(user, entry) {
     id, user.id, scope.campaignId, scope.playerId, doc.name, doc.summary, doc.text, normaliseSchemaVersion(entry.schema_version), now, now,
   );
   return { ok: true, id };
+}
+
+/* -------------------------------------------------------------------------
+ * Sharing: who may open this sheet, and who may edit it.
+ *
+ * Everything under here is the owner's alone. `visibility` is the D&D Beyond-shaped choice
+ * (private / campaign / public), `share_token` is the link that carries it, and
+ * `character_grants` is the named list — a specific account, or whoever runs a given campaign.
+ * A share link is one URL whatever the setting: who it lets in is `visibility`'s answer, so
+ * narrowing a character narrows every link already sent without minting a new one.
+ * ------------------------------------------------------------------------- */
+
+/** The owner's view of a character's sharing, minting the link token on first read. */
+router.get('/api/characters/:id/sharing', requireAuth, async (req, res) => {
+  try {
+    const row = await findOwnedCharacter(req.user.id, req.params.id);
+    if (!row || row.deleted_at) return res.status(404).json({ error: 'character_not_found' });
+    const token = row.share_token || await mintShareToken(row.id);
+    res.json({ ok: true, sharing: await sharingPayload({ ...row, share_token: token }) });
+  } catch (e) {
+    console.error('GET /api/characters/:id/sharing', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+/**
+ * Set the visibility, and optionally rotate the link. Rotating is the revoke: every URL handed out
+ * so far stops resolving, which is the only way back from "I posted it somewhere I should not have".
+ */
+router.put('/api/characters/:id/sharing', requireAuth, async (req, res) => {
+  try {
+    const body = req.body || {};
+    const row = await findOwnedCharacter(req.user.id, req.params.id);
+    if (!row || row.deleted_at) return res.status(404).json({ error: 'character_not_found' });
+
+    let visibility = row.visibility;
+    if (Object.hasOwn(body, 'visibility')) {
+      const normalised = normaliseVisibility(body.visibility);
+      if (normalised.error) return res.status(400).json({ error: normalised.error });
+      visibility = normalised.value;
+    }
+
+    await db.run('UPDATE characters SET visibility = ? WHERE id = ?', visibility, row.id);
+    const token = body.rotate_token ? await mintShareToken(row.id) : (row.share_token || await mintShareToken(row.id));
+    res.json({ ok: true, sharing: await sharingPayload({ ...row, visibility, share_token: token }) });
+  } catch (e) {
+    console.error('PUT /api/characters/:id/sharing', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+/**
+ * Hand the sheet to one account, or to whoever runs one campaign. The subject has to be someone
+ * the owner already shares a table with — a grant list that could name any account on the system
+ * would be a way to test whether a username exists.
+ */
+router.post('/api/characters/:id/grants', requireAuth, async (req, res) => {
+  try {
+    const body = req.body || {};
+    const row = await findOwnedCharacter(req.user.id, req.params.id);
+    if (!row || row.deleted_at) return res.status(404).json({ error: 'character_not_found' });
+
+    const subjectType = body.subject_type;
+    const subjectId = normaliseId(body.subject_id);
+    const access = body.access === 'edit' ? 'edit' : 'view';
+    if (subjectType !== 'user' && subjectType !== 'campaign_owner') {
+      return res.status(400).json({ error: 'invalid_subject_type' });
+    }
+    if (subjectId === null) return res.status(400).json({ error: 'subject_id_required' });
+    if (subjectType === 'user' && Number(subjectId) === Number(req.user.id)) {
+      return res.status(400).json({ error: 'cannot_grant_to_self' });
+    }
+
+    const allowed = subjectType === 'user'
+      ? await sharesACampaign(req.user.id, subjectId)
+      : Boolean(await getCampaignMembership(req.user.id, subjectId));
+    if (!allowed) return res.status(400).json({ error: 'subject_not_at_a_shared_table' });
+
+    await db.run(
+      `INSERT INTO character_grants(character_id, subject_type, subject_id, access) VALUES (?, ?, ?, ?)
+       ON CONFLICT(character_id, subject_type, subject_id) DO UPDATE SET access = excluded.access`,
+      row.id, subjectType, subjectId, access,
+    );
+    res.status(201).json({ ok: true, sharing: await sharingPayload(row) });
+  } catch (e) {
+    console.error('POST /api/characters/:id/grants', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+router.delete('/api/characters/:id/grants/:grantId', requireAuth, async (req, res) => {
+  try {
+    const row = await findOwnedCharacter(req.user.id, req.params.id);
+    if (!row || row.deleted_at) return res.status(404).json({ error: 'character_not_found' });
+    const grantId = normaliseId(req.params.grantId);
+    const grant = grantId === null
+      ? null
+      : await db.get('SELECT * FROM character_grants WHERE id = ? AND character_id = ?', grantId, row.id);
+    if (!grant) return res.status(404).json({ error: 'grant_not_found' });
+    await db.run('DELETE FROM character_grants WHERE id = ?', grant.id);
+    res.json({ ok: true, sharing: await sharingPayload(row) });
+  } catch (e) {
+    console.error('DELETE /api/characters/:id/grants/:grantId', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+/**
+ * A shared link. `optionalAuth` because a public character is readable signed out — that is the
+ * whole point of the setting — while a campaign-only or privately granted one resolves through the
+ * same rules as its id would, so one URL serves every visibility.
+ */
+router.get('/api/shared/characters/:token', optionalAuth, async (req, res) => {
+  try {
+    const token = req.params.token;
+    if (typeof token !== 'string' || !SHARE_TOKEN_PATTERN.test(token)) {
+      return res.status(404).json({ error: 'character_not_found' });
+    }
+    const row = await db.get('SELECT * FROM characters WHERE share_token = ?', token);
+    const access = await resolveCharacterAccess(req.user, row);
+    if (!access) return res.status(404).json({ error: 'character_not_found' });
+    res.json({ ok: true, character: publicCharacter(access.row, access) });
+  } catch (e) {
+    console.error('GET /api/shared/characters/:token', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+async function mintShareToken(characterId) {
+  const token = genToken(24);
+  await db.run('UPDATE characters SET share_token = ? WHERE id = ?', token, characterId);
+  return token;
+}
+
+/** Two accounts share a table when one campaign lists both as members. */
+async function sharesACampaign(userId, otherUserId) {
+  const row = await db.get(
+    `SELECT 1 AS ok FROM campaign_members a
+       JOIN campaign_members b ON b.campaign_id = a.campaign_id
+      WHERE a.user_id = ? AND b.user_id = ? LIMIT 1`,
+    userId, otherUserId,
+  );
+  return Boolean(row);
+}
+
+/**
+ * The sharing state as the owner's editor needs it. Each grant carries a label because a list of
+ * bare ids is not something anyone can revoke with confidence.
+ */
+async function sharingPayload(row) {
+  const grants = [];
+  for (const grant of await listGrants(row.id)) {
+    grants.push({ ...grant, label: await describeGrantSubject(grant) });
+  }
+  return {
+    character_id: row.id,
+    visibility: characterVisibility(row),
+    share_token: row.share_token ?? null,
+    grants,
+  };
+}
+
+async function describeGrantSubject(grant) {
+  if (grant.subject_type === 'user') {
+    const user = await db.get('SELECT username FROM users WHERE id = ?', grant.subject_id);
+    return user?.username || `Account ${grant.subject_id}`;
+  }
+  const campaign = await db.get('SELECT name FROM campaigns WHERE id = ?', grant.subject_id);
+  return campaign?.name ? `GM of ${campaign.name}` : `GM of campaign ${grant.subject_id}`;
 }
 
 function normaliseSchemaVersion(value) {

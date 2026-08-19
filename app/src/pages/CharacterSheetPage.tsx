@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, FileDown, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { CharacterSheetView } from '@/components/character/CharacterSheetView';
+import { CharacterSharingDialog } from '@/components/character/CharacterSharingDialog';
+import { useAuthStore } from '@/store/authStore';
 import { exportCharacterToFillablePdf } from '@/lib/characterPdf';
 import type { Character } from '@/types/dnd';
 
@@ -16,6 +18,9 @@ export function CharacterSheetPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getCharacter, deleteCharacter, loadCharacterIntoBuilder, updateCharacter } = useCharacterStore();
+  // Sharing is a server-side fact, so there is nothing to offer a signed-out builder: its
+  // characters live only in this browser until an account exists to attach them to.
+  const signedIn = useAuthStore((state) => Boolean(state.user));
 
   const character = id ? getCharacter(id) : undefined;
 
@@ -82,6 +87,7 @@ export function CharacterSheetPage() {
             <Pencil className="mr-2 h-4 w-4" />
             Edit
           </Button>
+          {signedIn ? <CharacterSharingDialog characterId={character.id} characterName={character.name} /> : null}
           <Button variant="outline" onClick={handleExportPDF}>
             <FileDown className="mr-2 h-4 w-4" />
             Export PDF

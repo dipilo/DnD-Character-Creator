@@ -1,6 +1,10 @@
 import { api } from './client';
 import type {
   CampaignCharacterSummary,
+  CharacterGrantAccess,
+  CharacterGrantSubject,
+  CharacterSharing,
+  CharacterVisibility,
   CharacterImportEntry,
   CharacterImportResult,
   CharacterRecord,
@@ -73,4 +77,63 @@ export async function deleteCharacter(id: string): Promise<void> {
  */
 export async function importCharacters(entries: CharacterImportEntry[]): Promise<CharacterImportResult> {
   return await api.post<CharacterImportResult>('/api/characters/import', { characters: entries });
+}
+
+/* -------------------------------------------------------------------------
+ * Sharing. Everything here is the owner's: a granted editor may write the
+ * document and nothing else, so none of these routes answer to them.
+ * ------------------------------------------------------------------------- */
+
+/** The current sharing state. Reading it mints the share link if there is not one yet. */
+export async function getCharacterSharing(id: string): Promise<CharacterSharing> {
+  const body = await api.get<{ sharing: CharacterSharing }>(`/api/characters/${encodeURIComponent(id)}/sharing`);
+  return body.sharing;
+}
+
+/**
+ * Change who may open the sheet. One link serves every visibility, so narrowing a character
+ * narrows every URL already handed out; `rotateToken` is the harder revoke that invalidates them.
+ */
+export async function setCharacterSharing(
+  id: string,
+  patch: { visibility?: CharacterVisibility; rotateToken?: boolean },
+): Promise<CharacterSharing> {
+  const body = await api.put<{ sharing: CharacterSharing }>(`/api/characters/${encodeURIComponent(id)}/sharing`, {
+    ...(patch.visibility ? { visibility: patch.visibility } : {}),
+    rotate_token: Boolean(patch.rotateToken),
+  });
+  return body.sharing;
+}
+
+/**
+ * Hand the sheet to one account, or to whoever runs one campaign. The subject has to be someone
+ * the owner already shares a table with, so this cannot be used to probe for accounts.
+ */
+export async function grantCharacterAccess(
+  id: string,
+  grant: { subjectType: CharacterGrantSubject; subjectId: number; access: CharacterGrantAccess },
+): Promise<CharacterSharing> {
+  const body = await api.post<{ sharing: CharacterSharing }>(`/api/characters/${encodeURIComponent(id)}/grants`, {
+    subject_type: grant.subjectType,
+    subject_id: grant.subjectId,
+    access: grant.access,
+  });
+  return body.sharing;
+}
+
+export async function revokeCharacterAccess(id: string, grantId: number): Promise<CharacterSharing> {
+  const body = await api.delete<{ sharing: CharacterSharing }>(
+    `/api/characters/${encodeURIComponent(id)}/grants/${grantId}`,
+  );
+  return body.sharing;
+}
+
+/**
+ * Open a character from a share link. Signed out is a real case — that is what `public` means — so
+ * this is the one character read that does not require a session; a link to a narrower character
+ * simply 404s for anyone it does not cover.
+ */
+export async function getSharedCharacter(token: string): Promise<CharacterRecord> {
+  const body = await api.get<{ character: CharacterRecord }>(`/api/shared/characters/${encodeURIComponent(token)}`);
+  return body.character;
 }

@@ -172,3 +172,26 @@ export async function claimPlayer(campaignId: number, payload: ClaimPlayerPayloa
 export async function unclaimPlayer(campaignId: number, playerId: number): Promise<void> {
   await api.post(`/api/campaigns/${campaignId}/unclaim-player`, { player_id: playerId });
 }
+
+/**
+ * Whether this table asks its players to let the GM edit their characters. Owner-only, and it is
+ * only the question: nothing is granted until each player answers it themselves.
+ */
+export async function setCampaignCharacterEditRequest(campaignId: number, requested: boolean): Promise<Campaign> {
+  const body = await api.put<{ campaign: Campaign }>(`/api/campaigns/${campaignId}`, {
+    requests_character_edit: requested,
+  });
+  return body.campaign;
+}
+
+/**
+ * The caller's own answer to that ask. It covers every character they seat at this table, now and
+ * later, and only they can write it — the owner cannot grant it to themselves.
+ */
+export async function setCharacterEditConsent(campaignId: number, consent: boolean): Promise<CampaignMember> {
+  const body = await api.put<{ membership: CampaignMember }>(
+    `/api/campaigns/${campaignId}/character-edit-consent`,
+    { consent },
+  );
+  return body.membership;
+}

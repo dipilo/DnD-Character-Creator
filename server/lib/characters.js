@@ -4,6 +4,7 @@
 // requires a saved character to read back into the builder and that needs every choice-mode and
 // selection field intact — a lossy column mapping breaks `loadCharacterIntoBuilder` silently.
 // These helpers are the single place the document is parsed and the single shape it leaves in.
+const { characterVisibility } = require('./characterAccess');
 
 // A serialised document larger than this is not a character sheet any more; the most likely cause
 // is a portrait data URL. Rejecting it here beats storing a row nothing can load.
@@ -25,7 +26,10 @@ function normaliseSummary(value) {
   return trimmed || null;
 }
 
-/** Row metadata, without the document. What list endpoints return. */
+/**
+ * Row metadata, without the document. What list endpoints return. `share_token` is deliberately
+ * absent: it is a credential, and it is handed out by the owner's own sharing route alone.
+ */
 function characterSummary(row) {
   if (!row || typeof row !== 'object') return null;
   return {
@@ -35,6 +39,7 @@ function characterSummary(row) {
     player_id: row.player_id ?? null,
     name: row.name ?? null,
     summary: row.summary ?? null,
+    visibility: characterVisibility(row),
     schema_version: row.schema_version ?? 1,
     version: row.version ?? 1,
     created_at: row.created_at ?? null,
@@ -48,17 +53,37 @@ function characterSummary(row) {
  * only fields here that are not the character's own; `username` is the one column of `users` that
  * is safe to hand a campaign-mate.
  */
-function campaignCharacterSummary(row) {
+function campaignCharacterSummary(row, access = null) {
   const summary = characterSummary(row);
   if (!summary) return null;
-  return { ...summary, owner_name: row.owner_name ?? null, player_name: row.player_name ?? null };
+  return {
+    ...summary,
+    owner_name: row.owner_name ?? null,
+    player_name: row.player_name ?? null,
+    // A character its owner has made private still holds its seat and still fills a line in the
+    // roster — they put it there — but the sheet behind it does not open. Saying so on the row is
+    // what stops the party view offering a link that can only 404.
+    can_read: Boolean(access),
+    can_edit: Boolean(access?.canEdit),
+  };
 }
 
-/** The summary plus the parsed document. A row whose JSON is unreadable reports `data: null`. */
-function publicCharacter(row) {
+/**
+ * The summary plus the parsed document. A row whose JSON is unreadable reports `data: null`.
+ *
+ * `access` is what `resolveCharacterAccess` said about the caller; the two flags travel with the
+ * sheet so a reader knows whether to offer a write surface at all. They are a courtesy — every
+ * write is checked again — and `is_owner` is the one that gates anything but the document.
+ */
+function publicCharacter(row, access = { isOwner: true, canEdit: true }) {
   const summary = characterSummary(row);
   if (!summary) return null;
-  return { ...summary, data: parseDocument(row) };
+  return {
+    ...summary,
+    is_owner: Boolean(access.isOwner),
+    can_edit: Boolean(access.canEdit),
+    data: parseDocument(row),
+  };
 }
 
 function parseDocument(row) {

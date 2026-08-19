@@ -213,6 +213,7 @@ export function MembersPage() {
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-medium">{memberName(member)}</span>
                   {owner ? <Badge variant="secondary">Owner</Badge> : null}
+                  {member.character_edit_consent ? <Badge variant="outline">Lets you edit their characters</Badge> : null}
                   <span className="text-sm text-muted-foreground">{member.player_name ?? 'No seat'}</span>
                 </div>
                 {isOwner && !owner ? (
@@ -265,6 +266,11 @@ export function MembersPage() {
                     <TableCell className="whitespace-nowrap">
                       {memberName(member)}
                       {owner ? <Badge className="ml-2" variant="secondary">Owner</Badge> : null}
+                      {/* Read-only here on purpose: it is the member's answer, not a switch the
+                          owner may flip. */}
+                      {member.character_edit_consent ? (
+                        <Badge className="ml-2" variant="outline">Character editing</Badge>
+                      ) : null}
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-muted-foreground">
                       {member.player_name ?? 'No seat'}

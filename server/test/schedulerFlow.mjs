@@ -275,9 +275,12 @@ async function partyFlow(campaignId, players) {
   const sheet = await call('dm', 'GET', '/api/characters/flow-char-bram');
   check('CampaignCharacterPage: the DM can read the seated sheet', sheet.status === 200 && sheet.json.character?.data?.name === 'Bram Ashvale', `${sheet.status} ${JSON.stringify(sheet.json).slice(0, 150)}`);
 
-  // ...but reading is all. A shared sheet is not a writable one.
+  // ...but reading is all. A shared sheet is not a writable one until its owner says so, and this
+  // player has granted nothing — see `characterSharing.mjs` for the grant and consent paths. The
+  // refusal is 403 rather than 404 because the DM can already read the row: there is nothing left
+  // for a 404 to protect once the id is known to exist.
   const clobber = await call('dm', 'PUT', '/api/characters/flow-char-bram', { version: 1, data: { name: 'DM edit' } });
-  check('a shared sheet is still read-only to everyone but its owner', clobber.status === 404, `${clobber.status} ${JSON.stringify(clobber.json)}`);
+  check('a shared sheet is still read-only to everyone but its owner', clobber.status === 403 && clobber.json.error === 'character_not_editable', `${clobber.status} ${JSON.stringify(clobber.json)}`);
 
   const strangerParty = await call('stranger', 'GET', `/api/campaigns/${campaignId}/characters`);
   check('a non-member cannot read the party', strangerParty.status === 403, strangerParty.status);

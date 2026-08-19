@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, UserRoundMinus, UserRoundPlus, Users } from 'lucide-react';
 import { toast } from 'sonner';
-import { listCharacters, parseAllowedSourceIds, removeCampaignCharacter, setCharacterSeat } from '@/lib/api';
+import { listCharacters, parseAllowedSourceIds, removeCampaignCharacter, setCharacterEditConsent, setCharacterSeat } from '@/lib/api';
 import type { CampaignCharacterSummary, CharacterRecordSummary, Player } from '@/lib/api';
 import { DEFAULT_GAME_SYSTEM_ID, getGameSystem, type GameSystemId } from '@/data/gameSystems';
 import { getStoreHolding } from '@/store/documentStores';
@@ -37,6 +37,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuthStore } from '@/store/authStore';
@@ -59,7 +60,9 @@ export function PartyPage() {
   const createKobCharacter = useKobCharacterStore((state) => state.createCharacter);
   const setKobPendingSeat = useKobCharacterStore((state) => state.setPendingSeat);
 
+  const loadMembership = useCampaignStore((state) => state.loadMembership);
   const [attaching, setAttaching] = useState(false);
+  const [savingConsent, setSavingConsent] = useState(false);
   /** Someone else's character the owner is about to take off the table. */
   const [confirmRemove, setConfirmRemove] = useState<CampaignCharacterSummary | null>(null);
   const { characters, loading, error, reload } = useCampaignCharacters(campaignId);
@@ -131,6 +134,23 @@ export function PartyPage() {
   };
 
   const runsCampaign = isCampaignOwner(membership);
+  // Only the ask puts the control on screen, but once someone has said yes it stays visible —
+  // a consent you cannot find is one you cannot withdraw.
+  const consented = Boolean(membership?.character_edit_consent);
+  const showsConsent = !runsCampaign && (Boolean(campaign?.requests_character_edit) || consented);
+
+  const handleConsent = async (next: boolean) => {
+    setSavingConsent(true);
+    try {
+      await setCharacterEditConsent(campaignId, next);
+      await loadMembership(campaignId);
+      toast.success(next ? 'The GM can now edit your characters here' : 'The GM can no longer edit your characters here');
+    } catch (e) {
+      toast.error('Could not change that', { description: e instanceof Error ? e.message : undefined });
+    } finally {
+      setSavingConsent(false);
+    }
+  };
 
   const seatName = (character: CampaignCharacterSummary) => character.player_name ?? 'No seat';
 
@@ -160,6 +180,26 @@ export function PartyPage() {
           New characters start filtered to this campaign's {allowedSourceIds.length} allowed source
           {allowedSourceIds.length === 1 ? '' : 's'}.
         </p>
+      ) : null}
+
+      {showsConsent ? (
+        <Card>
+          <CardContent className="flex flex-wrap items-start justify-between gap-3 py-4">
+            <div className="min-w-0 flex-1">
+              <p className="font-medium">Let the GM edit your characters at this table</p>
+              <p className="text-sm text-muted-foreground">
+                It covers every character you seat here, now and later — never the ones you keep elsewhere.
+                Yours to give and yours to take back; nobody else can set it for you.
+              </p>
+            </div>
+            <Switch
+              checked={consented}
+              disabled={savingConsent}
+              onCheckedChange={(next) => void handleConsent(next)}
+              aria-label="Let the GM edit your characters at this table"
+            />
+          </CardContent>
+        </Card>
       ) : null}
 
       {loading ? (
@@ -194,7 +234,7 @@ export function PartyPage() {
                       {character.summary ?? 'No summary recorded yet'}
                     </CardDescription>
                   </div>
-                  {isOwn ? <Badge>Yours</Badge> : null}
+                  <CharacterAccessBadge isOwn={isOwn} character={character} />
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -203,9 +243,15 @@ export function PartyPage() {
                   <p className="truncate">Seat: {seatName(character)}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Button asChild size="sm" variant="secondary">
-                    <Link to={`/campaign/${campaignId}/party/${character.id}`}>View sheet</Link>
-                  </Button>
+                  {character.can_read ? (
+                    <Button asChild size="sm" variant="secondary">
+                      <Link to={`/campaign/${campaignId}/party/${character.id}`}>
+                        {character.can_edit && !isOwn ? 'Open sheet' : 'View sheet'}
+                      </Link>
+                    </Button>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">Its player keeps this sheet private.</span>
+                  )}
                   {isOwn ? (
                     <Button size="sm" variant="ghost" onClick={() => handleUnseat(character)}>
                       Detach
@@ -444,4 +490,12 @@ function AttachCharacterForm({
       </DialogContent>
     </Dialog>
   );
+}
+
+/** Whose sheet this is and what this reader may do with it. */
+function CharacterAccessBadge({ isOwn, character }: Readonly<{ isOwn: boolean; character: CampaignCharacterSummary }>) {
+  if (isOwn) return <Badge>Yours</Badge>;
+  if (character.can_edit) return <Badge variant="secondary">You can edit</Badge>;
+  if (!character.can_read) return <Badge variant="outline">Private</Badge>;
+  return null;
 }

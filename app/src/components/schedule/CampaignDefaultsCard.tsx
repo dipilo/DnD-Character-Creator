@@ -5,10 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
 import { PermissionToggles } from '@/components/schedule/PermissionToggles';
 import { GAME_SYSTEM_LIST, getGameSystem, type GameSystemId } from '@/data/gameSystems';
 import {
   parsePermissionBlob,
+  setCampaignCharacterEditRequest,
   setCampaignDefaultPermissions,
   setCampaignSystem,
   type Campaign,
@@ -37,6 +39,7 @@ function DefaultsForm({ campaign, canEdit, onCampaignChange }: Readonly<Campaign
     () => parsePermissionBlob(campaign.default_invite_permissions),
   );
   const [busy, setBusy] = useState(false);
+  const asksCharacterEdit = Boolean(campaign.requests_character_edit);
 
   const save = async (run: () => Promise<Campaign>, what: string) => {
     if (busy) return;
@@ -87,6 +90,26 @@ function DefaultsForm({ campaign, canEdit, onCampaignChange }: Readonly<Campaign
         <p className="text-xs text-muted-foreground">
           Decides which builder the party page opens when someone starts a character here.
         </p>
+      </div>
+
+      <Separator />
+
+      {/* The ask, and only the ask. It is not a permission the owner can grant themselves: each
+          player answers it on their own membership row, which this page cannot write. */}
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium">Ask players to let you edit their characters</p>
+          <p className="text-xs text-muted-foreground">
+            Puts the question on this campaign&apos;s invite links and on its Party page. Nothing is granted until a
+            player says yes, and they can take it back at any time — turning this off does not revoke what they gave.
+          </p>
+        </div>
+        <Switch
+          checked={asksCharacterEdit}
+          disabled={!canEdit || busy}
+          aria-label="Ask players to let you edit their characters"
+          onCheckedChange={(next) => save(() => setCampaignCharacterEditRequest(campaign.id, next), 'Character editing request')}
+        />
       </div>
 
       <Separator />

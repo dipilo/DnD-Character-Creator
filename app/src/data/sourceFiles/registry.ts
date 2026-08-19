@@ -112,6 +112,17 @@ export const getSourceEntryCount = (sourceId: string) => {
   return buckets.reduce((total, bucket) => total + aggregateBucketEntries(matchingModules, bucket).length, 0);
 };
 
+// The packs are module-level constants, so the whole-registry aggregate for a bucket can only be
+// computed once. It used to run per call, and `getRuntimeSpells()` calls it on every lookup.
+const allSourceBuckets = new Map<string, unknown>();
+
 export const getSourceBuckets = <K extends keyof ImportedContentSourceFile['content']>(bucket: K) => {
-  return aggregateBucketEntries(sourceModuleRegistry, bucket);
+  const cached = allSourceBuckets.get(bucket as string);
+  if (cached) {
+    return cached as ImportedContentSourceFile['content'][K];
+  }
+
+  const entries = aggregateBucketEntries(sourceModuleRegistry, bucket);
+  allSourceBuckets.set(bucket as string, entries);
+  return entries;
 };

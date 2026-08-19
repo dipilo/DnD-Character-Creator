@@ -4,7 +4,10 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { CharacterSharingDialog } from '@/components/character/CharacterSharingDialog';
+import { fullName } from '@/data/gameSystems/kidsOnBikes/rules';
 import { KobSheetView } from '@/components/kob/KobSheetView';
+import { useAuthStore } from '@/store/authStore';
 import { useKobCharacterStore } from '@/store/kobCharacterStore';
 import type { KobCharacter } from '@/types/kob';
 
@@ -15,6 +18,8 @@ export function KobSheetPage() {
     state.characters.find((entry) => entry.id === characterId),
   );
   const { updateCharacter } = useKobCharacterStore.getState();
+  // Sharing is a server-side fact; a signed-out builder has nothing to share yet.
+  const signedIn = useAuthStore((state) => Boolean(state.user));
 
   if (!character) {
     return (
@@ -40,12 +45,15 @@ export function KobSheetPage() {
         </Button>
       )}
       actions={(
-        <Button asChild variant="secondary" className="min-h-11">
-          <Link to={`/kob/builder/${character.id}`}>
-            <Pencil className="h-4 w-4" />
-            Edit
-          </Link>
-        </Button>
+        <>
+          <Button asChild variant="secondary" className="min-h-11">
+            <Link to={`/kob/builder/${character.id}`}>
+              <Pencil className="h-4 w-4" />
+              Edit
+            </Link>
+          </Button>
+          {signedIn ? <CharacterSharingDialog characterId={character.id} characterName={fullName(character) || 'this character'} /> : null}
+        </>
       )}
     />
   );
