@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { KobCharacter } from '@/types/kob';
+import type { KobCharacter, KobConsentSheet } from '@/types/kob';
 import { KOB_STAT_IDS, statDiceForTrope } from '@/data/gameSystems/kidsOnBikes/rules';
 import type { KobDie, KobStatId } from '@/data/gameSystems/kidsOnBikes/types';
+import { createDebouncedLocalStorage } from '@/lib/debouncedStorage';
 import type { CharacterSyncMeta, PendingSeat } from '@/store/syncTypes';
 
 /**
@@ -42,6 +43,18 @@ function emptyStatDice(): Record<KobStatId, KobDie> {
   return statDiceForTrope(null);
 }
 
+function emptyConsentSheet(): KobConsentSheet {
+  return {
+    crush: false,
+    date: false,
+    partner: false,
+    onScreenIntimacy: false,
+    offScreenIntimacy: false,
+    relationshipNotes: '',
+    characterNotes: '',
+  };
+}
+
 export function createEmptyKobCharacter(): KobCharacter {
   const now = new Date().toISOString();
   return {
@@ -69,6 +82,7 @@ export function createEmptyKobCharacter(): KobCharacter {
     bike: { colorId: '', upgradeId: '', name: '', origin: '', favoriteMemory: '' },
     relationships: [],
     bondedActions: [],
+    consent: emptyConsentSheet(),
     // "Each player starts the game with 3 AT in their supply."
     adversityTokens: 3,
     notes: '',
@@ -93,6 +107,7 @@ function withDefaults(character: KobCharacter): KobCharacter {
     knacks: character.knacks?.length ? character.knacks : base.knacks,
     relationships: character.relationships ?? [],
     bondedActions: character.bondedActions ?? [],
+    consent: { ...base.consent, ...(character.consent ?? {}) },
   };
 }
 
@@ -217,6 +232,7 @@ export const useKobCharacterStore = create<KobCharacterState>()(
     }),
     {
       name: 'kids-on-bikes-storage',
+      storage: createDebouncedLocalStorage(),
       partialize: (state) => ({
         characters: state.characters,
         syncMeta: state.syncMeta,

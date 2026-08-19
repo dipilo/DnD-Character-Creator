@@ -49,6 +49,11 @@ export interface KobCharacter {
   bike: KobBike;
   relationships: KobRelationship[];
   bondedActions: KobBondedActionEntry[];
+  /**
+   * The Consent Sheet (rulebook p. 16–18): what the player is comfortable their character doing
+   * on-page, not a creation-time answer — it is meant to be revisited as comfort shifts over play.
+   */
+  consent: KobConsentSheet;
 
   /** Each player starts the game with 3. */
   adversityTokens: number;
@@ -56,6 +61,21 @@ export interface KobCharacter {
 
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * "To accommodate this, each player has a section on their Consent Sheet that allows them to
+ * select the levels of romance they are interested in." Crush/Date/Partner are cumulative levels
+ * of romantic involvement; the two intimacy flags are independent of them, per the printed sheet.
+ */
+export interface KobConsentSheet {
+  crush: boolean;
+  date: boolean;
+  partner: boolean;
+  onScreenIntimacy: boolean;
+  offScreenIntimacy: boolean;
+  relationshipNotes: string;
+  characterNotes: string;
 }
 
 export interface KobBike {

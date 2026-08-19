@@ -12,6 +12,7 @@ import {
 } from '@/lib/builderRules';
 import type { Character, CharacterSummary, BuilderState, BuilderStep, AbilityScores } from '@/types/dnd';
 import { dndContent } from '@/data/contentResolvers';
+import { createDebouncedLocalStorage } from '@/lib/debouncedStorage';
 import type { CharacterSyncMeta, PendingSeat } from '@/store/syncTypes';
 
 /**
@@ -332,6 +333,7 @@ export const useCharacterStore = create<CharacterState>()(
     }),
     {
       name: 'dnd-character-storage',
+      storage: createDebouncedLocalStorage(),
       partialize: (state) => ({
         characters: state.characters,
         syncMeta: state.syncMeta,

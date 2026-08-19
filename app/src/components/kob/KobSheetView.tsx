@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import { ConsentSheetPanel } from '@/components/kob/ConsentSheetPanel';
 import { StatSpread } from '@/components/kob/StatSpread';
 import {
   freeStrengthForAge,
@@ -302,6 +303,8 @@ export function KobSheetView({ character, actions, leading, note, onChange }: Re
           </Card>
         ) : null}
       </div>
+
+      <ConsentSheetPanel character={character} onChange={onChange} />
 
       {onChange || character.notes.trim() ? (
         <Card>

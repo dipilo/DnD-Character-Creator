@@ -50,22 +50,6 @@ import type { AbilityScores, Character } from '@/types/dnd';
 
 const humanizeFallbackId = (value: string) => value.split('-').filter(Boolean).join(' ');
 const isDefined = <T,>(value: T | null | undefined): value is T => Boolean(value);
-const formatEquipmentOptionLabel = (item: { name: string; count?: number }) => {
-  const prefix = item.count ? `${item.count} ` : '';
-  return `${prefix}${item.name}`;
-};
-const formatBackgroundEquipment = (item: { name: string; count?: number; alternatives?: Array<{ name: string; count?: number }> }) => {
-  if (item.alternatives?.length) {
-    return `${item.name}: ${item.alternatives.map((alternative) => formatEquipmentOptionLabel(alternative)).join(' or ')}`;
-  }
-
-  return formatEquipmentOptionLabel(item);
-};
-
-const formatSelectedEquipmentLabel = (name: string, quantity: number) => {
-  return quantity > 1 ? `${name} x${quantity}` : name;
-};
-
 const calculateModifier = (score: number): number => Math.floor((score - 10) / 2);
 const formatModifier = (mod: number): string => (mod >= 0 ? `+${mod}` : `${mod}`);
 const normalizeEquipmentName = (value: string) => value.toLowerCase().replaceAll(/[^a-z0-9]+/g, ' ').trim();
@@ -203,9 +187,6 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
       getBackgroundById: (backgroundId) => backgrounds.find((entry) => entry.id === backgroundId)
     });
   }, [character.equipment, backgrounds, equipment]);
-  const selectedBackgroundEquipment = useMemo(() => {
-    return resolvedEquipment.filter((entry) => entry.sourceLabel.includes('Background Equipment'));
-  }, [resolvedEquipment]);
 
   const derivedProficiencies = useMemo(() => {
     return deriveCharacterProficiencies({
@@ -559,24 +540,6 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
             catalogue={equipment}
             onChange={onChange}
           />
-
-          {background && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Background Equipment</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-1">
-                  {(selectedBackgroundEquipment.length > 0
-                    ? selectedBackgroundEquipment.map((item) => ({ key: item.equipmentId, label: formatSelectedEquipmentLabel(item.name, item.quantity) }))
-                    : background.equipment.map((item) => ({ key: `${item.name}-${item.type}`, label: formatBackgroundEquipment(item) }))
-                  ).map((item) => (
-                    <li key={item.key} className="text-sm text-muted-foreground">• {item.label}</li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          )}
         </TabsContent>
 
         <TabsContent value="background" className="space-y-4">

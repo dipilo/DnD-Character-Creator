@@ -80,6 +80,16 @@ export function DiceTray() {
     return () => window.clearTimeout(timer);
   }, [dismiss, outcome]);
 
+  // The outcome card auto-dismisses, but the settled dice meshes stay on the physics surface until
+  // something clears them — left alone, a single roll sits on screen for the rest of the session.
+  useEffect(() => {
+    if (outcome || active) {
+      return;
+    }
+
+    sceneRef.current?.clear();
+  }, [active, outcome]);
+
   const rolling = Boolean(active);
   if (!showScene && !rolling && !outcome) {
     return null;

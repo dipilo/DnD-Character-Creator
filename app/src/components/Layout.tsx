@@ -21,10 +21,11 @@ const COMMUNITY_TESTING_MODE: boolean = false;
 /**
  * Destinations that belong to no one game. Each system contributes its own on top of these
  * (`GameSystemDefinition.navItems`), so switching the game swaps the builder and its companions
- * and leaves the shared screens alone.
+ * and leaves the shared screens alone. Home leads the row rather than trailing the active system's
+ * own items — it is the one destination that makes sense before "which game" has even been chosen.
  */
-const SHARED_NAV_ITEMS: GameSystemNavItem[] = [
-  { to: '/', label: 'Home', icon: Home, match: '/', exact: true },
+const HOME_NAV_ITEM: GameSystemNavItem = { to: '/', label: 'Home', icon: Home, match: '/', exact: true };
+const TRAILING_SHARED_NAV_ITEMS: GameSystemNavItem[] = [
   { to: '/campaigns', label: 'Campaigns', icon: CalendarRange, match: '/campaign' },
   { to: '/dice', label: 'Dice', icon: Dices, match: '/dice' },
 ];
@@ -60,7 +61,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
   const showExtendedNavigation = COMMUNITY_TESTING_MODE === false;
 
   const items = showExtendedNavigation
-    ? [...activeSystem.navItems, ...SHARED_NAV_ITEMS]
+    ? [HOME_NAV_ITEM, ...activeSystem.navItems, ...TRAILING_SHARED_NAV_ITEMS]
     : activeSystem.navItems.slice(0, 1);
   const isActive = (item: GameSystemNavItem) =>
     item.exact ? location.pathname === item.match : location.pathname.startsWith(item.match);
