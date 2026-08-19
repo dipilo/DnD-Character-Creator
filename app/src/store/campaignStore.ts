@@ -16,9 +16,12 @@ export const CAMPAIGN_PERMISSION_FLAGS = [
   { key: 'can_delete_players', label: 'Remove players', hint: 'Delete any seat, not just their own' },
   { key: 'can_manage_groups', label: 'Manage groups', hint: 'Create, edit and delete tables' },
   { key: 'can_create_invites', label: 'Create invites', hint: 'Mint and revoke invite links' },
-  { key: 'can_edit_self', label: 'Edit own seat', hint: 'Change their own player details' },
-  { key: 'players_self_delete', label: 'Release own seat', hint: 'Unclaim the seat they hold' },
+  { key: 'can_edit_self', label: 'Edit own seat', hint: 'Change the name, timezone and notes on the seat they hold' },
+  { key: 'players_self_delete', label: 'Release own seat', hint: 'Give up or delete the seat they hold' },
 ] as const satisfies readonly { key: keyof CampaignPermissions; label: string; hint: string }[];
+
+/** What a campaign grants arrivals when it has never said — mirrors the server's own floor. */
+export const DEFAULT_MEMBER_PERMISSIONS: CampaignPermissions = { can_edit_self: true, players_self_delete: true };
 
 export type CampaignPermissionFlag = (typeof CAMPAIGN_PERMISSION_FLAGS)[number]['key'];
 
@@ -30,11 +33,22 @@ export function parsePermissions(member: Pick<CampaignMember, 'permissions'> | n
   if (!member?.permissions) return {};
   try {
     const parsed: unknown = JSON.parse(member.permissions);
-    return parsed && typeof parsed === 'object' ? (parsed as CampaignPermissions) : {};
+    if (!parsed || typeof parsed !== 'object') return {};
+    return canonicalisePermissions(parsed as CampaignPermissions);
   } catch (e) {
     console.warn('campaign member permissions are not valid JSON', e instanceof Error ? e.message : e);
     return {};
   }
+}
+
+/**
+ * `can_unclaim` is the older name for `players_self_delete` and rows written by the claim flow
+ * carry it, so reading it as its own flag left the switch off for a right the member actually
+ * holds. Writing back the canonical shape is what retires it.
+ */
+function canonicalisePermissions(permissions: CampaignPermissions): CampaignPermissions {
+  const { can_unclaim, ...rest } = permissions;
+  return can_unclaim ? { ...rest, players_self_delete: true } : rest;
 }
 
 interface CampaignState {

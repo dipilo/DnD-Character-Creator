@@ -20,6 +20,13 @@ const GRANTABLE_PERMISSIONS = [
 const GRANTABLE_PERMISSION_SET = new Set(GRANTABLE_PERMISSIONS);
 
 /**
+ * What a campaign grants arrivals when it has no opinion of its own. A member who can change
+ * nothing on their own row cannot correct their own timezone, so "no default" used to mean a seat
+ * its holder could not touch.
+ */
+const DEFAULT_MEMBER_PERMISSIONS = Object.freeze({ can_edit_self: true, players_self_delete: true });
+
+/**
  * Normalise a permissions object from a request body.
  *
  * Returns `{ value }` with a JSON string (or null when nothing is granted, which is how "no
@@ -55,18 +62,41 @@ function parsePermissions(stored) {
 
 /**
  * What a new member gets. An invite's own blob wins when it has one; otherwise the campaign's
- * default applies. NULL on the invite means "no opinion", which is why it cannot simply be
- * defaulted to `{}` at the column level — an invite has to be able to say "grant nothing" too.
+ * default applies, and a campaign with no opinion falls back to the self-service floor. NULL and
+ * `{}` differ on both columns for that reason — "no opinion" and "grant nothing" are not the same
+ * answer.
  */
 function resolveJoinPermissions(campaign, invite = null) {
   if (invite && invite.permissions !== null && invite.permissions !== undefined) {
     return parsePermissions(invite.permissions);
   }
-  return parsePermissions(campaign?.default_member_permissions);
+  const stored = campaign?.default_member_permissions;
+  if (stored === null || stored === undefined || stored === '') return { ...DEFAULT_MEMBER_PERMISSIONS };
+  return parsePermissions(stored);
+}
+
+/** The same answer as a JSON string, ready for the `campaign_members.permissions` column. */
+function joinPermissionsBlob(campaign, invite = null, extra = null) {
+  const granted = { ...resolveJoinPermissions(campaign, invite), ...(extra ?? {}) };
+  return Object.keys(granted).length > 0 ? JSON.stringify(granted) : null;
+}
+
+/**
+ * A campaign default keeps the empty object an owner explicitly saved, so "grant nothing" can be
+ * said out loud. `normalisePermissions` collapses it to NULL, which here would read as no opinion.
+ */
+function normaliseDefaultPermissions(value) {
+  if (value === null || value === undefined || value === '') return { value: null };
+  const normalised = normalisePermissions(value);
+  if (normalised.error) return normalised;
+  return { value: normalised.value ?? '{}' };
 }
 
 module.exports = {
+  DEFAULT_MEMBER_PERMISSIONS,
   GRANTABLE_PERMISSIONS,
+  joinPermissionsBlob,
+  normaliseDefaultPermissions,
   normalisePermissions,
   parsePermissions,
   resolveJoinPermissions,

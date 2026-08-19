@@ -1,5 +1,5 @@
 {
-  "requests": 170,
+  "requests": 183,
   "results": [
     {
       "name": "root",
@@ -1295,7 +1295,7 @@
             "campaign_id": 1,
             "created_at": "<volatile>",
             "id": 2,
-            "permissions": null,
+            "permissions": "{\"can_edit_self\":true,\"players_self_delete\":true}",
             "player_id": null,
             "player_name": null,
             "role": "player",
@@ -1307,7 +1307,7 @@
             "campaign_id": 1,
             "created_at": "<volatile>",
             "id": 3,
-            "permissions": "{\"can_unclaim\":true,\"can_edit_self\":true}",
+            "permissions": "{\"can_edit_self\":true,\"players_self_delete\":true}",
             "player_id": null,
             "player_name": null,
             "role": "player",
@@ -1415,7 +1415,32 @@
           "created_at": "<volatile>",
           "id": 2,
           "permissions": "{\"can_edit_self\":true}",
-          "player_id": null,
+          "player_id": 2,
+          "role": "player",
+          "user_id": 2
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "unclaim-without-self-release",
+      "request": "POST /api/campaigns/1/unclaim-player",
+      "status": 403,
+      "body": {
+        "error": "forbidden"
+      }
+    },
+    {
+      "name": "grant-self-release",
+      "request": "PATCH /api/campaigns/1/members/2/permissions",
+      "status": 200,
+      "body": {
+        "member": {
+          "campaign_id": 1,
+          "created_at": "<volatile>",
+          "id": 2,
+          "permissions": "{\"can_edit_self\":true,\"players_self_delete\":true}",
+          "player_id": 2,
           "role": "player",
           "user_id": 2
         },
@@ -1441,9 +1466,9 @@
     {
       "name": "leave-campaign",
       "request": "POST /api/campaigns/1/leave",
-      "status": 200,
+      "status": 403,
       "body": {
-        "ok": true
+        "error": "not_a_member"
       }
     },
     {
@@ -2874,6 +2899,159 @@
             "user_name": "dara"
           }
         ],
+        "ok": true
+      }
+    },
+    {
+      "name": "remove-member-as-member",
+      "request": "DELETE /api/campaigns/2/members/8",
+      "status": 403,
+      "body": {
+        "error": "owner_required"
+      }
+    },
+    {
+      "name": "remove-owner-member",
+      "request": "DELETE /api/campaigns/2/members/5",
+      "status": 400,
+      "body": {
+        "error": "owners_cannot_be_removed"
+      }
+    },
+    {
+      "name": "remove-member",
+      "request": "DELETE /api/campaigns/2/members/8",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "name": "remove-member-again",
+      "request": "DELETE /api/campaigns/2/members/8",
+      "status": 404,
+      "body": {
+        "error": "member_not_found"
+      }
+    },
+    {
+      "name": "camp2-members-after-removal",
+      "request": "GET /api/campaigns/2/members",
+      "status": 200,
+      "body": {
+        "members": [
+          {
+            "campaign_id": 2,
+            "created_at": "<volatile>",
+            "id": 5,
+            "permissions": null,
+            "player_id": null,
+            "player_name": null,
+            "role": "owner",
+            "user_discord": null,
+            "user_id": 1,
+            "user_name": "alice"
+          },
+          {
+            "campaign_id": 2,
+            "created_at": "<volatile>",
+            "id": 6,
+            "permissions": "{\"can_manage_groups\":true}",
+            "player_id": null,
+            "player_name": null,
+            "role": "player",
+            "user_discord": null,
+            "user_id": 2,
+            "user_name": "bob"
+          },
+          {
+            "campaign_id": 2,
+            "created_at": "<volatile>",
+            "id": 7,
+            "permissions": "{\"can_create_players\":true}",
+            "player_id": null,
+            "player_name": null,
+            "role": "player",
+            "user_discord": null,
+            "user_id": 4,
+            "user_name": "Ellis"
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "removed-member-cannot-read-camp2",
+      "request": "GET /api/campaigns/2/members",
+      "status": 403,
+      "body": {
+        "error": "not_a_member"
+      }
+    },
+    {
+      "name": "seat-character-in-camp2",
+      "request": "PUT /api/characters/char-imported/seat",
+      "status": 200,
+      "body": {
+        "character": {
+          "campaign_id": 2,
+          "created_at": "<volatile>",
+          "id": "char-imported",
+          "name": "Imported",
+          "player_id": null,
+          "schema_version": 1,
+          "summary": null,
+          "updated_at": "<volatile>",
+          "user_id": 1,
+          "version": 1
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "remove-campaign-character-as-member",
+      "request": "DELETE /api/campaigns/2/characters/char-imported",
+      "status": 403,
+      "body": {
+        "error": "owner_required"
+      }
+    },
+    {
+      "name": "remove-campaign-character",
+      "request": "DELETE /api/campaigns/2/characters/char-imported",
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    {
+      "name": "remove-campaign-character-again",
+      "request": "DELETE /api/campaigns/2/characters/char-imported",
+      "status": 404,
+      "body": {
+        "error": "character_not_found"
+      }
+    },
+    {
+      "name": "character-after-campaign-removal",
+      "request": "GET /api/characters/char-imported",
+      "status": 200,
+      "body": {
+        "character": {
+          "campaign_id": null,
+          "created_at": "<volatile>",
+          "data": {
+            "name": "Imported"
+          },
+          "id": "char-imported",
+          "name": "Imported",
+          "player_id": null,
+          "schema_version": 1,
+          "summary": null,
+          "updated_at": "<volatile>",
+          "user_id": 1,
+          "version": 1
+        },
         "ok": true
       }
     },

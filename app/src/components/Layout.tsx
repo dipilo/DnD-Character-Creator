@@ -69,6 +69,9 @@ export function Layout({ children }: Readonly<LayoutProps>) {
   // The header names the game you are in — "D&D Character Creator" over a Kids on Bikes sheet
   // reads as the wrong app.
   const brandLabel = `${activeSystem.shortName} Character Creator`;
+  useEffect(() => {
+    document.title = brandLabel;
+  }, [brandLabel]);
 
   const mainClassName = isFullBleedBuilderRoute
     ? 'w-full flex-1'

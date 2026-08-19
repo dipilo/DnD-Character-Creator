@@ -19,14 +19,14 @@ const CHILD_INTIMACY_HARD_LINE =
   'On-screen and off-screen intimacy are unavailable for a child character.';
 
 const LEVEL_FIELDS: ReadonlyArray<{ key: keyof KobConsentSheet; label: string; description: string }> = [
-  { key: 'crush', label: 'Crush', description: 'Relatively harmless: no intimacy. Blushing, small gifts, holding hands, a kiss on the cheek.' },
-  { key: 'date', label: 'Date', description: 'Going out together, an emotional bond, minimal or light physical intimacy.' },
-  { key: 'partner', label: 'Partner', description: 'A committed relationship — marriage or common-law, often living together.' }
+  { key: 'crush', label: 'Crush', description: 'A crush is considered relatively harmless with no intimacy. Characters may get flustered, blush, try to show affection through small gifts, acts of service, or compliments. They may hold hands or even share a small kiss on the cheek.' },
+  { key: 'date', label: 'Date', description: 'Dating is going out to places, hanging out together, sharing an emotional bond, with minimal or light physical intimacy. Characters might be jealous or protective of each other. They might show affection with grand gestures, by being helpful, protecting each other, or helping the other succeed. They may cuddle, kiss, make out, or have sex. (Underage characters should not be discussed having sex.)' },
+  { key: 'partner', label: 'Partner', description: 'Partners spend a lot of time together, are often in a committed relationship like a marriage or common-law marriage, and often live together. They may show affection through inside jokes, shared history, having or adopting children together, doing household chores for one another, or helping the other get through their daily lives. They may share an easier physical intimacy, regularly have sex or other physical closeness, and know each other very intimately.' }
 ];
 
 const INTIMACY_FIELDS: ReadonlyArray<{ key: keyof KobConsentSheet; label: string; description: string }> = [
-  { key: 'onScreenIntimacy', label: 'On-Screen Intimacy', description: "You're okay with physical affection being described at the table." },
-  { key: 'offScreenIntimacy', label: 'Off-Screen Intimacy', description: 'It can happen, but never narrated — "we go out for a drive, then come home."' }
+  { key: 'onScreenIntimacy', label: 'On-Screen Intimacy', description: "Indicates that you’re okay with the kinds of physical affection mentioned for each relationship and that you’re okay with them occurring on screen for your character." },
+  { key: 'offScreenIntimacy', label: 'Off-Screen Intimacy', description: 'Indicates that you’re okay with any of the kinds of physical affection mentioned for each relationship but that you only want them to occur in ways that are not described at the table.' }
 ];
 
 interface ConsentSheetPanelProps {
@@ -91,7 +91,7 @@ export function ConsentSheetPanel({ character, onChange }: Readonly<ConsentSheet
                 id={`consent-relationship-notes-${character.id}`}
                 value={consent.relationshipNotes}
                 onChange={(event) => setField('relationshipNotes', event.target.value)}
-                placeholder="Preferences specific to a relationship — only with NPCs, a long-distance partner you'd rather not dwell on…"
+                placeholder="You might prefer to only roleplay intimacy with nonplayer characters, for example, or you’d like for your character to have a long distance relationship that doesn’t get mentioned frequently."
                 className="min-h-20"
               />
             </div>

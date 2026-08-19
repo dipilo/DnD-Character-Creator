@@ -1,4 +1,5 @@
 const db = require('../db');
+const { readMembership } = require('../lib/membership');
 const { getSessionUser } = require('../lib/sessions');
 
 // Identity comes from the session cookie and nowhere else. The `X-User-Id` header and
@@ -40,7 +41,7 @@ function requireCampaignAccess(role = null) {
       if (!user) return res.status(401).json({ error: 'not_authenticated' });
 
       // check membership
-      const mem = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ?', campaignId, user.id);
+      const mem = await readMembership(db, campaignId, user.id);
       if (!mem) return res.status(403).json({ error: 'not_a_member' });
       if (role === 'owner' && mem.role !== 'owner') return res.status(403).json({ error: 'owner_required' });
 
@@ -63,7 +64,7 @@ async function isCampaignOwner(userId, campaignId) {
 
 async function getCampaignMembership(userId, campaignId) {
   if (!userId || !campaignId) return null;
-  return await db.get('SELECT * FROM campaign_members WHERE user_id = ? AND campaign_id = ?', userId, campaignId);
+  return await readMembership(db, campaignId, userId);
 }
 
 /** Read one flag out of a campaign_members.permissions JSON blob without throwing on bad JSON. */
@@ -78,15 +79,25 @@ function memberHasPermission(memberRow, ...flags) {
   }
 }
 
+/**
+ * Whether this user holds that seat. Putting their own character in it is not editing it, so this
+ * is what seating checks — the seat row is untouched, only the character's `player_id` moves.
+ */
+async function holdsPlayerSeat(user, campaignId, playerId) {
+  if (!user) return false;
+  const memberRow = await readMembership(db, campaignId, user.id);
+  return memberRow?.player_id != null && Number(memberRow.player_id) === Number(playerId);
+}
+
+/**
+ * Editing a seat is the campaign owner's right, or `can_edit_self` on the seat you hold. Holding
+ * it was enough on its own until the flag was enforced, which left the switch in the Members grid
+ * doing nothing at all.
+ */
 async function canUserModifyPlayer(user, campaignId, playerId) {
   if (!user) return false;
-  // owner of campaign?
   if (await isCampaignOwner(user.id, campaignId)) return true;
-  // is there a campaign_members linking this user to this player?
-  const link = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ? AND player_id = ?', campaignId, user.id, playerId);
-  if (link) return true;
-  // if the user is a member (not necessarily linked to this player) but has can_edit_self on their linked member and the playerId equals their player_id, allow
-  const memberRow = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ?', campaignId, user.id);
+  const memberRow = await readMembership(db, campaignId, user.id);
   if (memberRow?.player_id && Number(memberRow.player_id) === Number(playerId)) {
     return memberHasPermission(memberRow, 'can_edit_self');
   }
@@ -111,6 +122,7 @@ async function cleanupOrphanedUser(userId) {
 
 module.exports = {
   canUserModifyPlayer,
+  holdsPlayerSeat,
   cleanupOrphanedUser,
   getCampaignMembership,
   isCampaignOwner,

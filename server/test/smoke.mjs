@@ -189,6 +189,10 @@ const steps = [
 
   { name: 'claim-player', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/claim-player`, headers: () => asUser('bob'), body: () => ({ player_id: ctx.cora }) },
   { name: 'set-member-permissions', method: 'PATCH', path: () => `/api/campaigns/${ctx.camp}/members/${ctx.bob}/permissions`, headers: () => asUser('alice'), body: { permissions: { can_edit_self: true } } },
+  // The grant above replaced the blob the claim wrote, so releasing the seat is refused until the
+  // right is granted back. Holding a seat used to be permission enough, which left the switch inert.
+  { name: 'unclaim-without-self-release', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/unclaim-player`, headers: () => asUser('bob'), body: () => ({ player_id: ctx.cora }) },
+  { name: 'grant-self-release', method: 'PATCH', path: () => `/api/campaigns/${ctx.camp}/members/${ctx.bob}/permissions`, headers: () => asUser('alice'), body: { permissions: { can_edit_self: true, players_self_delete: true } } },
   { name: 'unclaim-player', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/unclaim-player`, headers: () => asUser('bob'), body: () => ({ player_id: ctx.cora }) },
   { name: 'discord-confirm-link', method: 'POST', path: '/api/discord/confirm-link', headers: () => asUser('bob'), body: () => ({ player_id: ctx.cora }) },
   { name: 'leave-campaign', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/leave`, headers: () => asUser('bob') },
@@ -308,7 +312,24 @@ const steps = [
   { name: 'camp2-members-carry-granted-permissions', method: 'GET', path: () => `/api/campaigns/${ctx.camp2}/members`, headers: () => asUser('alice') },
   // Joining by id is the other door in, and it takes the campaign's member default too.
   { name: 'join-camp2-by-id', method: 'POST', path: () => `/api/campaigns/${ctx.camp2}/members`, headers: () => asUser('dara') },
-  { name: 'camp2-members-after-direct-join', method: 'GET', path: () => `/api/campaigns/${ctx.camp2}/members`, headers: () => asUser('alice') },
+  { name: 'camp2-members-after-direct-join', method: 'GET', path: () => `/api/campaigns/${ctx.camp2}/members`, headers: () => asUser('alice'), capture: (j) => { ctx.camp2Owner = j.members?.find((m) => m.role === 'owner')?.id; ctx.camp2Dara = j.members?.find((m) => m.user_id === ctx.dara)?.id; } },
+
+  // The owner's two removals. Neither destroys anything: a removed member's seat goes back to
+  // unclaimed, and a character taken off the table is only unshared.
+  { name: 'remove-member-as-member', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp2}/members/${ctx.camp2Dara}`, headers: () => asUser('bob') },
+  { name: 'remove-owner-member', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp2}/members/${ctx.camp2Owner}`, headers: () => asUser('alice') },
+  { name: 'remove-member', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp2}/members/${ctx.camp2Dara}`, headers: () => asUser('alice') },
+  { name: 'remove-member-again', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp2}/members/${ctx.camp2Dara}`, headers: () => asUser('alice') },
+  { name: 'camp2-members-after-removal', method: 'GET', path: () => `/api/campaigns/${ctx.camp2}/members`, headers: () => asUser('alice') },
+  { name: 'removed-member-cannot-read-camp2', method: 'GET', path: () => `/api/campaigns/${ctx.camp2}/members`, headers: () => asUser('dara') },
+
+  { name: 'seat-character-in-camp2', method: 'PUT', path: '/api/characters/char-imported/seat', headers: () => asUser('alice'), body: () => ({ campaign_id: ctx.camp2 }) },
+  { name: 'remove-campaign-character-as-member', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp2}/characters/char-imported`, headers: () => asUser('bob') },
+  { name: 'remove-campaign-character', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp2}/characters/char-imported`, headers: () => asUser('alice') },
+  { name: 'remove-campaign-character-again', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp2}/characters/char-imported`, headers: () => asUser('alice') },
+  // The document is untouched by either removal — it is still its owner's, merely unattached.
+  { name: 'character-after-campaign-removal', method: 'GET', path: '/api/characters/char-imported', headers: () => asUser('alice') },
+
   { name: 'delete-camp2', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp2}`, headers: () => asUser('alice') },
 
   { name: 'delete-player', method: 'DELETE', path: () => `/api/players/${ctx.cora}`, headers: () => asUser('alice') },

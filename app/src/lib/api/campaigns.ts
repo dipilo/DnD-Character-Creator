@@ -128,6 +128,19 @@ export async function updateMemberPermissions(
   return body.member;
 }
 
+/**
+ * Remove someone from a campaign. Owner-only, and it takes back only what membership granted: the
+ * seat goes back to unclaimed and their characters leave the table, neither is deleted.
+ */
+export async function removeCampaignMember(campaignId: number, memberId: number): Promise<void> {
+  await api.delete(`/api/campaigns/${campaignId}/members/${memberId}`);
+}
+
+/** Take a character off this table. The document stays its owner's; only the seat is given up. */
+export async function removeCampaignCharacter(campaignId: number, characterId: string): Promise<void> {
+  await api.delete(`/api/campaigns/${campaignId}/characters/${encodeURIComponent(characterId)}`);
+}
+
 /** Create a seat for the signed-in user in a campaign they have just joined. */
 export async function addSelfAsPlayer(campaignId: number): Promise<Player> {
   const body = await api.post<{ player: Player }>(`/api/campaigns/${campaignId}/add-self`);

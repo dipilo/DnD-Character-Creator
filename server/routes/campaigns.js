@@ -6,7 +6,8 @@ const { campaignCharacterSummary } = require('../lib/characters');
 const { publicPlayer } = require('../lib/players');
 const { createSession, publicUser } = require('../lib/sessions');
 const { genToken } = require('../lib/tokens');
-const { normalisePermissions, parsePermissions } = require('../lib/permissions');
+const { readMembership, upsertMembership } = require('../lib/membership');
+const { joinPermissionsBlob, normaliseDefaultPermissions, normalisePermissions } = require('../lib/permissions');
 const { cleanupOrphanedUser, isCampaignOwner, memberHasPermission, optionalAuth, requireAuth, requireCampaignAccess } = require('../middleware/auth');
 
 const router = express.Router();
@@ -77,10 +78,9 @@ router.post('/api/campaigns/:campaignId/add-self', requireAuth, async (req, res)
     const info = await db.run('INSERT INTO players (name, discord, timezone, notes, campaign_id) VALUES (?, ?, ?, ?, ?)', user.username || ('user'+user.id), '', '', '', campaignId);
     const created = await db.get('SELECT * FROM players WHERE id = ?', info.lastInsertRowid);
     // link membership (user -> player), with the campaign's default grant for arrivals
-    await db.run(
-      'INSERT OR IGNORE INTO campaign_members (campaign_id, user_id, player_id, role, permissions) VALUES (?, ?, ?, ?, ?)',
-      campaignId, user.id, created.id, 'player', camp.default_member_permissions ?? null,
-    );
+    await upsertMembership(db, {
+      campaignId, userId: user.id, playerId: created.id, permissions: joinPermissionsBlob(camp),
+    });
     res.json({ ok: true, player: publicPlayer(created) });
   } catch (e) {
     console.error('/api/campaigns/:campaignId/add-self', e);
@@ -145,8 +145,8 @@ const CAMPAIGN_UPDATABLE_COLUMNS = [
   }],
   ['allowed_source_ids', normaliseAllowedSourceIds],
   ['system_id', normaliseSystemId],
-  ['default_member_permissions', normalisePermissions],
-  ['default_invite_permissions', normalisePermissions],
+  ['default_member_permissions', normaliseDefaultPermissions],
+  ['default_invite_permissions', normaliseDefaultPermissions],
 ];
 
 // Update a campaign (owner only): rename it, or set the sources its table plays with. One table of
@@ -346,7 +346,7 @@ router.post('/api/campaigns/:campaignId/members', requireAuth, async (req, res) 
     // Add user as a campaign member, holding whatever the campaign grants arrivals by default.
     await db.run(
       'INSERT INTO campaign_members (campaign_id, user_id, role, permissions) VALUES (?, ?, ?, ?)',
-      campaignId, user.id, 'player', campaign.default_member_permissions ?? null,
+      campaignId, user.id, 'player', joinPermissionsBlob(campaign),
     );
 
     res.json({ ok: true, campaign });
@@ -416,11 +416,7 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
     // Claiming a seat creates a campaign-scoped account whose only reason to exist is that seat, so
     // editing and releasing it are a floor the campaign's defaults are layered on top of — without
     // them the new account can see the roster and change nothing on its own row.
-    const claimPermissions = JSON.stringify({
-      ...parsePermissions(campaign.default_member_permissions),
-      can_unclaim: true,
-      can_edit_self: true,
-    });
+    const claimPermissions = joinPermissionsBlob(campaign, null, { can_edit_self: true, players_self_delete: true });
 
     const user = req.user;
     if (user) {
@@ -437,8 +433,9 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
             throw new Error('already_claimed');
           }
           
-          // Link user to campaign_members with player_id
-          await trx.run('INSERT OR IGNORE INTO campaign_members(campaign_id,user_id,player_id,role,permissions) VALUES (?, ?, ?, ?, ?)', campaignId, user.id, playerId, 'player', claimPermissions);
+          // Link user to campaign_members with player_id. A member who joined first already has a
+          // row: the seat and the grant land on it rather than beside it.
+          await upsertMembership(trx, { campaignId, userId: user.id, playerId, permissions: claimPermissions });
           
           // Update Discord ID if available
           if (user.discord_id) {
@@ -461,8 +458,9 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
             user.discord_id || null);
           
           // Link user to new player
-          await trx.run('INSERT INTO campaign_members(campaign_id,user_id,player_id,role,permissions) VALUES (?, ?, ?, ?, ?)',
-            campaignId, user.id, info.lastInsertRowid, 'player', claimPermissions);
+          await upsertMembership(trx, {
+            campaignId, userId: user.id, playerId: info.lastInsertRowid, permissions: claimPermissions,
+          });
           
           // Return new player object
           const newPlayer = await trx.get('SELECT * FROM players WHERE id = ?', info.lastInsertRowid);
@@ -544,9 +542,10 @@ router.post('/api/campaigns/:campaignId/unclaim-player', requireAuth, async (req
 
     // owner can unclaim, or the linked user with can_unclaim permission can unclaim their own player
     const isOwner = await isCampaignOwner(user.id, campaignId);
-    const linked = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ? AND player_id = ?', campaignId, user.id, playerId);
+    const membership = await readMembership(db, campaignId, user.id);
+    const holdsIt = membership?.player_id != null && Number(membership.player_id) === Number(playerId);
     // legacy can_unclaim or modern players_self_delete both grant it
-    const hasPermission = isOwner || memberHasPermission(linked, 'can_unclaim', 'players_self_delete');
+    const hasPermission = isOwner || (holdsIt && memberHasPermission(membership, 'can_unclaim', 'players_self_delete'));
     if (!hasPermission) return res.status(403).json({ error: 'forbidden' });
 
     // remove password_hash and unlink any user mapping, mark as explicitly unclaimed
@@ -572,14 +571,64 @@ router.patch('/api/campaigns/:campaignId/members/:memberId/permissions', require
   try {
     const memberId = Number.parseInt(req.params.memberId, 10);
     if (!memberId) return res.status(400).json({ error: 'invalid_member_id' });
-    const body = req.body || {};
-    const perms = body.permissions || null; // expects an object
-    const pStr = perms ? JSON.stringify(perms) : null;
-    await db.run('UPDATE campaign_members SET permissions = ? WHERE id = ?', pStr, memberId);
+    const member = await db.get('SELECT * FROM campaign_members WHERE id = ? AND campaign_id = ?', memberId, req.campaign.id);
+    if (!member) return res.status(404).json({ error: 'member_not_found' });
+    const normalised = normalisePermissions(req.body?.permissions ?? null);
+    if (normalised.error) return res.status(400).json({ error: normalised.error });
+    await db.run('UPDATE campaign_members SET permissions = ? WHERE id = ?', normalised.value, memberId);
     const updated = await db.get('SELECT * FROM campaign_members WHERE id = ?', memberId);
     res.json({ ok: true, member: updated });
   } catch (e) {
     console.error('PATCH /api/campaigns/:campaignId/members/:memberId/permissions', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+/**
+ * Remove someone from a campaign (owner only). Everything this takes away is the membership: the
+ * seat they held goes back to unclaimed rather than being deleted, and their characters come off
+ * the table exactly as `leave` would take them — a sheet belongs to its account.
+ */
+router.delete('/api/campaigns/:campaignId/members/:memberId', requireCampaignAccess('owner'), async (req, res) => {
+  try {
+    const memberId = Number.parseInt(req.params.memberId, 10);
+    if (!memberId) return res.status(400).json({ error: 'invalid_member_id' });
+    const member = await db.get('SELECT * FROM campaign_members WHERE id = ? AND campaign_id = ?', memberId, req.campaign.id);
+    if (!member) return res.status(404).json({ error: 'member_not_found' });
+    if (member.role === 'owner') return res.status(400).json({ error: 'owners_cannot_be_removed' });
+
+    await db.run('DELETE FROM campaign_members WHERE id = ?', memberId);
+    if (member.player_id) {
+      await db.run(
+        'UPDATE players SET password_hash = NULL, discord_id = NULL, unclaimed_at = CURRENT_TIMESTAMP WHERE id = ?',
+        member.player_id,
+      );
+    }
+    await detachUserCharacters(req.campaign.id, member.user_id);
+    await cleanupOrphanedUser(member.user_id);
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('DELETE /api/campaigns/:campaignId/members/:memberId', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+/**
+ * Take a character off this table (owner only). It is the same write the character's own owner
+ * makes with `PUT /api/characters/:id/seat` and carries no `version` for the same reason: the seat
+ * is row metadata, and nobody but the owning account may touch the document itself.
+ */
+router.delete('/api/campaigns/:campaignId/characters/:characterId', requireCampaignAccess('owner'), async (req, res) => {
+  try {
+    const row = await db.get(
+      'SELECT * FROM characters WHERE id = ? AND campaign_id = ?',
+      String(req.params.characterId), req.campaign.id,
+    );
+    if (!row) return res.status(404).json({ error: 'character_not_found' });
+    await db.run('UPDATE characters SET campaign_id = NULL, player_id = NULL WHERE id = ?', row.id);
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('DELETE /api/campaigns/:campaignId/characters/:characterId', e);
     res.status(500).json({ error: e.message });
   }
 });

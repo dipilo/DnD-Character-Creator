@@ -192,7 +192,7 @@ export function KobSheetView({ character, actions, leading, note, onChange }: Re
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Spend them to raise a roll, to power a Strength, or — with the GM's permission — to
+            Spend them to raise a roll, to power a Strength, or—with the GM's permission—to
             ignore your Fear. You gain one every time you fail a roll.
           </p>
         </CardContent>

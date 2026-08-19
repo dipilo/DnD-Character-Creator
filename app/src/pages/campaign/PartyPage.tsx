@@ -9,12 +9,22 @@
 // sits in is the server's to state, and a stale party list is worse than a brief spinner.
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, UserRoundPlus, Users } from 'lucide-react';
+import { Plus, UserRoundMinus, UserRoundPlus, Users } from 'lucide-react';
 import { toast } from 'sonner';
-import { listCharacters, parseAllowedSourceIds, setCharacterSeat } from '@/lib/api';
+import { listCharacters, parseAllowedSourceIds, removeCampaignCharacter, setCharacterSeat } from '@/lib/api';
 import type { CampaignCharacterSummary, CharacterRecordSummary, Player } from '@/lib/api';
 import { DEFAULT_GAME_SYSTEM_ID, getGameSystem, type GameSystemId } from '@/data/gameSystems';
 import { getStoreHolding } from '@/store/documentStores';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,7 +40,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuthStore } from '@/store/authStore';
-import { useCampaignStore } from '@/store/campaignStore';
+import { isCampaignOwner, useCampaignStore } from '@/store/campaignStore';
 import { useCharacterStore } from '@/store/characterStore';
 import { useKobCharacterStore } from '@/store/kobCharacterStore';
 import { playerLabel, useCampaignCharacters, useCampaignId, useRoster } from '@/pages/campaign/useCampaignData';
@@ -50,6 +60,8 @@ export function PartyPage() {
   const setKobPendingSeat = useKobCharacterStore((state) => state.setPendingSeat);
 
   const [attaching, setAttaching] = useState(false);
+  /** Someone else's character the owner is about to take off the table. */
+  const [confirmRemove, setConfirmRemove] = useState<CampaignCharacterSummary | null>(null);
   const { characters, loading, error, reload } = useCampaignCharacters(campaignId);
 
   const campaign = useMemo(() => campaigns.find((c) => c.id === campaignId) ?? null, [campaigns, campaignId]);
@@ -100,6 +112,25 @@ export function PartyPage() {
       toast.error('Could not detach that character', { description: e instanceof Error ? e.message : undefined });
     }
   };
+
+  /**
+   * The owner can take anyone's character off the table. It is the same write as its owner's own
+   * Detach: the seat and the sharing go, the document stays theirs and never leaves their account.
+   */
+  const handleRemove = async () => {
+    const character = confirmRemove;
+    if (!character) return;
+    setConfirmRemove(null);
+    try {
+      await removeCampaignCharacter(campaignId, character.id);
+      reload();
+      toast.success(`${character.name ?? 'That character'} left the party`);
+    } catch (e) {
+      toast.error('Could not remove that character', { description: e instanceof Error ? e.message : undefined });
+    }
+  };
+
+  const runsCampaign = isCampaignOwner(membership);
 
   const seatName = (character: CampaignCharacterSummary) => character.player_name ?? 'No seat';
 
@@ -180,12 +211,37 @@ export function PartyPage() {
                       Detach
                     </Button>
                   ) : null}
+                  {!isOwn && runsCampaign ? (
+                    <Button size="sm" variant="ghost" onClick={() => setConfirmRemove(character)}>
+                      <UserRoundMinus className="h-4 w-4 text-destructive" />
+                      Remove
+                    </Button>
+                  ) : null}
                 </div>
               </CardContent>
             </Card>
           );
         })}
       </div>
+
+      <AlertDialog open={confirmRemove !== null} onOpenChange={(open) => !open && setConfirmRemove(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Take {confirmRemove?.name ?? 'this character'} off the table?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              It leaves this campaign's party and its seat, and the table stops being able to read
+              the sheet. The character itself is untouched and stays with its player, who can attach
+              it again.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleRemove}>Remove</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AttachCharacterDialog
         campaignId={campaignId}

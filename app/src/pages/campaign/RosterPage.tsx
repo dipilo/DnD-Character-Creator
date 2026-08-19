@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Pencil, Plus, Sparkles, Trash2, Upload, UserCheck, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -21,6 +21,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Spinner } from '@/components/ui/spinner';
+import { describeTimeZone } from '@/lib/timezones';
 import { isCampaignOwner, memberCan, membershipPlayerId, useCampaignStore } from '@/store/campaignStore';
 import { playerLabel, useCampaignCharacters, useCampaignId, useRoster } from '@/pages/campaign/useCampaignData';
 
@@ -59,6 +60,8 @@ export function RosterPage() {
   const [confirmDelete, setConfirmDelete] = useState<Player | null>(null);
   const [seeding, setSeeding] = useState<Player | null>(null);
 
+  // One clock reading for the page: a zone's offset line must not be recomputed per render.
+  const now = useMemo(() => new Date(), []);
   const campaign = campaigns.find((c) => c.id === campaignId) ?? null;
   const allowedSourceIds = parseAllowedSourceIds(campaign);
 
@@ -67,9 +70,14 @@ export function RosterPage() {
   const canAdd = memberCan(membership, 'can_create_players');
   const canDeleteAny = memberCan(membership, 'can_delete_players');
 
-  const canEdit = (player: Player) => isOwner || player.id === ownSeatId;
-  const canDelete = (player: Player) =>
-    canDeleteAny || (player.id === ownSeatId && memberCan(membership, 'players_self_delete'));
+  // Holding a seat is not the same as being allowed to change it: the server checks the flag too,
+  // so a button shown without it would only ever produce a 403.
+  const canEditSelf = memberCan(membership, 'can_edit_self');
+  const canReleaseSelf = memberCan(membership, 'players_self_delete');
+  const canEdit = (player: Player) => isOwner || (player.id === ownSeatId && canEditSelf);
+  const canDelete = (player: Player) => canDeleteAny || (player.id === ownSeatId && canReleaseSelf);
+  const canRelease = (player: Player) =>
+    (isOwner && player.is_claimed) || (player.id === ownSeatId && canReleaseSelf);
 
   const handleClaim = async (player: Player) => {
     try {
@@ -150,7 +158,7 @@ export function RosterPage() {
                   <div className="min-w-0">
                     <CardTitle className="truncate text-base">{playerLabel(player)}</CardTitle>
                     <CardDescription className="truncate">
-                      {player.timezone || 'No timezone set'}
+                      {describeTimeZone(player.timezone, now) ?? 'No timezone set'}
                     </CardDescription>
                   </div>
                   {isOwnSeat ? <Badge>You</Badge> : null}
@@ -188,7 +196,7 @@ export function RosterPage() {
                     Claim
                   </Button>
                 ) : null}
-                {isOwnSeat || (isOwner && player.is_claimed) ? (
+                {canRelease(player) ? (
                   <Button size="sm" variant="ghost" onClick={() => handleUnclaim(player)}>
                     <UserPlus className="h-4 w-4" />
                     Release

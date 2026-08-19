@@ -41,6 +41,7 @@ const KobSheetPage = lazy(() => import('@/pages/kob/KobSheetPage').then((module)
 // Phase 5: the join between the two halves — real builder characters seated at campaign tables.
 const PartyPage = lazy(() => import('@/pages/campaign/PartyPage').then((module) => ({ default: module.PartyPage })));
 const CampaignCharacterPage = lazy(() => import('@/pages/campaign/CampaignCharacterPage').then((module) => ({ default: module.CampaignCharacterPage })));
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((module) => ({ default: module.NotFoundPage })));
 
 function RouteFallback() {
   return (
@@ -116,6 +117,10 @@ function App() {
                 <Route path="groups" element={<GroupsPage />} />
                 <Route path="members" element={<MembersPage />} />
               </Route>
+
+              {/* A branch that matches no child falls through to here, so a wrong link inside a
+                  campaign lands on the same page as a wrong link anywhere else. */}
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
         </Layout>

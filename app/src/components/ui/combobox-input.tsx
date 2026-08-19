@@ -11,10 +11,21 @@ function splitActiveSegment(value: string) {
   return { active, completed }
 }
 
+// A suggestion that carries more than its own text: a subtitle shown under it, and the words it
+// answers to besides its value (a timezone's abbreviations, say).
+export interface ComboboxOption {
+  readonly value: string
+  readonly label?: string
+  readonly description?: string
+  readonly keywords?: readonly string[]
+}
+
+export type ComboboxSuggestion = string | ComboboxOption
+
 interface ComboboxInputProps extends Readonly<Omit<ComponentProps<typeof Input>, "value" | "onChange" | "onSelect">> {
   readonly value: string
   readonly onChange: (value: string) => void
-  readonly suggestions: readonly string[]
+  readonly suggestions: readonly ComboboxSuggestion[]
   // When true (default), value is treated as a comma-separated list and
   // suggestions filter/insert against the segment currently being typed.
   // When false, suggestions match and replace the entire value.
@@ -41,21 +52,31 @@ export function ComboboxInput({
   const [isOpen, setIsOpen] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(0)
 
+  const options = useMemo(
+    () =>
+      suggestions.map((suggestion) => {
+        const option = typeof suggestion === "string" ? { value: suggestion } : suggestion;
+        const searchable = [option.value, option.label, option.description, ...(option.keywords ?? [])];
+        return { ...option, haystack: searchable.filter(Boolean).join(" ").toLowerCase() };
+      }),
+    [suggestions],
+  );
+
   const { active, completed } = useMemo(() => (multiValue ? splitActiveSegment(value) : { active: value, completed: [] }), [value, multiValue]);
 
   const alreadyChosen = useMemo(() => new Set(completed.map((entry) => entry.toLowerCase())), [completed]);
 
   const filteredSuggestions = useMemo(() => {
     const query = active.trim().toLowerCase();
-    return suggestions
-      .filter((option) => !alreadyChosen.has(option.toLowerCase()))
-      .filter((option) => query.length === 0 || option.toLowerCase().includes(query))
+    return options
+      .filter((option) => !alreadyChosen.has(option.value.toLowerCase()))
+      .filter((option) => query.length === 0 || option.haystack.includes(query))
       .slice(0, maxSuggestions);
-  }, [suggestions, active, alreadyChosen, maxSuggestions]);
+  }, [options, active, alreadyChosen, maxSuggestions]);
 
   const showDropdown = isOpen && filteredSuggestions.length > 0;
 
-  const commitSuggestion = (option: string) => {
+  const commitSuggestion = ({ value: option }: ComboboxOption) => {
     if (onSelect) {
       onSelect(option);
     } else if (multiValue) {
@@ -115,7 +136,7 @@ export function ComboboxInput({
           {filteredSuggestions.map((option, index) => {
             const isHighlighted = index === highlightedIndex;
             return (
-              <li key={option}>
+              <li key={option.value}>
                 <button
                   type="button"
                   className={cn(
@@ -126,7 +147,10 @@ export function ComboboxInput({
                   onMouseEnter={() => setHighlightedIndex(index)}
                   onClick={() => commitSuggestion(option)}
                 >
-                  {option}
+                  {option.label ?? option.value}
+                  {option.description ? (
+                    <span className="block text-xs text-muted-foreground">{option.description}</span>
+                  ) : null}
                 </button>
               </li>
             );

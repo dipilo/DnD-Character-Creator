@@ -58,7 +58,7 @@ export function FinishingTouches({ character, onChange }: Readonly<FinishingTouc
             placeholder="Suffocation"
           />
           <p className="text-xs text-muted-foreground">
-            Spend an Adversity Token — with the GM's permission — to ignore it.
+            Spend an Adversity Token—with the GM's permission—to ignore it.
           </p>
         </div>
 

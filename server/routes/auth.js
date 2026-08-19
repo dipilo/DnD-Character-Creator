@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const { config } = require('../config');
 const db = require('../db');
 const fetch = require('../lib/httpFetch');
+const { upsertMembership } = require('../lib/membership');
 const { genToken } = require('../lib/tokens');
 const {
   clearSessionCookie,
@@ -220,7 +221,7 @@ router.post('/api/discord/confirm-link', requireAuth, async (req, res) => {
       return res.status(400).json({ error: 'Already linked to this campaign' });
     }
     // Create the link
-    await db.run('INSERT INTO campaign_members (campaign_id, user_id, player_id, role) VALUES (?, ?, ?, ?)', campaign_id, user.id, player_id, 'player');
+    await upsertMembership(db, { campaignId: campaign_id, userId: user.id, playerId: player_id });
     await db.run('UPDATE players SET discord_id = ? WHERE id = ?', user.discord_id, player_id);
     const campRow = await db.get('SELECT name FROM campaigns WHERE id = ?', campaign_id);
     res.json({ ok: true, campaign_id, player_id, campaign_name: campRow && campRow.name });
@@ -282,7 +283,7 @@ router.post('/auth/signup', async (req, res) => {
     // Create a new passwordless user scoped to this campaign
     const info2 = await db.run('INSERT INTO users(username, password_hash) VALUES (?, ?)', username, null);
     const u2 = await db.get('SELECT id, username, discord_id, created_at FROM users WHERE id = ?', info2.lastInsertRowid);
-    await db.run('INSERT OR IGNORE INTO campaign_members(campaign_id,user_id,role,permissions) VALUES (?, ?, ?, ?)', campaignId, u2.id, 'player', JSON.stringify({ can_unclaim: true, can_edit_self: true }));
+    await db.run('INSERT OR IGNORE INTO campaign_members(campaign_id,user_id,role,permissions) VALUES (?, ?, ?, ?)', campaignId, u2.id, 'player', JSON.stringify({ can_edit_self: true, players_self_delete: true }));
     await createSession(req, res, u2);
     return res.json({ ok: true, user: publicUser(u2) });
   } catch (e) {

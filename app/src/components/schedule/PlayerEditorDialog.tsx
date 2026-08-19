@@ -17,7 +17,10 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import { TimeZoneField } from '@/components/schedule/TimeZoneField';
+import { browserTimeZone } from '@/lib/timezones';
 import { playerLabel } from '@/pages/campaign/useCampaignData';
+import { useAuthStore } from '@/store/authStore';
 
 interface PlayerEditorDialogProps {
   campaignId: number;
@@ -42,11 +45,23 @@ const TEXT_FIELDS = [
 
 type FormState = Record<string, string>;
 
-function toFormState(player: Player | null): FormState {
+/**
+ * What a brand-new seat starts with. A seat is almost always the person creating it, so their own
+ * device's timezone and — when they signed in with Discord, where the username *is* the handle —
+ * their handle are filled in. Both are ordinary editable fields: a guess, not a fact.
+ */
+function seatDefaults(user: { username: string | null; discord_id: string | null } | null): Partial<FormState> {
+  return {
+    timezone: browserTimeZone(),
+    discord: user?.discord_id ? (user.username ?? '') : '',
+  };
+}
+
+function toFormState(player: Player | null, defaults: Partial<FormState> = {}): FormState {
   return {
     name: player?.name ?? '',
-    discord: player?.discord ?? '',
-    timezone: player?.timezone ?? '',
+    discord: player?.discord ?? defaults.discord ?? '',
+    timezone: player?.timezone ?? defaults.timezone ?? '',
     notes: player?.notes ?? '',
     age: player?.age ?? '',
     computer_access: player?.computer_access ?? '',
@@ -56,17 +71,6 @@ function toFormState(player: Player | null): FormState {
     pref_play_with: player?.pref_play_with ?? '',
     pref_play_not_with: player?.pref_play_not_with ?? '',
   };
-}
-
-/** The zones the browser knows, for the timezone datalist. Older engines just get free text. */
-function supportedTimeZones(): string[] {
-  const withValues = Intl as typeof Intl & { supportedValuesOf?: (key: string) => string[] };
-  try {
-    return withValues.supportedValuesOf?.('timeZone') ?? [];
-  } catch (e) {
-    console.warn('could not list time zones', e instanceof Error ? e.message : e);
-    return [];
-  }
 }
 
 function formatBlock(block: AvailabilityBlock): string {
@@ -104,12 +108,13 @@ function PlayerEditorForm({
   onOpenChange,
   onSaved,
 }: Readonly<PlayerEditorFormProps>) {
-  const [form, setForm] = useState<FormState>(() => toFormState(player));
+  const user = useAuthStore((state) => state.user);
+  // Lazy, so the defaults are read once when the form mounts rather than on every keystroke.
+  const [form, setForm] = useState<FormState>(() => toFormState(player, player ? {} : seatDefaults(user)));
   const [preview, setPreview] = useState<AvailabilityBlock[] | null>(null);
   const [usePreview, setUsePreview] = useState(false);
   const [parsing, setParsing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const timeZones = useMemo(() => supportedTimeZones(), []);
   const otherPlayers = useMemo(() => roster.filter((p) => p.id !== player?.id), [roster, player?.id]);
 
   const setField = (key: string, value: string) => setForm((current) => ({ ...current, [key]: value }));
@@ -168,18 +173,12 @@ function PlayerEditorForm({
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="player-timezone">Timezone</Label>
-                <Input
+                <TimeZoneField
                   id="player-timezone"
-                  list="player-timezone-options"
-                  placeholder="Europe/London"
+                  placeholder="Europe/London, CST, -06:00"
                   value={form.timezone}
-                  onChange={(e) => setField('timezone', e.target.value)}
+                  onChange={(value) => setField('timezone', value)}
                 />
-                <datalist id="player-timezone-options">
-                  {timeZones.map((zone) => (
-                    <option key={zone} value={zone} />
-                  ))}
-                </datalist>
               </div>
               {TEXT_FIELDS.map((field) => (
                 <div key={field.key} className="space-y-1.5">

@@ -4,3 +4,4 @@ export { MyCharactersPage } from './MyCharactersPage';
 export { HomebrewHubPage } from './HomebrewHubPage';
 export { CharacterBuilderPage } from './CharacterBuilderPage';
 export { CharacterSheetPage } from './CharacterSheetPage';
+export { NotFoundPage } from './NotFoundPage';

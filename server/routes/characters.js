@@ -7,7 +7,7 @@ const express = require('express');
 const crypto = require('node:crypto');
 const db = require('../db');
 const { characterSummary, publicCharacter, serializeDocument } = require('../lib/characters');
-const { canUserModifyPlayer, getCampaignMembership, requireAuth } = require('../middleware/auth');
+const { canUserModifyPlayer, getCampaignMembership, holdsPlayerSeat, requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -68,9 +68,12 @@ async function resolveScope(user, body, existing) {
     if (!player || Number(player.campaign_id) !== Number(campaignId)) {
       return { error: 'player_not_in_campaign', status: 400 };
     }
-    if (!await canUserModifyPlayer(user, campaignId, playerId)) {
-      return { error: 'forbidden', status: 403 };
-    }
+    // The seat's own holder, or whoever runs the campaign. Seating writes nothing on the seat, so
+    // it does not want `can_edit_self` — a member whose permissions were later narrowed can still
+    // put their character where they sit.
+    const mayUse = await holdsPlayerSeat(user, campaignId, playerId)
+      || await canUserModifyPlayer(user, campaignId, playerId);
+    if (!mayUse) return { error: 'forbidden', status: 403 };
   }
   return { campaignId, playerId };
 }

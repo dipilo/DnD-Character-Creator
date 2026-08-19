@@ -7,23 +7,13 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
+import { TimeZoneField } from '@/components/schedule/TimeZoneField';
 import type { PaletteEntry } from '@/store/schedulePreferencesStore';
 import { useSchedulePreferences } from '@/store/schedulePreferencesStore';
 
 interface ScheduleSettingsProps {
   filterAggregate: boolean;
   onFilterAggregateChange: (value: boolean) => void;
-}
-
-/** The zones offered in the view picker; 'local' means whatever the browser is set to. */
-function viewTimeZoneOptions(): string[] {
-  const withValues = Intl as typeof Intl & { supportedValuesOf?: (key: string) => string[] };
-  try {
-    return withValues.supportedValuesOf?.('timeZone') ?? [];
-  } catch (e) {
-    console.warn('could not list time zones', e instanceof Error ? e.message : e);
-    return [];
-  }
 }
 
 /**
@@ -33,7 +23,6 @@ function viewTimeZoneOptions(): string[] {
 export function ScheduleSettings({ filterAggregate, onFilterAggregateChange }: Readonly<ScheduleSettingsProps>) {
   const { ownColor, aggregatePalette, viewTimeZone, setOwnColor, setAggregateEntry, setViewTimeZone, resetColors } =
     useSchedulePreferences();
-  const zones = useMemo(() => viewTimeZoneOptions(), []);
   // The band's position in the ladder is its identity ("3 free"), so it is named once here rather
   // than keying the rows off the map index.
   const bands = useMemo(
@@ -58,18 +47,12 @@ export function ScheduleSettings({ filterAggregate, onFilterAggregateChange }: R
       <PopoverContent align="end" className="w-[min(20rem,calc(100vw-2rem))] max-h-[calc(100dvh-6rem)] space-y-4 overflow-y-auto">
         <div className="space-y-1.5">
           <Label htmlFor="view-timezone">Show times in</Label>
-          <Input
+          <TimeZoneField
             id="view-timezone"
-            list="view-timezone-options"
+            allowLocal
             value={viewTimeZone}
-            onChange={(e) => setViewTimeZone(e.target.value || 'local')}
+            onChange={(value) => setViewTimeZone(value || 'local')}
           />
-          <datalist id="view-timezone-options">
-            <option value="local" />
-            {zones.map((zone) => (
-              <option key={zone} value={zone} />
-            ))}
-          </datalist>
           <p className="text-xs text-muted-foreground">`local` follows this device.</p>
         </div>
 

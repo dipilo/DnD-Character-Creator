@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Copy, Link2, Plus, RefreshCw, Settings2, Trash2 } from 'lucide-react';
+import { Copy, Link2, Plus, RefreshCw, Settings2, Trash2, UserMinus } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   deleteCampaign,
@@ -9,10 +9,21 @@ import {
   listCampaignMembers,
   listInvites,
   regenerateCampaignCode,
+  removeCampaignMember,
   renameCampaign,
   updateMemberPermissions,
 } from '@/lib/api';
 import type { CampaignMember, CampaignPermissions, Invite } from '@/lib/api';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -156,6 +167,22 @@ export function MembersPage() {
     }
   };
 
+  /** Null while nothing is being removed; holding the row keeps its name in the confirmation. */
+  const [confirmRemove, setConfirmRemove] = useState<CampaignMember | null>(null);
+
+  const handleRemoveMember = async () => {
+    const member = confirmRemove;
+    if (!member) return;
+    setConfirmRemove(null);
+    try {
+      await removeCampaignMember(campaignId, member.id);
+      setMembers((current) => current.filter((m) => m.id !== member.id));
+      toast.success(`${memberName(member)} is no longer in this campaign`);
+    } catch (e) {
+      toast.error('Could not remove that member', { description: e instanceof Error ? e.message : undefined });
+    }
+  };
+
   const togglePermission = async (member: CampaignMember, flag: keyof CampaignPermissions, value: boolean) => {
     const permissions = { ...parsePermissions(member), [flag]: value };
     try {
@@ -188,6 +215,17 @@ export function MembersPage() {
                   {owner ? <Badge variant="secondary">Owner</Badge> : null}
                   <span className="text-sm text-muted-foreground">{member.player_name ?? 'No seat'}</span>
                 </div>
+                {isOwner && !owner ? (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="min-h-11 text-destructive"
+                    onClick={() => setConfirmRemove(member)}
+                  >
+                    <UserMinus className="h-4 w-4" />
+                    Remove from campaign
+                  </Button>
+                ) : null}
                 {isOwner ? (
                   <div className="space-y-2">
                     {CAMPAIGN_PERMISSION_FLAGS.map((flag) => (
@@ -215,6 +253,7 @@ export function MembersPage() {
                 <TableHead>Member</TableHead>
                 <TableHead>Seat</TableHead>
                 {isOwner ? CAMPAIGN_PERMISSION_FLAGS.map((flag) => <TableHead key={flag.key}>{flag.label}</TableHead>) : null}
+                {isOwner ? <TableHead className="sr-only">Remove</TableHead> : null}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -242,6 +281,20 @@ export function MembersPage() {
                           </TableCell>
                         ))
                       : null}
+                    {isOwner ? (
+                      <TableCell>
+                        {owner ? null : (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            aria-label={`Remove ${memberName(member)} from this campaign`}
+                            onClick={() => setConfirmRemove(member)}
+                          >
+                            <UserMinus className="h-4 w-4 text-destructive" />
+                          </Button>
+                        )}
+                      </TableCell>
+                    ) : null}
                   </TableRow>
                 );
               })}
@@ -375,6 +428,25 @@ export function MembersPage() {
           )}
         </CardContent>
       </Card>
+
+      <AlertDialog open={confirmRemove !== null} onOpenChange={(open) => !open && setConfirmRemove(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Remove {confirmRemove ? memberName(confirmRemove) : 'this member'} from the campaign?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Their seat goes back to unclaimed and their characters leave the party. Nothing is
+              deleted — a seat can be claimed again, and a sheet belongs to its account. They can
+              rejoin with the campaign code or a new invite.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleRemoveMember}>Remove</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <InviteSettingsDialog
         open={inviteDialog !== null}

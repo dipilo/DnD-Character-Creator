@@ -184,14 +184,15 @@ router.delete('/api/players/:id', requireAuth, async (req, res) => {
     const existing = await db.get('SELECT * FROM players WHERE id = ?', id);
     if (!existing) return res.status(404).json({ error: 'player_not_found' });
     const user = req.user;
-    // owner, the linked user (deleting their own seat), or a member with can_delete_players
+    // Owner, a member with can_delete_players, or the seat's own holder with the self-service
+    // right. Holding the seat used to be enough by itself, which made the flag unrevokable.
     const isOwner = await isCampaignOwner(user.id, existing.campaign_id);
     if (!isOwner) {
-      const linked = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ? AND player_id = ?', existing.campaign_id, user.id, id);
-      if (!linked) {
-        const cm = await db.get('SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ?', existing.campaign_id, user.id);
-        if (!memberHasPermission(cm, 'can_delete_players')) return res.status(403).json({ error: 'forbidden' });
-      }
+      const cm = await getCampaignMembership(user.id, existing.campaign_id);
+      const ownSeat = cm?.player_id != null && Number(cm.player_id) === id;
+      const allowed = memberHasPermission(cm, 'can_delete_players')
+        || (ownSeat && memberHasPermission(cm, 'players_self_delete', 'can_unclaim'));
+      if (!allowed) return res.status(403).json({ error: 'forbidden' });
     }
         // delete dependent rows first to avoid FK constraint failures
         // collect any user_ids linked to this player so we can cleanup orphaned campaign-scoped users
