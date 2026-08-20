@@ -42,6 +42,7 @@ const KobSheetPage = lazy(() => import('@/pages/kob/KobSheetPage').then((module)
 // Phase 5: the join between the two halves — real builder characters seated at campaign tables.
 const PartyPage = lazy(() => import('@/pages/campaign/PartyPage').then((module) => ({ default: module.PartyPage })));
 const CampaignCharacterPage = lazy(() => import('@/pages/campaign/CampaignCharacterPage').then((module) => ({ default: module.CampaignCharacterPage })));
+const CampaignCharacterEditPage = lazy(() => import('@/pages/campaign/CampaignCharacterEditPage').then((module) => ({ default: module.CampaignCharacterEditPage })));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((module) => ({ default: module.NotFoundPage })));
 
 function RouteFallback() {
@@ -118,6 +119,7 @@ function App() {
                 <Route path="roster" element={<RosterPage />} />
                 <Route path="party" element={<PartyPage />} />
                 <Route path="party/:characterId" element={<CampaignCharacterPage />} />
+                <Route path="party/:characterId/edit" element={<CampaignCharacterEditPage />} />
                 <Route path="groups" element={<GroupsPage />} />
                 <Route path="members" element={<MembersPage />} />
               </Route>

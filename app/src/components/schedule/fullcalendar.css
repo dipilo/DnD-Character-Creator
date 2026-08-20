@@ -77,3 +77,12 @@
     margin-bottom: 0.4rem;
   }
 }
+
+/*
+ * The classic theme paints a background event at a flat 15% of its colour. The Everyone calendar's
+ * palette carries its own alpha, chosen with the opacity sliders in Display, so 15% of that came
+ * out at 7% and made every band a barely visible wash. At 100% the palette entry is what shows.
+ */
+.fc-aggregate {
+  --fc-classic-background-event-opacity: 100%;
+}

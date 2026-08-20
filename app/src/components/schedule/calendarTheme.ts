@@ -19,5 +19,9 @@ import './fullcalendar.css';
  */
 export const timeGridPlugins: PluginInput[] = [classicTheme, timeGridPlugin];
 
-/** The above plus drag, resize and range selection, for the editable calendar. */
-export const editableTimeGridPlugins: PluginInput[] = [classicTheme, timeGridPlugin, interactionPlugin];
+/**
+ * The above plus the interaction plugin. The editable calendar needs it for drag, resize and range
+ * selection; the read-only aggregate needs it for `dateClick`, because a background event sits
+ * under the slot lanes and never receives a pointer at all.
+ */
+export const interactiveTimeGridPlugins: PluginInput[] = [classicTheme, timeGridPlugin, interactionPlugin];

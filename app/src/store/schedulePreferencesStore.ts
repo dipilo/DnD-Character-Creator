@@ -81,3 +81,12 @@ export function paletteEntryForCount(palette: PaletteEntry[], count: number): Pa
   const index = Math.min(Math.max(0, count - 1), palette.length - 1);
   return palette[index];
 }
+
+/**
+ * What a band means, by its place in the ladder. The last entry absorbs every higher count, so it
+ * is the one that reads "4+". Named here because the settings popover and the calendar's own
+ * legend must not drift apart.
+ */
+export function paletteBandLabel(palette: PaletteEntry[], index: number): string {
+  return index === palette.length - 1 ? `${index + 1}+ free` : `${index + 1} free`;
+}

@@ -118,9 +118,6 @@ export function SchedulePage() {
           </TabsContent>
 
           <TabsContent value="everyone" className="space-y-2">
-            <p className="text-xs text-muted-foreground short:hidden">
-              Shaded by how many players are free. {isTouch ? 'Tap' : 'Hover'} a band to see who.
-            </p>
             <AggregateCalendar campaignId={campaignId} players={players} playerFilter={aggregateFilter} />
           </TabsContent>
         </Tabs>

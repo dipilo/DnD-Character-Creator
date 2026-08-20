@@ -95,7 +95,7 @@ export function createEmptyKobCharacter(): KobCharacter {
  * A stored document may predate a field. Filling the gaps on read keeps every screen free of
  * `?? ''` and means an older character never renders as a half-empty sheet.
  */
-function withDefaults(character: KobCharacter): KobCharacter {
+export function withKobDefaults(character: KobCharacter): KobCharacter {
   const base = createEmptyKobCharacter();
   const statDice = { ...base.statDice, ...(character.statDice ?? {}) };
   for (const statId of KOB_STAT_IDS) statDice[statId] ??= 'd4';
@@ -199,7 +199,7 @@ export const useKobCharacterStore = create<KobCharacterState>()(
 
       applyRemoteCharacter: (character, version) => {
         set((state) => {
-          const stored = withDefaults(character);
+          const stored = withKobDefaults(character);
           const exists = state.characters.some((entry) => entry.id === stored.id);
           return {
             characters: exists
@@ -249,7 +249,7 @@ export const useKobCharacterStore = create<KobCharacterState>()(
         return {
           ...current,
           ...stored,
-          characters: (stored?.characters ?? []).map((character) => withDefaults(character)),
+          characters: (stored?.characters ?? []).map((character) => withKobDefaults(character)),
         };
       },
     },

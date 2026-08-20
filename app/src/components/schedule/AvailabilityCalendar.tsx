@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { applyAvailabilityOps, listAvailability } from '@/lib/api';
 import type { AvailabilityOp, Player } from '@/lib/api';
 import { toRgba, useSchedulePreferences } from '@/store/schedulePreferencesStore';
-import { editableTimeGridPlugins } from '@/components/schedule/calendarTheme';
+import { interactiveTimeGridPlugins } from '@/components/schedule/calendarTheme';
 import { BlockActionsDialog } from '@/components/schedule/BlockActionsDialog';
 import { RepeatBlockDialog } from '@/components/schedule/RepeatBlockDialog';
 import { useCalendarLayout } from '@/components/schedule/useCalendarLayout';
@@ -116,8 +116,7 @@ export function AvailabilityCalendar({ player, campaignId, editable = true }: Re
       start: row.start_iso,
       end: row.end_iso,
       title: player.name ?? 'Available',
-      backgroundColor: eventColor,
-      borderColor: eventColor,
+      color: eventColor,
       extendedProps: { player_id: row.player_id, source: row.source },
     }));
   }, [player.id, player.name, campaignId, eventColor]);
@@ -133,8 +132,7 @@ export function AvailabilityCalendar({ player, campaignId, editable = true }: Re
         start: startIso,
         end: endIso,
         title: player.name ?? 'Available',
-        backgroundColor: eventColor,
-        borderColor: eventColor,
+        color: eventColor,
       });
       enqueue({ op: 'create', player_id: player.id, start_iso: startIso, end_iso: endIso });
     }
@@ -193,8 +191,7 @@ export function AvailabilityCalendar({ player, campaignId, editable = true }: Re
         start: startIso,
         end: endIso,
         title: player.name ?? 'Available',
-        backgroundColor: eventColor,
-        borderColor: eventColor,
+        color: eventColor,
       });
       enqueue({ op: 'create', player_id: player.id, start_iso: startIso, end_iso: endIso });
     }
@@ -208,7 +205,7 @@ export function AvailabilityCalendar({ player, campaignId, editable = true }: Re
         // FullCalendar source is not re-read when its closure changes.
         key={`${player.id}-${campaignId}-${viewTimeZone}-${eventColor}`}
         ref={calendarRef}
-        plugins={editableTimeGridPlugins}
+        plugins={interactiveTimeGridPlugins}
         initialView={layout.initialView}
         headerToolbar={layout.headerToolbar}
         height={layout.height}

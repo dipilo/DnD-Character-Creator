@@ -66,13 +66,20 @@ export function CampaignCharacterPage() {
   // second, server-only write path for the same document would be two writers on one row.
   const mayEdit = Boolean(record?.can_edit) && !isOwn;
   const systemId = isKobDocument(document) ? 'kids-on-bikes' : DEFAULT_GAME_SYSTEM_ID;
-  // The Kids on Bikes builder reads its own store, so only the D&D document has a builder to open.
-  const mayOpenBuilder = mayEdit && systemId === DEFAULT_GAME_SYSTEM_ID && record !== null;
+  const mayOpenBuilder = mayEdit && record !== null;
 
+  // Two builders, two write paths. The D&D wizard saves from its Review step, so it is handed the
+  // document and the version to push; the Kids on Bikes one writes as you type and gets its own
+  // route, which reads the character back from the server for itself.
+  //
   // `document` rather than `record.data`: an inline edit made on this page may not have been
   // pushed yet, and the builder must open what is on screen.
   const handleEditInBuilder = () => {
     if (!record) return;
+    if (systemId === 'kids-on-bikes') {
+      navigate(`/campaign/${campaignId}/party/${record.id}/edit`);
+      return;
+    }
     loadDocumentIntoBuilder(document as Character, { id: record.id, version: record.version, campaignId });
     navigate('/builder/review');
   };

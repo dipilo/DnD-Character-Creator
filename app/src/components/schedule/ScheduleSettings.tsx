@@ -9,7 +9,7 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { TimeZoneField } from '@/components/schedule/TimeZoneField';
 import type { PaletteEntry } from '@/store/schedulePreferencesStore';
-import { useSchedulePreferences } from '@/store/schedulePreferencesStore';
+import { paletteBandLabel, useSchedulePreferences } from '@/store/schedulePreferencesStore';
 
 interface ScheduleSettingsProps {
   filterAggregate: boolean;
@@ -23,14 +23,14 @@ interface ScheduleSettingsProps {
 export function ScheduleSettings({ filterAggregate, onFilterAggregateChange }: Readonly<ScheduleSettingsProps>) {
   const { ownColor, aggregatePalette, viewTimeZone, setOwnColor, setAggregateEntry, setViewTimeZone, resetColors } =
     useSchedulePreferences();
-  // The band's position in the ladder is its identity ("3 free"), so it is named once here rather
-  // than keying the rows off the map index.
+  // The band's position in the ladder is its identity ("3 free"), so the row is keyed off that
+  // rather than off the map index. The wording is shared with the calendar's own legend.
   const bands = useMemo(
     () =>
       aggregatePalette.map((entry, index) => ({
         id: `agg-color-${index + 1}`,
         index,
-        label: index === aggregatePalette.length - 1 ? `${index + 1}+ free` : `${index + 1} free`,
+        label: paletteBandLabel(aggregatePalette, index),
         entry,
       })),
     [aggregatePalette],
