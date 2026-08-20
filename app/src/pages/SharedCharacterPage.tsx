@@ -62,7 +62,7 @@ export function SharedCharacterPage() {
       leading={home}
       note={(
         <Badge variant="outline" className="mt-2">
-          {record?.is_owner ? 'Your character, as anyone with this link sees it' : 'Shared with you — read-only'}
+          {record?.is_owner ? 'Your character, as anyone with this link sees it' : 'Shared with you, read-only'}
         </Badge>
       )}
     />

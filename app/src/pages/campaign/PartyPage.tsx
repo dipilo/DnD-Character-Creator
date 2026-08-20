@@ -188,8 +188,8 @@ export function PartyPage() {
             <div className="min-w-0 flex-1">
               <p className="font-medium">Let the GM edit your characters at this table</p>
               <p className="text-sm text-muted-foreground">
-                It covers every character you seat here, now and later — never the ones you keep elsewhere.
-                Yours to give and yours to take back; nobody else can set it for you.
+                Covers every character you seat at this table, now and later. You can turn it off
+                at any time.
               </p>
             </div>
             <Switch
@@ -277,9 +277,8 @@ export function PartyPage() {
               Take {confirmRemove?.name ?? 'this character'} off the table?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              It leaves this campaign's party and its seat, and the table stops being able to read
-              the sheet. The character itself is untouched and stays with its player, who can attach
-              it again.
+              It leaves this campaign's party and seat, and the table can no longer read the
+              sheet. Its player can attach it again.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -462,8 +461,8 @@ function AttachCharacterForm({
             </SelectContent>
           </Select>
           <p className="text-xs text-muted-foreground">
-            A seat is the roster entry whose availability the scheduler tracks. You can only use one
-            you hold, unless you run the campaign.
+            The roster entry whose availability the scheduler tracks. You can use one you hold, or
+            any of them if you run the campaign.
           </p>
         </div>
       </div>
@@ -476,8 +475,8 @@ function AttachCharacterForm({
         <DialogHeader>
           <DialogTitle>Attach a character</DialogTitle>
           <DialogDescription>
-            The campaign's members will be able to read the sheet. It stays yours — nobody else can
-            edit it, and detaching takes it back out of view.
+            The campaign's members will be able to read the sheet. Detaching takes it back out
+            of view.
           </DialogDescription>
         </DialogHeader>
         {body}

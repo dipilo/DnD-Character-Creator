@@ -424,11 +424,24 @@ export type BuilderStep =
 
 export type AbilityScoreMethod = 'standard' | 'point-buy' | 'rolled' | 'manual';
 
+export interface RemoteEditTarget {
+  id: string;
+  version: number;
+  /** The campaign whose party page it was opened from, and where saving returns to. */
+  campaignId: number;
+}
+
 export interface BuilderState {
   currentStep: BuilderStep;
   character: Partial<Character>;
   // Set while the builder is editing a saved character; saving updates that character in place.
   editingCharacterId?: string;
+  /**
+   * Set instead when the builder is editing someone else's character on a grant. There is no local
+   * copy to write, so Review pushes a `PUT` against the version it read rather than going through
+   * `characterStore`.
+   */
+  remoteEditing?: RemoteEditTarget;
   /**
    * The campaign this character is being built for (MERGE_PLAN.md Phase 5). Set by "new character
    * for this campaign", which also seeds `selectedSourceIds` from that campaign's allowed sources.

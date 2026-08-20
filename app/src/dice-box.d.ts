@@ -33,6 +33,11 @@ declare module '@3d-dice/dice-box' {
     value?: number;
     sides?: number;
     modifier?: number;
+    /** dice-box's handle on one die that is on the surface. Only it can identify a die to reroll. */
+    rollId?: number;
+    groupId?: number;
+    theme?: string;
+    themeColor?: string;
   };
 
   export default class DiceBox {
@@ -40,6 +45,10 @@ declare module '@3d-dice/dice-box' {
     init(): Promise<void>;
     clear(): this;
     roll(notation: DiceNotation, options?: DiceRollOptions): Promise<DiceRollResult[]>;
+    reroll(
+      dice: DiceRollResult | DiceRollResult[],
+      options?: DiceRollOptions & { remove?: boolean; hide?: boolean },
+    ): Promise<DiceRollResult[]>;
     updateConfig(config: Partial<DiceBoxConfig>): void;
   }
 }

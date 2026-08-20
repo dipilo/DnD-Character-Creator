@@ -90,7 +90,7 @@ export function SheetCatalogPicker({ triggerLabel, title, description, items, on
           </div>
         </ScrollArea>
         {matches.length === MAX_VISIBLE ? (
-          <p className="text-xs text-muted-foreground">Showing the first {MAX_VISIBLE} matches — narrow the search to see more.</p>
+          <p className="text-xs text-muted-foreground">Showing the first {MAX_VISIBLE} matches. Narrow the search to see more.</p>
         ) : null}
       </DialogContent>
     </Dialog>

@@ -5,6 +5,7 @@ import type {
   KobBondedAction,
   KobDie,
   KobDifficultyBand,
+  KobFinishingTouch,
   KobRuleSection,
   KobStatId,
   KobStrength,
@@ -141,6 +142,11 @@ export function difficultyBandFor(total: number): KobDifficultyBand | null {
 }
 
 /** The two questions a trope asks, so the builder can render exactly as many answer fields. */
+/** One Finishing Touches field's book text, by the slug of its printed name. */
+export function finishingTouch(id: string): KobFinishingTouch | null {
+  return kob.finishingTouches.find((entry) => entry.id === id) ?? null;
+}
+
 export function tropeQuestions(tropeId: string | null | undefined): string[] {
   return getTrope(tropeId)?.questions ?? [];
 }

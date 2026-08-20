@@ -37,7 +37,7 @@ function EmptySeatNote({ player, onSeed }: Readonly<{ player: Player; onSeed: ()
   return (
     <div className="space-y-1.5 rounded-md border border-dashed p-2">
       <p className="text-xs text-muted-foreground">
-        No builder character yet — this seat still carries a D&D Beyond import.
+        No builder character yet. This seat still carries a D&D Beyond import.
       </p>
       <Button size="sm" variant="outline" onClick={onSeed}>
         <Sparkles className="h-4 w-4" />
@@ -250,8 +250,8 @@ export function RosterPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Remove {confirmDelete ? playerLabel(confirmDelete) : 'this seat'}?</AlertDialogTitle>
             <AlertDialogDescription>
-              The seat and its availability go. Any character sitting in it is unseated but not
-              deleted — a character belongs to its player's account.
+              The seat and its availability go. Any character sitting in it is unseated, not
+              deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -84,8 +84,8 @@ export function RepeatBlockDialog({ source, onOpenChange, onApply }: Readonly<Re
         <DialogHeader>
           <DialogTitle>Repeat this block weekly</DialogTitle>
           <DialogDescription>
-            Copies of this block are created at the same time on the same weekday. They are ordinary
-            blocks afterwards — editing one does not change the others.
+            Copies of this block are created at the same time on the same weekday. Editing one
+            afterwards does not change the others.
           </DialogDescription>
         </DialogHeader>
 

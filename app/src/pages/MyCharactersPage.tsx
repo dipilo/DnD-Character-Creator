@@ -49,7 +49,7 @@ export function MyCharactersPage() {
   // An edit session owns the builder draft, so starting a new character must leave it behind
   // instead of saving the next set of choices over the character being edited.
   const handleStartNewCharacter = () => {
-    if (builderState.editingCharacterId) {
+    if (builderState.editingCharacterId || builderState.remoteEditing) {
       resetBuilder();
     }
   };

@@ -22,6 +22,8 @@ export interface DiceRollResult {
   value?: number;
   sides?: number;
   modifier?: number;
+  /** dice-box's handle on a die still on the surface. Absent on an instantly-resolved roll. */
+  rollId?: number;
 }
 
 const MAX_DICE = 100;

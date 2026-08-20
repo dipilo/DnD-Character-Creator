@@ -98,6 +98,19 @@ export interface GameSystemDefinition {
    * — a third system declares its own answer here instead of editing the campaign screens.
    */
   hasSelectableSources: boolean;
+  /**
+   * What the shared roller offers while this system is the active game.
+   *
+   * Only the capability lives here, never a rule's text: naming the rule is enough for the control
+   * and the result badge, and the wording itself belongs in the system's own imported content
+   * (Kids on Bikes states the Lucky Break in `playRules`, which the sheet quotes).
+   */
+  dice: {
+    /** Quick-roll buttons, in the order they are shown. */
+    presets: string[];
+    /** A die that lands on its maximum is thrown again and added, or null when there is no such rule. */
+    explodingRule: { name: string } | null;
+  };
   theme: GameSystemTheme;
 }
 
@@ -145,6 +158,10 @@ export const GAME_SYSTEMS: Record<GameSystemId, GameSystemDefinition> = {
     ],
     available: true,
     hasSelectableSources: true,
+    dice: {
+      presets: ['1d4', '1d6', '1d8', '1d10', '1d12', '1d20', '2d20', '4d6'],
+      explodingRule: null,
+    },
     theme: {
       label: 'Dungeons & Dragons',
       // The book red, dropped in luminance for a dark surface so large fills stay readable.
@@ -194,6 +211,11 @@ export const GAME_SYSTEMS: Record<GameSystemId, GameSystemDefinition> = {
     ],
     available: true,
     hasSelectableSources: false,
+    dice: {
+      // The stat dice, biggest first, because that is the order a spread is read in.
+      presets: ['1d20', '1d12', '1d10', '1d8', '1d6', '1d4'],
+      explodingRule: { name: 'Lucky Break' },
+    },
     theme: {
       // Eighties VHS: magenta against cyan over a violet-tinted night.
       label: 'Kids on Bikes',

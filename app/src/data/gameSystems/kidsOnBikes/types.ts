@@ -68,6 +68,14 @@ export interface KobBondedActions {
   actions: KobBondedAction[];
 }
 
+/** One field the Finishing Touches section asks for, in the book's own words. */
+export interface KobFinishingTouch {
+  id: string;
+  name: string;
+  paragraphs: string[];
+  callouts: KobCallout[];
+}
+
 export interface KobRelationshipQuestion {
   /** The d20 result that selects this question. */
   roll: number;
@@ -154,6 +162,7 @@ export interface KidsOnBikesContent {
   stats: KobStat[];
   diceOrder: string[];
   ages: KobAgeRules[];
+  finishingTouches: KobFinishingTouch[];
   tropes: KobTrope[];
   strengths: KobStrength[];
   flaws: KobFlaw[];

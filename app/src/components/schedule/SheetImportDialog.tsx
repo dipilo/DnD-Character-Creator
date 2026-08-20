@@ -93,8 +93,7 @@ function TemplateLinks({ templates }: Readonly<{ templates: SheetIntakeTemplate[
       </div>
       {(form && !form.copyable) || (sheet && !sheet.copyable) ? (
         <p className="text-xs text-muted-foreground">
-          One of these links opens the original rather than a copy — a short link or a published
-          form URL carries a response token, not the document id. Use{' '}
+          One of these links opens the original rather than a copy. Use{' '}
           <strong>File &rarr; Make a copy</strong> once it opens.
         </p>
       ) : null}
@@ -271,8 +270,7 @@ export function SheetImportDialog({ campaignId, open, onOpenChange, onImported }
               </Button>
             </div>
             <p className="text-xs text-muted-foreground">
-              The sheet must be shared as "anyone with the link can view" — the server reads it
-              anonymously and cannot sign in to your Drive.
+              The sheet must be shared as "anyone with the link can view".
             </p>
           </div>
 

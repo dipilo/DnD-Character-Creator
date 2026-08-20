@@ -1477,9 +1477,9 @@
     {
       "name": "leave-campaign",
       "request": "POST /api/campaigns/1/leave",
-      "status": 403,
+      "status": 200,
       "body": {
-        "error": "not_a_member"
+        "ok": true
       }
     },
     {

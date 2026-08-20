@@ -110,7 +110,7 @@ export function BikeBuilder({ character, onChange }: Readonly<BikeBuilderProps>)
       {suggestion && !canTakeGift ? (
         <p className="rounded-md border border-dashed p-3 text-sm text-muted-foreground">
           This Trope suggests a {suggestion.color} bike with {suggestion.upgrade}, but the imported
-          Bikes appendix has no entry for it — pick a colour below instead.
+          Bikes appendix has no entry for it. Pick a colour below instead.
         </p>
       ) : null}
 

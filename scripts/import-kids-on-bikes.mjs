@@ -345,6 +345,67 @@ function parseAges(text) {
 }
 
 // ---------------------------------------------------------------------------------------------
+// Finishing Touches
+// ---------------------------------------------------------------------------------------------
+
+/**
+ * Finishing Touches states each field it asks for as `>**Name:** what it is`, with Obsidian
+ * callouts under it. The builder printed paraphrases of all seven; these are the book's own words.
+ */
+function parseFinishingTouches(text) {
+  const lines = stripFrontmatter(text).split(/\r?\n/);
+  const entries = [];
+  let inSection = false;
+  let entry = null;
+  let callout = null;
+
+  for (const line of lines) {
+    const heading = /^#+\s+(?<name>.+?)\s*$/.exec(line);
+    if (heading) {
+      if (inSection) break;
+      inSection = cleanCell(heading.groups.name).toLowerCase() === 'finishing touches';
+      continue;
+    }
+    if (!inSection) continue;
+
+    const quoted = /^>\s?(?<body>.*)$/.exec(line);
+    if (!quoted) {
+      callout = null;
+      continue;
+    }
+
+    const raw = quoted.groups.body.trim();
+    const marker = /^\[!(?<kind>[a-z]+)\](?<fold>[+-])?\s*$/i.exec(raw);
+    if (marker && entry) {
+      callout = { kind: marker.groups.kind.toLowerCase(), defaultOpen: marker.groups.fold !== '-', paragraphs: [] };
+      entry.callouts.push(callout);
+      continue;
+    }
+
+    const lead = /^\*\*(?<name>[^*]+?):\*\*\s*(?<body>.*)$/.exec(raw);
+    if (lead) {
+      const name = cleanCell(lead.groups.name);
+      entry = { id: slugify(name), name, paragraphs: [], callouts: [] };
+      entries.push(entry);
+      callout = null;
+      const opening = cleanCell(dropNotePointers(stripBlockId(lead.groups.body)));
+      if (opening) entry.paragraphs.push(opening);
+      continue;
+    }
+
+    const body = cleanCell(dropNotePointers(stripBlockId(raw)));
+    if (!body || !entry) continue;
+    if (callout) callout.paragraphs.push(body);
+    else entry.paragraphs.push(body);
+  }
+
+  if (!inSection) warn('Character Creation.md: no "Finishing Touches" section found.');
+  else if (entries.length === 0) warn('Finishing Touches: the section has a heading but names no fields.');
+
+  return entries.map((item) => ({ ...item, callouts: item.callouts.filter((c) => c.paragraphs.length > 0) }));
+}
+
+// ---------------------------------------------------------------------------------------------
 // Bonded Actions
 // ---------------------------------------------------------------------------------------------
 
@@ -717,6 +778,7 @@ function main() {
     stats: STAT_NAMES.map((name) => ({ id: name.toLowerCase(), name })),
     diceOrder: DICE_ORDER,
     ages: creationNote ? parseAges(creationNote) : [],
+    finishingTouches: creationNote ? parseFinishingTouches(creationNote) : [],
     tropes,
     strengths,
     flaws,

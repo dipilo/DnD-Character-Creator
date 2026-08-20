@@ -1,10 +1,10 @@
-import { ChevronDown, Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { KobCallouts } from '@/components/kob/KobCallouts';
 import { getBondedAction, kob } from '@/data/gameSystems/kidsOnBikes/rules';
 import { useCharacterPartyMates, type PartyMate } from '@/hooks/useCharacterPartyMates';
 import type { KobBondedActionEntry, KobCharacter } from '@/types/kob';
@@ -74,21 +74,7 @@ export function BondedActionsEditor({ character, onChange }: Readonly<BondedActi
         </Button>
       </div>
 
-      {callouts.map((callout) => (
-        <Collapsible key={callout.kind} defaultOpen={callout.defaultOpen}>
-          <CollapsibleTrigger className="group flex min-h-11 items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground">
-            {callout.kind}
-            <ChevronDown className="size-3.5 transition-transform group-data-[state=open]:rotate-180" aria-hidden />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="max-w-prose space-y-2 pt-1">
-            {callout.paragraphs.map((paragraph) => (
-              <p key={paragraph} className="text-sm text-muted-foreground">
-                {paragraph}
-              </p>
-            ))}
-          </CollapsibleContent>
-        </Collapsible>
-      ))}
+      <KobCallouts callouts={callouts} />
 
       {entries.length === 0 ? (
         <p className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">

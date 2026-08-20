@@ -1017,7 +1017,7 @@ export function EquipmentSelectionPage() {
         <CardHeader>
           <CardTitle>Selected Equipment</CardTitle>
           <CardDescription>
-            Mark armor, shields, and weapons as equipped so the character sheet can derive armor class and loadout from your current gear.
+            Mark armor, shields and weapons as equipped to set armor class and loadout.
           </CardDescription>
         </CardHeader>
         <CardContent>

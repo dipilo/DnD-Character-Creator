@@ -7,7 +7,7 @@ const { campaignCharacterSummary } = require('../lib/characters');
 const { publicPlayer } = require('../lib/players');
 const { createSession, publicUser } = require('../lib/sessions');
 const { genToken } = require('../lib/tokens');
-const { readMembership, upsertMembership } = require('../lib/membership');
+const { readMembership, releaseSeat, upsertMembership } = require('../lib/membership');
 const { joinPermissionsBlob, normaliseDefaultPermissions, normalisePermissions } = require('../lib/permissions');
 const { cleanupOrphanedUser, isCampaignOwner, memberHasPermission, optionalAuth, requireAuth, requireCampaignAccess } = require('../middleware/auth');
 
@@ -582,11 +582,10 @@ router.post('/api/campaigns/:campaignId/unclaim-player', requireAuth, async (req
     if (!hasPermission) return res.status(403).json({ error: 'forbidden' });
 
     // remove password_hash and unlink any user mapping, mark as explicitly unclaimed
-    const linkedUsers = (await db.all('SELECT DISTINCT user_id FROM campaign_members WHERE campaign_id = ? AND player_id = ?', campaignId, playerId)).map(r => r.user_id).filter(Boolean);
     await db.run('UPDATE players SET password_hash = NULL, discord_id = NULL, unclaimed_at = CURRENT_TIMESTAMP WHERE id = ?', playerId);
-    await db.run('DELETE FROM campaign_members WHERE campaign_id = ? AND player_id = ?', campaignId, playerId);
-    // Releasing a seat also drops the membership it was linked through, so the characters that were
-    // shared with this campaign on the strength of it come back out.
+    const linkedUsers = await releaseSeat(db, campaignId, playerId);
+    // The seat is what the characters were shared on the strength of, so they come back out even
+    // though the membership stays.
     for (const uid of linkedUsers) await detachUserCharacters(campaignId, uid);
 
     // cleanup any orphaned campaign-scoped users

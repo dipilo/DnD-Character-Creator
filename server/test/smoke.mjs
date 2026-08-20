@@ -195,6 +195,9 @@ const steps = [
   { name: 'grant-self-release', method: 'PATCH', path: () => `/api/campaigns/${ctx.camp}/members/${ctx.bob}/permissions`, headers: () => asUser('alice'), body: { permissions: { can_edit_self: true, players_self_delete: true } } },
   { name: 'unclaim-player', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/unclaim-player`, headers: () => asUser('bob'), body: () => ({ player_id: ctx.cora }) },
   { name: 'discord-confirm-link', method: 'POST', path: '/api/discord/confirm-link', headers: () => asUser('bob'), body: () => ({ player_id: ctx.cora }) },
+  // Releasing a seat is not leaving the table, so bob is still a member here and the leave
+  // succeeds. It used to answer not_a_member: unclaiming deleted the membership row along with the
+  // seat, which is the bug that evicted a campaign's owner for deleting a seat they had claimed.
   { name: 'leave-campaign', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/leave`, headers: () => asUser('bob') },
   { name: 'owner-cannot-leave', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/leave`, headers: () => asUser('alice') },
   { name: 'delete-invite', method: 'DELETE', path: () => `/api/invites/${ctx.inviteId}`, headers: () => asUser('alice') },

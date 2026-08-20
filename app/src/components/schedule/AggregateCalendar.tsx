@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import Calendar from '@fullcalendar/react';
-import type { CalendarRef, DatesSetInfo, EventClickInfo, EventHoveringInfo, EventInput } from '@fullcalendar/react';
+import type { EventClickInfo, EventHoveringInfo, EventInput, EventSourceFuncInfo } from '@fullcalendar/react';
 import { fetchAggregate } from '@/lib/api';
 import type { Player } from '@/lib/api';
 import { paletteEntryForCount, toRgba, useSchedulePreferences } from '@/store/schedulePreferencesStore';
@@ -30,7 +30,6 @@ const TOOLTIP_HEIGHT = 96;
  * client intersecting anything itself.
  */
 export function AggregateCalendar({ campaignId, players, playerFilter = null }: Readonly<AggregateCalendarProps>) {
-  const calendarRef = useRef<CalendarRef>(null);
   const [hover, setHover] = useState<HoverInfo | null>(null);
   const palette = useSchedulePreferences((state) => state.aggregatePalette);
   const viewTimeZone = useSchedulePreferences((state) => state.viewTimeZone);
@@ -44,21 +43,17 @@ export function AggregateCalendar({ campaignId, players, playerFilter = null }: 
 
   const filterKey = playerFilter?.join(',') ?? '';
 
+  // An event-source function, not `datesSet` plus `addEvent`: FullCalendar fires `datesSet` while
+  // it initialises, before React has attached the ref the imperative version read, so the first
+  // load found no API and returned — the view stayed empty until something forced a second fire.
   const loadIntervals = useCallback(
-    async (info: DatesSetInfo) => {
-      const api = calendarRef.current?.getApi();
-      if (!api) return;
-      const startIso = info.start.toISOString();
-      const endIso = info.end.toISOString();
-      try {
-        const intervals = await fetchAggregate(campaignId, startIso, endIso, playerFilter);
-        for (const event of api.getEvents()) {
-          if (event.id.startsWith('agg-')) event.remove();
-        }
-        for (const interval of intervals) {
-          if (interval.count <= 0) continue;
+    async (info: EventSourceFuncInfo): Promise<EventInput[]> => {
+      const intervals = await fetchAggregate(campaignId, info.start.toISOString(), info.end.toISOString(), playerFilter);
+      return intervals
+        .filter((interval) => interval.count > 0)
+        .map((interval) => {
           const color = toRgba(paletteEntryForCount(palette, interval.count));
-          const event: EventInput = {
+          return {
             id: `agg-${interval.start}-${interval.end}`,
             start: interval.start,
             end: interval.end,
@@ -67,11 +62,7 @@ export function AggregateCalendar({ campaignId, players, playerFilter = null }: 
             borderColor: color,
             extendedProps: { count: interval.count, player_ids: interval.player_ids },
           };
-          api.addEvent(event);
-        }
-      } catch (e) {
-        console.warn('could not load the aggregate view', e instanceof Error ? e.message : e);
-      }
+        });
     },
     [campaignId, playerFilter, palette],
   );
@@ -105,13 +96,12 @@ export function AggregateCalendar({ campaignId, players, playerFilter = null }: 
     <div className="relative">
       <Calendar
         key={`${campaignId}-${viewTimeZone}-${filterKey}`}
-        ref={calendarRef}
         plugins={timeGridPlugins}
         initialView={layout.initialView}
         headerToolbar={layout.headerToolbar}
         height={layout.height}
         timeZone={viewTimeZone}
-        datesSet={loadIntervals}
+        events={loadIntervals}
         eventMouseEnter={showHover}
         eventMouseLeave={() => setHover(null)}
         eventClick={toggleOnClick}

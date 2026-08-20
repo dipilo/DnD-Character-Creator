@@ -1,4 +1,4 @@
-import { type ChangeEvent, useMemo } from 'react';
+import { type ChangeEvent, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCharacterStore } from '@/store/characterStore';
 import {
@@ -30,6 +30,8 @@ import {
   type SelectedClassWithLevel
 } from '@/lib/builderRules';
 import { exportCharacterToFillablePdf } from '@/lib/characterPdf';
+import { updateCharacter as pushCharacter } from '@/lib/api';
+import { getStoreForDocument } from '@/store/documentStores';
 
 function humanizeFallbackId(value: string) {
   return value
@@ -63,7 +65,11 @@ export function ReviewPage() {
 
   const character = builderState.character;
   const editedCharacter = builderState.editingCharacterId ? getCharacter(builderState.editingCharacterId) : undefined;
-  const isEditing = Boolean(editedCharacter);
+  // Someone else's character, opened on a grant. There is no local copy to write, so saving is a
+  // `PUT` against the version the sheet read.
+  const remoteEditing = builderState.remoteEditing;
+  const isEditing = Boolean(editedCharacter) || Boolean(remoteEditing);
+  const [pushing, setPushing] = useState(false);
   const characterName = character.name || '';
   const species = character?.speciesId ? getRuntimeSpeciesById(character.speciesId) : undefined;
   const variant = character?.speciesId && character?.variantId
@@ -208,13 +214,41 @@ export function ReviewPage() {
     }
   };
 
+  const handleSaveRemote = async (nextCharacter: Character, target: NonNullable<typeof remoteEditing>) => {
+    setPushing(true);
+    try {
+      const store = getStoreForDocument(nextCharacter);
+      await pushCharacter(target.id, target.version, {
+        name: store.nameOf(nextCharacter),
+        // The summary is the client's to write: a push that omits it leaves the party list showing
+        // a stale level.
+        summary: await store.describe(nextCharacter),
+        data: nextCharacter,
+      });
+      toast.success(`Character "${characterName}" updated`);
+      resetBuilder();
+      navigate(`/campaign/${target.campaignId}/party/${target.id}`);
+    } catch (e) {
+      toast.error('Could not save that character', {
+        description: e instanceof Error ? e.message : 'The server refused the write.',
+      });
+    } finally {
+      setPushing(false);
+    }
+  };
+
   const handleSaveCharacter = () => {
     const nextCharacter = buildReviewCharacter();
     if (!nextCharacter) {
       return;
     }
 
-    if (isEditing) {
+    if (remoteEditing) {
+      void handleSaveRemote(nextCharacter, remoteEditing);
+      return;
+    }
+
+    if (editedCharacter) {
       updateCharacter(nextCharacter);
       toast.success(`Character "${characterName}" updated`);
       resetBuilder();
@@ -336,7 +370,9 @@ export function ReviewPage() {
   const reviewDescription = isEditing
     ? 'Change any step, then save your updates back to this character.'
     : 'Review your choices and give your character a name before saving.';
-  const saveButtonLabel = isEditing ? 'Save Changes' : 'Create Character';
+  let saveButtonLabel = 'Create Character';
+  if (pushing) saveButtonLabel = 'Saving...';
+  else if (isEditing) saveButtonLabel = 'Save Changes';
 
   return (
     <div className="space-y-6">
@@ -655,7 +691,7 @@ export function ReviewPage() {
       </div>
 
       <div className="flex justify-center">
-        <Button size="lg" onClick={handleSaveCharacter} disabled={!isComplete}>
+        <Button size="lg" onClick={handleSaveCharacter} disabled={!isComplete || pushing}>
           {saveButtonLabel}
         </Button>
       </div>

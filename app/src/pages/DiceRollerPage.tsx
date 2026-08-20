@@ -1,4 +1,5 @@
-import { startTransition, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,14 +9,22 @@ import { DiceScene, type DiceSceneHandle, type DiceSceneResult } from '@/compone
 import { AVAILABLE_DICE_THEMES } from '@/components/dice/diceOptions';
 import { DiceAppearanceControls } from '@/components/dice/DiceAppearanceControls';
 import { DICE_PALETTE_COLORS } from '@/components/dice/dicePalette';
+import { DiceRollLog } from '@/components/dice/DiceRollLog';
 import { useDicePreferencesStore } from '@/store/dicePreferencesStore';
-import { parseDiceNotation, rollDiceNotation, totalDiceResults } from '@/lib/diceNotation';
-
-const presetRolls = ['1d4', '1d6', '1d8', '1d10', '1d12', '1d20', '2d20', '4d6'];
+import { MAX_LUCKY_BREAKS, isMaximum, recordRoll, rollInstantly, summarizeRoll, useDiceTrayStore } from '@/store/diceTrayStore';
+import { resolveActiveGameSystem, useGameSystemStore } from '@/store/gameSystemStore';
+import { parseDiceNotation } from '@/lib/diceNotation';
 
 const ghostButtonClass = 'border-white/20 bg-white/10 text-white hover:bg-white/20';
 
 export function DiceRollerPage() {
+  // The roller is shared, so the presets and the exploding-die rule are the active system's to
+  // state — the page used to hard-code a D&D preset row on a Kids on Bikes table.
+  const location = useLocation();
+  const preferredSystemId = useGameSystemStore((state) => state.preferredSystemId);
+  const system = resolveActiveGameSystem(location.pathname, preferredSystemId);
+  const explodingRule = system.dice.explodingRule;
+  const [exploding, setExploding] = useState(false);
   const [notation, setNotation] = useState('1d20');
   const soundEnabled = useDicePreferencesStore((state) => state.soundEnabled);
   const theme = useDicePreferencesStore((state) => state.theme) as (typeof AVAILABLE_DICE_THEMES)[number];
@@ -28,8 +37,11 @@ export function DiceRollerPage() {
   const [sceneReady, setSceneReady] = useState(false);
   const [rolling, setRolling] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [results, setResults] = useState<DiceSceneResult[]>([]);
-  const [total, setTotal] = useState<number | null>(null);
+  // The log entry whose dice are still on this page's surface. dice-box can only throw a die again
+  // while it is rendering it, so nothing older than the last roll is rerollable.
+  const [liveEntryId, setLiveEntryId] = useState<string | null>(null);
+  const reviseLogEntry = useDiceTrayStore((state) => state.reviseLogEntry);
+  const latestEntryId = useDiceTrayStore((state) => state.log[0]?.id ?? null);
   const diceSceneRef = useRef<DiceSceneHandle | null>(null);
   // Nothing has to load when the dice are not being thrown, so the roll button is live immediately.
   const ready = show3dDice ? sceneReady : true;
@@ -39,16 +51,34 @@ export function DiceRollerPage() {
   }
   const rollerDescription = show3dDice
     ? 'Enter dice notation and roll across the screen.'
-    : 'Enter dice notation and get the result straight away — no dice to wait for.';
+    : 'Enter dice notation and get the result straight away.';
 
   // The 3D surface resolves each settled die without the notation's modifier, so `+3` has to be
   // added back from the notation itself. Both roll paths total the same way for that reason.
-  const finish = (nextResults: DiceSceneResult[], nextNotation: string) => {
+  //
+  // This page throws on its own surface rather than through `rollOnScreen`, so it logs the outcome
+  // itself — one history covers the roller and every sheet.
+  const finish = (nextResults: DiceSceneResult[], nextNotation: string, live: boolean, luckyBreaks = 0) => {
     const modifier = parseDiceNotation(nextNotation)?.modifier ?? 0;
-    startTransition(() => {
-      setResults(nextResults);
-      setTotal(totalDiceResults(nextResults, modifier));
-    });
+    const id = recordRoll(
+      { notation: nextNotation, label: system.shortName },
+      summarizeRoll(nextResults, modifier, luckyBreaks),
+    );
+    setLiveEntryId(live ? id : null);
+  };
+
+  /**
+   * A die on its maximum is thrown again and added, as many times as it keeps landing there. It is
+   * a loop rather than something the notation can say, exactly as in the tray.
+   */
+  const explodeOnSurface = async (scene: DiceSceneHandle, settled: DiceSceneResult[]) => {
+    const results = [...settled];
+    let luckyBreaks = 0;
+    while (isMaximum(results.at(-1)) && luckyBreaks < MAX_LUCKY_BREAKS) {
+      results.push(...(await scene.roll(`1d${results.at(-1)?.sides ?? 0}`)));
+      luckyBreaks += 1;
+    }
+    return { results, luckyBreaks };
   };
 
   const handleRoll = async (nextNotation = notation) => {
@@ -57,15 +87,21 @@ export function DiceRollerPage() {
     }
 
     setNotation(nextNotation);
+    // The rule is written for one die; on a handful there is no "the die" to throw again.
+    const explodesNow = Boolean(explodingRule) && exploding && (parseDiceNotation(nextNotation)?.groups.length === 1);
 
     if (!show3dDice) {
-      const instantResults = rollDiceNotation(nextNotation);
-      if (!instantResults) {
+      const outcome = rollInstantly({
+        notation: nextNotation,
+        label: system.shortName,
+        explodeOnMax: explodesNow,
+      });
+      if (!outcome) {
         setError(`"${nextNotation}" is not dice notation this roller understands.`);
         return;
       }
       setError(null);
-      finish(instantResults, nextNotation);
+      finish(outcome.results, nextNotation, false, outcome.luckyBreaks);
       return;
     }
 
@@ -75,8 +111,11 @@ export function DiceRollerPage() {
 
     try {
       setRolling(true);
-      const nextResults = await diceSceneRef.current.roll(nextNotation);
-      finish(nextResults, nextNotation);
+      const settled = await diceSceneRef.current.roll(nextNotation);
+      const thrown = explodesNow
+        ? await explodeOnSurface(diceSceneRef.current, settled)
+        : { results: settled, luckyBreaks: 0 };
+      finish(thrown.results, nextNotation, true, thrown.luckyBreaks);
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : 'The dice roll could not be completed.');
     } finally {
@@ -86,8 +125,31 @@ export function DiceRollerPage() {
 
   const handleClear = () => {
     diceSceneRef.current?.clear();
-    setResults([]);
-    setTotal(null);
+    setLiveEntryId(null);
+  };
+
+  /**
+   * Throw one settled die again, in place. dice-box has no picking or dragging of its own, so this
+   * is as close as its API gets to handling a die: `reroll` names one by the `rollId` it handed
+   * back, removes that mesh and drops a replacement onto the same surface.
+   */
+  const handleRerollDie = async (index: number) => {
+    const scene = diceSceneRef.current;
+    const entry = useDiceTrayStore.getState().log.find((item) => item.id === liveEntryId);
+    const die = entry?.results[index];
+    if (!scene || !entry || !die?.rollId) return;
+
+    try {
+      setRolling(true);
+      const replacement = (await scene.reroll(die))[0];
+      if (!replacement) return;
+      const results = entry.results.map((result, i) => (i === index ? replacement : result));
+      reviseLogEntry(entry.id, summarizeRoll(results, entry.modifier, entry.luckyBreaks));
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : 'That die could not be thrown again.');
+    } finally {
+      setRolling(false);
+    }
   };
 
   return (
@@ -124,7 +186,7 @@ export function DiceRollerPage() {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            {presetRolls.map((preset) => (
+            {system.dice.presets.map((preset) => (
               <Button
                 key={preset}
                 type="button"
@@ -173,6 +235,25 @@ export function DiceRollerPage() {
                   </Button>
                 </div>
 
+                {explodingRule ? (
+                  <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium">{explodingRule.name}</p>
+                      <p className="text-xs text-slate-300">A single die on its maximum is thrown again and added.</p>
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={exploding ? 'default' : 'outline'}
+                      className={exploding ? '' : ghostButtonClass}
+                      onClick={() => setExploding(!exploding)}
+                      aria-pressed={exploding}
+                    >
+                      {exploding ? 'On' : 'Off'}
+                    </Button>
+                  </div>
+                ) : null}
+
                 {show3dDice ? <DiceAppearanceControls /> : null}
 
                 <div className="flex flex-wrap gap-2">
@@ -189,26 +270,14 @@ export function DiceRollerPage() {
             <Card className="border-white/12 bg-slate-950/46 text-slate-50 shadow-lg backdrop-blur-[2px]">
               <CardHeader>
                 <CardTitle>Results</CardTitle>
-                <CardDescription className="text-slate-300">Latest settled dice values from the live surface.</CardDescription>
+                <CardDescription className="text-slate-300">Every roll this session, here and on your sheets.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {results.length > 0 ? (
-                  <>
-                    <div className="flex flex-wrap gap-2">
-                      {results.map((result, index) => (
-                        <Badge key={`${result.sides}-${result.value}-${index}`} className="bg-white text-slate-950 hover:bg-white">
-                          d{result.sides ?? '?'}: {result.value ?? '?'}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="rounded-lg border border-white/10 bg-white/5 p-3">
-                      <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Total</p>
-                      <p className="text-2xl font-semibold text-white">{total ?? 0}</p>
-                    </div>
-                  </>
-                ) : (
-                  <p className="text-sm text-slate-300">Roll the dice to capture results here.</p>
-                )}
+              <CardContent>
+                <DiceRollLog
+                  dark
+                  onRerollDie={liveEntryId && liveEntryId === latestEntryId ? (index) => void handleRerollDie(index) : undefined}
+                  rerollDisabled={rolling}
+                />
               </CardContent>
             </Card>
           </div>

@@ -41,7 +41,7 @@ export function KobCharactersPage() {
             </EmptyMedia>
             <EmptyTitle>No characters yet</EmptyTitle>
             <EmptyDescription>
-              Pick a Trope, an age, two Strengths and a Flaw — that is most of a character.
+              Pick a Trope, an age, two Strengths and a Flaw. That is most of a character.
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent>

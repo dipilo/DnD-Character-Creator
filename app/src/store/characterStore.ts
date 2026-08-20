@@ -10,7 +10,7 @@ import {
   resolveBackgroundGrantedFeat,
   resolveCharacterClasses
 } from '@/lib/builderRules';
-import type { Character, CharacterSummary, BuilderState, BuilderStep, AbilityScores } from '@/types/dnd';
+import type { Character, CharacterSummary, BuilderState, BuilderStep, AbilityScores, RemoteEditTarget } from '@/types/dnd';
 import { dndContent } from '@/data/contentResolvers';
 import { createDebouncedLocalStorage } from '@/lib/debouncedStorage';
 import type { CharacterSyncMeta, PendingSeat } from '@/store/syncTypes';
@@ -62,6 +62,11 @@ interface CharacterState {
   updateBuilderState: (updates: Partial<BuilderState>) => void;
   updateBuilderCharacter: (updates: Partial<Character>) => void;
   loadCharacterIntoBuilder: (id: string) => boolean;
+  /**
+   * Open a document that is not in this cache — someone else's character, held on a grant. A
+   * separate entry point rather than a flag, because there is nothing here to look up.
+   */
+  loadDocumentIntoBuilder: (document: Character, remote: RemoteEditTarget) => void;
   resetBuilder: () => void;
   
 }
@@ -103,6 +108,45 @@ const initialBuilderState: BuilderState = {
   abilityScoreMethod: 'standard',
   rolledScoreAssignments: {}
 };
+
+/** The builder state that opens a saved character on its Review step, wherever it came from. */
+function buildEditorState(character: Character): BuilderState {
+  const species = character.speciesId ? dndContent().getRuntimeSpeciesById(character.speciesId) : undefined;
+  const variant = character.speciesId && character.variantId
+    ? dndContent().getRuntimeSpeciesVariant(character.speciesId, character.variantId)
+    : undefined;
+  const background = character.backgroundId ? dndContent().getRuntimeBackgroundById(character.backgroundId) : undefined;
+  // Repair stored class ids first: a character saved against an older printing keeps that
+  // printing's id, and every step that resolves a class by exact id then behaves as though
+  // the character had no class at all.
+  const classes = normalizeCharacterClassIds(character.classes, dndContent().getRuntimeClassById);
+  const resolvedClasses = resolveCharacterClasses({
+    classes,
+    getClassById: dndContent().getRuntimeClassById,
+    getSubclassById: dndContent().getRuntimeSubclass
+  });
+  const abilityScoreEntry = resolveAbilityScoreEntryState(character);
+
+  return {
+    ...initialBuilderState,
+    currentStep: 'review',
+    character: {
+      ...character,
+      classes,
+      // The sheet stores merged proficiencies; the builder needs the player's own picks.
+      proficiencies: extractSelectedProficiencies({
+        character,
+        resolvedClasses,
+        background,
+        species,
+        variant
+      })
+    },
+    abilityScoreMethod: abilityScoreEntry.abilityScoreMethod,
+    rolledScores: abilityScoreEntry.rolledScores,
+    rolledScoreAssignments: abilityScoreEntry.rolledScoreAssignments
+  };
+}
 
 export const useCharacterStore = create<CharacterState>()(
   persist(
@@ -285,46 +329,12 @@ export const useCharacterStore = create<CharacterState>()(
           return false;
         }
 
-        const species = character.speciesId ? dndContent().getRuntimeSpeciesById(character.speciesId) : undefined;
-        const variant = character.speciesId && character.variantId
-          ? dndContent().getRuntimeSpeciesVariant(character.speciesId, character.variantId)
-          : undefined;
-        const background = character.backgroundId ? dndContent().getRuntimeBackgroundById(character.backgroundId) : undefined;
-        // Repair stored class ids first: a character saved against an older printing keeps that
-        // printing's id, and every step that resolves a class by exact id then behaves as though
-        // the character had no class at all.
-        const classes = normalizeCharacterClassIds(character.classes, dndContent().getRuntimeClassById);
-        const resolvedClasses = resolveCharacterClasses({
-          classes,
-          getClassById: dndContent().getRuntimeClassById,
-          getSubclassById: dndContent().getRuntimeSubclass
-        });
-        const abilityScoreEntry = resolveAbilityScoreEntryState(character);
-
-        set({
-          builderState: {
-            ...initialBuilderState,
-            currentStep: 'review',
-            editingCharacterId: character.id,
-            character: {
-              ...character,
-              classes,
-              // The sheet stores merged proficiencies; the builder needs the player's own picks.
-              proficiencies: extractSelectedProficiencies({
-                character,
-                resolvedClasses,
-                background,
-                species,
-                variant
-              })
-            },
-            abilityScoreMethod: abilityScoreEntry.abilityScoreMethod,
-            rolledScores: abilityScoreEntry.rolledScores,
-            rolledScoreAssignments: abilityScoreEntry.rolledScoreAssignments
-          }
-        });
-
+        set({ builderState: { ...buildEditorState(character), editingCharacterId: character.id } });
         return true;
+      },
+
+      loadDocumentIntoBuilder: (document, remote) => {
+        set({ builderState: { ...buildEditorState(document), remoteEditing: remote } });
       },
 
       resetBuilder: () => {

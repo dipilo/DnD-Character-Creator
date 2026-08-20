@@ -186,6 +186,11 @@ export function KobSheetView({ character, actions, leading, note, onChange }: Re
   // The Lucky Break is the reason a stat is a button; the rule is quoted from the vault, never
   // paraphrased here.
   const statCheckRule = getPlayRuleSection('stat-checks')?.paragraphs[1] ?? null;
+  // Both of these are the book's own sentences, imported from the vault rather than paraphrased.
+  const adversityRule = [
+    getPlayRuleSection('adversity-tokens')?.paragraphs[0],
+    getPlayRuleSection('failing-a-roll')?.paragraphs[0],
+  ].filter(Boolean).join(' ');
   const setTokens = (value: number) => onChange?.({ adversityTokens: Math.max(0, value) });
 
   return (
@@ -239,10 +244,7 @@ export function KobSheetView({ character, actions, leading, note, onChange }: Re
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Spend them to raise a roll, to power a Strength, or—with the GM's permission—to
-            ignore your Fear. You gain one every time you fail a roll.
-          </p>
+          <p className="text-sm text-muted-foreground">{adversityRule}</p>
         </CardContent>
       </Card>
 

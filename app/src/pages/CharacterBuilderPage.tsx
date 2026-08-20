@@ -49,6 +49,9 @@ export function CharacterBuilderPage() {
   const navigate = useNavigate();
   const { resetBuilder, builderState, getCharacter, updateBuilderCharacter, updateBuilderState } = useCharacterStore();
   const editedCharacter = builderState.editingCharacterId ? getCharacter(builderState.editingCharacterId) : undefined;
+  // Someone else's character, opened on a grant: there is no local copy, so leaving goes back to
+  // the party sheet it was opened from rather than to My Characters.
+  const remoteEditing = builderState.remoteEditing;
   const [classLevelDrafts, setClassLevelDrafts] = useState<Record<string, string>>({});
   const stepRailRef = useRef<HTMLDivElement>(null);
   const isAbilityScoresRoute = location.pathname.startsWith('/builder/ability-scores');
@@ -166,10 +169,11 @@ export function CharacterBuilderPage() {
   };
 
   const handleResetBuilder = () => {
+    const returnTo = remoteEditing
+      ? `/campaign/${remoteEditing.campaignId}/party/${remoteEditing.id}`
+      : editedCharacter && `/character/${editedCharacter.id}`;
     resetBuilder();
-    if (editedCharacter) {
-      navigate(`/character/${editedCharacter.id}`);
-    }
+    if (returnTo) navigate(returnTo);
   };
 
   // Eight steps do not fit a phone, so the rail scrolls — and a scrolled rail that never follows
@@ -189,10 +193,11 @@ export function CharacterBuilderPage() {
     ? classDetailTabLabels[classDetailTabs[currentDetailTabIndex - 1] as keyof typeof classDetailTabLabels]
     : 'Back';
   const shellClassName = isAbilityScoresRoute ? 'mx-auto w-full max-w-6xl px-4 md:px-6' : '';
-  const builderSubtitle = editedCharacter
-    ? `Editing ${editedCharacter.name} — changes are saved from the Review step`
+  const editingName = editedCharacter?.name ?? (remoteEditing ? builderState.character.name : undefined);
+  const builderSubtitle = editingName
+    ? `Editing ${editingName}. Changes are saved from the Review step.`
     : 'Create your D&D 5e character step by step';
-  const resetButtonLabel = editedCharacter ? 'Discard Changes' : 'Start Over';
+  const resetButtonLabel = editingName ? 'Discard Changes' : 'Start Over';
 
   return (
     <div className={isAbilityScoresRoute ? 'flex w-full flex-col space-y-6 py-6' : 'mx-auto flex w-full max-w-6xl flex-col space-y-6'}>

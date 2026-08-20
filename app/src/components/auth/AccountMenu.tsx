@@ -17,8 +17,8 @@ import { CloudOff, LogIn, LogOut, RefreshCw, TriangleAlert, UploadCloud, User } 
 const syncLabels: Record<SyncStatus, string> = {
   idle: 'Characters synced to your account',
   syncing: 'Syncing characters…',
-  offline: 'Offline — saved on this device',
-  error: 'Sync failed — saved on this device',
+  offline: 'Offline. Saved on this device.',
+  error: 'Sync failed. Saved on this device.',
 };
 
 const syncIcons: Record<SyncStatus, typeof RefreshCw> = {

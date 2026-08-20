@@ -3,6 +3,7 @@ const db = require('../db');
 const { buildRangesFromText, mergeInsertAvailability, normalizePreviewBlocks } = require('../lib/availability');
 const { resolveNamesToPlayerIds } = require('../lib/groups');
 const { publicPlayer } = require('../lib/players');
+const { releaseSeat } = require('../lib/membership');
 const { canUserModifyPlayer, cleanupOrphanedUser, getCampaignMembership, isCampaignOwner, memberHasPermission, requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
@@ -195,11 +196,10 @@ router.delete('/api/players/:id', requireAuth, async (req, res) => {
       if (!allowed) return res.status(403).json({ error: 'forbidden' });
     }
         // delete dependent rows first to avoid FK constraint failures
-        // collect any user_ids linked to this player so we can cleanup orphaned campaign-scoped users
-        const linkedUsers = (await db.all('SELECT DISTINCT user_id FROM campaign_members WHERE player_id = ?', id)).map(r => r.user_id).filter(Boolean);
+        let linkedUsers = [];
         await db.transaction(async (trx) => {
           await trx.run('DELETE FROM group_members WHERE player_id = ?', id);
-          await trx.run('DELETE FROM campaign_members WHERE player_id = ?', id);
+          linkedUsers = await releaseSeat(trx, existing.campaign_id, id);
           await trx.run('DELETE FROM availability WHERE player_id = ?', id);
           // Deleting a seat unseats any character sitting in it; the character itself belongs to
           // its user and survives (MERGE_PLAN.md §9).

@@ -18,6 +18,12 @@ export interface DiceSceneHandle {
   clear: () => void;
   isReady: () => boolean;
   roll: (notation: string) => Promise<DiceSceneResult[]>;
+  /**
+   * Throw one die that is already on the surface again. dice-box identifies a die by the `rollId`
+   * it hands back, so only a result object it produced can be rerolled — a die picked out of the
+   * log after a reload cannot.
+   */
+  reroll: (die: DiceSceneResult) => Promise<DiceSceneResult[]>;
 }
 
 // Vibrant, visually distinct pool used when each die is colored independently.
@@ -165,6 +171,13 @@ export const DiceScene = forwardRef<DiceSceneHandle, DiceSceneProps>(function Di
   useImperativeHandle(ref, () => ({
     clear: clearScene,
     isReady: () => ready,
+    reroll: async (die: DiceSceneResult) => {
+      if (!ready || !diceBoxRef.current) {
+        throw new Error('Dice scene is still initializing.');
+      }
+      await audioControllerRef.current.playRollStart(`1d${die.sides ?? 20}`);
+      return diceBoxRef.current.reroll(die, { remove: true }) as Promise<DiceSceneResult[]>;
+    },
     roll: async (notation: string) => {
       if (!ready || !diceBoxRef.current) {
         throw new Error('Dice scene is still initializing.');

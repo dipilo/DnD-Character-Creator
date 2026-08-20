@@ -62,9 +62,8 @@ export function DdbSeedDialog({
         <DialogHeader>
           <DialogTitle>Start from the D&D Beyond import</DialogTitle>
           <DialogDescription>
-            This seat carries a D&D Beyond export from the old scheduler. It is a different game
-            object with its own ids, so it seeds the builder rather than becoming a sheet — you
-            finish the character normally from there.
+            This seat carries a D&D Beyond export from the old scheduler. It seeds the builder
+            rather than becoming a sheet, so you finish the character from there.
           </DialogDescription>
         </DialogHeader>
 
@@ -85,7 +84,7 @@ export function DdbSeedDialog({
           </div>
         ) : (
           <p className="text-sm text-muted-foreground">
-            That import could not be read — it is not valid D&D Beyond character JSON.
+            That import could not be read. It is not valid D&D Beyond character JSON.
           </p>
         )}
 

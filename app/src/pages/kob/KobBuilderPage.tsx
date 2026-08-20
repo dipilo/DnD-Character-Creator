@@ -18,6 +18,7 @@ import { StatSpread } from '@/components/kob/StatSpread';
 import { StrengthsAndFlaw } from '@/components/kob/StrengthsAndFlaw';
 import { TropePicker } from '@/components/kob/TropePicker';
 import {
+  finishingTouch,
   getAgeRules,
   getTrope,
   kob,
@@ -75,6 +76,9 @@ function AgePicker({
     </div>
   );
 }
+
+/** The section's own line about names, rather than a paraphrase of it. */
+const fullNameRule = finishingTouch('full-name')?.paragraphs[0] ?? '';
 
 export function KobBuilderPage() {
   const { characterId } = useParams<{ characterId: string }>();
@@ -148,10 +152,7 @@ export function KobBuilderPage() {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Who they are</CardTitle>
-          <CardDescription>
-            A first name or a nickname is enough to start — hold the surname until you know whether
-            you are related to anyone at the table.
-          </CardDescription>
+          <CardDescription>{fullNameRule}</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-3">
           <div className="space-y-1.5">

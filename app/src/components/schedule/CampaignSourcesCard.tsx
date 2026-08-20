@@ -84,7 +84,7 @@ export function CampaignSourcesCard({ campaign, canEdit }: Readonly<CampaignSour
                 </Button>
               ) : null}
               <p className="text-xs text-muted-foreground">
-                This is a default, not a lock — a player can still widen the filter in the builder.
+                A default, not a lock. Players can widen the filter in the builder.
               </p>
             </div>
           </>

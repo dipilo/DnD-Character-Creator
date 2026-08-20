@@ -115,7 +115,7 @@ export function CharacterSharingDialog({ characterId, characterName }: Readonly<
   const handleRotate = () => {
     void run(
       () => setCharacterSharing(characterId, { rotateToken: true }),
-      'New link minted — every link you sent before has stopped working',
+      'New link created. Every link you sent before has stopped working.',
     );
   };
 
@@ -168,9 +168,9 @@ export function CharacterSharingDialog({ characterId, characterName }: Readonly<
               {VISIBILITY_OPTIONS.map((option) => (
                 <div key={option.value} className="flex items-start gap-3">
                   <RadioGroupItem value={option.value} id={`visibility-${option.value}`} className="mt-1" />
-                  <Label htmlFor={`visibility-${option.value}`} className="cursor-pointer font-normal">
-                    <span className="block font-medium">{option.label}</span>
-                    <span className="block text-xs text-muted-foreground">{option.hint}</span>
+                  <Label htmlFor={`visibility-${option.value}`} className="min-w-0 flex-1 cursor-pointer flex-col items-start gap-1 font-normal">
+                    <span className="font-medium">{option.label}</span>
+                    <span className="text-xs text-muted-foreground">{option.hint}</span>
                   </Label>
                 </div>
               ))}
@@ -196,8 +196,8 @@ export function CharacterSharingDialog({ characterId, characterName }: Readonly<
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                One link, whatever the setting above: it lets in exactly the people that setting allows. Minting a new
-                one stops every link you have already sent.
+                The link lets in exactly the people the setting above allows. Creating a new one
+                stops every link you have already sent.
               </p>
             </div>
 
@@ -207,7 +207,7 @@ export function CharacterSharingDialog({ characterId, characterName }: Readonly<
               <div>
                 <h4 className="text-sm font-medium">Named people</h4>
                 <p className="text-xs text-muted-foreground">
-                  They can open this sheet whatever the setting above says — and edit it, if you say so.
+                  They can open this sheet whatever the setting above says, and edit it if you allow it.
                 </p>
               </div>
 

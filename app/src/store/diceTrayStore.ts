@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { createDebouncedLocalStorage } from '@/lib/debouncedStorage';
 import { parseDiceNotation, rollDiceNotation, type DiceRollResult } from '@/lib/diceNotation';
 
 /**
@@ -56,6 +58,22 @@ export interface SettledRoll extends DiceRollOutcome {
   request: DiceRollRequest;
 }
 
+/**
+ * A settled roll flattened for the log. `describeOutcome` is a callback, so its line is resolved
+ * here rather than stored — that is also what keeps an entry serializable.
+ */
+export interface DiceRollLogEntry extends DiceRollOutcome {
+  id: string;
+  label: string;
+  detail?: string;
+  notation: string;
+  note: string | null;
+  at: number;
+}
+
+/** How many rolls the log keeps. Older ones fall off the end. */
+export const DICE_LOG_LIMIT = 60;
+
 interface DiceTrayState {
   /** Rolls waiting for the tray. Serial: a second click queues rather than interrupting. */
   queue: PendingRoll[];
@@ -66,8 +84,15 @@ interface DiceTrayState {
    * on page load, so a route nobody rolls on never downloads the engine.
    */
   warm: boolean;
+  /** Every roll the app has settled, newest first, wherever it was thrown from. */
+  log: DiceRollLogEntry[];
 
   roll: (request: DiceRollRequest) => Promise<DiceRollOutcome>;
+  /** Add a roll the tray did not throw itself. Returns the log entry's id. */
+  record: (request: DiceRollRequest, outcome: DiceRollOutcome) => string;
+  /** Rewrite one entry in place, for a die thrown again on a surface the caller owns. */
+  reviseLogEntry: (id: string, outcome: DiceRollOutcome) => void;
+  clearLog: () => void;
 
   // Driven by DiceTray; not called from the components that request rolls.
   takeNext: () => PendingRoll | null;
@@ -93,6 +118,18 @@ export function summarizeRoll(results: DiceRollResult[], modifier: number, lucky
   };
 }
 
+function toLogEntry(id: string, request: DiceRollRequest, outcome: DiceRollOutcome): DiceRollLogEntry {
+  return {
+    ...outcome,
+    id,
+    label: request.label,
+    detail: request.detail,
+    notation: request.notation,
+    note: request.describeOutcome?.(outcome) ?? null,
+    at: Date.now(),
+  };
+}
+
 /** The instant path: the same outcome shape with no physics and no wait. */
 export function rollInstantly(request: DiceRollRequest): DiceRollOutcome | null {
   const parsed = parseDiceNotation(request.notation);
@@ -112,37 +149,73 @@ export function rollInstantly(request: DiceRollRequest): DiceRollOutcome | null 
   return summarizeRoll(results, parsed.modifier, luckyBreaks);
 }
 
-export const useDiceTrayStore = create<DiceTrayState>()((set, get) => ({
-  queue: [],
-  active: null,
-  outcome: null,
-  warm: false,
+export const useDiceTrayStore = create<DiceTrayState>()(
+  persist(
+    (set, get) => ({
+      queue: [],
+      active: null,
+      outcome: null,
+      warm: false,
+      log: [],
 
-  roll: (request) =>
-    new Promise<DiceRollOutcome>((resolve) => {
-      set((state) => ({
-        queue: [...state.queue, { id: crypto.randomUUID(), request, resolve }],
-        warm: true,
-      }));
+      roll: (request) =>
+        new Promise<DiceRollOutcome>((resolve) => {
+          set((state) => ({
+            queue: [...state.queue, { id: crypto.randomUUID(), request, resolve }],
+            warm: true,
+          }));
+        }),
+
+      record: (request, outcome) => {
+        const entry = toLogEntry(crypto.randomUUID(), request, outcome);
+        set((state) => ({ log: [entry, ...state.log].slice(0, DICE_LOG_LIMIT) }));
+        return entry.id;
+      },
+
+      reviseLogEntry: (id, outcome) =>
+        set((state) => ({
+          log: state.log.map((entry) =>
+            entry.id === id ? { ...entry, ...outcome, note: entry.note } : entry,
+          ),
+        })),
+
+      clearLog: () => set({ log: [] }),
+
+      takeNext: () => {
+        const { active, queue } = get();
+        if (active || queue.length === 0) return null;
+        const [next, ...rest] = queue;
+        set({ active: next, queue: rest, outcome: null });
+        return next;
+      },
+
+      settle: (pending, outcome) => {
+        set((state) => ({
+          active: null,
+          outcome: { ...outcome, id: pending.id, request: pending.request },
+          log: [toLogEntry(pending.id, pending.request, outcome), ...state.log].slice(0, DICE_LOG_LIMIT),
+        }));
+        pending.resolve(outcome);
+      },
+
+      dismiss: () => set({ outcome: null }),
     }),
-
-  takeNext: () => {
-    const { active, queue } = get();
-    if (active || queue.length === 0) return null;
-    const [next, ...rest] = queue;
-    set({ active: next, queue: rest, outcome: null });
-    return next;
-  },
-
-  settle: (pending, outcome) => {
-    set({ active: null, outcome: { ...outcome, id: pending.id, request: pending.request } });
-    pending.resolve(outcome);
-  },
-
-  dismiss: () => set({ outcome: null }),
-}));
+    {
+      name: 'dnd-dice-log',
+      storage: createDebouncedLocalStorage<Pick<DiceTrayState, 'log'>>(),
+      // The queue holds a live `resolve` for each waiting caller and the surface is torn down on
+      // reload; only the log outlives the session.
+      partialize: (state) => ({ log: state.log }),
+    },
+  ),
+);
 
 /** Request a roll from anywhere. The tray decides whether it is thrown or resolved instantly. */
 export function rollOnScreen(request: DiceRollRequest): Promise<DiceRollOutcome> {
   return useDiceTrayStore.getState().roll(request);
+}
+
+/** Log a roll thrown on a surface of the caller's own, so one history covers every page. */
+export function recordRoll(request: DiceRollRequest, outcome: DiceRollOutcome): string {
+  return useDiceTrayStore.getState().record(request, outcome);
 }

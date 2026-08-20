@@ -100,8 +100,7 @@ function DefaultsForm({ campaign, canEdit, onCampaignChange }: Readonly<Campaign
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium">Ask players to let you edit their characters</p>
           <p className="text-xs text-muted-foreground">
-            Puts the question on this campaign&apos;s invite links and on its Party page. Nothing is granted until a
-            player says yes, and they can take it back at any time — turning this off does not revoke what they gave.
+            Asks players for permission to edit their characters on this campaign&apos;s invite links and Party page.
           </p>
         </div>
         <Switch

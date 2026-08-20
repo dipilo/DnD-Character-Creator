@@ -100,11 +100,11 @@ export function InviteLandingPage() {
                 onCheckedChange={(checked) => setEditConsent(checked === true)}
                 className="mt-0.5"
               />
-              <Label htmlFor="invite-character-edit-consent" className="cursor-pointer font-normal">
-                <span className="block font-medium">Let the GM edit my characters here</span>
-                <span className="block text-xs text-muted-foreground">
-                  {campaignName} asks for this. It covers the characters you seat at this table, now and later —
-                  never the ones you keep elsewhere. You can change your mind on the Party page at any time.
+              {/* Label is `flex items-center gap-2`, so two blocks become two narrow columns. */}
+              <Label htmlFor="invite-character-edit-consent" className="min-w-0 flex-1 cursor-pointer flex-col items-start gap-1 font-normal">
+                <span className="font-medium">Let the GM edit my characters here</span>
+                <span className="text-xs text-muted-foreground">
+                  {campaignName} asks for this. You can change it on the Party page.
                 </span>
               </Label>
             </div>

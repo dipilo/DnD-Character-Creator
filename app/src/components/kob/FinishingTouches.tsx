@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { getTrope, tropeQuestions } from '@/data/gameSystems/kidsOnBikes/rules';
+import { KobCallouts } from '@/components/kob/KobCallouts';
+import { finishingTouch, getTrope, tropeQuestions } from '@/data/gameSystems/kidsOnBikes/rules';
 import type { KobCharacter } from '@/types/kob';
 
 interface FinishingTouchesProps {
@@ -13,6 +14,20 @@ interface FinishingTouchesProps {
 
 /** Three at most, per the rules — one at creation, the rest earned in play. */
 const MAX_KNACKS = 3;
+
+/** The section's own wording for one field, and whatever tips and examples the book prints under it. */
+function TouchNote({ id }: Readonly<{ id: string }>) {
+  const touch = finishingTouch(id);
+  if (!touch) return null;
+  return (
+    <div className="space-y-1.5">
+      {touch.paragraphs.map((paragraph) => (
+        <p key={paragraph} className="text-xs text-muted-foreground">{paragraph}</p>
+      ))}
+      <KobCallouts callouts={touch.callouts} />
+    </div>
+  );
+}
 
 export function FinishingTouches({ character, onChange }: Readonly<FinishingTouchesProps>) {
   const trope = getTrope(character.tropeId);
@@ -43,10 +58,7 @@ export function FinishingTouches({ character, onChange }: Readonly<FinishingTouc
             onChange={(event) => onChange({ motivation: event.target.value })}
             placeholder="Find my son no matter what it costs me"
           />
-          <p className="text-xs text-muted-foreground">
-            Usually shared with the GM alone. Children are curious, teens want to belong, adults
-            hold on to what they have.
-          </p>
+          <TouchNote id="motivation" />
         </div>
 
         <div className="space-y-1.5">
@@ -57,9 +69,7 @@ export function FinishingTouches({ character, onChange }: Readonly<FinishingTouc
             onChange={(event) => onChange({ fear: event.target.value })}
             placeholder="Suffocation"
           />
-          <p className="text-xs text-muted-foreground">
-            Spend an Adversity Token—with the GM's permission—to ignore it.
-          </p>
+          <TouchNote id="fear" />
         </div>
 
         <div className="space-y-1.5 md:col-span-2">
@@ -70,17 +80,15 @@ export function FinishingTouches({ character, onChange }: Readonly<FinishingTouc
             onChange={(event) => onChange({ obligations: event.target.value })}
             placeholder="Walk the dog twice a day; don't embarrass your parents"
           />
+          <TouchNote id="obligations" />
         </div>
       </div>
 
       <section className="space-y-2">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <div className="min-w-0 flex-1 space-y-1.5">
             <Label>Knacks</Label>
-            <p className="text-xs text-muted-foreground">
-              Something you can always do. Once per session, take a 10 instead of rolling. One now,
-              three at most.
-            </p>
+            <TouchNote id="knack" />
           </div>
           <Button
             type="button"
@@ -128,19 +136,14 @@ export function FinishingTouches({ character, onChange }: Readonly<FinishingTouc
           onChange={(event) => onChange({ backpack: event.target.value })}
           placeholder="A calculator and two books; the advice your grandmother gave you"
         />
-        <p className="text-xs text-muted-foreground">
-          What you are never without — literally, and figuratively.
-        </p>
+        <TouchNote id="backpack" />
       </div>
 
       {questions.length > 0 ? (
         <section className="space-y-3">
-          <div>
+          <div className="space-y-1.5">
             <Label>{trope?.name} questions</Label>
-            <p className="text-xs text-muted-foreground">
-              You do not have to answer these out loud, but you should know your answers. Share them
-              with the GM.
-            </p>
+            <TouchNote id="trope-specific-questions" />
           </div>
           {questions.map((question, index) => (
             <div key={question} className="space-y-1.5">

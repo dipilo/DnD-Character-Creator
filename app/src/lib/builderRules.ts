@@ -1486,7 +1486,12 @@ export const extractSelectedProficiencies = ({
   species?: Species;
   variant?: SpeciesVariant;
 }): Character['proficiencies'] => {
-  const stored = character.proficiencies ?? emptyCharacterProficiencies();
+  // `??` catches a missing block but not a wrong-shaped one, and a document read from the server
+  // was not necessarily written by this version — an array here made every list undefined.
+  const storedValue = character.proficiencies;
+  const stored = storedValue && !Array.isArray(storedValue) && typeof storedValue === 'object'
+    ? { ...emptyCharacterProficiencies(), ...storedValue }
+    : emptyCharacterProficiencies();
   const granted = deriveCharacterProficiencies({
     character: { ...character, proficiencies: emptyCharacterProficiencies() },
     resolvedClasses,

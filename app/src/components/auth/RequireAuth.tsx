@@ -43,8 +43,8 @@ export function RequireAuth({ children }: Readonly<RequireAuthProps>) {
         <CardHeader>
           <CardTitle>Sign in to continue</CardTitle>
           <CardDescription>
-            Campaigns, rosters and schedules belong to an account. Character building does not —
-            you can keep building signed out.
+            Campaigns, rosters and schedules belong to an account. You can keep building
+            characters signed out.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">

@@ -45,4 +45,27 @@ async function upsertMembership(runner, { campaignId, userId, playerId = null, r
   );
 }
 
-module.exports = { readMembership, upsertMembership };
+/**
+ * Deleting or releasing a seat gives the seat up, never the membership. Dropping the row evicted
+ * the holder from the campaign — an owner who claimed a seat in the Roster and then deleted it
+ * lost their own table. A campaign-scoped account (sheet import, no password) is the exception:
+ * its membership only ever existed for the seat.
+ */
+async function releaseSeat(runner, campaignId, playerId) {
+  const rows = await runner.all(
+    `SELECT cm.id, cm.user_id, u.password_hash
+       FROM campaign_members cm LEFT JOIN users u ON u.id = cm.user_id
+      WHERE cm.campaign_id = ? AND cm.player_id = ?`,
+    campaignId, playerId,
+  );
+  for (const row of rows) {
+    if (row.user_id && !row.password_hash) {
+      await runner.run('DELETE FROM campaign_members WHERE id = ?', row.id);
+    } else {
+      await runner.run('UPDATE campaign_members SET player_id = NULL WHERE id = ?', row.id);
+    }
+  }
+  return rows.map((row) => row.user_id).filter(Boolean);
+}
+
+module.exports = { readMembership, releaseSeat, upsertMembership };

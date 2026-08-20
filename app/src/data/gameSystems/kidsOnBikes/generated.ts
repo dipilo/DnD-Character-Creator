@@ -12,7 +12,7 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
     "systemId": "kids-on-bikes",
     "label": "Kids on Bikes (2nd Edition)",
     "source": "Obsidian vault notes",
-    "importedAt": "2026-08-19",
+    "importedAt": "2026-08-20",
     "warnings": [
       "Trope tables name colors the appendices do not define: While, Yellow",
       "Playing The Game: Lucky Breaks has a heading but no text in the vault."
@@ -103,6 +103,117 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
       "freeStrength": "skilled-at",
       "forbiddenStrength": null,
       "text": "Adults automatically receive the Skilled at ___ Strength. This skill, selected by the character’s player, will correspond to their life experiences, often representing a job they’ve held or a skill they’ve honed over the years. When rolling stat checks, adults add +1 to their Brains and Grit checks. Even if they aren’t always geniuses, they’ve seen enough of the world to know what it’s about and to not get shaken by much."
+    }
+  ],
+  "finishingTouches": [
+    {
+      "id": "full-name",
+      "name": "Full Name",
+      "paragraphs": [
+        "Remember to keep your name in line with the tone that you and the other players have agreed to for the game."
+      ],
+      "callouts": []
+    },
+    {
+      "id": "motivation",
+      "name": "Motivation",
+      "paragraphs": [
+        "Write down something that strongly motivates you.",
+        "If you feel it’s appropriate for them to know, you can share this information with the other players. Most likely, you’ll just share this motivation with the GM."
+      ],
+      "callouts": [
+        {
+          "kind": "example",
+          "defaultOpen": false,
+          "paragraphs": [
+            "It could be a specific motivation (e.g., “find my son no matter what it costs me” or “impress Tom so that he’ll go out with me”), it could be more general, (e.g., “look cool or “learn”), or it could have to do with concealing some information (e.g., “don’t let the others find out that my business is failing” or “don’t let my children learn that I killed their father”)."
+          ]
+        },
+        {
+          "kind": "tip",
+          "defaultOpen": false,
+          "paragraphs": [
+            "Typically, children will be motivated by some kind of curiosity. Teens will often be motivated by social factors like fitting in or finding and maintaining a romantic relationship. Adults will be motivated by holding onto or protecting what they have, whether that’s a business or family. And all ages can be motivated by something or someone that they’ve lost."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fear",
+      "name": "Fear",
+      "paragraphs": [
+        "Write down something that you’re afraid of. Mechanically, fears will have three effects, which we’ll talk more about in “Planned Actions and Snap Decisions.\""
+      ],
+      "callouts": [
+        {
+          "kind": "tip",
+          "defaultOpen": false,
+          "paragraphs": [
+            "Children usually fear things that, rationally, they shouldn't fear and don't fear things they ought to. Generally, children fear the unknown and what they can't see. Children are also generally not ashamed of their fears.",
+            "Teens are all over the place. Some teens are still scared of the things that scared them as children, but they'll tend to be very tight-lipped about these fears. Often, though, teens are more scared of social isolation, losing friends, or embarrassing themselves. But sometimes, more mature teens—or ones whose lives have been rough—will have fears more like an adult's.",
+            "Few adults have the fears that children have, and most of them aren't worried about the kinds of social things that concern teens. Rather, they're typically afraid of things being taken from them. Some adults also fear realistic things going wrong."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "obligations",
+      "name": "Obligations",
+      "paragraphs": [
+        "Regardless of how easy or difficult your character’s life is, they definitely have things they’re required to do."
+      ],
+      "callouts": []
+    },
+    {
+      "id": "knack",
+      "name": "Knack",
+      "paragraphs": [
+        "Thinking about your character’s backstory, what is something that your character can always do, even when they’re under pressure? This will be your Knack, something that you can do only once per session without having to roll a check for it. Instead, you’ll get a 10 on that check.",
+        "You’ll notice on the character sheet that there is a blank space where you can write Knacks. You’ll only choose 1 for now. There will be opportunities to earn more later—but you’ll only ever be able to have 3 Knacks in total."
+      ],
+      "callouts": [
+        {
+          "kind": "tip",
+          "defaultOpen": false,
+          "paragraphs": [
+            "To make your Knack, think about an \"-ing\" verb that describes what you're good at, like \"identifying local plants,\" \"computer programming,\" or \"playing soccer.\""
+          ]
+        }
+      ]
+    },
+    {
+      "id": "backpack",
+      "name": "Backpack",
+      "paragraphs": [
+        "The final finishing touch is indicating what you have in your backpack, literally and figuratively. What items are you never without? The backpack is also a good place to list advantages that you have over other people and the more intangible resources you have at your disposal."
+      ],
+      "callouts": [
+        {
+          "kind": "example",
+          "defaultOpen": false,
+          "paragraphs": [
+            "Your backpack might indicate that your parents are exceptionally supportive and do everything they can to give you the resources to succeed at school. It might indicate that your bad relationship with your parents has given you a strong sense of self-reliance and ability to do for yourself."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trope-specific-questions",
+      "name": "Trope-Specific Questions",
+      "paragraphs": [
+        "Each Trope has two questions about your character that should be answered at some point during the character creation process. The answers to these questions do not need to be shared with the other players at the table—but they can be if you would like to. Your comments should be shared with the GM."
+      ],
+      "callouts": [
+        {
+          "kind": "example",
+          "defaultOpen": false,
+          "paragraphs": [
+            "Kalsang Barton is motivated by protecting her son and making his life as easy as possible. The sudden loss of his father when he was only six affected him badly. Her Fear is suffocation, and she tells the table that she has had nightmares about suffocating under the earth, like she assumes her husband did when the mine collapsed. In terms of Obligations, she’s of course obligated to care for and provide for her son as well as taking care of the house, though she says that Daniel is finally starting to be able to be more helpful with his chores. Beyond the tangible obligations of single parenting, though, she feels a need to provide all of the guidance to Daniel that both parents would have. In keeping with the work that she has done, she decides that her starting Knack is repairing vehicles. She carries nothing terribly special with her in a literal sense, but she carries the loss of her husband and the flexibility that she learned when she had to switch jobs.",
+            "Isabella Freeman is motivated by fitting in with the cool kids, very much in keeping with her taking the Aspiring Wannabe Trope. Her Fear is spiders, which she has been afraid of for as long as she can remember. Her parents take care of all of her tangible needs other than a few odd chores at her house; however, since they’re both pillars of the community, the nearly explicit agreement is that she won’t do anything to embarrass her pillars-of-the-community parents, so she bears that Obligation. She also has the self-imposed Obligation of trying to fit in with the cool kids. Her Knack, she decides, are her sweet dance moves, which have never failed her before. In her Backpack, she always carries gum to make sure that her breath is as fresh as possible. Figuratively speaking, she carries with her a feeling that her parents are disappointed in her and the concern that she’ll never fit in with the cool kids.",
+            "Oswald Gates is motivated by learning as much as he possibly can in as many fields as humanly possible. His Fear is heights and falling, and his Obligation is walking his dog twice a day, but beyond that, his parents take care of everything for him. His Knack is reading and understanding quickly. He always carries his calculator and at least two books with him, since he’s never reading just one book. Figuratively, he carries the advice that his grandmother gave him the last time she visited: “Be yourself, Ozzie. Nobody else can be.”"
+          ]
+        }
+      ]
     }
   ],
   "tropes": [

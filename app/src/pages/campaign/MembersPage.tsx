@@ -443,8 +443,7 @@ export function MembersPage() {
             </AlertDialogTitle>
             <AlertDialogDescription>
               Their seat goes back to unclaimed and their characters leave the party. Nothing is
-              deleted — a seat can be claimed again, and a sheet belongs to its account. They can
-              rejoin with the campaign code or a new invite.
+              deleted, and they can rejoin with the campaign code or a new invite.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

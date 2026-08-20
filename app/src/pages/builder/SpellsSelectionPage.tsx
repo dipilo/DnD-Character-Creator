@@ -184,7 +184,8 @@ export function SpellsSelectionPage() {
         <CardHeader>
           <CardTitle className="text-lg">Spellcasting Summary</CardTitle>
           <CardDescription>
-            Limits are based on your current class levels. Prepared casters use the builder&apos;s current preparation estimate from class level and spellcasting ability.
+            Limits come from your current class levels. Prepared casters use an estimate from
+            class level and spellcasting ability.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
