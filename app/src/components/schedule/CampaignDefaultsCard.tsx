@@ -10,12 +10,18 @@ import { PermissionToggles } from '@/components/schedule/PermissionToggles';
 import { GAME_SYSTEM_LIST, getGameSystem, type GameSystemId } from '@/data/gameSystems';
 import {
   parsePermissionBlob,
+  setCampaignAutoClaim,
   setCampaignCharacterEditRequest,
   setCampaignDefaultPermissions,
   setCampaignSystem,
+  type AutoClaimMode,
   type Campaign,
   type CampaignPermissions,
 } from '@/lib/api';
+import { AUTO_CLAIM_MODES } from '@/lib/autoClaim';
+
+/** Radix rejects an empty string as an item value, so "no opinion" needs a value of its own. */
+const UNSET = 'unset';
 
 interface CampaignDefaultsCardProps {
   readonly campaign: Campaign | null;
@@ -40,6 +46,7 @@ function DefaultsForm({ campaign, canEdit, onCampaignChange }: Readonly<Campaign
   );
   const [busy, setBusy] = useState(false);
   const asksCharacterEdit = Boolean(campaign.requests_character_edit);
+  const autoClaim = campaign.default_auto_claim_seats ?? UNSET;
 
   const save = async (run: () => Promise<Campaign>, what: string) => {
     if (busy) return;
@@ -109,6 +116,35 @@ function DefaultsForm({ campaign, canEdit, onCampaignChange }: Readonly<Campaign
           aria-label="Ask players to let you edit their characters"
           onCheckedChange={(next) => save(() => setCampaignCharacterEditRequest(campaign.id, next), 'Character editing request')}
         />
+      </div>
+
+      <Separator />
+
+      <div className="space-y-1.5">
+        <Label htmlFor="campaign-auto-claim">Claim a seat on making one</Label>
+        <Select
+          value={autoClaim}
+          disabled={!canEdit || busy}
+          onValueChange={(value) =>
+            save(
+              () => setCampaignAutoClaim(campaign.id, value === UNSET ? null : (value as AutoClaimMode)),
+              'Seat claiming',
+            )
+          }
+        >
+          <SelectTrigger id="campaign-auto-claim" className="h-11 w-full sm:w-64">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={UNSET}>Let each player decide</SelectItem>
+            {AUTO_CLAIM_MODES.map((mode) => (
+              <SelectItem key={mode.value} value={mode.value}>{mode.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">
+          A player who has not chosen for themselves takes the first seat they make.
+        </p>
       </div>
 
       <Separator />

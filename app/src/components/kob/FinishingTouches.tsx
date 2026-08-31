@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { BackpackButton } from '@/components/kob/BackpackButton';
+import { BackpackCanvasDialog } from '@/components/kob/BackpackCanvasDialog';
 import { KobCallouts } from '@/components/kob/KobCallouts';
 import { finishingTouch, getTrope, tropeQuestions } from '@/data/gameSystems/kidsOnBikes/rules';
+import { readCanvas } from '@/lib/kob/backpackCanvas';
 import type { KobCharacter } from '@/types/kob';
 
 interface FinishingTouchesProps {
@@ -30,6 +34,7 @@ function TouchNote({ id }: Readonly<{ id: string }>) {
 }
 
 export function FinishingTouches({ character, onChange }: Readonly<FinishingTouchesProps>) {
+  const [backpackOpen, setBackpackOpen] = useState(false);
   const trope = getTrope(character.tropeId);
   const questions = tropeQuestions(character.tropeId);
   const knacks = character.knacks.length > 0 ? character.knacks : [''];
@@ -128,16 +133,25 @@ export function FinishingTouches({ character, onChange }: Readonly<FinishingTouc
         </div>
       </section>
 
+      {/* The book asks for things, some of which are pictures, so the field is a board rather than
+          a paragraph. What was typed into the old text field is migrated onto it once, by
+          `withKobDefaults`. */}
       <div className="space-y-1.5">
-        <Label htmlFor="backpack">Backpack</Label>
-        <Textarea
-          id="backpack"
-          value={character.backpack}
-          onChange={(event) => onChange({ backpack: event.target.value })}
-          placeholder="A calculator and two books; the advice your grandmother gave you"
+        <Label>Backpack</Label>
+        <BackpackButton
+          canvas={readCanvas(character.backpackCanvas)}
+          onOpen={() => setBackpackOpen(true)}
         />
         <TouchNote id="backpack" />
       </div>
+
+      <BackpackCanvasDialog
+        open={backpackOpen}
+        onOpenChange={setBackpackOpen}
+        canvas={readCanvas(character.backpackCanvas)}
+        prompt={finishingTouch('backpack')?.paragraphs[0]}
+        onChange={(backpackCanvas) => onChange({ backpackCanvas })}
+      />
 
       {questions.length > 0 ? (
         <section className="space-y-3">

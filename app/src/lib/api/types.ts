@@ -179,6 +179,11 @@ export interface Campaign {
    */
   default_invite_permissions: string | null;
   /**
+   * The table's default for whether making a seat also takes it: 'never', 'first' or 'always'.
+   * Null is "no opinion", which resolves to 'first' for a player and 'never' for the owner.
+   */
+  default_auto_claim_seats: AutoClaimMode | null;
+  /**
    * Whether this table asks its players to let the GM edit their characters. It is the ask and not
    * the answer: each member's reply lives on their own membership row, which the owner cannot
    * write. Stored 0/1.
@@ -201,6 +206,12 @@ export interface CampaignPermissions {
   players_self_delete?: boolean;
 }
 
+/**
+ * Whether a seat someone creates becomes theirs. 'first' claims only while they hold none, so it
+ * covers the seat made after deleting a previous one as well as the literal first.
+ */
+export type AutoClaimMode = 'never' | 'first' | 'always';
+
 export interface CampaignMember {
   id: number;
   campaign_id: number;
@@ -215,6 +226,10 @@ export interface CampaignMember {
    * is why it is a column of its own rather than a flag in `permissions`.
    */
   character_edit_consent: number | null;
+  /** The owner's word on this member's auto-claim. Null hands the decision to their preference. */
+  auto_claim_override: AutoClaimMode | null;
+  /** This member's own auto-claim setting. Null falls through to the campaign's default. */
+  auto_claim_preference: AutoClaimMode | null;
   created_at: string | null;
   user_discord: string | null;
   user_name: string | null;
@@ -309,6 +324,10 @@ export interface Group {
   id: number;
   name: string | null;
   notes: string | null;
+  /** A palette key from `lib/groupColors.ts`. The server stores it without interpreting it. */
+  color: string | null;
+  /** How many seats this table is meant to hold, or null when it has no target. */
+  target_size: number | null;
   created_at: string | null;
   sort_index: number | null;
   campaign_id: number | null;

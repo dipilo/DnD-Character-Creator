@@ -42,7 +42,14 @@ export interface KobCharacter {
   obligations: string;
   /** One at creation, three at most, per the rules. */
   knacks: string[];
+  /**
+   * The book's own Backpack line, as typed before the canvas existed. Kept because a saved
+   * character is a document and not a receipt: it is migrated into `backpackCanvas` once, and the
+   * sheet still reads it for a character that has no canvas.
+   */
   backpack: string;
+  /** "What items are you never without?", as a board of notes, links and pictures. */
+  backpackCanvas?: KobBackpackCanvas;
   /** Answers to the trope's two questions, in the order the trope lists them. */
   tropeAnswers: string[];
 
@@ -68,6 +75,39 @@ export interface KobCharacter {
  * select the levels of romance they are interested in." Crush/Date/Partner are cumulative levels
  * of romantic involvement; the two intimacy flags are independent of them, per the printed sheet.
  */
+/**
+ * The backpack as a pinboard.
+ *
+ * "The backpack is also a good place to list advantages that you have over other people and the
+ * more intangible resources you have at your disposal" — which is a collage, not a paragraph, so a
+ * node is a note, a link or a picture and it sits where the player put it.
+ *
+ * A picture is either a URL the player pasted or a small file they dropped, held as a data URL in
+ * `src`. The whole character is one JSON document on the server, so the size caps in
+ * `lib/kob/backpackCanvas.ts` are what keep a dropped photo from making the document unsavable.
+ */
+export interface KobBackpackCanvas {
+  nodes: KobBackpackNode[];
+}
+
+export type KobBackpackNodeKind = 'note' | 'link' | 'media';
+
+export interface KobBackpackNode {
+  id: string;
+  kind: KobBackpackNodeKind;
+  /** Board coordinates, in CSS pixels at 100% zoom. */
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** A note's body, a link's caption, or a picture's caption. */
+  text: string;
+  /** An http(s) URL, or a `data:` URL for a small dropped file. Empty on a note. */
+  src: string;
+  /** A palette key from `lib/groupColors.ts`, or null for the default card. */
+  color: string | null;
+}
+
 export interface KobConsentSheet {
   crush: boolean;
   date: boolean;

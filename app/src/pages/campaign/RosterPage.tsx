@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { claimPlayer, deletePlayer, parseAllowedSourceIds, unclaimPlayer } from '@/lib/api';
 import type { Player } from '@/lib/api';
 import { DdbSeedDialog } from '@/components/schedule/DdbSeedDialog';
+import { OwnAutoClaimField } from '@/components/schedule/OwnAutoClaimField';
 import { PlayerEditorDialog } from '@/components/schedule/PlayerEditorDialog';
 import { SheetImportDialog } from '@/components/schedule/SheetImportDialog';
 import { Badge } from '@/components/ui/badge';
@@ -86,6 +87,9 @@ export function RosterPage() {
       toast.success(`You now hold ${playerLabel(claimed)}`);
       // The membership row gained a player_id; the permission helpers read it.
       void useCampaignStore.getState().loadMembership(campaignId);
+      // A seat released earlier and claimed again reads differently on the server than the
+      // response says on its own, so take the roster's own word for it.
+      reload();
     } catch (e) {
       toast.error('Could not claim that seat', { description: e instanceof Error ? e.message : undefined });
     }
@@ -138,6 +142,8 @@ export function RosterPage() {
           </div>
         ) : null}
       </div>
+
+      <OwnAutoClaimField campaignId={campaignId} campaign={campaign} membership={membership} />
 
       {loading ? (
         <output className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -242,6 +248,9 @@ export function RosterPage() {
         onSaved={(player) => {
           replacePlayer(player);
           setEditing(null);
+          // A new seat may have been claimed on creation (`lib/autoClaim.ts`), which changes the
+          // membership row every permission helper on this page reads.
+          void useCampaignStore.getState().loadMembership(campaignId);
         }}
       />
 

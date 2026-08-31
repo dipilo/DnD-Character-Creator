@@ -5,8 +5,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { KobCallouts } from '@/components/kob/KobCallouts';
+import { PartyMateField } from '@/components/kob/PartyMateField';
 import { getBondedAction, kob } from '@/data/gameSystems/kidsOnBikes/rules';
-import { useCharacterPartyMates, type PartyMate } from '@/hooks/useCharacterPartyMates';
+import { useCampaignConnections } from '@/hooks/useCampaignConnections';
 import type { KobBondedActionEntry, KobCharacter } from '@/types/kob';
 
 interface BondedActionsEditorProps {
@@ -14,35 +15,18 @@ interface BondedActionsEditorProps {
   onChange: (patch: Partial<KobCharacter>) => void;
 }
 
-/** The option value that means "not one of the party's characters". */
-const FREE_TEXT_VALUE = 'free-text';
 /** The book's own out: a pair who see nothing that fits may invent one. */
 const INVENTED_VALUE = 'invented';
 
-function describeMate(mate: PartyMate): string {
-  const played = mate.playerName ?? mate.ownerName;
-  return played ? `${mate.name} — ${played}` : mate.name;
-}
-
 export function BondedActionsEditor({ character, onChange }: Readonly<BondedActionsEditorProps>) {
   const entries = character.bondedActions;
-  const { mates } = useCharacterPartyMates(character.id);
+  const { connections, campaignId, loading } = useCampaignConnections(character.id);
   const { intro, callouts, actions } = kob.bondedActions;
 
   const update = (id: string, patch: Partial<KobBondedActionEntry>) => {
     onChange({
       bondedActions: entries.map((entry) => (entry.id === id ? { ...entry, ...patch } : entry)),
     });
-  };
-
-  /** Picking a party-mate fills the name and keeps the pointer; going back to free text drops it. */
-  const selectMate = (entry: KobBondedActionEntry, value: string) => {
-    if (value === FREE_TEXT_VALUE) {
-      update(entry.id, { withCharacterId: null });
-      return;
-    }
-    const mate = mates.find((candidate) => candidate.id === value);
-    if (mate) update(entry.id, { withCharacterId: mate.id, withCharacter: mate.name });
   };
 
   const add = () => {
@@ -86,48 +70,27 @@ export function BondedActionsEditor({ character, onChange }: Readonly<BondedActi
       {entries.map((entry) => {
         const invented = entry.actionId === '';
         const chosen = getBondedAction(entry.actionId);
-        const linkedMate = entry.withCharacterId
-          ? mates.find((mate) => mate.id === entry.withCharacterId)
-          : undefined;
 
         return (
           <div key={entry.id} className="space-y-3 rounded-lg border p-3">
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label htmlFor={`bond-who-${entry.id}`}>With</Label>
-                {mates.length > 0 ? (
-                  <Select
-                    value={entry.withCharacterId ?? FREE_TEXT_VALUE}
-                    onValueChange={(value) => selectMate(entry, value)}
-                  >
-                    <SelectTrigger id={`bond-mate-${entry.id}`} className="h-11 w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={FREE_TEXT_VALUE}>Someone else — type a name</SelectItem>
-                      {mates.map((mate) => (
-                        <SelectItem key={mate.id} value={mate.id}>
-                          {describeMate(mate)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : null}
-                {entry.withCharacterId ? (
-                  <p className="text-xs text-muted-foreground">
-                    {linkedMate
-                      ? `Bonded with ${linkedMate.name}`
-                      : `Bonded with ${entry.withCharacter || 'a character'}, who is no longer at this table.`}
-                  </p>
-                ) : (
-                  <Input
-                    id={`bond-who-${entry.id}`}
-                    value={entry.withCharacter}
-                    onChange={(event) => update(entry.id, { withCharacter: event.target.value })}
-                    placeholder="Oswald"
-                  />
-                )}
-              </div>
+              <PartyMateField
+                id={`bond-who-${entry.id}`}
+                label="With"
+                connections={connections}
+                campaignId={campaignId}
+                loading={loading}
+                who={entry.withCharacter}
+                withCharacterId={entry.withCharacterId}
+                onPick={(patch) =>
+                  update(entry.id, {
+                    withCharacterId: patch.withCharacterId,
+                    ...(patch.who === undefined ? {} : { withCharacter: patch.who }),
+                  })
+                }
+                onTypeName={(withCharacter) => update(entry.id, { withCharacter })}
+                placeholder="Oswald"
+              />
 
               <div className="space-y-1.5">
                 <Label htmlFor={`bond-action-${entry.id}`}>Bonded Action</Label>

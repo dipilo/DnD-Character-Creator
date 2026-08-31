@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { Campaign, CampaignMember, CampaignPermissions, Player, UnclaimedPlayer } from './types';
+import type { AutoClaimMode, Campaign, CampaignMember, CampaignPermissions, Player, UnclaimedPlayer } from './types';
 
 /**
  * Campaigns and their membership (MERGE_PLAN.md Phase 4). Every campaign-scoped route on the
@@ -171,6 +171,33 @@ export async function claimPlayer(campaignId: number, payload: ClaimPlayerPayloa
 
 export async function unclaimPlayer(campaignId: number, playerId: number): Promise<void> {
   await api.post(`/api/campaigns/${campaignId}/unclaim-player`, { player_id: playerId });
+}
+
+/** The table's default for whether making a seat also takes it. Owner-only; null is no opinion. */
+export async function setCampaignAutoClaim(campaignId: number, mode: AutoClaimMode | null): Promise<Campaign> {
+  const body = await api.put<{ campaign: Campaign }>(`/api/campaigns/${campaignId}`, {
+    default_auto_claim_seats: mode,
+  });
+  return body.campaign;
+}
+
+/** The caller's own auto-claim setting at this table. Theirs alone, as the consent flag is. */
+export async function setOwnAutoClaim(campaignId: number, mode: AutoClaimMode | null): Promise<CampaignMember> {
+  const body = await api.put<{ membership: CampaignMember }>(`/api/campaigns/${campaignId}/auto-claim`, { mode });
+  return body.membership;
+}
+
+/** The owner's override for one member. Null hands the decision back to that member. */
+export async function setMemberAutoClaim(
+  campaignId: number,
+  memberId: number,
+  mode: AutoClaimMode | null,
+): Promise<CampaignMember> {
+  const body = await api.patch<{ member: CampaignMember }>(
+    `/api/campaigns/${campaignId}/members/${memberId}/auto-claim`,
+    { mode },
+  );
+  return body.member;
 }
 
 /**

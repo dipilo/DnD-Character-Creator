@@ -54,14 +54,17 @@ router.post('/api/groups', requireAuth, async (req, res) => {
   try {
     const { name, member_ids } = req.body || {};
     const campaignId = req.body?.campaign_id || null;
-    if (!campaignId) return res.status(400).json({ error: 'campaign_id required' });
-    if (!await isCampaignOwner(req.user.id, campaignId)) return res.status(403).json({ error: 'owner_required' });
+    const denied = await checkGroupManageAccess(req.user, campaignId);
+    if (denied) return res.status(denied.status).json({ error: denied.error });
 
-    // determine next sort_index (append)
-    const mx = await db.get('SELECT MAX(sort_index) as mx FROM groups');
+    // Append within this campaign. A global MAX put a new group after every other table's groups.
+    const mx = await db.get('SELECT MAX(sort_index) as mx FROM groups WHERE campaign_id = ?', campaignId);
     const nextIndex = mx?.mx != null ? mx.mx + 1 : 0;
 
-    const info = await db.run('INSERT INTO groups(name, sort_index, campaign_id) VALUES (?, ?, ?)', name || null, nextIndex, campaignId);
+    const info = await db.run(
+      'INSERT INTO groups(name, sort_index, campaign_id, color) VALUES (?, ?, ?, ?)',
+      name || null, nextIndex, campaignId, typeof req.body?.color === 'string' ? req.body.color : null,
+    );
     const groupId = info.lastInsertRowid;
     if (Array.isArray(member_ids) && member_ids.length) {
       await db.transaction(async (trx) => {
@@ -128,6 +131,28 @@ router.delete('/api/groups/:id', requireAuth, async (req, res) => {
   }
 });
 
+/**
+ * What a group is, beyond a name and a member list. `color` is a palette key the client defines
+ * and the server keeps opaque, the same posture `system_id` and `allowed_source_ids` take; a
+ * `target_size` of null is "no target". One table rather than an `if (Object.hasOwn(...))` block
+ * per column, per CLAUDE.md.
+ */
+const GROUP_UPDATABLE_COLUMNS = [
+  ['name', (value) => ({ value: typeof value === 'string' ? value.trim().slice(0, 80) : null })],
+  ['notes', (value) => ({ value: typeof value === 'string' ? value.slice(0, 4000) : null })],
+  ['color', (value) => {
+    if (value === null || value === undefined || value === '') return { value: null };
+    if (typeof value !== 'string' || !/^[a-z0-9][a-z0-9-]{0,31}$/.test(value)) return { error: 'invalid_color' };
+    return { value };
+  }],
+  ['target_size', (value) => {
+    if (value === null || value === undefined || value === '') return { value: null };
+    const size = Number.parseInt(value, 10);
+    if (!Number.isFinite(size) || size < 1 || size > 64) return { error: 'invalid_target_size' };
+    return { value: size };
+  }],
+];
+
 // PUT /api/groups/:id  -> update group name and optionally replace member list
 // body: { name?: string, member_ids?: [1,2,3] }
 router.put('/api/groups/:id', requireAuth, async (req, res) => {
@@ -138,8 +163,16 @@ router.put('/api/groups/:id', requireAuth, async (req, res) => {
     const group = await loadManageableGroup(req, res, gid);
     if (!group) return undefined;
 
-    if (body.name !== undefined) {
-      await db.run('UPDATE groups SET name = ? WHERE id = ?', body.name, gid);
+    const updates = [];
+    for (const [column, normalise] of GROUP_UPDATABLE_COLUMNS) {
+      if (!Object.hasOwn(body, column)) continue;
+      const result = normalise(body[column]);
+      if (result.error) return res.status(400).json({ error: result.error });
+      updates.push([column, result.value]);
+    }
+    if (updates.length > 0) {
+      const assignments = updates.map(([column]) => `${column} = ?`).join(', ');
+      await db.run(`UPDATE groups SET ${assignments} WHERE id = ?`, ...updates.map(([, value]) => value), gid);
     }
     if (Array.isArray(body.member_ids)) {
       await db.transaction(async (trx) => {
@@ -267,7 +300,7 @@ router.post('/api/groups/save-suggestion', requireAuth, async (req, res) => {
     const groups = Array.isArray(payload.groups) ? payload.groups : [];
     const created = [];
     await db.transaction(async (trx) => {
-      const mx = await trx.get('SELECT MAX(sort_index) as mx FROM groups');
+      const mx = await trx.get('SELECT MAX(sort_index) as mx FROM groups WHERE campaign_id = ?', campaignId);
       let nextIndex = mx?.mx != null ? mx.mx + 1 : 0;
       for (const g of groups) {
         const info = await trx.run('INSERT INTO groups(name, sort_index, campaign_id) VALUES (?, ?, ?)', g.name || null, nextIndex++, campaignId);

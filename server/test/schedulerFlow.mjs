@@ -229,6 +229,129 @@ async function inviteFlow(campaignId, players) {
 }
 
 /**
+ * Claiming a seat, and the setting that does it for you.
+ *
+ * The regression this pins down is silent: releasing a seat stamps `players.unclaimed_at`, which
+ * `is_claimed` is read from, and claiming it again never cleared it — so the Roster went on
+ * offering a seat its holder had already taken. The response said "claimed" and the next list said
+ * "unclaimed", which is the whole of "claiming a seat does not work".
+ */
+async function seatClaimingFlow(campaignId, players) {
+  const seatOf = async (who, playerId) => {
+    const roster = await call(who, 'GET', `/api/players?campaign_id=${campaignId}`);
+    return roster.json.find?.((p) => p.id === playerId) ?? null;
+  };
+
+  const held = await seatOf('dm', players.bram);
+  check('a claimed seat lists as claimed', held?.is_claimed === true, JSON.stringify(held));
+
+  // The owner releases it: `inviteFlow` replaced this member's grant with `can_create_players`
+  // alone, so their own self-release right is gone — which is the permission editor working.
+  await call('dm', 'POST', `/api/campaigns/${campaignId}/unclaim-player`, { player_id: players.bram });
+  const released = await seatOf('dm', players.bram);
+  check('releasing it lists as unclaimed', released?.is_claimed === false, JSON.stringify(released));
+
+  const again = await call('player', 'POST', `/api/campaigns/${campaignId}/claim-player`, { player_id: players.bram });
+  check('a released seat can be claimed again', again.status === 200, `${again.status} ${JSON.stringify(again.json)}`);
+
+  const afterClaim = await call('dm', 'GET', `/api/campaigns/${campaignId}/members`);
+  const stillGranted = afterClaim.json.members?.find((m) => m.role !== 'owner');
+  check(
+    'claiming a seat does not rewrite what the owner granted',
+    stillGranted?.permissions?.includes('can_create_players'),
+    JSON.stringify(stillGranted),
+  );
+  const reclaimed = await seatOf('dm', players.bram);
+  check('...and it lists as claimed, not as unclaimed', reclaimed?.is_claimed === true, JSON.stringify(reclaimed));
+
+  const offered = await call('anon', 'GET', `/api/campaigns/${campaignId}/unclaimed-players`);
+  check(
+    'a re-claimed seat is no longer offered to claimants',
+    !offered.json.players?.some((p) => p.id === players.bram),
+    JSON.stringify(offered.json).slice(0, 200),
+  );
+
+  // Auto-claim. The owner makes seats for other people, so the built-in default leaves theirs
+  // alone; a player takes the first seat they make.
+  const ownerSeat = await call('dm', 'POST', '/api/players', { campaign_id: campaignId, name: 'Owner made this' });
+  check('the owner does not auto-claim a seat they make', ownerSeat.json.auto_claimed === false, JSON.stringify(ownerSeat.json).slice(0, 200));
+
+  await call('dm', 'POST', `/api/campaigns/${campaignId}/unclaim-player`, { player_id: players.bram });
+  const playerSeat = await call('player', 'POST', '/api/players', { campaign_id: campaignId, name: 'Player made this' });
+  check('a seatless player claims the seat they make', playerSeat.json.auto_claimed === true, JSON.stringify(playerSeat.json).slice(0, 200));
+
+  const holdingOne = await call('player', 'POST', '/api/players', { campaign_id: campaignId, name: 'A second one' });
+  check('...but not a second one, on the default', holdingOne.json.auto_claimed === false, JSON.stringify(holdingOne.json).slice(0, 200));
+
+  // The member's own preference, written by nobody else.
+  const own = await call('player', 'PUT', `/api/campaigns/${campaignId}/auto-claim`, { mode: 'always' });
+  check('a member sets their own auto-claim', own.json.effective_mode === 'always', JSON.stringify(own.json).slice(0, 200));
+  const third = await call('player', 'POST', '/api/players', { campaign_id: campaignId, name: 'On always' });
+  check('always moves the seat to the newest', third.json.auto_claimed === true, JSON.stringify(third.json).slice(0, 200));
+
+  // The owner's override wins over it.
+  const members = await call('dm', 'GET', `/api/campaigns/${campaignId}/members`);
+  const memberRow = members.json.members?.find((m) => m.role !== 'owner');
+  const override = await call('dm', 'PATCH', `/api/campaigns/${campaignId}/members/${memberRow.id}/auto-claim`, { mode: 'never' });
+  check('the override wins over the preference', override.json.effective_mode === 'never', JSON.stringify(override.json).slice(0, 200));
+  const fourth = await call('player', 'POST', '/api/players', { campaign_id: campaignId, name: 'After the override' });
+  check('...and the seat is not claimed', fourth.json.auto_claimed === false, JSON.stringify(fourth.json).slice(0, 200));
+
+  const bad = await call('dm', 'PUT', `/api/campaigns/${campaignId}`, { default_auto_claim_seats: 'sometimes' });
+  check('an unknown auto-claim mode is refused', bad.status === 400, `${bad.status} ${JSON.stringify(bad.json)}`);
+
+  const owned = await call('player', 'PATCH', `/api/campaigns/${campaignId}/members/${memberRow.id}/auto-claim`, { mode: 'always' });
+  check('a member cannot write their own override', owned.status === 403, `${owned.status} ${JSON.stringify(owned.json)}`);
+
+  // Hand the table back as `inviteFlow` left it: this member holds Bram, on the table's default.
+  await call('dm', 'PATCH', `/api/campaigns/${campaignId}/members/${memberRow.id}/auto-claim`, { mode: null });
+  await call('player', 'PUT', `/api/campaigns/${campaignId}/auto-claim`, { mode: null });
+  const restored = await call('player', 'POST', `/api/campaigns/${campaignId}/claim-player`, { player_id: players.bram });
+  check('the seat can be taken back', restored.status === 200, `${restored.status} ${JSON.stringify(restored.json)}`);
+}
+
+/**
+ * Groups as tables rather than name lists: a colour, a size target, notes, and a create route that
+ * honours `can_manage_groups` like every other write on the resource already did.
+ */
+async function groupObjectFlow(campaignId, players) {
+  const created = await call('dm', 'POST', '/api/groups', { campaign_id: campaignId, name: 'Colourful table' });
+  const groupId = created.json.group?.id;
+  check('GroupEditorDialog: create answers { group }', Boolean(groupId), JSON.stringify(created.json).slice(0, 200));
+
+  const saved = await call('dm', 'PUT', `/api/groups/${groupId}`, {
+    name: 'Thursday table',
+    color: 'amber',
+    target_size: 4,
+    notes: 'Meets fortnightly.',
+    member_ids: [players.ysolde],
+  });
+  check(
+    'GroupEditorDialog: colour, size and notes round-trip',
+    saved.json.group?.color === 'amber' && saved.json.group?.target_size === 4 && saved.json.group?.notes === 'Meets fortnightly.',
+    JSON.stringify(saved.json).slice(0, 300),
+  );
+
+  const badColor = await call('dm', 'PUT', `/api/groups/${groupId}`, { color: 'not a key' });
+  check('an unknown colour is refused', badColor.status === 400, `${badColor.status} ${JSON.stringify(badColor.json)}`);
+  const badSize = await call('dm', 'PUT', `/api/groups/${groupId}`, { target_size: 0 });
+  check('a table size of zero is refused', badSize.status === 400, `${badSize.status} ${JSON.stringify(badSize.json)}`);
+
+  // can_manage_groups now creates as well as edits. It always claimed to ("Create, edit and delete
+  // tables"), and every other write on the resource already accepted it.
+  const members = await call('dm', 'GET', `/api/campaigns/${campaignId}/members`);
+  const memberRow = members.json.members?.find((m) => m.role !== 'owner');
+  await call('dm', 'PATCH', `/api/campaigns/${campaignId}/members/${memberRow.id}/permissions`, {
+    permissions: { can_create_players: true, can_manage_groups: true },
+  });
+  const byMember = await call('player', 'POST', '/api/groups', { campaign_id: campaignId, name: 'Member made this' });
+  check('can_manage_groups can create a group', byMember.status === 200, `${byMember.status} ${JSON.stringify(byMember.json)}`);
+
+  const byStranger = await call('stranger', 'POST', '/api/groups', { campaign_id: campaignId, name: 'Nope' });
+  check('a non-member still cannot', byStranger.status === 403, `${byStranger.status} ${JSON.stringify(byStranger.json)}`);
+}
+
+/**
  * Phase 5 — the join between the two halves. Everything above this proves the scheduler works;
  * this proves a *builder character* can sit at one of its seats, be read by the table, and stay its
  * owner's alone. The permission boundary is the whole point, so it is driven from both sides.
@@ -314,6 +437,8 @@ async function scenario() {
   await calendarWritesAvailability(campaignId, players.ysolde);
   await aggregateAndGroups(campaignId, players);
   await inviteFlow(campaignId, players);
+  await seatClaimingFlow(campaignId, players);
+  await groupObjectFlow(campaignId, players);
   await partyFlow(campaignId, players);
 }
 

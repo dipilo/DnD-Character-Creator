@@ -39,6 +39,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useCampaignGroups } from '@/hooks/useCampaignGroups';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuthStore } from '@/store/authStore';
 import { isCampaignOwner, useCampaignStore } from '@/store/campaignStore';
@@ -47,6 +48,9 @@ import { useKobCharacterStore } from '@/store/kobCharacterStore';
 import { playerLabel, useCampaignCharacters, useCampaignId, useRoster } from '@/pages/campaign/useCampaignData';
 
 const UNSEATED = 'unseated';
+
+/** Radix rejects an empty item value, so "no group filter" needs a value of its own. */
+const ALL_GROUPS = 'all';
 
 export function PartyPage() {
   const campaignId = useCampaignId();
@@ -65,7 +69,14 @@ export function PartyPage() {
   const [savingConsent, setSavingConsent] = useState(false);
   /** Someone else's character the owner is about to take off the table. */
   const [confirmRemove, setConfirmRemove] = useState<CampaignCharacterSummary | null>(null);
-  const { characters, loading, error, reload } = useCampaignCharacters(campaignId);
+  const { characters: allCharacters, loading, error, reload } = useCampaignCharacters(campaignId);
+  // The Groups tab links here with ?group=…, so one table can be read on its own.
+  const { groups, selected: selectedGroup, memberIds: groupMemberIds, selectGroup } = useCampaignGroups(campaignId);
+  const characters = useMemo(() => {
+    if (groupMemberIds === null) return allCharacters;
+    const members = new Set(groupMemberIds);
+    return allCharacters.filter((entry) => entry.player_id != null && members.has(entry.player_id));
+  }, [allCharacters, groupMemberIds]);
 
   const campaign = useMemo(() => campaigns.find((c) => c.id === campaignId) ?? null, [campaigns, campaignId]);
   const allowedSourceIds = useMemo(() => parseAllowedSourceIds(campaign), [campaign]);
@@ -163,7 +174,25 @@ export function PartyPage() {
             Every character at this table. This campaign plays {system.name}.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {groups.length > 0 ? (
+            <Select
+              value={selectedGroup ? String(selectedGroup.id) : ALL_GROUPS}
+              onValueChange={(value) => selectGroup(value === ALL_GROUPS ? null : Number(value))}
+            >
+              <SelectTrigger className="h-11 w-full sm:w-52" aria-label="Group">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL_GROUPS}>Everyone in the campaign</SelectItem>
+                {groups.map((group) => (
+                  <SelectItem key={group.id} value={String(group.id)}>
+                    {group.name || 'Unnamed group'}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : null}
           <Button variant="outline" onClick={() => setAttaching(true)}>
             <UserRoundPlus className="h-4 w-4" />
             Attach a character
@@ -215,7 +244,9 @@ export function PartyPage() {
           <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
             <Users className="h-10 w-10 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
-              No characters at this table yet. Attach one you have already built, or start a new one.
+              {selectedGroup
+                ? 'Nobody in this group has a character at this table yet.'
+                : 'No characters at this table yet. Attach one you have already built, or start a new one.'}
             </p>
           </CardContent>
         </Card>
@@ -295,7 +326,7 @@ export function PartyPage() {
         systemId={system.id}
         systemName={system.name}
         defaultPlayerId={membership?.player_id ?? null}
-        alreadyAttached={characters.map((c) => c.id)}
+        alreadyAttached={allCharacters.map((c) => c.id)}
         onOpenChange={setAttaching}
         onAttached={() => {
           setAttaching(false);

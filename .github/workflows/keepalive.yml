@@ -1,0 +1,33 @@
+# Render's free tier spins an instance down after 15 minutes with no inbound request, and the cold
+# start that follows is the ~50s wait before the first page of the day loads anything. A ping from
+# outside is the only thing that can wake an instance that is already asleep, which is why this
+# lives here rather than as a timer inside the server process.
+#
+# Actions minutes are free on a public repository. GitHub disables a scheduled workflow after 60
+# days with no commits to the repo: re-enable it from the Actions tab if that happens.
+name: Keep the backend warm
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: keepalive
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /health
+        run: |
+          curl --fail --silent --show-error --location \
+               --retry 3 --retry-all-errors --retry-delay 20 \
+               --max-time 120 \
+               "${BACKEND_URL%/}/health"
+        env:
+          # The public backend. An override lives in repository variables so a redeploy elsewhere
+          # does not need this file edited.
+          BACKEND_URL: ${{ vars.BACKEND_URL || 'https://dnd-0wye.onrender.com' }}

@@ -4,9 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { PartyMateField } from '@/components/kob/PartyMateField';
 import { kob } from '@/data/gameSystems/kidsOnBikes/rules';
 import type { KobRelationshipQuestion } from '@/data/gameSystems/kidsOnBikes/types';
-import { useCharacterPartyMates, type PartyMate } from '@/hooks/useCharacterPartyMates';
+import { useCampaignConnections } from '@/hooks/useCampaignConnections';
 import { rollOnScreen } from '@/store/diceTrayStore';
 import type { KobCharacter, KobRelationship } from '@/types/kob';
 
@@ -21,9 +22,6 @@ const QUESTION_KINDS: ReadonlyArray<{ value: KobRelationship['kind']; label: str
   { value: 'stranger', label: "Someone you don't know" },
 ];
 
-/** The option value that means "not one of the party's characters". */
-const FREE_TEXT_VALUE = 'free-text';
-
 function questionsFor(kind: KobRelationship['kind']): KobRelationshipQuestion[] {
   return kob.relationshipQuestions[kind];
 }
@@ -33,14 +31,9 @@ function questionForRoll(list: KobRelationshipQuestion[], roll: number): string 
   return (list.find((entry) => entry.roll === roll) ?? list[roll - 1])?.question;
 }
 
-function describeMate(mate: PartyMate): string {
-  const played = mate.playerName ?? mate.ownerName;
-  return played ? `${mate.name} — ${played}` : mate.name;
-}
-
 export function RelationshipsEditor({ character, onChange }: Readonly<RelationshipsEditorProps>) {
   const relationships = character.relationships;
-  const { mates } = useCharacterPartyMates(character.id);
+  const { connections, campaignId, loading } = useCampaignConnections(character.id);
 
   const update = (id: string, patch: Partial<KobRelationship>) => {
     onChange({
@@ -65,17 +58,6 @@ export function RelationshipsEditor({ character, onChange }: Readonly<Relationsh
 
     const question = questionForRoll(list, outcome.total);
     if (question) update(entry.id, { question });
-  };
-
-  /** Picking a party-mate fills the name and keeps the pointer; going back to free text drops it. */
-  const selectMate = (entry: KobRelationship, value: string) => {
-    if (value === FREE_TEXT_VALUE) {
-      update(entry.id, { withCharacterId: null });
-      return;
-    }
-
-    const mate = mates.find((candidate) => candidate.id === value);
-    if (mate) update(entry.id, { withCharacterId: mate.id, who: mate.name });
   };
 
   const add = () => {
@@ -114,51 +96,21 @@ export function RelationshipsEditor({ character, onChange }: Readonly<Relationsh
       ) : null}
 
       {relationships.map((entry) => {
-        const linkedMate = entry.withCharacterId
-          ? mates.find((mate) => mate.id === entry.withCharacterId)
-          : undefined;
-
         return (
           <div key={entry.id} className="space-y-3 rounded-lg border p-3">
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label htmlFor={`rel-who-${entry.id}`}>Who</Label>
-                {mates.length > 0 ? (
-                  <Select
-                    value={entry.withCharacterId ?? FREE_TEXT_VALUE}
-                    onValueChange={(value) => selectMate(entry, value)}
-                  >
-                    <SelectTrigger id={`rel-mate-${entry.id}`} className="h-11 w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={FREE_TEXT_VALUE}>Someone else — type a name</SelectItem>
-                      {mates.map((mate) => (
-                        <SelectItem key={mate.id} value={mate.id}>
-                          {describeMate(mate)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : null}
-                {/* The linked character keeps its own name; only a free-text relationship is typed.
-                    A pointer at a character that has since left the party still shows the name that
-                    was recorded, rather than blanking the field. */}
-                {entry.withCharacterId ? (
-                  <p className="text-xs text-muted-foreground">
-                    {linkedMate
-                      ? `Linked to ${linkedMate.name}${linkedMate.summary ? ` · ${linkedMate.summary}` : ''}`
-                      : `Linked to ${entry.who || 'a character'}, who is no longer at this table.`}
-                  </p>
-                ) : (
-                  <Input
-                    id={`rel-who-${entry.id}`}
-                    value={entry.who}
-                    onChange={(event) => update(entry.id, { who: event.target.value })}
-                    placeholder="Oswald"
-                  />
-                )}
-              </div>
+              <PartyMateField
+                id={`rel-who-${entry.id}`}
+                label="Who"
+                connections={connections}
+                campaignId={campaignId}
+                loading={loading}
+                who={entry.who}
+                withCharacterId={entry.withCharacterId ?? null}
+                onPick={(patch) => update(entry.id, patch)}
+                onTypeName={(who) => update(entry.id, { who })}
+                placeholder="Oswald"
+              />
               <div className="space-y-1.5">
                 <Label htmlFor={`rel-connection-${entry.id}`}>How you know them</Label>
                 <Input

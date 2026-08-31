@@ -11,9 +11,10 @@ import {
   regenerateCampaignCode,
   removeCampaignMember,
   renameCampaign,
+  setMemberAutoClaim,
   updateMemberPermissions,
 } from '@/lib/api';
-import type { CampaignMember, CampaignPermissions, Invite } from '@/lib/api';
+import type { AutoClaimMode, CampaignMember, CampaignPermissions, Invite } from '@/lib/api';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +31,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { CampaignDefaultsCard } from '@/components/schedule/CampaignDefaultsCard';
 import { CampaignSourcesCard } from '@/components/schedule/CampaignSourcesCard';
 import { InviteSettingsDialog } from '@/components/schedule/InviteSettingsDialog';
+import { MemberAutoClaimSelect } from '@/components/schedule/MemberAutoClaimSelect';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
@@ -183,6 +185,17 @@ export function MembersPage() {
     }
   };
 
+  const changeAutoClaim = async (member: CampaignMember, mode: AutoClaimMode | null) => {
+    try {
+      const updated = await setMemberAutoClaim(campaignId, member.id, mode);
+      setMembers((current) =>
+        current.map((m) => (m.id === member.id ? { ...m, auto_claim_override: updated.auto_claim_override } : m)),
+      );
+    } catch (e) {
+      toast.error('Could not change seat claiming', { description: e instanceof Error ? e.message : undefined });
+    }
+  };
+
   const togglePermission = async (member: CampaignMember, flag: keyof CampaignPermissions, value: boolean) => {
     const permissions = { ...parsePermissions(member), [flag]: value };
     try {
@@ -228,6 +241,17 @@ export function MembersPage() {
                   </Button>
                 ) : null}
                 {isOwner ? (
+                  <div className="flex min-h-11 flex-wrap items-center justify-between gap-3">
+                    <span className="text-sm">Claim a seat on making one</span>
+                    <MemberAutoClaimSelect
+                      campaign={campaign}
+                      member={member}
+                      memberName={memberName(member)}
+                      onChange={(mode) => changeAutoClaim(member, mode)}
+                    />
+                  </div>
+                ) : null}
+                {isOwner ? (
                   <div className="space-y-2">
                     {CAMPAIGN_PERMISSION_FLAGS.map((flag) => (
                       <div key={flag.key} className="flex min-h-9 items-center justify-between gap-3">
@@ -253,6 +277,7 @@ export function MembersPage() {
               <TableRow>
                 <TableHead>Member</TableHead>
                 <TableHead>Seat</TableHead>
+                {isOwner ? <TableHead>Claims own seats</TableHead> : null}
                 {isOwner ? CAMPAIGN_PERMISSION_FLAGS.map((flag) => <TableHead key={flag.key}>{flag.label}</TableHead>) : null}
                 {isOwner ? <TableHead className="sr-only">Remove</TableHead> : null}
               </TableRow>
@@ -275,6 +300,16 @@ export function MembersPage() {
                     <TableCell className="whitespace-nowrap text-muted-foreground">
                       {member.player_name ?? 'No seat'}
                     </TableCell>
+                    {isOwner ? (
+                      <TableCell>
+                        <MemberAutoClaimSelect
+                          campaign={campaign}
+                          member={member}
+                          memberName={memberName(member)}
+                          onChange={(mode) => changeAutoClaim(member, mode)}
+                        />
+                      </TableCell>
+                    ) : null}
                     {isOwner
                       ? CAMPAIGN_PERMISSION_FLAGS.map((flag) => (
                           <TableCell key={flag.key}>

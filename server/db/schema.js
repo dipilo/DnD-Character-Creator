@@ -25,6 +25,7 @@ const LEGACY_COLUMNS = {
     ['default_member_permissions', 'TEXT'],
     ['default_invite_permissions', 'TEXT'],
     ['requests_character_edit', 'INTEGER DEFAULT 0'],
+    ['default_auto_claim_seats', 'TEXT'],
   ],
   players: [
     ['discord', 'TEXT'],
@@ -63,6 +64,8 @@ const LEGACY_COLUMNS = {
     ['permissions', 'TEXT'],
     ['created_at', "TEXT DEFAULT (datetime('now'))"],
     ['character_edit_consent', 'INTEGER DEFAULT 0'],
+    ['auto_claim_override', 'TEXT'],
+    ['auto_claim_preference', 'TEXT'],
   ],
   invites: [
     ['token', 'TEXT'],
@@ -85,6 +88,8 @@ const LEGACY_COLUMNS = {
   groups: [
     ['name', 'TEXT'],
     ['notes', 'TEXT'],
+    ['color', 'TEXT'],
+    ['target_size', 'INTEGER'],
     ['created_at', "TEXT DEFAULT (datetime('now'))"],
     ['sort_index', 'INTEGER DEFAULT 0'],
     ['campaign_id', 'INTEGER'],
@@ -181,6 +186,7 @@ async function ensureSchema(db) {
     default_member_permissions TEXT,
     default_invite_permissions TEXT,
     requests_character_edit INTEGER DEFAULT 0,
+    default_auto_claim_seats TEXT,
     FOREIGN KEY(owner_user_id) REFERENCES users(id)
   )`);
 
@@ -270,11 +276,19 @@ async function ensureSchema(db) {
     permissions TEXT,
     created_at TEXT DEFAULT (datetime('now')),
     character_edit_consent INTEGER DEFAULT 0,
+    auto_claim_override TEXT,
+    auto_claim_preference TEXT,
     FOREIGN KEY(campaign_id) REFERENCES campaigns(id),
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(player_id) REFERENCES players(id)
   )`);
 
+  // `auto_claim_override` is the owner's word on whether a seat this member creates becomes theirs
+  // and `auto_claim_preference` is the member's own; NULL on either is "no opinion" and falls
+  // through to the campaign's `default_auto_claim_seats`, then to the built-in default
+  // (`server/lib/seatClaim.js`). Two columns because the owner may not write a member's preference
+  // and the member may not clear the owner's override.
+  //
   // `permissions` is the blob granted to whoever joins on this link, overriding the campaign's own
   // default for arrivals. NULL means "use the campaign's default", not "grant nothing" — the two
   // have to stay distinguishable or an invite could never opt out of a default.
@@ -303,10 +317,14 @@ async function ensureSchema(db) {
     FOREIGN KEY(user_id) REFERENCES users(id)
   )`);
 
+  // `color` is a palette key the client resolves (`GROUP_COLORS` in `lib/groupColors.ts`), stored
+  // opaquely for the same reason `system_id` is: the palette is the client's to define.
   await db.run(`CREATE TABLE IF NOT EXISTS groups (
     id INTEGER PRIMARY KEY,
     name TEXT,
     notes TEXT,
+    color TEXT,
+    target_size INTEGER,
     created_at TEXT DEFAULT (datetime('now')),
     sort_index INTEGER DEFAULT 0,
     campaign_id INTEGER

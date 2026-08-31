@@ -3,7 +3,9 @@ const db = require('../db');
 const { buildRangesFromText, mergeInsertAvailability, normalizePreviewBlocks } = require('../lib/availability');
 const { resolveNamesToPlayerIds } = require('../lib/groups');
 const { publicPlayer } = require('../lib/players');
-const { releaseSeat } = require('../lib/membership');
+const { releaseSeat, upsertMembership } = require('../lib/membership');
+const { resolveAutoClaimMode, shouldAutoClaim } = require('../lib/seatClaim');
+const { invalidateCache } = require('../lib/cache');
 const { canUserModifyPlayer, cleanupOrphanedUser, getCampaignMembership, isCampaignOwner, memberHasPermission, requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
@@ -93,13 +95,21 @@ router.post('/api/players', requireAuth, async (req, res) => {
         await mergeInsertAvailability(created.id, block.start_iso, block.end_iso, 'sheet');
       }
     }
-  // Don't auto-claim players when creating them - leave them unclaimed for others to claim
-  // Only add campaign_members link if explicitly claiming (not just creating)
-  
-  // include claimed metadata (should be unclaimed since we didn't create a campaign_members link)
+  // Whether making a seat also takes it is the table's setting, not a rule (`lib/seatClaim.js`).
+  // A player who is not the owner takes the first seat they make by default, which is what almost
+  // everyone was doing by hand immediately afterwards.
+  const campaign = await db.get('SELECT * FROM campaigns WHERE id = ?', campaignId);
+  const mode = resolveAutoClaimMode(campaign, mem);
+  if (shouldAutoClaim(mode, mem.player_id)) {
+    await upsertMembership(db, { campaignId, userId: user.id, playerId: created.id, role: mem.role });
+    await db.run('UPDATE players SET unclaimed_at = NULL WHERE id = ?', created.id);
+    invalidateCache(`unclaimed_players_${campaignId}`);
+  }
+
+  const seated = await db.get('SELECT * FROM players WHERE id = ?', created.id);
   const claimedRow = await db.get('SELECT user_id FROM campaign_members WHERE player_id = ? AND campaign_id = ? AND user_id IS NOT NULL LIMIT 1', created.id, campaignId);
-  const playerOut = { ...created, claimed_user_id: claimedRow ? claimedRow.user_id : null, is_claimed: created.unclaimed_at ? false : (Boolean(claimedRow?.user_id) || Boolean(created.password_hash) || Boolean(created.discord_id)) };
-  res.json({ ok: true, player: publicPlayer(playerOut) });
+  const playerOut = { ...seated, claimed_user_id: claimedRow ? claimedRow.user_id : null, is_claimed: seated.unclaimed_at ? false : (Boolean(claimedRow?.user_id) || Boolean(seated.password_hash) || Boolean(seated.discord_id)) };
+  res.json({ ok: true, player: publicPlayer(playerOut), auto_claimed: Boolean(claimedRow?.user_id) && claimedRow.user_id === user.id });
   } catch (e) {
     console.error('POST /api/players error', e);
     res.status(500).json({ error: e.message });
@@ -208,6 +218,7 @@ router.delete('/api/players/:id', requireAuth, async (req, res) => {
         });
         // cleanup any now-orphaned users (no password_hash and no remaining campaign_members)
         for (const uid of linkedUsers) await cleanupOrphanedUser(uid);
+        invalidateCache(`unclaimed_players_${existing.campaign_id}`);
     res.json({ ok: true });
   } catch (e) {
     console.error('DELETE /api/players/:id', e);

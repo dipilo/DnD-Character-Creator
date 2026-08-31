@@ -8,8 +8,12 @@ import { AggregateCalendar } from '@/components/schedule/AggregateCalendar';
 import { AvailabilityCalendar } from '@/components/schedule/AvailabilityCalendar';
 import { ScheduleSettings } from '@/components/schedule/ScheduleSettings';
 import { useCalendarLayout } from '@/components/schedule/useCalendarLayout';
+import { useCampaignGroups } from '@/hooks/useCampaignGroups';
 import { isCampaignOwner, membershipPlayerId, useCampaignStore } from '@/store/campaignStore';
 import { playerLabel, useCampaignId, useRoster } from '@/pages/campaign/useCampaignData';
+
+/** Radix rejects an empty item value, so "no group filter" needs a value of its own. */
+const ALL_GROUPS = 'all';
 
 export function SchedulePage() {
   const campaignId = useCampaignId();
@@ -25,12 +29,16 @@ export function SchedulePage() {
   const selectedId = Number.isFinite(requestedId) && requestedId > 0 ? requestedId : ownSeatId;
   const selected = useMemo(() => players.find((p) => p.id === selectedId) ?? null, [players, selectedId]);
 
+  // The Groups tab links here with ?group=…, so a table can be read as a table.
+  const { groups, selected: selectedGroup, memberIds: groupMemberIds, selectGroup } = useCampaignGroups(campaignId);
+
   const [filterToSelected, setFilterToSelected] = useState(false);
-  // Memoised because a fresh array every render would re-key the aggregate calendar's loader.
-  const aggregateFilter = useMemo(
-    () => (filterToSelected && selected ? [selected.id] : null),
-    [filterToSelected, selected],
-  );
+  // Memoised because a fresh array every render would re-key the aggregate calendar's loader. The
+  // seat filter is the narrower of the two, so it wins where both are on.
+  const aggregateFilter = useMemo(() => {
+    if (filterToSelected && selected) return [selected.id];
+    return groupMemberIds;
+  }, [filterToSelected, selected, groupMemberIds]);
 
   // Owners edit any seat; everyone else edits only their own.
   const canEditSelected = Boolean(selected) && (isOwner || selected?.id === ownSeatId);
@@ -72,6 +80,27 @@ export function SchedulePage() {
             </SelectContent>
           </Select>
         </div>
+        {groups.length > 0 ? (
+          <div className="w-full min-w-0 space-y-1.5 sm:w-auto">
+            <span className="text-sm font-medium short:hidden">Group</span>
+            <Select
+              value={selectedGroup ? String(selectedGroup.id) : ALL_GROUPS}
+              onValueChange={(value) => selectGroup(value === ALL_GROUPS ? null : Number(value))}
+            >
+              <SelectTrigger className="w-full sm:w-56">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL_GROUPS}>Everyone in the campaign</SelectItem>
+                {groups.map((group) => (
+                  <SelectItem key={group.id} value={String(group.id)}>
+                    {group.name || 'Unnamed group'}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        ) : null}
         <ScheduleSettings
           filterAggregate={filterToSelected}
           onFilterAggregateChange={setFilterToSelected}
@@ -109,7 +138,9 @@ export function SchedulePage() {
             <TabsTrigger value="own" className="flex-1 sm:flex-none">
               <span className="truncate">{playerLabel(selected)}</span>
             </TabsTrigger>
-            <TabsTrigger value="everyone" className="flex-1 sm:flex-none">Everyone</TabsTrigger>
+            <TabsTrigger value="everyone" className="flex-1 sm:flex-none">
+              <span className="truncate">{selectedGroup ? selectedGroup.name || 'This group' : 'Everyone'}</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="own" className="space-y-2">

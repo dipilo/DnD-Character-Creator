@@ -3,15 +3,23 @@ const db = require('../db');
 
 const router = express.Router();
 
-// Health check endpoint for monitoring
-router.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
+// Health check endpoint for monitoring.
+//
+// Mounted at `/api/health` as well because that is the only prefix the client can reach: Vercel
+// rewrites `/api/*` and `/auth/*` to this host and nothing else, so a browser asking for `/health`
+// gets the SPA's index.html back. The keep-alive ping uses it to hold a free-tier host awake
+// (`.github/workflows/keepalive.yml`, `store/backendKeepAlive.ts`), so it touches no database.
+const health = (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json({
+    status: 'healthy',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development'
   });
-});
+};
+router.get('/health', health);
+router.get('/api/health', health);
 
   // Lightweight DB diagnostics (optional token-protected)
   router.get('/diag/db', async (req, res) => {

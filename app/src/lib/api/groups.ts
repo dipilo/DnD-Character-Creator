@@ -6,20 +6,31 @@ export async function listGroups(campaignId: number): Promise<Group[]> {
   return await api.get<Group[]>(`/api/groups?campaign_id=${encodeURIComponent(campaignId)}`);
 }
 
-export async function createGroup(campaignId: number, name: string, memberIds: number[] = []): Promise<Group> {
+export async function createGroup(
+  campaignId: number,
+  name: string,
+  memberIds: number[] = [],
+  color?: string,
+): Promise<Group> {
   const body = await api.post<{ group: Group }>('/api/groups', {
     campaign_id: campaignId,
     name,
     member_ids: memberIds,
+    color: color ?? null,
   });
   return body.group;
 }
 
-/** `member_ids` replaces the whole membership when present; omit it to rename only. */
-export async function updateGroup(
-  groupId: number,
-  changes: { name?: string; member_ids?: number[] },
-): Promise<Group> {
+/** `member_ids` replaces the whole membership when present; omit it to change the rest only. */
+export interface GroupChanges {
+  name?: string;
+  notes?: string;
+  color?: string | null;
+  target_size?: number | null;
+  member_ids?: number[];
+}
+
+export async function updateGroup(groupId: number, changes: GroupChanges): Promise<Group> {
   const body = await api.put<{ group: Group }>(`/api/groups/${groupId}`, changes);
   return body.group;
 }

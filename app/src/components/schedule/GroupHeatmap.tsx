@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { fetchAggregate } from '@/lib/api';
 import type { AggregateInterval } from '@/lib/api';
+import { bestMeetingWindows, describeMeetingWindow } from '@/lib/meetingWindows';
 
 interface GroupHeatmapProps {
   campaignId: number;
   memberIds: number[];
   /** How many days forward from today the grid covers. */
   days?: number;
+  /** Name the fullest stretches as dates and times under the grid. */
+  showWindows?: boolean;
 }
 
 const HOURS_PER_DAY = 24;
@@ -40,7 +43,7 @@ function countForCell(intervals: AggregateInterval[], memberIds: number[], cellS
  * A thumbnail of when a group can meet: days across, hours down, darker where more of the group
  * is free. Deliberately small and unlabelled — it is a glance beside a group card, not a view.
  */
-export function GroupHeatmap({ campaignId, memberIds, days = 7 }: Readonly<GroupHeatmapProps>) {
+export function GroupHeatmap({ campaignId, memberIds, days = 7, showWindows = false }: Readonly<GroupHeatmapProps>) {
   // `memberKey` is the identity of the request: a fresh array holding the same ids must not
   // refetch, and a result tagged with an older key is stale rather than something to clear from
   // the effect body (CLAUDE.md's rule against setState in an effect).
@@ -88,8 +91,12 @@ export function GroupHeatmap({ campaignId, memberIds, days = 7 }: Readonly<Group
   const maxCount = Math.max(1, ...cells.map((cell) => cell.count));
   const cellSize = 10;
   const gap = 2;
+  // The grid answers "roughly when"; a group card also has to be able to name a date, which is
+  // what `bestMeetingWindows` reads out of the same intervals.
+  const intervals = loaded?.key === memberKey ? loaded.intervals : [];
+  const windows = showWindows ? bestMeetingWindows(intervals, memberIds) : [];
 
-  return (
+  const grid = (
     <svg
       viewBox={`0 0 ${(cellSize + gap) * days} ${(cellSize + gap) * HOURS_PER_DAY}`}
       className="h-36 w-full text-primary"
@@ -110,5 +117,27 @@ export function GroupHeatmap({ campaignId, memberIds, days = 7 }: Readonly<Group
         />
       ))}
     </svg>
+  );
+
+  if (!showWindows) return grid;
+
+  return (
+    <div className="space-y-2">
+      {grid}
+      {windows.length === 0 ? (
+        <p className="text-xs text-muted-foreground">No stretch of two hours or more this week.</p>
+      ) : (
+        <ul className="space-y-0.5 text-xs text-muted-foreground">
+          {windows.map((window) => (
+            <li key={window.start.toISOString()}>
+              {describeMeetingWindow(window)}
+              <span className="ml-1 opacity-70">
+                ({window.count} of {memberIds.length})
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }

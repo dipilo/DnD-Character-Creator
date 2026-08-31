@@ -210,6 +210,7 @@
           "allowed_source_ids": null,
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
+          "default_auto_claim_seats": null,
           "default_invite_permissions": null,
           "default_member_permissions": null,
           "id": 1,
@@ -241,6 +242,7 @@
             "allowed_source_ids": null,
             "campaign_code": "<volatile>",
             "created_at": "<volatile>",
+            "default_auto_claim_seats": null,
             "default_invite_permissions": null,
             "default_member_permissions": null,
             "id": 1,
@@ -271,6 +273,7 @@
           "allowed_source_ids": null,
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
+          "default_auto_claim_seats": null,
           "default_invite_permissions": null,
           "default_member_permissions": null,
           "id": 1,
@@ -292,6 +295,7 @@
           "allowed_source_ids": null,
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
+          "default_auto_claim_seats": null,
           "default_invite_permissions": null,
           "default_member_permissions": null,
           "id": 1,
@@ -327,6 +331,8 @@
       "body": {
         "members": [
           {
+            "auto_claim_override": null,
+            "auto_claim_preference": null,
             "campaign_id": 1,
             "character_edit_consent": 0,
             "created_at": "<volatile>",
@@ -362,6 +368,7 @@
       "request": "POST /api/players",
       "status": 200,
       "body": {
+        "auto_claimed": false,
         "ok": true,
         "player": {
           "age": "",
@@ -395,6 +402,7 @@
       "request": "POST /api/players",
       "status": 200,
       "body": {
+        "auto_claimed": false,
         "ok": true,
         "player": {
           "age": "",
@@ -720,6 +728,7 @@
       "body": {
         "group": {
           "campaign_id": 1,
+          "color": null,
           "created_at": "<volatile>",
           "id": 1,
           "members": [
@@ -772,7 +781,8 @@
           ],
           "name": "Table A",
           "notes": null,
-          "sort_index": 0
+          "sort_index": 0,
+          "target_size": null
         },
         "ok": true
       }
@@ -782,7 +792,7 @@
       "request": "POST /api/groups",
       "status": 403,
       "body": {
-        "error": "owner_required"
+        "error": "not_a_member"
       }
     },
     {
@@ -792,6 +802,7 @@
       "body": {
         "group": {
           "campaign_id": 1,
+          "color": null,
           "created_at": "<volatile>",
           "id": 1,
           "members": [
@@ -821,7 +832,8 @@
           ],
           "name": "Table A prime",
           "notes": null,
-          "sort_index": 0
+          "sort_index": 0,
+          "target_size": null
         },
         "ok": true
       }
@@ -833,6 +845,7 @@
       "body": {
         "group": {
           "campaign_id": 1,
+          "color": null,
           "created_at": "<volatile>",
           "id": 1,
           "members": [
@@ -885,7 +898,8 @@
           ],
           "name": "Table A prime",
           "notes": null,
-          "sort_index": 0
+          "sort_index": 0,
+          "target_size": null
         },
         "ok": true
       }
@@ -957,6 +971,7 @@
         "groups": [
           {
             "campaign_id": 1,
+            "color": null,
             "created_at": "<volatile>",
             "id": 1,
             "members": [
@@ -986,10 +1001,12 @@
             ],
             "name": "Table A prime",
             "notes": null,
-            "sort_index": 0
+            "sort_index": 0,
+            "target_size": null
           },
           {
             "campaign_id": 1,
+            "color": null,
             "created_at": "<volatile>",
             "id": 2,
             "members": [
@@ -1019,7 +1036,8 @@
             ],
             "name": "Suggested 1",
             "notes": null,
-            "sort_index": 1
+            "sort_index": 1,
+            "target_size": null
           }
         ],
         "ok": true
@@ -1032,6 +1050,7 @@
       "body": [
         {
           "campaign_id": 1,
+          "color": null,
           "created_at": "<volatile>",
           "id": 1,
           "members": [
@@ -1061,10 +1080,12 @@
           ],
           "name": "Table A prime",
           "notes": null,
-          "sort_index": 0
+          "sort_index": 0,
+          "target_size": null
         },
         {
           "campaign_id": 1,
+          "color": null,
           "created_at": "<volatile>",
           "id": 2,
           "members": [
@@ -1094,7 +1115,8 @@
           ],
           "name": "Suggested 1",
           "notes": null,
-          "sort_index": 1
+          "sort_index": 1,
+          "target_size": null
         }
       ]
     },
@@ -1286,6 +1308,8 @@
       "body": {
         "members": [
           {
+            "auto_claim_override": null,
+            "auto_claim_preference": null,
             "campaign_id": 1,
             "character_edit_consent": 0,
             "created_at": "<volatile>",
@@ -1299,6 +1323,8 @@
             "user_name": "alice"
           },
           {
+            "auto_claim_override": null,
+            "auto_claim_preference": null,
             "campaign_id": 1,
             "character_edit_consent": 0,
             "created_at": "<volatile>",
@@ -1312,6 +1338,8 @@
             "user_name": "bob"
           },
           {
+            "auto_claim_override": null,
+            "auto_claim_preference": null,
             "campaign_id": 1,
             "character_edit_consent": 0,
             "created_at": "<volatile>",
@@ -1420,6 +1448,8 @@
       "status": 200,
       "body": {
         "member": {
+          "auto_claim_override": null,
+          "auto_claim_preference": null,
           "campaign_id": 1,
           "character_edit_consent": 0,
           "created_at": "<volatile>",
@@ -1446,6 +1476,8 @@
       "status": 200,
       "body": {
         "member": {
+          "auto_claim_override": null,
+          "auto_claim_preference": null,
           "campaign_id": 1,
           "character_edit_consent": 0,
           "created_at": "<volatile>",
@@ -1767,6 +1799,7 @@
       "request": "POST /api/players",
       "status": 200,
       "body": {
+        "auto_claimed": false,
         "ok": true,
         "player": {
           "age": "",
@@ -2582,6 +2615,7 @@
           "allowed_source_ids": "[\"phb-2024\",\"basic-rules-2024\"]",
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
+          "default_auto_claim_seats": null,
           "default_invite_permissions": null,
           "default_member_permissions": null,
           "id": 1,
@@ -2635,6 +2669,7 @@
           "allowed_source_ids": "[\"phb-2024\",\"basic-rules-2024\"]",
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
+          "default_auto_claim_seats": null,
           "default_invite_permissions": null,
           "default_member_permissions": null,
           "id": 1,
@@ -2664,6 +2699,7 @@
           "allowed_source_ids": "[\"phb-2024\",\"basic-rules-2024\"]",
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
+          "default_auto_claim_seats": null,
           "default_invite_permissions": null,
           "default_member_permissions": "{\"can_edit_self\":true,\"players_self_delete\":true}",
           "id": 1,
@@ -2693,6 +2729,7 @@
           "allowed_source_ids": "[\"phb-2024\",\"basic-rules-2024\"]",
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
+          "default_auto_claim_seats": null,
           "default_invite_permissions": "{\"can_manage_groups\":true}",
           "default_member_permissions": "{\"can_edit_self\":true,\"players_self_delete\":true}",
           "id": 1,
@@ -2723,6 +2760,7 @@
             "allowed_source_ids": "[\"phb-2024\",\"basic-rules-2024\"]",
             "campaign_code": "<volatile>",
             "created_at": "<volatile>",
+            "default_auto_claim_seats": null,
             "default_invite_permissions": "{\"can_manage_groups\":true}",
             "default_member_permissions": "{\"can_edit_self\":true,\"players_self_delete\":true}",
             "id": 1,
@@ -2745,6 +2783,7 @@
           "allowed_source_ids": null,
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
+          "default_auto_claim_seats": null,
           "default_invite_permissions": null,
           "default_member_permissions": null,
           "id": 2,
@@ -2767,6 +2806,7 @@
           "allowed_source_ids": null,
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
+          "default_auto_claim_seats": null,
           "default_invite_permissions": "{\"can_manage_groups\":true}",
           "default_member_permissions": "{\"can_edit_self\":true}",
           "id": 2,
@@ -2848,6 +2888,8 @@
       "body": {
         "members": [
           {
+            "auto_claim_override": null,
+            "auto_claim_preference": null,
             "campaign_id": 2,
             "character_edit_consent": 0,
             "created_at": "<volatile>",
@@ -2861,6 +2903,8 @@
             "user_name": "alice"
           },
           {
+            "auto_claim_override": null,
+            "auto_claim_preference": null,
             "campaign_id": 2,
             "character_edit_consent": 0,
             "created_at": "<volatile>",
@@ -2874,6 +2918,8 @@
             "user_name": "bob"
           },
           {
+            "auto_claim_override": null,
+            "auto_claim_preference": null,
             "campaign_id": 2,
             "character_edit_consent": 0,
             "created_at": "<volatile>",
@@ -2899,6 +2945,7 @@
           "allowed_source_ids": null,
           "campaign_code": "<volatile>",
           "created_at": "<volatile>",
+          "default_auto_claim_seats": null,
           "default_invite_permissions": "{\"can_manage_groups\":true}",
           "default_member_permissions": "{\"can_edit_self\":true}",
           "id": 2,
@@ -2918,6 +2965,8 @@
       "body": {
         "members": [
           {
+            "auto_claim_override": null,
+            "auto_claim_preference": null,
             "campaign_id": 2,
             "character_edit_consent": 0,
             "created_at": "<volatile>",
@@ -2931,6 +2980,8 @@
             "user_name": "alice"
           },
           {
+            "auto_claim_override": null,
+            "auto_claim_preference": null,
             "campaign_id": 2,
             "character_edit_consent": 0,
             "created_at": "<volatile>",
@@ -2944,6 +2995,8 @@
             "user_name": "bob"
           },
           {
+            "auto_claim_override": null,
+            "auto_claim_preference": null,
             "campaign_id": 2,
             "character_edit_consent": 0,
             "created_at": "<volatile>",
@@ -2957,6 +3010,8 @@
             "user_name": "Ellis"
           },
           {
+            "auto_claim_override": null,
+            "auto_claim_preference": null,
             "campaign_id": 2,
             "character_edit_consent": 0,
             "created_at": "<volatile>",
@@ -3012,6 +3067,8 @@
       "body": {
         "members": [
           {
+            "auto_claim_override": null,
+            "auto_claim_preference": null,
             "campaign_id": 2,
             "character_edit_consent": 0,
             "created_at": "<volatile>",
@@ -3025,6 +3082,8 @@
             "user_name": "alice"
           },
           {
+            "auto_claim_override": null,
+            "auto_claim_preference": null,
             "campaign_id": 2,
             "character_edit_consent": 0,
             "created_at": "<volatile>",
@@ -3038,6 +3097,8 @@
             "user_name": "bob"
           },
           {
+            "auto_claim_override": null,
+            "auto_claim_preference": null,
             "campaign_id": 2,
             "character_edit_consent": 0,
             "created_at": "<volatile>",

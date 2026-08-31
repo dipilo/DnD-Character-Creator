@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const db = require('../db');
-const { getCachedQueryAsync, setCache } = require('../lib/cache');
+const { getCachedQueryAsync, invalidateCache, setCache } = require('../lib/cache');
 const { resolveCharacterAccess } = require('../lib/characterAccess');
 const { campaignCharacterSummary } = require('../lib/characters');
 const { publicPlayer } = require('../lib/players');
@@ -9,6 +9,7 @@ const { createSession, publicUser } = require('../lib/sessions');
 const { genToken } = require('../lib/tokens');
 const { readMembership, releaseSeat, upsertMembership } = require('../lib/membership');
 const { joinPermissionsBlob, normaliseDefaultPermissions, normalisePermissions } = require('../lib/permissions');
+const { normaliseAutoClaimMode, resolveAutoClaimMode } = require('../lib/seatClaim');
 const { cleanupOrphanedUser, isCampaignOwner, memberHasPermission, optionalAuth, requireAuth, requireCampaignAccess } = require('../middleware/auth');
 
 const router = express.Router();
@@ -151,6 +152,9 @@ const CAMPAIGN_UPDATABLE_COLUMNS = [
   // The ask, not the answer: it puts the question in front of anyone joining and changes nothing
   // on its own. Each member's reply lives on their own row, where the owner cannot write it.
   ['requests_character_edit', (value) => ({ value: value ? 1 : 0 })],
+  // The table's default for "does a seat I make become mine?". A member's own preference and the
+  // owner's per-member override both sit above it (`server/lib/seatClaim.js`).
+  ['default_auto_claim_seats', normaliseAutoClaimMode],
 ];
 
 // Update a campaign (owner only): rename it, or set the sources its table plays with. One table of
@@ -362,6 +366,44 @@ router.put('/api/campaigns/:campaignId/character-edit-consent', requireCampaignA
   }
 });
 
+/**
+ * A member's own answer to "does a seat I make become mine?", written by its holder alone. The
+ * owner's per-member override lives beside it and wins; the campaign default sits under both.
+ */
+router.put('/api/campaigns/:campaignId/auto-claim', requireCampaignAccess(), async (req, res) => {
+  try {
+    const mode = normaliseAutoClaimMode(req.body?.mode ?? null);
+    if (mode.error) return res.status(400).json({ error: mode.error });
+    await db.run(
+      'UPDATE campaign_members SET auto_claim_preference = ? WHERE campaign_id = ? AND user_id = ?',
+      mode.value, req.campaign.id, req.user.id,
+    );
+    const membership = await readMembership(db, req.campaign.id, req.user.id);
+    res.json({ ok: true, membership, effective_mode: resolveAutoClaimMode(req.campaign, membership) });
+  } catch (e) {
+    console.error('PUT /api/campaigns/:campaignId/auto-claim', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+/** The owner's per-member override. NULL hands the decision back to the member's own preference. */
+router.patch('/api/campaigns/:campaignId/members/:memberId/auto-claim', requireCampaignAccess('owner'), async (req, res) => {
+  try {
+    const memberId = Number.parseInt(req.params.memberId, 10);
+    if (!memberId) return res.status(400).json({ error: 'invalid_member_id' });
+    const member = await db.get('SELECT * FROM campaign_members WHERE id = ? AND campaign_id = ?', memberId, req.campaign.id);
+    if (!member) return res.status(404).json({ error: 'member_not_found' });
+    const mode = normaliseAutoClaimMode(req.body?.mode ?? null);
+    if (mode.error) return res.status(400).json({ error: mode.error });
+    await db.run('UPDATE campaign_members SET auto_claim_override = ? WHERE id = ?', mode.value, memberId);
+    const updated = await db.get('SELECT * FROM campaign_members WHERE id = ?', memberId);
+    res.json({ ok: true, member: updated, effective_mode: resolveAutoClaimMode(req.campaign, updated) });
+  } catch (e) {
+    console.error('PATCH /api/campaigns/:campaignId/members/:memberId/auto-claim', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // Add current user as a member of a campaign (join campaign)
 router.post('/api/campaigns/:campaignId/members', requireAuth, async (req, res) => {
   try {
@@ -455,6 +497,11 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
     if (user) {
       // Use database transaction for consistency and better performance
       const transaction = async () => await db.transaction(async (trx) => {
+        // Someone already at this table keeps whatever the owner granted them: passing a blob here
+        // *replaced* it, so a player who re-claimed their seat silently lost `can_create_players`
+        // and every other grant. The floor below is for an arrival who has no row yet.
+        const existing = await readMembership(trx, campaignId, user.id);
+        const grant = existing ? null : claimPermissions;
         if (playerId) {
           // Claiming existing player
           const p = await trx.get('SELECT * FROM players WHERE id = ? AND campaign_id = ?', playerId, campaignId);
@@ -468,9 +515,12 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
           
           // Link user to campaign_members with player_id. A member who joined first already has a
           // row: the seat and the grant land on it rather than beside it.
-          await upsertMembership(trx, { campaignId, userId: user.id, playerId, permissions: claimPermissions });
+          await upsertMembership(trx, { campaignId, userId: user.id, playerId, permissions: grant });
           
-          // Update Discord ID if available
+          // A seat released earlier carries `unclaimed_at`, and `is_claimed` is read from it — so
+          // leaving it set made a re-claimed seat report as unclaimed forever, which is what
+          // "claiming a seat doesn't work" looked like from the Roster.
+          await trx.run('UPDATE players SET unclaimed_at = NULL WHERE id = ?', playerId);
           if (user.discord_id) {
             await trx.run('UPDATE players SET discord_id = ? WHERE id = ?', user.discord_id, playerId);
           }
@@ -492,7 +542,7 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
           
           // Link user to new player
           await upsertMembership(trx, {
-            campaignId, userId: user.id, playerId: info.lastInsertRowid, permissions: claimPermissions,
+            campaignId, userId: user.id, playerId: info.lastInsertRowid, permissions: grant,
           });
           
           // Return new player object
@@ -507,6 +557,7 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
       
       try {
         const playerOut = await transaction();
+        invalidateCache(`unclaimed_players_${campaignId}`);
         return res.json({ ok: true, player: publicPlayer(playerOut), user: publicUser(user) });
       } catch (error) {
         return res.status(400).json({ error: error.message });
@@ -533,6 +584,7 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
   const playerOut = { ...created, claimed_user_id: claimedRow ? claimedRow.user_id : null, is_claimed: Boolean(claimedRow?.user_id) || Boolean(created.password_hash) || Boolean(created.discord_id) };
   // The campaign-scoped account just created is a real account, so it gets a real session too.
   await createSession(req, res, newUser);
+  invalidateCache(`unclaimed_players_${campaignId}`);
   return res.json({ ok: true, player: publicPlayer(playerOut), user: publicUser(newUser) });
   }
   // claiming existing player
@@ -544,7 +596,7 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
   const saltRounds = 10;
   const hash = bcrypt.hashSync(plain, saltRounds);
   // set player password_hash to reserve the player
-  await db.run('UPDATE players SET password_hash = ? WHERE id = ?', hash, playerId);
+  await db.run('UPDATE players SET password_hash = ?, unclaimed_at = NULL WHERE id = ?', hash, playerId);
   // create a user record representing the claimant; if password provided, store it on users too
   const uInfo = await db.run('INSERT INTO users(username, password_hash) VALUES (?, ?)', name || ('player' + playerId), (plain ? hash : null));
   const newUser = await db.get('SELECT * FROM users WHERE id = ?', uInfo.lastInsertRowid);
@@ -555,6 +607,7 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
   const claimedR = await db.get('SELECT user_id FROM campaign_members WHERE player_id = ? AND campaign_id = ? AND user_id IS NOT NULL LIMIT 1', playerId, campaignId);
   const playerOutFinal = { ...createdP, claimed_user_id: claimedR ? claimedR.user_id : null, is_claimed: Boolean(claimedR?.user_id) || Boolean(createdP.password_hash) || Boolean(createdP.discord_id) };
   await createSession(req, res, newUser);
+  invalidateCache(`unclaimed_players_${campaignId}`);
   res.json({ ok: true, player: publicPlayer(playerOutFinal), user: publicUser(newUser) });
   } catch (e) {
     console.error('POST /api/campaigns/:campaignId/claim-player', e);
@@ -590,7 +643,8 @@ router.post('/api/campaigns/:campaignId/unclaim-player', requireAuth, async (req
 
     // cleanup any orphaned campaign-scoped users
     for (const uid of linkedUsers) await cleanupOrphanedUser(uid);
-    
+    invalidateCache(`unclaimed_players_${campaignId}`);
+
     res.json({ ok: true });
   } catch (e) {
     console.error('POST /api/campaigns/:campaignId/unclaim-player', e);

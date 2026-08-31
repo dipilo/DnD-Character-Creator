@@ -6,7 +6,7 @@
 //
 // It reads no store and performs no writes. `onChange` is the whole write surface, and its absence
 // is what makes the party view read-only.
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Minus, Plus } from 'lucide-react';
 import { getGameSystem } from '@/data/gameSystems';
@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import { BackpackButton } from '@/components/kob/BackpackButton';
+import { BackpackCanvasDialog } from '@/components/kob/BackpackCanvasDialog';
 import { ConsentSheetPanel } from '@/components/kob/ConsentSheetPanel';
 import { StatSpread } from '@/components/kob/StatSpread';
 import {
@@ -32,6 +34,7 @@ import {
   needsSkilledAt,
   tropeQuestions,
 } from '@/data/gameSystems/kidsOnBikes/rules';
+import { readCanvas } from '@/lib/kob/backpackCanvas';
 import type { KobCharacter } from '@/types/kob';
 
 /** A labelled block that renders nothing when the player has not written anything in it. */
@@ -41,6 +44,34 @@ function Field({ label, value }: Readonly<{ label: string; value: string }>) {
     <div>
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
       <p className="mt-0.5 whitespace-pre-wrap text-sm">{value}</p>
+    </div>
+  );
+}
+
+/**
+ * The backpack, opened as the board it is. Read-only without `onChange`, which is the same thing
+ * that makes the rest of the party view read-only.
+ */
+function BackpackCard({
+  character,
+  onChange,
+}: Readonly<{ character: KobCharacter; onChange?: (patch: Partial<KobCharacter>) => void }>) {
+  const [open, setOpen] = useState(false);
+  const canvas = readCanvas(character.backpackCanvas);
+  if (canvas.nodes.length === 0 && !onChange) {
+    return <Field label="Backpack" value={character.backpack} />;
+  }
+  return (
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Backpack</p>
+      <BackpackButton canvas={canvas} onOpen={() => setOpen(true)} className="mt-1" />
+      <BackpackCanvasDialog
+        open={open}
+        onOpenChange={setOpen}
+        canvas={canvas}
+        readOnly={!onChange}
+        onChange={(backpackCanvas) => onChange?.({ backpackCanvas })}
+      />
     </div>
   );
 }
@@ -293,7 +324,7 @@ export function KobSheetView({ character, actions, leading, note, onChange }: Re
                 </p>
               </div>
             ) : null}
-            <Field label="Backpack" value={character.backpack} />
+            <BackpackCard character={character} onChange={onChange} />
             <Field label="Description" value={character.description} />
           </CardContent>
         </Card>

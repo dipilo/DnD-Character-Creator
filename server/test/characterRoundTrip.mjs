@@ -91,6 +91,25 @@ const kobCharacter = {
   obligations: 'Paper route every morning.',
   knacks: ['Knows every shortcut in town'],
   backpack: 'Tape recorder, spare batteries, a map with pins.',
+  // The board that replaced the text field. An inlined picture is a data URL inside the document,
+  // so this is also what proves the document can still carry one across the wire.
+  backpackCanvas: {
+    nodes: [
+      { id: 'n1', kind: 'note', x: -110, y: -70, width: 220, height: 140, text: 'A map with pins.', src: '', color: null },
+      { id: 'n2', kind: 'link', x: 140, y: -70, width: 240, height: 96, text: 'The tape', src: 'https://example.invalid/tape', color: 'amber' },
+      {
+        id: 'n3',
+        kind: 'media',
+        x: -110,
+        y: 100,
+        width: 260,
+        height: 200,
+        text: 'The water tower',
+        src: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
+        color: null,
+      },
+    ],
+  },
   tropeAnswers: ['The Hendersons.', 'Because nobody else was looking.'],
   bike: { colorId: 'red', upgradeId: 'basket', name: 'Scoop', origin: 'Handed down.', favoriteMemory: 'The storm drain.' },
   relationships: [{ id: 'r1', who: 'Danny', connection: 'Neighbour', kind: 'positive', question: 'What do you owe them?', answer: 'A tape.' }],
@@ -198,6 +217,12 @@ async function scenario() {
   const kobIdentical = JSON.stringify(kobRoundTripped) === JSON.stringify(kobCharacter);
   check('the Kids on Bikes document is byte-identical', kobIdentical, kobIdentical ? '' : JSON.stringify(kobRoundTripped).slice(0, 300));
   check('its systemId survives the trip', kobRoundTripped?.systemId === 'kids-on-bikes', kobRoundTripped?.systemId);
+  check(
+    'the backpack board survives, inlined picture and all',
+    kobRoundTripped?.backpackCanvas?.nodes?.length === 3
+      && kobRoundTripped.backpackCanvas.nodes[2].src.startsWith('data:image/gif;base64,'),
+    JSON.stringify(kobRoundTripped?.backpackCanvas).slice(0, 200),
+  );
 
   // Device B edits it; device A still believes in version 1.
   const edited = { ...character, name: 'Ysolde Vane the Unseen', updatedAt: '2026-08-13T12:00:00.000Z' };

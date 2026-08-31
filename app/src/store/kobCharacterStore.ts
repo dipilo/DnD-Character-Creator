@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { KobCharacter, KobConsentSheet } from '@/types/kob';
+import type { KobBackpackCanvas, KobCharacter, KobConsentSheet } from '@/types/kob';
 import { KOB_STAT_IDS, statDiceForTrope } from '@/data/gameSystems/kidsOnBikes/rules';
 import type { KobDie, KobStatId } from '@/data/gameSystems/kidsOnBikes/types';
 import { createDebouncedLocalStorage } from '@/lib/debouncedStorage';
 import type { CharacterSyncMeta, PendingSeat } from '@/store/syncTypes';
+import { createNode, readCanvas } from '@/lib/kob/backpackCanvas';
 
 /**
  * Kids on Bikes characters, cached in localStorage.
@@ -78,6 +79,7 @@ export function createEmptyKobCharacter(): KobCharacter {
     obligations: '',
     knacks: [''],
     backpack: '',
+    backpackCanvas: { nodes: [] },
     tropeAnswers: [],
     bike: { colorId: '', upgradeId: '', name: '', origin: '', favoriteMemory: '' },
     relationships: [],
@@ -113,7 +115,24 @@ export function withKobDefaults(character: KobCharacter): KobCharacter {
       withCharacterId: entry.withCharacterId ?? null,
     })),
     consent: { ...base.consent, ...(character.consent ?? {}) },
+    backpackCanvas: migrateBackpack(character),
   };
+}
+
+/**
+ * The Backpack was a text field before it was a board, and a saved character is a document rather
+ * than a receipt — so what was typed becomes the first note on the board, once.
+ *
+ * Keyed on the field being *absent*, never on the board being empty: a player who deletes that
+ * note must not have it put back the next time the character is read. `character.backpack` is left
+ * alone, so nothing is destroyed by the migration either.
+ */
+function migrateBackpack(character: KobCharacter): KobBackpackCanvas {
+  if (character.backpackCanvas !== undefined) return readCanvas(character.backpackCanvas);
+  const text = typeof character.backpack === 'string' ? character.backpack.trim() : '';
+  if (text === '') return { nodes: [] };
+  const node = createNode('note', { x: 0, y: 0 });
+  return { nodes: [{ ...node, text }] };
 }
 
 const dirtyMeta = (meta: CharacterSyncMeta | undefined): CharacterSyncMeta => ({
