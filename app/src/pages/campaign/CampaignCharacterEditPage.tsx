@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { KobBuilder } from '@/components/kob/KobBuilder';
 import { useRemoteCharacter } from '@/hooks/useRemoteCharacter';
+import { SaveConflictAlert } from '@/components/character/SaveConflictAlert';
 import { isKobDocument } from '@/lib/storedCharacter';
 import { withKobDefaults } from '@/store/kobCharacterStore';
 import type { KobCharacter } from '@/types/kob';
@@ -23,7 +24,7 @@ import { useCampaignId } from '@/pages/campaign/useCampaignData';
 export function CampaignCharacterEditPage() {
   const campaignId = useCampaignId();
   const { characterId } = useParams<{ characterId: string }>();
-  const { record, document, error, loading, saving, applyPatch } = useRemoteCharacter({
+  const { record, document, error, loading, saving, applyPatch, conflict, resolveConflict } = useRemoteCharacter({
     kind: 'id',
     id: characterId ?? '',
   });
@@ -65,6 +66,7 @@ export function CampaignCharacterEditPage() {
 
   return (
     <div className="space-y-4">
+      {conflict ? <SaveConflictAlert conflict={conflict} onResolve={resolveConflict} /> : null}
       {error ? (
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>

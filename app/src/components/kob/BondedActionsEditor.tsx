@@ -4,7 +4,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { KobCallouts } from '@/components/kob/KobCallouts';
 import { PartyMateField } from '@/components/kob/PartyMateField';
 import { getBondedAction, kob } from '@/data/gameSystems/kidsOnBikes/rules';
 import { useCampaignConnections } from '@/hooks/useCampaignConnections';
@@ -21,7 +20,7 @@ const INVENTED_VALUE = 'invented';
 export function BondedActionsEditor({ character, onChange }: Readonly<BondedActionsEditorProps>) {
   const entries = character.bondedActions;
   const { connections, campaignId, loading } = useCampaignConnections(character.id);
-  const { intro, callouts, actions } = kob.bondedActions;
+  const { intro, actions } = kob.bondedActions;
 
   const update = (id: string, patch: Partial<KobBondedActionEntry>) => {
     onChange({
@@ -57,8 +56,6 @@ export function BondedActionsEditor({ character, onChange }: Readonly<BondedActi
           Add a Bonded Action
         </Button>
       </div>
-
-      <KobCallouts callouts={callouts} />
 
       {entries.length === 0 ? (
         <p className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">

@@ -6,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { BackpackButton } from '@/components/kob/BackpackButton';
 import { BackpackCanvasDialog } from '@/components/kob/BackpackCanvasDialog';
-import { KobCallouts } from '@/components/kob/KobCallouts';
 import { finishingTouch, getTrope, tropeQuestions } from '@/data/gameSystems/kidsOnBikes/rules';
 import { readCanvas } from '@/lib/kob/backpackCanvas';
 import type { KobCharacter } from '@/types/kob';
@@ -19,7 +18,7 @@ interface FinishingTouchesProps {
 /** Three at most, per the rules — one at creation, the rest earned in play. */
 const MAX_KNACKS = 3;
 
-/** The section's own wording for one field, and whatever tips and examples the book prints under it. */
+/** The section's own wording for one field. */
 function TouchNote({ id }: Readonly<{ id: string }>) {
   const touch = finishingTouch(id);
   if (!touch) return null;
@@ -28,7 +27,6 @@ function TouchNote({ id }: Readonly<{ id: string }>) {
       {touch.paragraphs.map((paragraph) => (
         <p key={paragraph} className="text-xs text-muted-foreground">{paragraph}</p>
       ))}
-      <KobCallouts callouts={touch.callouts} />
     </div>
   );
 }

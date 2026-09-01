@@ -13,6 +13,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getCharacter, getSharedCharacter, isConflict, updateCharacter } from '@/lib/api';
 import type { CharacterRecord, StoredCharacterDocument } from '@/lib/api';
+import { conflictingRecord } from '@/lib/characterConflict';
 import { getStoreForDocument } from '@/store/documentStores';
 
 const PUSH_DEBOUNCE_MS = 900;
@@ -29,6 +30,16 @@ export interface RemoteCharacterState {
    * may only read simply does not pass it on.
    */
   applyPatch: (patch: Partial<StoredCharacterDocument>) => void;
+  /** Set when the server refused a write because someone else saved. The edit is still held. */
+  conflict: RemoteCharacterConflict | null;
+  /** Answer a conflict: send the local edit over their version, or take theirs and drop it. */
+  resolveConflict: (choice: 'mine' | 'theirs') => void;
+}
+
+/** The other writer's copy, as the 409 handed it back. */
+export interface RemoteCharacterConflict {
+  theirs: CharacterRecord;
+  savedAt: string | null;
 }
 
 /** Where the character is being read from: its id, or a share link's token. */
@@ -59,12 +70,16 @@ export function useRemoteCharacter(source: RemoteCharacterSource): RemoteCharact
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [draft, setDraft] = useState<{ key: string; document: StoredCharacterDocument } | null>(null);
   const [saving, setSaving] = useState(false);
+  const [conflict, setConflict] = useState<{ key: string; conflict: RemoteCharacterConflict } | null>(null);
   const sync = useRef<SyncState | null>(null);
+  // An unanswered conflict stops the push loop. Retrying against a version the server has already
+  // refused only earns the same 409, and the player would watch it fail on every keystroke.
+  const blocked = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const push = useCallback(async () => {
     const outstanding = sync.current;
-    if (!outstanding?.dirty) return;
+    if (!outstanding?.dirty || blocked.current) return;
     const sent = outstanding.document;
     setSaving(true);
     try {
@@ -85,10 +100,15 @@ export function useRemoteCharacter(source: RemoteCharacterSource): RemoteCharact
       }
       setLoaded((current) => (current?.record ? { ...current, record: { ...current.record, ...saved }, error: null } : current));
     } catch (e) {
-      // A 409 means the sheet was written somewhere else since it was read. The local edit is not
-      // thrown away — it stays owed — but nothing retries on its own, because a retry would
-      // clobber whatever the other writer saved.
-      setLoaded((current) => (current ? { ...current, error: describeSaveFailure(e) } : current));
+      // A 409 means the sheet was written somewhere else since it was read. The local edit stays
+      // owed and nothing retries on its own: which version wins is the player's answer to give,
+      // and the refusal carries the other writer's copy to show them.
+      const theirs = conflictingRecord(e);
+      if (theirs) {
+        blocked.current = true;
+        setConflict({ key: outstanding.key, conflict: { theirs, savedAt: theirs.updated_at ?? null } });
+      }
+      setLoaded((current) => (current ? { ...current, error: theirs ? null : describeSaveFailure(e) } : current));
     } finally {
       setSaving(false);
     }
@@ -97,6 +117,8 @@ export function useRemoteCharacter(source: RemoteCharacterSource): RemoteCharact
   useEffect(() => {
     let cancelled = false;
     sync.current = null;
+    blocked.current = false;
+    setConflict(null);
     const request = kind === 'id' ? getCharacter(locator) : getSharedCharacter(locator);
     request
       .then((record) => {
@@ -121,6 +143,25 @@ export function useRemoteCharacter(source: RemoteCharacterSource): RemoteCharact
     void push();
   }, [push]);
 
+  const resolveConflict = useCallback((choice: 'mine' | 'theirs') => {
+    const outstanding = sync.current;
+    const pending = conflict?.conflict;
+    if (!outstanding || !pending) return;
+    blocked.current = false;
+    setConflict(null);
+    if (choice === 'mine') {
+      // Rebase rather than resend: the document is the local one, the version is theirs.
+      sync.current = { ...outstanding, version: pending.theirs.version, dirty: true };
+      void push();
+      return;
+    }
+    const document = pending.theirs.data;
+    if (!document) return;
+    sync.current = { ...outstanding, version: pending.theirs.version, document, dirty: false };
+    setDraft({ key: outstanding.key, document });
+    setLoaded((current) => (current ? { ...current, record: pending.theirs, error: null } : current));
+  }, [conflict, push]);
+
   const applyPatch = useCallback((patch: Partial<StoredCharacterDocument>) => {
     const current = sync.current;
     if (!current) return;
@@ -142,6 +183,8 @@ export function useRemoteCharacter(source: RemoteCharacterSource): RemoteCharact
     loading: fresh === null,
     saving,
     applyPatch,
+    conflict: conflict?.key === key ? conflict.conflict : null,
+    resolveConflict,
   };
 }
 
@@ -152,7 +195,7 @@ function describeError(error: unknown): string {
 
 function describeSaveFailure(error: unknown): string {
   if (isConflict(error)) {
-    return 'Someone else saved this sheet while you were editing it. Reload to see their version — your change has not been sent.';
+    return 'Someone else saved this sheet while you were editing it. Your change has not been sent.';
   }
   return `Could not save: ${describeError(error)}`;
 }

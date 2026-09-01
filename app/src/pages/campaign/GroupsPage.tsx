@@ -30,13 +30,29 @@ function seatsInAnyGroup(groups: readonly Group[]): Set<number> {
   return new Set(groups.flatMap((group) => group.members.map((member) => member.id)));
 }
 
+/** Per group, the seats sitting in some *other* group. A seat in this one is not elsewhere. */
+function seatsElsewhereByGroup(groups: readonly Group[]): Map<number, Set<number>> {
+  return new Map(
+    groups.map((group) => [
+      group.id,
+      new Set(
+        groups
+          .filter((other) => other.id !== group.id)
+          .flatMap((other) => other.members.map((member) => member.id)),
+      ),
+    ]),
+  );
+}
+
+const NO_SEATS: ReadonlySet<number> = new Set<number>();
+
 interface GroupCardProps {
   readonly campaignId: number;
   readonly group: Group;
   readonly roster: readonly Player[];
   readonly characterForPlayer: (playerId: number) => CampaignCharacterSummary | undefined;
   readonly doubled: ReadonlySet<number>;
-  readonly placed: ReadonlySet<number>;
+  readonly placedElsewhere: ReadonlySet<number>;
   readonly canManage: boolean;
   readonly canMoveUp: boolean;
   readonly canMoveDown: boolean;
@@ -82,7 +98,7 @@ function GroupCard({
   roster,
   characterForPlayer,
   doubled,
-  placed,
+  placedElsewhere,
   canManage,
   canMoveUp,
   canMoveDown,
@@ -145,7 +161,7 @@ function GroupCard({
         <GroupParty group={group} characterForPlayer={characterForPlayer} campaignId={campaignId} />
         <GroupHeatmap campaignId={campaignId} memberIds={group.members.map((m) => m.id)} showWindows />
         {canManage ? (
-          <GroupMembersEditor group={group} roster={roster} placedElsewhere={placed} onChange={onMembers} />
+          <GroupMembersEditor group={group} roster={roster} placedElsewhere={placedElsewhere} onChange={onMembers} />
         ) : (
           <div className="flex flex-wrap gap-1">
             {group.members.map((member) => (
@@ -216,6 +232,7 @@ export function GroupsPage() {
 
   const doubled = useMemo(() => seatsInSeveralGroups(groups), [groups]);
   const placed = useMemo(() => seatsInAnyGroup(groups), [groups]);
+  const elsewhere = useMemo(() => seatsElsewhereByGroup(groups), [groups]);
   const unassigned = players.filter((player) => !placed.has(player.id));
 
   const handleDelete = async (group: Group) => {
@@ -322,7 +339,7 @@ export function GroupsPage() {
             roster={players}
             characterForPlayer={characterForPlayer}
             doubled={doubled}
-            placed={placed}
+            placedElsewhere={elsewhere.get(group.id) ?? NO_SEATS}
             canManage={canManage}
             canMoveUp={index > 0}
             canMoveDown={index < groups.length - 1}

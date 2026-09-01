@@ -31,6 +31,18 @@ import {
 } from '@/lib/builderRules';
 import { exportCharacterToFillablePdf } from '@/lib/characterPdf';
 import { updateCharacter as pushCharacter } from '@/lib/api';
+import type { CharacterRecord } from '@/lib/api';
+import { conflictingRecord } from '@/lib/characterConflict';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { getStoreForDocument } from '@/store/documentStores';
 
 function humanizeFallbackId(value: string) {
@@ -70,6 +82,9 @@ export function ReviewPage() {
   const remoteEditing = builderState.remoteEditing;
   const isEditing = Boolean(editedCharacter) || Boolean(remoteEditing);
   const [pushing, setPushing] = useState(false);
+  // A refused save keeps the draft. Which version wins is the player's answer, so the write is
+  // held here with the version the server refused it against.
+  const [conflict, setConflict] = useState<{ character: Character; theirs: CharacterRecord } | null>(null);
   const characterName = character.name || '';
   const species = character?.speciesId ? getRuntimeSpeciesById(character.speciesId) : undefined;
   const variant = character?.speciesId && character?.variantId
@@ -214,11 +229,11 @@ export function ReviewPage() {
     }
   };
 
-  const handleSaveRemote = async (nextCharacter: Character, target: NonNullable<typeof remoteEditing>) => {
+  const handleSaveRemote = async (nextCharacter: Character, target: NonNullable<typeof remoteEditing>, version = target.version) => {
     setPushing(true);
     try {
       const store = getStoreForDocument(nextCharacter);
-      await pushCharacter(target.id, target.version, {
+      await pushCharacter(target.id, version, {
         name: store.nameOf(nextCharacter),
         // The summary is the client's to write: a push that omits it leaves the party list showing
         // a stale level.
@@ -229,12 +244,24 @@ export function ReviewPage() {
       resetBuilder();
       navigate(`/campaign/${target.campaignId}/party/${target.id}`);
     } catch (e) {
-      toast.error('Could not save that character', {
-        description: e instanceof Error ? e.message : 'The server refused the write.',
-      });
+      const theirs = conflictingRecord(e);
+      if (theirs) {
+        setConflict({ character: nextCharacter, theirs });
+      } else {
+        toast.error('Could not save that character', {
+          description: e instanceof Error ? e.message : 'The server refused the write.',
+        });
+      }
     } finally {
       setPushing(false);
     }
+  };
+
+  const handleOverwriteRemote = () => {
+    if (!conflict || !remoteEditing) return;
+    const { character: mine, theirs } = conflict;
+    setConflict(null);
+    void handleSaveRemote(mine, remoteEditing, theirs.version);
   };
 
   const handleSaveCharacter = () => {
@@ -701,6 +728,22 @@ export function ReviewPage() {
           Please complete all required fields before saving.
         </p>
       )}
+
+      <AlertDialog open={conflict !== null} onOpenChange={(open) => !open && setConflict(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Someone else saved this character</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your changes have not been sent. Save over their version, or close this and leave
+              without saving.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Not yet</AlertDialogCancel>
+            <AlertDialogAction onClick={handleOverwriteRemote}>Save over theirs</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

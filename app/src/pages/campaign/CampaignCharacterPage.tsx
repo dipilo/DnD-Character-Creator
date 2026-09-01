@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { exportCharacterToFillablePdf } from '@/lib/characterPdf';
 import { useRemoteCharacter } from '@/hooks/useRemoteCharacter';
+import { SaveConflictAlert } from '@/components/character/SaveConflictAlert';
 import { useCharacterStore } from '@/store/characterStore';
 import type { Character } from '@/types/dnd';
 import { useCampaignId } from '@/pages/campaign/useCampaignData';
@@ -29,7 +30,7 @@ export function CampaignCharacterPage() {
   const navigate = useNavigate();
   const { characterId } = useParams<{ characterId: string }>();
   const loadDocumentIntoBuilder = useCharacterStore((state) => state.loadDocumentIntoBuilder);
-  const { record, document, error, loading, saving, applyPatch } = useRemoteCharacter({
+  const { record, document, error, loading, saving, applyPatch, conflict, resolveConflict } = useRemoteCharacter({
     kind: 'id',
     id: characterId ?? '',
   });
@@ -97,6 +98,7 @@ export function CampaignCharacterPage() {
 
   return (
     <div className="space-y-4">
+      {conflict ? <SaveConflictAlert conflict={conflict} onResolve={resolveConflict} /> : null}
       {error ? (
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
