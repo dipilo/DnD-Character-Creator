@@ -1495,6 +1495,160 @@ const extractBasicRulesSpellcasting = (raw, classId, primaryAbility) => {
   return spellcasting;
 };
 
+// A class table's numeric columns are its resources: Rages, Ki Points, Sorcery Points, Channel
+// Divinity, Second Wind, Wild Shape. They are read from the table rather than written into the app,
+// so a class that states one gets a tracker and a class that does not, does not.
+//
+// Everything else in the table is deliberately refused. A "Known" column is a build-time count, not
+// a pool a player spends; a proficiency bonus is "+2"; Sneak Attack and Martial Arts are dice; and
+// Unarmored Movement is a distance. Only a column whose every cell is a bare integer or a dash is
+// a resource.
+const NON_RESOURCE_HEADERS = new Set([
+  'level', 'proficiencybonus', 'features', 'feature', 'spellslots', 'slotlevel',
+  'cantripsknown', 'cantrips', 'spellsknown', 'preparedspells', 'spellsprepared',
+]);
+
+const isResourceHeader = (header) => {
+  if (!header || NON_RESOURCE_HEADERS.has(header)) return false;
+  // "Invocations Known", "Infusions Known", "Maneuvers Known": how many you picked, not how many
+  // you have left.
+  if (header.endsWith('known')) return false;
+  return /^\d+(?:st|nd|rd|th)?$/.test(header) === false;
+};
+
+/**
+ * One cell of a resource column: the number, `null` for the 2014 Barbarian's level-20 "Unlimited"
+ * Rages, and `undefined` for anything else — which is what disqualifies the whole column, because
+ * a cell holding "1d6" or "+10 ft." means it was never a pool.
+ */
+const readResourceCell = (value) => {
+  const text = stripTags(value ?? '').trim();
+  if (!text || /^[—–-]+$/.test(text)) return 0;
+  if (/^unlimited$/i.test(text)) return null;
+  return /^\d+$/.test(text) ? Number(text) : undefined;
+};
+
+// A column is only a pool if its feature says the uses are spent and come back on a rest, and the
+// two printings word that four different ways:
+//
+//   2024  "You regain one expended use when you finish a Short Rest, and you regain all expended
+//          uses when you finish a Long Rest."
+//   2014  "Once you have raged the number of times shown ..., you must finish a long rest before
+//          you can rage again."
+//   2014  "When you spend a ki point, it is unavailable until you finish a short or long rest."
+//   both  "You regain all spent sorcery points when you finish a long rest."
+//
+// Matching one of these is what makes a column a resource at all. Weapon Mastery and Eldritch
+// Invocations are numbers in the same tables that count what you picked, and their prose says so —
+// "you can practice weapon drills and change one of those weapon choices" mentions a Long Rest and
+// no expenditure, so none of these patterns reach it.
+const RESOURCE_RESET_PATTERNS = [
+  /regain(?:s)? all (?:of (?:its|your) )?(?:expended|spent)[^.]{0,80}?finish (?:a |an )?(short or (?:a )?long|short|long) rest/i,
+  /(?:is|are) unavailable until you finish (?:a |an )?(short or (?:a )?long|short|long) rest/i,
+  /must finish (?:a |an )?(short or (?:a )?long|short|long) rest before you can/i,
+  /regain(?:s)? (?:all|any) (?:of (?:its|your) )?(?:expended|spent)[^.]{0,80}?(short or (?:a )?long|short|long) rest/i,
+];
+
+/** "You regain one expended use when you finish a Short Rest" — a partial, not the full reset. */
+const SHORT_REST_PARTIAL = /regain(?:s)? (one|two|three|\d+) (?:of (?:its|your) )?expended[^.]{0,60}?finish (?:a |an )?short rest/i;
+
+const REST_WORDS = { one: 1, two: 2, three: 3 };
+
+/**
+ * When a resource comes back, read from the prose of the feature the column is named after.
+ *
+ * `resetsOn` is where *all* of them come back, so the 2024 books' "one back on a Short Rest, all
+ * back on a Long Rest" does not read as a short-rest resource; the partial is carried separately.
+ * Null means this column is not a pool at all and gets no tracker.
+ */
+const parseResourceReset = (text) => {
+  let resetsOn = null;
+  for (const pattern of RESOURCE_RESET_PATTERNS) {
+    const match = pattern.exec(text);
+    if (!match) continue;
+    resetsOn = /^short/i.test(match[1]) ? 'short' : 'long';
+    break;
+  }
+  if (!resetsOn) return { resetsOn: null, shortRestRegain: null };
+
+  const partial = resetsOn === 'long' ? SHORT_REST_PARTIAL.exec(text) : null;
+  const word = partial?.[1]?.toLowerCase();
+  const shortRestRegain = word ? (REST_WORDS[word] ?? Number(word) ?? null) : null;
+  return { resetsOn, shortRestRegain };
+};
+
+/**
+ * Which feature a column belongs to, from the book's own cross-reference: every one of these says
+ * "as shown in the <Column> column of the <Class> table". Matching on the feature *name* instead
+ * misses the ones the book named differently — the 2014 Sorcery Points column belongs to Font of
+ * Magic — so the name is only the fallback.
+ */
+const resourceFeatureKey = (header) => normalizeLabel(header).replace(/points$/, '').replace(/s$/, '');
+
+const findResourceFeature = (header, features) => {
+  const label = stripTags(header).trim();
+  if (!label) return null;
+
+  const columnReference = new RegExp(String.raw`\b${escapeRegExp(label)}\s+column\b`, 'i');
+  const byReference = features.find((feature) => columnReference.test(feature.description ?? ''));
+  if (byReference) return byReference;
+
+  const key = resourceFeatureKey(header);
+  if (!key) return null;
+  return features.find((feature) => {
+    const name = normalizeLabel(feature.name ?? '').replace(/s$/, '');
+    return name === key || name.includes(key) || key.includes(name);
+  }) ?? null;
+};
+
+const extractClassResources = (raw, features) => {
+  const resources = [];
+
+  for (const table of collectTableBlocks(raw)) {
+    const text = stripTags(table);
+    if (!/\bfeatures\b/i.test(text) || !/\blevel\b/i.test(text)) continue;
+
+    const rows = extractTableRows(table).map((row) => row.map((cell) => stripTags(cell)));
+    const firstDataRowIndex = rows.findIndex((row) => Number.isFinite(parseOrdinalLevel(row[0] ?? '', Number.NaN)));
+    if (firstDataRowIndex <= 0) continue;
+
+    const headers = rows[firstDataRowIndex - 1];
+    const dataRows = rows.slice(firstDataRowIndex)
+      .filter((row) => Number.isFinite(parseOrdinalLevel(row[0] ?? '', Number.NaN)))
+      // The 2014 caster tables carry a second header row of slot levels ("1st" … "9th") under the
+      // merged "Spell Slots per Spell Level" cell. Its first cell is an ordinal too, so it reads as
+      // level 1 and shifts every resource a row out of step.
+      .filter((row) => !row.every((cell) => /^\d+(?:st|nd|rd|th)$/i.test(cell.trim())));
+    if (dataRows.length === 0) continue;
+
+    headers.forEach((header, index) => {
+      if (!isResourceHeader(normalizeLabel(header))) return;
+
+      const perLevel = dataRows.map((row) => readResourceCell(row[index]));
+      if (perLevel.some((value) => value === undefined)) return;
+      if (!perLevel.some((value) => value === null || value > 0)) return;
+
+      const name = repairMojibake(stripTags(header)).trim();
+      if (!name || resources.some((one) => one.name === name)) return;
+
+      const feature = findResourceFeature(header, features);
+      const { resetsOn, shortRestRegain } = parseResourceReset(feature?.description ?? '');
+      if (!resetsOn) return;
+
+      resources.push({
+        id: slugify(name),
+        name,
+        perLevel,
+        resetsOn,
+        shortRestRegain: shortRestRegain ?? undefined,
+        featureName: feature?.name,
+      });
+    });
+  }
+
+  return resources.length > 0 ? resources : undefined;
+};
+
 const extractClassFeaturesFromBlock = (raw, label, featureLevels) => {
   const headingBlocks = [...collectHeadingBlocks(raw, 3), ...collectHeadingBlocks(raw, 4), ...collectHeadingBlocks(raw, 5)];
   const seen = new Set();
@@ -2182,6 +2336,7 @@ const extractBasicRulesClasses = (raw, label, sourceId) => {
         return null;
       }
 
+      const classFeatures = extractClassFeaturesFromBlock(classFeatureContent, label, featureLevels);
       return {
         id: toSourceSpecificId(sourceId, classId),
         name: repairMojibake(block.title),
@@ -2194,9 +2349,10 @@ const extractBasicRulesClasses = (raw, label, sourceId) => {
         toolProficiencies: toolProficiencies.length > 0 ? toolProficiencies : undefined,
         skillChoices,
         skillCount,
-        features: extractClassFeaturesFromBlock(classFeatureContent, label, featureLevels),
+        features: classFeatures,
         subclasses: [],
         subclassLevel,
+        resources: extractClassResources(block.content, classFeatures),
         spellcasting: extractBasicRulesSpellcasting(block.content, classId, primaryAbility),
         equipmentOptions,
         startingGold,
@@ -2917,6 +3073,7 @@ const extractTashasArtificerClass = (raw, label, sourceId) => {
     return undefined;
   }
 
+  const artificerFeatures = extractClassFeaturesFromBlock(content, label, featureLevels);
   return {
     id: toSourceSpecificId(sourceId, 'artificer'),
     name: repairMojibake(artificerBlock.title),
@@ -2929,9 +3086,10 @@ const extractTashasArtificerClass = (raw, label, sourceId) => {
     toolProficiencies: parseSimpleList(getPairValue([paragraphPairs, tablePairs], 'Tools', 'Tool Proficiencies')),
     skillChoices,
     skillCount,
-    features: extractClassFeaturesFromBlock(content, label, featureLevels),
+    features: artificerFeatures,
     subclasses: [],
     subclassLevel,
+    resources: extractClassResources(content, artificerFeatures),
     spellcasting: extractBasicRulesSpellcasting(content, 'artificer', spellcastingAbility ?? 'intelligence'),
     equipmentOptions,
     source: label,

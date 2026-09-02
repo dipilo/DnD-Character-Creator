@@ -27,6 +27,15 @@ function normaliseSummary(value) {
 }
 
 /**
+ * The columns a summary and an access decision need, and not one byte more.
+ *
+ * `SELECT *` on this table reads `data`, which is the whole character document and may carry
+ * megabytes of inlined pictures. A list endpoint that took it pulled every member's document out
+ * of the database to print a card subtitle, which is what made the party view time out.
+ */
+const SUMMARY_COLUMNS = 'id, user_id, campaign_id, player_id, name, summary, visibility, schema_version, version, created_at, updated_at, deleted_at';
+
+/**
  * Row metadata, without the document. What list endpoints return. `share_token` is deliberately
  * absent: it is a credential, and it is handed out by the owner's own sharing route alone.
  */
@@ -128,6 +137,7 @@ function pickName(documentName, fallbackName) {
 
 module.exports = {
   MAX_DOCUMENT_BYTES,
+  SUMMARY_COLUMNS,
   campaignCharacterSummary,
   characterSummary,
   publicCharacter,

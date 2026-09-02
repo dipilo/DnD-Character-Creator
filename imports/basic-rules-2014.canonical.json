@@ -3,11 +3,11 @@
   "source": {
     "sourceId": "basic-rules-2014",
     "label": "Basic Rules (2014)",
-    "category": "basic",
+    "category": "supplement",
     "aliases": [],
     "description": "Generated from local 2014 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-08-17T03:00:06.833Z",
+    "importedAt": "2026-09-02T18:52:16.246Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -825,6 +825,36 @@
         ],
         "subclasses": [],
         "subclassLevel": 3,
+        "resources": [
+          {
+            "id": "rages",
+            "name": "Rages",
+            "perLevel": [
+              2,
+              2,
+              3,
+              3,
+              3,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              5,
+              5,
+              5,
+              5,
+              5,
+              6,
+              6,
+              6,
+              null
+            ],
+            "resetsOn": "long",
+            "featureName": "Rage"
+          }
+        ],
         "equipmentOptions": [
           [
             {
@@ -1779,6 +1809,36 @@
         ],
         "subclasses": [],
         "subclassLevel": 3,
+        "resources": [
+          {
+            "id": "ki-points",
+            "name": "Ki Points",
+            "perLevel": [
+              0,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20
+            ],
+            "resetsOn": "short",
+            "featureName": "Ki"
+          }
+        ],
         "equipmentOptions": [
           [
             {
@@ -2652,6 +2712,36 @@
         ],
         "subclasses": [],
         "subclassLevel": 1,
+        "resources": [
+          {
+            "id": "sorcery-points",
+            "name": "Sorcery Points",
+            "perLevel": [
+              0,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20
+            ],
+            "resetsOn": "long",
+            "featureName": "Font of Magic"
+          }
+        ],
         "spellcasting": {
           "ability": "charisma",
           "cantripsKnown": [

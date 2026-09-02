@@ -383,6 +383,7 @@ export function ReviewPage() {
       conditions: character.conditions,
       spellSlotsUsed: character.spellSlotsUsed,
       pactSlotsUsed: character.pactSlotsUsed,
+      classResourcesUsed: character.classResourcesUsed,
       personality: character.personality,
       appearance: character.appearance,
       faction: character.faction,

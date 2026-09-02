@@ -144,6 +144,16 @@ export interface CampaignCharacterSummary extends CharacterRecordSummary {
   can_edit: boolean;
 }
 
+/**
+ * A character someone handed this account, from `GET /api/characters/shared-with-me`.
+ *
+ * `granted_via` says which grant reached you: `user` names the account, `campaign_owner` names a
+ * campaign you run — so the grant stays with the seat if the table changes hands.
+ */
+export interface SharedCharacterSummary extends CampaignCharacterSummary {
+  granted_via: 'user' | 'campaign_owner';
+}
+
 // ---------------------------------------------------------------------------
 // Scheduler (MERGE_PLAN.md Phase 4). These mirror the server's row shapes; the
 // server answers with `SELECT *` in most places, so the columns in db/schema.js

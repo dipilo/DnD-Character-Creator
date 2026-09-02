@@ -11,6 +11,7 @@ import type {
   CharacterRecordSummary,
   CharacterSeat,
   CharacterWritePayload,
+  SharedCharacterSummary,
 } from './types';
 
 /**
@@ -30,6 +31,15 @@ export async function listCharacters(campaignId?: number): Promise<CharacterReco
  */
 export async function listCampaignCharacters(campaignId: number): Promise<CampaignCharacterSummary[]> {
   const body = await api.get<{ characters: CampaignCharacterSummary[] }>(`/api/campaigns/${campaignId}/characters`);
+  return body.characters ?? [];
+}
+
+/**
+ * Characters somebody else granted this account, either by name or through a campaign it runs.
+ * Nothing notifies a grantee, so this list is how they find out at all.
+ */
+export async function listSharedCharacters(): Promise<SharedCharacterSummary[]> {
+  const body = await api.get<{ characters: SharedCharacterSummary[] }>('/api/characters/shared-with-me');
   return body.characters ?? [];
 }
 

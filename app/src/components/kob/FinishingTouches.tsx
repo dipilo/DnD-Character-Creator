@@ -7,7 +7,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { BackpackButton } from '@/components/kob/BackpackButton';
 import { BackpackCanvasDialog } from '@/components/kob/BackpackCanvasDialog';
 import { finishingTouch, getTrope, tropeQuestions } from '@/data/gameSystems/kidsOnBikes/rules';
-import { readCanvas } from '@/lib/kob/backpackCanvas';
 import type { KobCharacter } from '@/types/kob';
 
 interface FinishingTouchesProps {
@@ -136,17 +135,14 @@ export function FinishingTouches({ character, onChange }: Readonly<FinishingTouc
           `withKobDefaults`. */}
       <div className="space-y-1.5">
         <Label>Backpack</Label>
-        <BackpackButton
-          canvas={readCanvas(character.backpackCanvas)}
-          onOpen={() => setBackpackOpen(true)}
-        />
+        <BackpackButton canvas={character.backpackCanvas} onOpen={() => setBackpackOpen(true)} />
         <TouchNote id="backpack" />
       </div>
 
       <BackpackCanvasDialog
         open={backpackOpen}
         onOpenChange={setBackpackOpen}
-        canvas={readCanvas(character.backpackCanvas)}
+        canvas={character.backpackCanvas}
         prompt={finishingTouch('backpack')?.paragraphs[0]}
         onChange={(backpackCanvas) => onChange({ backpackCanvas })}
       />

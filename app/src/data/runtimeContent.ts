@@ -1,4 +1,4 @@
-import type { Background, Class, Equipment, Feature, FeatureOption, Feat, Monster, Species, SpeciesVariant, Spell, SpellcastingProgression, Subclass } from '@/types/dnd';
+import type { Background, Class, ClassResource, Equipment, Feature, FeatureOption, Feat, Monster, Species, SpeciesVariant, Spell, SpellcastingProgression, Subclass } from '@/types/dnd';
 import { backgrounds as staticBackgrounds } from './backgrounds';
 import { classes as staticClasses } from './classes';
 import { species as staticSpecies } from './species';
@@ -1044,6 +1044,16 @@ const applySpeciesFeatureChoiceSupplements = (species: Species): Species => {
   };
 };
 
+/**
+ * Resources are all-or-nothing per printing: a candidate either parsed the class table's pool
+ * columns or parsed none, and mixing two printings' columns would offer a 2014 Barbarian the 2024
+ * table's rage count. `choosePreferredArray` is the same rule the proficiency lists use.
+ */
+const choosePreferredResources = (primary?: ClassResource[], fallback?: ClassResource[]) => {
+  const chosen = choosePreferredArray(primary ?? [], fallback ?? []);
+  return chosen.length > 0 ? chosen : undefined;
+};
+
 const enrichClass = (primary: Class, fallback?: Class): Class => {
   const equipmentSupplement = classEquipmentSupplements[getClassFallbackLookupKey(primary)];
   const enriched = {
@@ -1055,6 +1065,7 @@ const enrichClass = (primary: Class, fallback?: Class): Class => {
     skillChoices: choosePreferredArray(primary.skillChoices, fallback?.skillChoices),
     skillCount: primary.skillCount || fallback?.skillCount || 0,
     features: mergeFeatureCollections(primary.features, fallback?.features),
+    resources: choosePreferredResources(primary.resources, fallback?.resources),
     spellcasting: choosePreferredSpellcasting(primary.spellcasting, fallback?.spellcasting),
     equipmentOptions: choosePreferredArray(primary.equipmentOptions, equipmentSupplement ?? fallback?.equipmentOptions),
     startingGold: choosePreferredNumber(primary.startingGold, fallback?.startingGold)
@@ -1102,6 +1113,7 @@ const mergeClassCandidates = (candidates: Class[]) => {
       features: mergeFeatureCollections(current.features, candidate.features),
       subclasses: mergeCollectionsById(current.subclasses, candidate.subclasses),
       subclassLevel: choosePreferredCount(current.subclassLevel, candidate.subclassLevel),
+      resources: choosePreferredResources(current.resources, candidate.resources),
       spellcasting: choosePreferredSpellcasting(current.spellcasting, candidate.spellcasting),
       equipmentOptions: choosePreferredArray(current.equipmentOptions, candidate.equipmentOptions),
       startingGold: choosePreferredNumber(current.startingGold, candidate.startingGold)

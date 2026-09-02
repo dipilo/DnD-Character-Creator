@@ -7,7 +7,7 @@ const express = require('express');
 const crypto = require('node:crypto');
 const db = require('../db');
 const { characterVisibility, listGrants, normaliseVisibility, resolveCharacterAccess } = require('../lib/characterAccess');
-const { characterSummary, publicCharacter, serializeDocument } = require('../lib/characters');
+const { SUMMARY_COLUMNS, characterSummary, publicCharacter, serializeDocument } = require('../lib/characters');
 const { genToken } = require('../lib/tokens');
 const { canUserModifyPlayer, getCampaignMembership, holdsPlayerSeat, optionalAuth, requireAuth } = require('../middleware/auth');
 
@@ -90,11 +90,67 @@ router.get('/api/characters', requireAuth, async (req, res) => {
   try {
     const campaignId = normaliseId(req.query.campaign_id);
     const rows = campaignId === null
-      ? await db.all('SELECT * FROM characters WHERE user_id = ? AND deleted_at IS NULL ORDER BY updated_at DESC, id ASC', req.user.id)
-      : await db.all('SELECT * FROM characters WHERE user_id = ? AND campaign_id = ? AND deleted_at IS NULL ORDER BY updated_at DESC, id ASC', req.user.id, campaignId);
+      ? await db.all(`SELECT ${SUMMARY_COLUMNS} FROM characters WHERE user_id = ? AND deleted_at IS NULL ORDER BY updated_at DESC, id ASC`, req.user.id)
+      : await db.all(`SELECT ${SUMMARY_COLUMNS} FROM characters WHERE user_id = ? AND campaign_id = ? AND deleted_at IS NULL ORDER BY updated_at DESC, id ASC`, req.user.id, campaignId);
     res.json({ ok: true, characters: rows.map(characterSummary) });
   } catch (e) {
     console.error('GET /api/characters', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+/**
+ * Characters somebody else handed this account.
+ *
+ * Registered before `/:id` on purpose: "shared-with-me" is a valid character id shape, so the
+ * parameterised route would swallow it.
+ *
+ * Only *explicit* grants are listed — a row naming this user, or naming a campaign they run. The
+ * table-wide `character_edit_consent` is deliberately not here: it covers every character its
+ * holder seats at that table, and those already have a home on the campaign's party page. A list
+ * that folded them in would restate the party view under a heading that says somebody chose to
+ * share with *you*.
+ */
+router.get('/api/characters/shared-with-me', requireAuth, async (req, res) => {
+  try {
+    const owned = await db.all(
+      "SELECT campaign_id FROM campaign_members WHERE user_id = ? AND role = 'owner'",
+      req.user.id,
+    );
+    const campaignIds = owned.map((row) => Number(row.campaign_id)).filter(Number.isFinite);
+
+    const columns = SUMMARY_COLUMNS.split(', ').map((column) => `ch.${column}`).join(', ');
+    const subjects = ["(g.subject_type = 'user' AND g.subject_id = ?)"];
+    const args = [req.user.id];
+    if (campaignIds.length > 0) {
+      subjects.push(`(g.subject_type = 'campaign_owner' AND g.subject_id IN (${campaignIds.map(() => '?').join(', ')}))`);
+      args.push(...campaignIds);
+    }
+
+    const rows = await db.all(`
+      SELECT ${columns}, u.username AS owner_name, p.name AS player_name,
+             MAX(CASE WHEN g.access = 'edit' THEN 1 ELSE 0 END) AS can_edit,
+             MAX(g.subject_type) AS granted_via
+      FROM character_grants g
+      JOIN characters ch ON ch.id = g.character_id
+      LEFT JOIN users u ON u.id = ch.user_id
+      LEFT JOIN players p ON p.id = ch.player_id
+      WHERE (${subjects.join(' OR ')}) AND ch.deleted_at IS NULL AND ch.user_id != ?
+      GROUP BY ch.id
+      ORDER BY ch.updated_at DESC, ch.id ASC
+    `, [...args, req.user.id]);
+
+    const characters = rows.map((row) => ({
+      ...characterSummary(row),
+      owner_name: row.owner_name ?? null,
+      player_name: row.player_name ?? null,
+      can_read: true,
+      can_edit: Number(row.can_edit) === 1,
+      granted_via: row.granted_via === 'campaign_owner' ? 'campaign_owner' : 'user',
+    }));
+    res.json({ ok: true, characters });
+  } catch (e) {
+    console.error('GET /api/characters/shared-with-me', e);
     res.status(500).json({ error: e.message });
   }
 });

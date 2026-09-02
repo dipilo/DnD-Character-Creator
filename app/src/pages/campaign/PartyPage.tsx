@@ -237,7 +237,14 @@ export function PartyPage() {
           Loading the party...
         </output>
       ) : null}
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {error ? (
+        <Card>
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 py-4">
+            <p className="min-w-0 flex-1 text-sm text-destructive">{error}</p>
+            <Button variant="outline" onClick={reload}>Try again</Button>
+          </CardContent>
+        </Card>
+      ) : null}
 
       {!loading && !error && characters.length === 0 ? (
         <Card>

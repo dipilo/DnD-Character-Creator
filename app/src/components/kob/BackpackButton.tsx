@@ -12,7 +12,7 @@ import type { KobBackpackCanvas } from '@/types/kob';
 const BACKPACK_SRC = `${import.meta.env.BASE_URL}assets/kob/backpack.svg`;
 
 interface BackpackButtonProps {
-  readonly canvas: KobBackpackCanvas;
+  readonly canvas: KobBackpackCanvas | undefined;
   readonly onOpen: () => void;
   readonly className?: string;
 }

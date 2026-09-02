@@ -131,11 +131,33 @@ export interface Class {
   features: ClassFeature[];
   subclasses: Subclass[];
   subclassLevel: number;
+  /** Pools the class table states: Rages, Ki Points, Channel Divinity, Second Wind. */
+  resources?: ClassResource[];
   spellcasting?: SpellcastingProgression;
   equipmentOptions: EquipmentOption[][];
   startingGold?: number;
   source: string;
   sourceId?: string;
+}
+
+/**
+ * A pool a class table gives a number for at each level, read out of the table by the importer
+ * (`extractClassResources`). Nothing about these is written in the app: a class whose table states
+ * no such column simply has none, which is why the 2014 Cleric has no Channel Divinity tracker and
+ * the 2024 one does.
+ */
+export interface ClassResource {
+  id: string;
+  /** The table's own column heading, which is what the tracker is labelled. */
+  name: string;
+  /** One entry per class level, index 0 being level 1. `null` is the book's "Unlimited". */
+  perLevel: (number | null)[];
+  /** The rest that returns every use. Null when the source states no recovery. */
+  resetsOn: 'short' | 'long' | null;
+  /** How many come back on a short rest when everything comes back on a long one. */
+  shortRestRegain?: number;
+  /** The feature the column belongs to, for the tracker's subtitle. */
+  featureName?: string;
 }
 
 export interface EquipmentOption {
@@ -367,6 +389,11 @@ export interface Character {
    */
   spellSlotsUsed?: number[];
   pactSlotsUsed?: number[];
+  /**
+   * How much of each class resource is spent, keyed `<classId>::<resourceId>`. Play state, so the
+   * sheet writes it and `buildReviewCharacter` has to carry it.
+   */
+  classResourcesUsed?: Record<string, number>;
   personality?: {
     traits: string;
     ideals: string;

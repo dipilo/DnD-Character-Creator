@@ -184,10 +184,22 @@ async function scenario() {
   });
   check('a grant cannot name someone from another table', strangerGrant.status === 400, strangerGrant.status);
 
+  // ---- the grantee can find it without being sent a link -------------------
+  const mateShared = await call('mate', 'GET', '/api/characters/shared-with-me');
+  check('a grantee can list what was shared with them', mateShared.status === 200, mateShared.status);
+  check('and it names the character', mateShared.json.characters?.[0]?.id === sheet.id, mateShared.json.characters?.[0]?.id);
+  check('with the access it carries', mateShared.json.characters?.[0]?.can_edit === true, mateShared.json.characters?.[0]?.can_edit);
+  check('and who it came from', mateShared.json.characters?.[0]?.owner_name === 'sharing-player', mateShared.json.characters?.[0]?.owner_name);
+  check('but not the document', mateShared.json.characters?.[0]?.data === undefined, typeof mateShared.json.characters?.[0]?.data);
+  const ownerShared = await call('player', 'GET', '/api/characters/shared-with-me');
+  check('the owner does not list their own sheet as shared with them', ownerShared.json.characters?.length === 0, ownerShared.json.characters?.length);
+
   const revoked = await call('player', 'DELETE', `/api/characters/${sheet.id}/grants/${granted.json.sharing.grants[0].id}`);
   check('revoking leaves no grants', revoked.json.sharing?.grants?.length === 0, revoked.json.sharing?.grants?.length);
   const mateRevoked = await call('mate', 'GET', `/api/characters/${sheet.id}`);
   check('and closes the sheet again', mateRevoked.status === 404, mateRevoked.status);
+  const mateSharedAfter = await call('mate', 'GET', '/api/characters/shared-with-me');
+  check('and takes it off the shared list', mateSharedAfter.json.characters?.length === 0, mateSharedAfter.json.characters?.length);
 
   // ---- the GM's table-wide consent ----------------------------------------
   await call('player', 'PUT', `/api/characters/${sheet.id}/sharing`, { visibility: 'campaign' });

@@ -2,8 +2,8 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const db = require('../db');
 const { getCachedQueryAsync, invalidateCache, setCache } = require('../lib/cache');
-const { resolveCharacterAccess } = require('../lib/characterAccess');
-const { campaignCharacterSummary } = require('../lib/characters');
+const { resolveCharacterAccessAll } = require('../lib/characterAccess');
+const { SUMMARY_COLUMNS, campaignCharacterSummary } = require('../lib/characters');
 const { publicPlayer } = require('../lib/players');
 const { createSession, publicUser } = require('../lib/sessions');
 const { genToken } = require('../lib/tokens');
@@ -324,19 +324,17 @@ router.get('/api/campaigns/:campaignId/members', requireCampaignAccess(), async 
  */
 router.get('/api/campaigns/:campaignId/characters', requireCampaignAccess(), async (req, res) => {
   try {
+    const columns = SUMMARY_COLUMNS.split(', ').map((column) => `ch.${column}`).join(', ');
     const rows = await db.all(`
-      SELECT ch.*, u.username AS owner_name, p.name AS player_name
+      SELECT ${columns}, u.username AS owner_name, p.name AS player_name
       FROM characters ch
       LEFT JOIN users u ON u.id = ch.user_id
       LEFT JOIN players p ON p.id = ch.player_id
       WHERE ch.campaign_id = ? AND ch.deleted_at IS NULL
       ORDER BY ch.updated_at DESC, ch.id ASC
     `, req.campaign.id);
-    const characters = [];
-    for (const row of rows) {
-      characters.push(campaignCharacterSummary(row, await resolveCharacterAccess(req.user, row)));
-    }
-    res.json({ ok: true, characters });
+    const access = await resolveCharacterAccessAll(req.user, rows);
+    res.json({ ok: true, characters: rows.map((row, index) => campaignCharacterSummary(row, access[index])) });
   } catch (e) {
     console.error('GET /api/campaigns/:campaignId/characters', e);
     res.status(500).json({ error: e.message });

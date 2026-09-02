@@ -20,6 +20,7 @@
     "test:scheduler": "node server/test/schedulerFlow.mjs",
     "test:availability": "node server/test/availabilityParsing.mjs",
     "test:sheet-intake": "node server/test/sheetIntake.mjs",
+    "test:conflict": "node app/test/characterConflict.mjs",
     "import:source": "node scripts/import-source.mjs --",
     "import:5etools": "node scripts/import-5etools.mjs",
     "import:kids-on-bikes": "node scripts/import-kids-on-bikes.mjs",

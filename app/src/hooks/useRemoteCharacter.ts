@@ -13,7 +13,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getCharacter, getSharedCharacter, isConflict, updateCharacter } from '@/lib/api';
 import type { CharacterRecord, StoredCharacterDocument } from '@/lib/api';
-import { conflictingRecord } from '@/lib/characterConflict';
+import { conflictingRecord, mergeTrackerEdits } from '@/lib/characterConflict';
 import { getStoreForDocument } from '@/store/documentStores';
 
 const PUSH_DEBOUNCE_MS = 900;
@@ -58,6 +58,11 @@ interface SyncState {
   version: number;
   document: StoredCharacterDocument;
   dirty: boolean;
+  /**
+   * The document as the server last had it at `version`. It is what makes a merge possible: without
+   * it, "what did I change" is unanswerable and every conflict is a choice between two whole sheets.
+   */
+  base: StoredCharacterDocument;
 }
 
 export function useRemoteCharacter(source: RemoteCharacterSource): RemoteCharacterState {
@@ -95,7 +100,7 @@ export function useRemoteCharacter(source: RemoteCharacterSource): RemoteCharact
       // owed, and now owes it against the version the server just wrote.
       const after = sync.current;
       if (after?.id === outstanding.id) {
-        sync.current = { ...after, version: saved.version, dirty: after.document !== sent };
+        sync.current = { ...after, version: saved.version, base: sent, dirty: after.document !== sent };
         if (after.document !== sent) void push();
       }
       setLoaded((current) => (current?.record ? { ...current, record: { ...current.record, ...saved }, error: null } : current));
@@ -105,8 +110,19 @@ export function useRemoteCharacter(source: RemoteCharacterSource): RemoteCharact
       // and the refusal carries the other writer's copy to show them.
       const theirs = conflictingRecord(e);
       if (theirs) {
-        blocked.current = true;
-        setConflict({ key: outstanding.key, conflict: { theirs, savedAt: theirs.updated_at ?? null } });
+        // Two people spending slots on one sheet is not a disagreement, so a conflict confined to
+        // the trackers is merged and sent rather than put to the player.
+        const merged = theirs.data
+          ? mergeTrackerEdits(outstanding.base, sent, theirs.data)
+          : null;
+        if (merged && theirs.data) {
+          sync.current = { ...outstanding, version: theirs.version, base: theirs.data, document: merged, dirty: true };
+          setDraft({ key: outstanding.key, document: merged });
+          void push();
+        } else {
+          blocked.current = true;
+          setConflict({ key: outstanding.key, conflict: { theirs, savedAt: theirs.updated_at ?? null } });
+        }
       }
       setLoaded((current) => (current ? { ...current, error: theirs ? null : describeSaveFailure(e) } : current));
     } finally {
@@ -124,7 +140,7 @@ export function useRemoteCharacter(source: RemoteCharacterSource): RemoteCharact
       .then((record) => {
         if (cancelled) return;
         if (record.data) {
-          sync.current = { key, id: record.id, version: record.version, document: record.data, dirty: false };
+          sync.current = { key, id: record.id, version: record.version, document: record.data, base: record.data, dirty: false };
         }
         setLoaded({ key, record, error: null });
       })
@@ -151,13 +167,14 @@ export function useRemoteCharacter(source: RemoteCharacterSource): RemoteCharact
     setConflict(null);
     if (choice === 'mine') {
       // Rebase rather than resend: the document is the local one, the version is theirs.
-      sync.current = { ...outstanding, version: pending.theirs.version, dirty: true };
+      const base = pending.theirs.data ?? outstanding.base;
+      sync.current = { ...outstanding, version: pending.theirs.version, base, dirty: true };
       void push();
       return;
     }
     const document = pending.theirs.data;
     if (!document) return;
-    sync.current = { ...outstanding, version: pending.theirs.version, document, dirty: false };
+    sync.current = { ...outstanding, version: pending.theirs.version, document, base: document, dirty: false };
     setDraft({ key: outstanding.key, document });
     setLoaded((current) => (current ? { ...current, record: pending.theirs, error: null } : current));
   }, [conflict, push]);

@@ -11,9 +11,11 @@ import {
   applyLongRest,
   applyShortRest,
   getSlotsUsed,
+  setClassResourceUsed,
   setPactSlotsUsed,
   setSpellSlotsUsed
 } from '@/lib/sheetPlayState';
+import type { ResolvedClassResource } from '@/lib/sheetPlayState';
 import { cn } from '@/lib/utils';
 import type { Character } from '@/types/dnd';
 
@@ -31,6 +33,8 @@ interface SheetResourcesPanelProps {
   /** Slots per level, indexed by level - 1, exactly as `getSpellcastingRulesSummary` reports them. */
   slotsByLevel: number[];
   pactSlotsByLevel: number[];
+  /** Rages, Ki Points, Channel Divinity: whatever this character's class tables state. */
+  classResources: ResolvedClassResource[];
   /** Added to a spent hit die, the way the rules add it. Omitted where the sheet has not derived it. */
   constitutionModifier?: number;
   onChange?: (patch: Partial<Character>) => void;
@@ -73,11 +77,39 @@ function SlotRow({
   );
 }
 
+/**
+ * One class pool. Pips like a spell slot's, because it is spent the same way — except where the
+ * book says "Unlimited", which is the 2014 Barbarian at level 20 and is not a thing to count.
+ */
+function ResourceRow({
+  resource,
+  onSetUsed
+}: Readonly<{ resource: ResolvedClassResource; onSetUsed?: (next: number) => void }>) {
+  const subtitle = [resource.className, resource.featureName].filter(Boolean).join(' · ');
+
+  if (resource.maximum === null) {
+    return (
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="text-sm">{resource.name}</span>
+        <Badge variant="secondary">Unlimited</Badge>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1">
+      <SlotRow label={resource.name} total={resource.maximum} used={resource.used} onSetUsed={onSetUsed} />
+      {subtitle ? <p className="text-xs text-muted-foreground">{subtitle}</p> : null}
+    </div>
+  );
+}
+
 export function SheetResourcesPanel({
   character,
   hitDice,
   slotsByLevel,
   pactSlotsByLevel,
+  classResources,
   constitutionModifier = 0,
   onChange
 }: Readonly<SheetResourcesPanelProps>) {
@@ -96,7 +128,7 @@ export function SheetResourcesPanel({
     }
   };
   const hasSlots = slotsByLevel.some((count) => count > 0) || pactSlotsByLevel.some((count) => count > 0);
-  if (hitDice.length === 0 && !hasSlots) {
+  if (hitDice.length === 0 && !hasSlots && classResources.length === 0) {
     return null;
   }
 
@@ -141,14 +173,31 @@ export function SheetResourcesPanel({
             ))}
             {onChange ? (
               <div className="flex flex-wrap gap-2 pt-2">
-                <Button type="button" size="sm" variant="outline" className="min-h-11" onClick={() => onChange(applyShortRest())}>
+                <Button type="button" size="sm" variant="outline" className="min-h-11" onClick={() => onChange(applyShortRest(character, classResources))}>
                   Short Rest
                 </Button>
-                <Button type="button" size="sm" className="min-h-11" onClick={() => onChange(applyLongRest(character))}>
+                <Button type="button" size="sm" className="min-h-11" onClick={() => onChange(applyLongRest(character, classResources))}>
                   Long Rest
                 </Button>
               </div>
             ) : null}
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {classResources.length > 0 ? (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Class Resources</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {classResources.map((resource) => (
+              <ResourceRow
+                key={resource.key}
+                resource={resource}
+                onSetUsed={onChange ? (next) => onChange(setClassResourceUsed(character, resource, next)) : undefined}
+              />
+            ))}
           </CardContent>
         </Card>
       ) : null}

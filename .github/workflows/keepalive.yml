@@ -1,7 +1,13 @@
 # Render's free tier spins an instance down after 15 minutes with no inbound request, and the cold
-# start that follows is the ~50s wait before the first page of the day loads anything. A ping from
+# start that follows is the ~33s wait before the first page of the day loads anything. A ping from
 # outside is the only thing that can wake an instance that is already asleep, which is why this
 # lives here rather than as a timer inside the server process.
+#
+# **This workflow is the backstop, not the primary pinger.** GitHub delays scheduled workflows
+# under load and drops them outright, so a `*/10` cron does not reliably fire every ten minutes and
+# the backend slept anyway. The primary is an external uptime pinger; see docs/keepalive.md. What
+# this does instead of trusting the scheduler is hold *one* job open for the hour and ping from
+# inside it, so a run that starts late still covers the rest of its hour.
 #
 # Actions minutes are free on a public repository. GitHub disables a scheduled workflow after 60
 # days with no commits to the repo: re-enable it from the Actions tab if that happens.
@@ -9,7 +15,7 @@ name: Keep the backend warm
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 concurrency:
@@ -19,14 +25,23 @@ concurrency:
 jobs:
   ping:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 70
     steps:
-      - name: Ping /health
+      - name: Ping /health every 5 minutes for an hour
         run: |
-          curl --fail --silent --show-error --location \
-               --retry 3 --retry-all-errors --retry-delay 20 \
-               --max-time 120 \
-               "${BACKEND_URL%/}/health"
+          for i in $(seq 1 12); do
+            if curl --fail --silent --show-error --location \
+                    --retry 2 --retry-all-errors --retry-delay 15 \
+                    --max-time 120 \
+                    "${BACKEND_URL%/}/health" > /dev/null; then
+              echo "ping $i ok"
+            else
+              # A failed ping is not a failed run: the next one is five minutes away, and marking
+              # the workflow red for a blip is how a genuinely broken backend stops being noticed.
+              echo "ping $i failed"
+            fi
+            [ "$i" -lt 12 ] && sleep 300
+          done
         env:
           # The public backend. An override lives in repository variables so a redeploy elsewhere
           # does not need this file edited.

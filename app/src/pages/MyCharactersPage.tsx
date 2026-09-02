@@ -21,6 +21,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { CharacterUploadOffer } from '@/components/CharacterUploadOffer';
+import { SharedWithYouList } from '@/components/character/SharedWithYouList';
 import { Plus, MoreVertical, Copy, Eye, Pencil, Trash2, User, FileDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { exportCharacterToFillablePdf } from '@/lib/characterPdf';
@@ -82,22 +83,27 @@ export function MyCharactersPage() {
     }
   };
 
+  // The shared list renders in both branches: an account with no characters of its own can still
+  // have been granted somebody else's, and the empty state used to return before reaching it.
   if (characters.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 space-y-6">
-        <div className="text-center space-y-2">
-          <User className="h-16 w-16 text-muted-foreground mx-auto" />
-          <h2 className="text-2xl font-bold">No Characters Yet</h2>
-          <p className="text-muted-foreground">
-            You haven't created any characters.
-          </p>
+      <div className="space-y-10">
+        <div className="flex flex-col items-center justify-center py-20 space-y-6">
+          <div className="text-center space-y-2">
+            <User className="h-16 w-16 text-muted-foreground mx-auto" />
+            <h2 className="text-2xl font-bold">No Characters Yet</h2>
+            <p className="text-muted-foreground">
+              You haven't created any characters.
+            </p>
+          </div>
+          <Link to="/builder" onClick={handleStartNewCharacter}>
+            <Button size="lg" className="gap-2">
+              <Plus className="h-5 w-5" />
+              Create Your First Character
+            </Button>
+          </Link>
         </div>
-        <Link to="/builder" onClick={handleStartNewCharacter}>
-          <Button size="lg" className="gap-2">
-            <Plus className="h-5 w-5" />
-            Create Your First Character
-          </Button>
-        </Link>
+        <SharedWithYouList />
       </div>
     );
   }
@@ -216,6 +222,8 @@ export function MyCharactersPage() {
           </Card>
         ))}
       </div>
+
+      <SharedWithYouList />
     </div>
   );
 }

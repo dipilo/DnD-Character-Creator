@@ -39,6 +39,7 @@ import {
 } from '@/lib/builderRules';
 import { deriveAttacks, deriveSheetVitals } from '@/lib/sheetDerivations';
 import { modifierNotation } from '@/lib/diceNotation';
+import { resolveClassResources } from '@/lib/sheetPlayState';
 import { rollOnScreen } from '@/store/diceTrayStore';
 import { SheetAttacksPanel } from '@/components/character/SheetAttacksPanel';
 import { SheetEquipmentPanel } from '@/components/character/SheetEquipmentPanel';
@@ -84,6 +85,13 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
       getSubclassById: getRuntimeSubclass
     });
   }, [character.classes]);
+
+  // Rages, Ki Points, Channel Divinity: whatever this character's class tables state, at the level
+  // they hold in each class. The class knows its own pools, so nothing here names one.
+  const classResources = useMemo(
+    () => resolveClassResources(character, getRuntimeClassById),
+    [character],
+  );
 
   const selectedSpells = useMemo(() => {
     return character.spells.map((entry) => {
@@ -407,6 +415,7 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
             hitDice={hitDicePools}
             slotsByLevel={spellcastingRules.slotsByLevel}
             pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
+            classResources={classResources}
             constitutionModifier={calculateModifier(displayedAbilityScores.constitution)}
             onChange={onChange}
           />

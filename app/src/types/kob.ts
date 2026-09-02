@@ -88,9 +88,25 @@ export interface KobCharacter {
  */
 export interface KobBackpackCanvas {
   nodes: KobBackpackNode[];
+  /** Written since the board gained edges; a canvas saved before that has none. */
+  edges?: KobBackpackEdge[];
 }
 
-export type KobBackpackNodeKind = 'note' | 'link' | 'media';
+export type KobBackpackNodeKind = 'note' | 'link' | 'media' | 'group';
+
+/** Which border an edge leaves or enters by. */
+export type KobBackpackSide = 'top' | 'right' | 'bottom' | 'left';
+
+/** An arrow from one card to another, with the caption the player wrote on it. */
+export interface KobBackpackEdge {
+  id: string;
+  from: string;
+  to: string;
+  fromSide: KobBackpackSide;
+  toSide: KobBackpackSide;
+  label: string;
+  color: string | null;
+}
 
 export interface KobBackpackNode {
   id: string;
@@ -100,7 +116,7 @@ export interface KobBackpackNode {
   y: number;
   width: number;
   height: number;
-  /** A note's body, a link's caption, or a picture's caption. */
+  /** A note's body, a link's caption, a picture's caption, or a group's title. */
   text: string;
   /** An http(s) URL, or a `data:` URL for a small dropped file. Empty on a note. */
   src: string;

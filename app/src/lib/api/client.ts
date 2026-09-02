@@ -12,6 +12,21 @@ const API_BASE = (import.meta.env.VITE_API_BASE ?? '').replace(/\/+$/, '');
 /** Status used for a request that never reached the server at all. */
 export const NETWORK_ERROR_STATUS = 0;
 
+/**
+ * How long to wait before giving up on a request.
+ *
+ * `fetch` has no timeout of its own, so a connection the host never answers leaves the promise
+ * pending for as long as the page is open: every page that derives its spinner from "no result
+ * yet" then spins forever, with nothing in the console. The bound is generous because the free
+ * host sleeps and a cold start measures ~33 s; anything past that is not waking up.
+ */
+export const REQUEST_TIMEOUT_MS = 45_000;
+
+function withTimeout(signal: AbortSignal | undefined): AbortSignal {
+  const timeout = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
+  return signal ? AbortSignal.any([signal, timeout]) : timeout;
+}
+
 export class ApiError extends Error {
   readonly status: number;
   /** The server's `error` string, or `network_error` when the request never landed. */
@@ -80,11 +95,19 @@ export async function apiRequest<T>(method: string, path: string, options: Reque
       credentials: 'include',
       headers: hasBody ? { 'Content-Type': 'application/json' } : undefined,
       body: hasBody ? JSON.stringify(options.body) : undefined,
-      signal: options.signal,
+      signal: withTimeout(options.signal),
     });
   } catch (e) {
+    const timedOut = e instanceof DOMException && e.name === 'TimeoutError';
     const message = e instanceof Error ? e.message : String(e);
-    throw new ApiError(NETWORK_ERROR_STATUS, 'network_error', null, `${method} ${path} did not reach the server: ${message}`);
+    throw new ApiError(
+      NETWORK_ERROR_STATUS,
+      timedOut ? 'request_timeout' : 'network_error',
+      null,
+      timedOut
+        ? `${method} ${path} got no answer in ${REQUEST_TIMEOUT_MS / 1000} seconds. The server may be waking up.`
+        : `${method} ${path} did not reach the server: ${message}`,
+    );
   }
 
   const body = await readBody(response);

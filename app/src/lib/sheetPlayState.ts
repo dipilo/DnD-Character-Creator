@@ -5,7 +5,7 @@
  * renders and never decides. Every function here takes the document and returns the patch to apply,
  * so the owner's page can persist it and the read-only party view can simply not pass a handler.
  */
-import type { Character, CharacterClass } from '@/types/dnd';
+import type { Character, CharacterClass, Class, ClassResource } from '@/types/dnd';
 
 export interface DeathSaves {
   successes: number;
@@ -125,15 +125,16 @@ export const getSlotsUsed = (used: number[] | undefined, slotLevel: number) => u
  * A short rest gets the pact slots back and nothing else. Hit dice are spent *during* a short rest
  * rather than restored by one, so this deliberately leaves them alone.
  */
-export function applyShortRest(): Partial<Character> {
-  return { pactSlotsUsed: [] };
+export function applyShortRest(character?: Character, resources: ResolvedClassResource[] = []): Partial<Character> {
+  if (!character) return { pactSlotsUsed: [] };
+  return { pactSlotsUsed: [], classResourcesUsed: restoreOnRest(character, resources, 'short') };
 }
 
 /**
  * A long rest: full hit points, every spell slot back, and half the character's total hit dice
  * (minimum one) recovered — spread across the classes that have spent any.
  */
-export function applyLongRest(character: Character): Partial<Character> {
+export function applyLongRest(character: Character, resources: ResolvedClassResource[] = []): Partial<Character> {
   const totalLevel = character.classes.reduce((sum, entry) => sum + entry.level, 0);
   let recoverable = Math.max(1, Math.floor(totalLevel / 2));
 
@@ -150,6 +151,7 @@ export function applyLongRest(character: Character): Partial<Character> {
     spellSlotsUsed: [],
     pactSlotsUsed: [],
     deathSaves: { ...EMPTY_DEATH_SAVES },
+    classResourcesUsed: restoreOnRest(character, resources, 'long'),
     // Exhaustion drops by one on a long rest in both editions.
     exhaustion: Math.max(0, (character.exhaustion ?? 0) - 1)
   };
@@ -184,4 +186,100 @@ export function toggleCondition(character: Character, condition: string): Partia
 
 export function setExhaustion(level: number): Partial<Character> {
   return { exhaustion: clamp(Math.trunc(level), 0, MAX_EXHAUSTION) };
+}
+
+/**
+ * One class resource as this character holds it: the pool the class table states, the maximum at
+ * the level they have in that class, and how much of it is spent.
+ *
+ * The table is the class's (`ClassResource`), so nothing here knows what a Rage or a Ki Point is —
+ * a class whose table states no pool column simply produces no tracker.
+ */
+export interface ResolvedClassResource extends ClassResource {
+  /** `<classId>::<resourceId>`, the key on the document. */
+  key: string;
+  classId: string;
+  className: string;
+  /** The level's entry in `perLevel`. Null is the book's "Unlimited". */
+  maximum: number | null;
+  used: number;
+}
+
+export function classResourceKey(classId: string, resourceId: string): string {
+  return `${classId}::${resourceId}`;
+}
+
+/**
+ * Every pool this character has, in class order. `resolveClass` is passed in rather than imported
+ * so this module stays free of the content library, exactly as the rest of it is.
+ */
+export function resolveClassResources(
+  character: Pick<Character, 'classes' | 'classResourcesUsed'>,
+  resolveClass: (classId: string) => Class | undefined,
+): ResolvedClassResource[] {
+  const spent = character.classResourcesUsed ?? {};
+  const resolved: ResolvedClassResource[] = [];
+
+  for (const entry of character.classes) {
+    const cls = resolveClass(entry.classId);
+    for (const resource of cls?.resources ?? []) {
+      const maximum = resource.perLevel[entry.level - 1] ?? 0;
+      // A pool the character has not reached the level for is not an empty tracker, it is no
+      // tracker: the 2024 Cleric gains Channel Divinity at level 2.
+      if (maximum === 0) continue;
+      const key = classResourceKey(entry.classId, resource.id);
+      resolved.push({
+        ...resource,
+        key,
+        classId: entry.classId,
+        className: cls?.name ?? entry.classId,
+        maximum,
+        used: clamp(spent[key] ?? 0, 0, maximum ?? Number.MAX_SAFE_INTEGER),
+      });
+    }
+  }
+
+  return resolved;
+}
+
+export function setClassResourceUsed(
+  character: Character,
+  resource: ResolvedClassResource,
+  next: number,
+): Partial<Character> {
+  const used = clamp(Math.trunc(next), 0, resource.maximum ?? Number.MAX_SAFE_INTEGER);
+  const current = { ...(character.classResourcesUsed ?? {}) };
+  if (used === 0) delete current[resource.key];
+  else current[resource.key] = used;
+  return { classResourcesUsed: current };
+}
+
+/**
+ * What a rest gives back. A resource that comes back fully on this rest is cleared; one the 2024
+ * books hand back a single use of on a short rest is reduced by that much instead, which is what
+ * `shortRestRegain` carries. A resource whose source states no recovery is left alone.
+ */
+function restoreOnRest(
+  character: Character,
+  resources: ResolvedClassResource[],
+  rest: 'short' | 'long',
+): Record<string, number> {
+  const next = { ...(character.classResourcesUsed ?? {}) };
+
+  for (const resource of resources) {
+    const spentNow = next[resource.key] ?? 0;
+    if (spentNow === 0) continue;
+
+    if (resource.resetsOn === rest || (rest === 'long' && resource.resetsOn === 'short')) {
+      delete next[resource.key];
+      continue;
+    }
+    if (rest === 'short' && resource.resetsOn === 'long' && resource.shortRestRegain) {
+      const left = Math.max(0, spentNow - resource.shortRestRegain);
+      if (left === 0) delete next[resource.key];
+      else next[resource.key] = left;
+    }
+  }
+
+  return next;
 }

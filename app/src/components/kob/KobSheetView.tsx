@@ -68,7 +68,7 @@ function BackpackCard({
       <BackpackCanvasDialog
         open={open}
         onOpenChange={setOpen}
-        canvas={canvas}
+        canvas={character.backpackCanvas}
         readOnly={!onChange}
         onChange={(backpackCanvas) => onChange?.({ backpackCanvas })}
       />

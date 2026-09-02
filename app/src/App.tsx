@@ -1,5 +1,8 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+// The `/react` entry, not `/next`: this is a Vite SPA. It patches history, so it counts a
+// react-router navigation without being given the router.
+import { Analytics } from '@vercel/analytics/react';
 import { Layout } from '@/components/Layout';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { HomePage } from '@/pages/HomePage';
@@ -11,6 +14,7 @@ const HomebrewHubPage = lazy(() => import('@/pages/HomebrewHubPage').then((modul
 const CharacterBuilderPage = lazy(() => import('@/pages/CharacterBuilderPage').then((module) => ({ default: module.CharacterBuilderPage })));
 const CharacterSheetPage = lazy(() => import('@/pages/CharacterSheetPage').then((module) => ({ default: module.CharacterSheetPage })));
 const SharedCharacterPage = lazy(() => import('@/pages/SharedCharacterPage').then((module) => ({ default: module.SharedCharacterPage })));
+const SharedWithYouPage = lazy(() => import('@/pages/SharedWithYouPage').then((module) => ({ default: module.SharedWithYouPage })));
 const SpeciesSelection = lazy(() => import('@/pages/builder/SpeciesSelection').then((module) => ({ default: module.SpeciesSelection })));
 const SpeciesDetails = lazy(() => import('@/pages/builder/SpeciesDetails').then((module) => ({ default: module.SpeciesDetails })));
 const ClassSelection = lazy(() => import('@/pages/builder/ClassSelection').then((module) => ({ default: module.ClassSelection })));
@@ -66,6 +70,8 @@ function App() {
               <Route path="/content/import" element={<ImportContentPage />} />
               <Route path="/homebrew" element={<HomebrewHubPage />} />
               <Route path="/characters" element={<MyCharactersPage />} />
+              {/* A character granted to this account by name, which may sit at no campaign at all. */}
+              <Route path="/characters/shared/:characterId" element={<SharedWithYouPage />} />
               <Route path="/dice" element={<DiceRollerPage />} />
               <Route path="/builder" element={<CharacterBuilderPage />}>
                 <Route index element={<Navigate to="species" replace />} />
@@ -132,6 +138,7 @@ function App() {
         </Layout>
       </BrowserRouter>
       <Toaster />
+      <Analytics />
     </>
   );
 }
