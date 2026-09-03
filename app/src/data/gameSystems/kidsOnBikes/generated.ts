@@ -2292,7 +2292,7 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
   },
   "preGameForm": {
     "title": "Pre-Game Form",
-    "intro": "Reference the Content Warning list on the next page for possible themes to include here.",
+    "intro": "Reference the Content Warning list for possible themes to include here.",
     "lists": [
       {
         "id": "wish-list",
@@ -3577,7 +3577,182 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
       }
     ],
     "powerTokens": 7,
-    "aspectsPerPlayer": 2
+    "aspectsPerPlayer": 2,
+    "powerCheck": {
+      "equation": "amount of experience + deviation + scope + degree of control",
+      "factors": [
+        {
+          "id": "degree-of-control",
+          "name": "Degree of Control",
+          "question": "How precise the Powered Character is trying to be.",
+          "options": [
+            {
+              "id": "low",
+              "label": "Low",
+              "modifier": 1,
+              "examples": "e.g., sending a wave of force in all directions, causing an explosion, afflicting all within range with a painful memory"
+            },
+            {
+              "id": "moderate",
+              "label": "Moderate",
+              "modifier": 2,
+              "examples": "e.g., sending a wave of force only in one straight line, causing an explosion that moves only one direction, afflicting one person with a painful memory"
+            },
+            {
+              "id": "high",
+              "label": "High",
+              "modifier": 4,
+              "examples": "e.g., sending a small burst of force some distance away from them, combusting a can of gasoline without allowing the fire to spread"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": "amount-of-experience",
+          "name": "Amount of Experience",
+          "question": "How often the Powered Character has done this.",
+          "options": [
+            {
+              "id": "mastered",
+              "label": "Mastered",
+              "modifier": 0,
+              "examples": "They have practiced this countless times."
+            },
+            {
+              "id": "practiced",
+              "label": "Practiced",
+              "modifier": 2,
+              "examples": "They have tried this quite a few times before."
+            },
+            {
+              "id": "untried",
+              "label": "Untried",
+              "modifier": 4,
+              "examples": "They have done things like this before, but never quite like this."
+            },
+            {
+              "id": "unconceived",
+              "label": "Unconceived",
+              "modifier": 6,
+              "examples": "They have never even thought of using their powers in this way before, or they are trying to use a power for the first time."
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": "deviation",
+          "name": "Deviation",
+          "question": "How much this breaks the rules of the universe.",
+          "options": [
+            {
+              "id": "accelerating-the-expected",
+              "label": "Accelerating the Expected",
+              "modifier": 0,
+              "examples": "e.g., gently eroding a rock, opening a flower’s bud, nudging a coin in someone’s hand"
+            },
+            {
+              "id": "causing-the-expected",
+              "label": "Causing the Expected",
+              "modifier": 1,
+              "examples": "e.g., putting a small crack in a rock, making a seed germinate in their palm, sliding a coin across a table"
+            },
+            {
+              "id": "causing-the-unexpected",
+              "label": "Causing the Unexpected",
+              "modifier": 2,
+              "examples": "e.g., putting a small crack in a diamond, making a plant go from seed to flower in their palm, levitating a coin off the table"
+            },
+            {
+              "id": "reversing-the-expected",
+              "label": "Reversing the Expected",
+              "modifier": 4,
+              "examples": "e.g., sealing a crack in a rock, making a flowered plant return to seed, teleporting a coin"
+            },
+            {
+              "id": "causing-the-impossible",
+              "label": "Causing the Impossible",
+              "modifier": 6,
+              "examples": "e.g., changing the color of a gemstone, making a plant disappear, changing one coin into another"
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": "scope",
+          "name": "Scope",
+          "question": "",
+          "options": [
+            {
+              "id": "tiny",
+              "label": "Tiny",
+              "modifier": 1,
+              "examples": "e.g., creating a spark, nudging a glass of water off a desk, reversing time by a second"
+            },
+            {
+              "id": "small",
+              "label": "Small",
+              "modifier": 2,
+              "examples": "e.g., creating a small fire in their palm, flipping a desk, reversing time by five seconds"
+            },
+            {
+              "id": "medium",
+              "label": "Medium",
+              "modifier": 4,
+              "examples": "e.g., instantly engulfing a person in flames, shoving a parked car a few inches, reversing time by ten seconds"
+            },
+            {
+              "id": "large",
+              "label": "Large",
+              "modifier": 6,
+              "examples": "e.g., instantly engulfing a room in flames, flipping a truck, reversing time by thirty seconds"
+            },
+            {
+              "id": "extra-large",
+              "label": "Extra Large",
+              "modifier": 8,
+              "examples": "Twice the scope of Large"
+            },
+            {
+              "id": "extra-extra-large",
+              "label": "Extra Extra Large",
+              "modifier": 10,
+              "examples": "Three times the scope of Large"
+            }
+          ],
+          "note": "Each time the scope increases by the size of “Large”, add +2 to the difficulty."
+        }
+      ],
+      "consequences": [
+        {
+          "tokens": 1,
+          "text": "No effects or incredibly minor effects (a split second of a headache, a momentary glare in their vision)"
+        },
+        {
+          "tokens": 2,
+          "text": "Minor physical effects (slight headache, minor tremors in the hands, passing blurred vision)"
+        },
+        {
+          "tokens": 3,
+          "text": "Minor mental effects (momentary confusion, passing synesthesia, temporary loss of emotional control)"
+        },
+        {
+          "tokens": 4,
+          "text": "Significant physical effects (stabbing pains, nausea, momentary blindness)"
+        },
+        {
+          "tokens": 5,
+          "text": "Significant mental effects (prolonged disorientation, inability to speak coherently for a few hours, decreased emotional control until fully rested)"
+        },
+        {
+          "tokens": 6,
+          "text": "Profound physical effects (broken bones, blindness until they get a night’s sleep, inability to stand without support until fully rested)"
+        },
+        {
+          "tokens": 7,
+          "text": "Profound mental effects (memory loss, replacement of their personality with a new one until they get a night’s sleep, erratic perception of reality until they get a night’s sleep)"
+        }
+      ]
+    }
   }
 } as const;
 

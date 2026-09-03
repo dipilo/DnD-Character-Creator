@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Pencil, Plus, Sparkles, Trash2, Upload, UserCheck, UserPlus } from 'lucide-react';
+import { FilePlus2, Pencil, Plus, Trash2, Upload, UserCheck, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { claimPlayer, deletePlayer, parseAllowedSourceIds, unclaimPlayer } from '@/lib/api';
 import type { Player } from '@/lib/api';
@@ -41,7 +41,7 @@ function EmptySeatNote({ player, onSeed }: Readonly<{ player: Player; onSeed: ()
         No builder character yet. This seat still carries a D&D Beyond import.
       </p>
       <Button size="sm" variant="outline" onClick={onSeed}>
-        <Sparkles className="h-4 w-4" />
+        <FilePlus2 className="h-4 w-4" />
         Start from it
       </Button>
     </div>

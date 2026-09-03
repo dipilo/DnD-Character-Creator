@@ -7,6 +7,7 @@
 //   - the transport is HTTP, not the WebSocket a `libsql:` URL selects, and
 //   - every statement has a deadline.
 const { createClient } = require('@libsql/client');
+const { fetch: libsqlFetch } = require('@libsql/isomorphic-fetch');
 
 const configuredUrl = process.env.TURSO_DATABASE_URL || process.env.LIBSQL_URL || process.env.DATABASE_URL;
 const authToken = process.env.TURSO_AUTH_TOKEN || process.env.LIBSQL_AUTH_TOKEN || process.env.AUTH_TOKEN;
@@ -49,7 +50,26 @@ function resolveUrl(url) {
 
 const url = resolveUrl(configuredUrl);
 
-let client = createClient({ url, authToken });
+/**
+ * How long one HTTP request to Turso may take. Longer than the statement's own deadline so the
+ * error a caller sees stays `db_timeout`; this bound exists to hang up, not to report.
+ */
+const HTTP_TIMEOUT_MS = STATEMENT_TIMEOUT_MS + 1_000;
+
+/**
+ * The driver's fetch, with a deadline of its own.
+ *
+ * `@libsql/isomorphic-fetch` is node-fetch over keep-alive agents held at module scope, and
+ * node-fetch has no timeout: a pooled socket the network dropped without a FIN takes the request
+ * with it and the promise never settles. Aborting destroys that socket, which is what `recycleClient`
+ * on its own could not do — every client, new or old, draws from those same two agents, so the read
+ * retry went out over the same dead connection and timed out again.
+ */
+function timedFetch(input, init) {
+  return libsqlFetch(input, { ...init, signal: AbortSignal.timeout(HTTP_TIMEOUT_MS) });
+}
+
+let client = createClient({ url, authToken, fetch: timedFetch });
 
 /**
  * Replace the connection after a statement was abandoned. The old one is closed best-effort: it is
@@ -58,7 +78,7 @@ let client = createClient({ url, authToken });
  */
 function recycleClient() {
   const stale = client;
-  client = createClient({ url, authToken });
+  client = createClient({ url, authToken, fetch: timedFetch });
   try {
     stale.close();
   } catch (e) {

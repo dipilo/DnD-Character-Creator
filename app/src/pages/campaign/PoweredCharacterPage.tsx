@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Plus, Sparkles } from 'lucide-react';
+import { Plus, Zap } from 'lucide-react';
 import { toast } from 'sonner';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
@@ -120,7 +119,7 @@ export function PoweredCharacterPage() {
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="flex items-center gap-2 text-lg font-semibold short:text-base">
-          <Sparkles className="h-5 w-5" />
+          <Zap className="h-5 w-5" />
           {kob.poweredCharacter.title || 'Powered Characters'}
         </h2>
         {owner && editing === null ? (
@@ -191,29 +190,6 @@ export function PoweredCharacterPage() {
           </div>
         ),
       )}
-
-      <PoweredCharacterRules />
     </div>
-  );
-}
-
-/** The chapter itself, imported from the rulebook. Collapsed, because it is reference, not a step. */
-function PoweredCharacterRules() {
-  const sections = kob.poweredCharacter.sections.filter((section) => section.name && section.paragraphs.length > 0);
-  if (sections.length === 0) return null;
-
-  return (
-    <Accordion type="single" collapsible className="rounded-md border px-3">
-      {sections.map((section) => (
-        <AccordionItem key={section.id} value={section.id}>
-          <AccordionTrigger className="text-left text-sm">{section.name}</AccordionTrigger>
-          <AccordionContent className="space-y-3 text-sm text-muted-foreground">
-            {section.paragraphs.map((paragraph) => (
-              <p key={paragraph.slice(0, 48)}>{paragraph}</p>
-            ))}
-          </AccordionContent>
-        </AccordionItem>
-      ))}
-    </Accordion>
   );
 }

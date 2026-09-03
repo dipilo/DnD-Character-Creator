@@ -27,6 +27,14 @@ const LIST_HEADING = /^(.+?\bList)\s*\S?$/;
 
 const RULE_LINE = /^_+$/;
 
+/**
+ * A printed book navigates by page and the app has none, so "the Content Warning list on the next
+ * page" points at nothing — the list is a control on the same screen. Only the locator goes: the
+ * sentence still names something the reader can find, which is what separates this from
+ * `dropSectionPointers` cutting a sentence whose target does not exist at all.
+ */
+const PAGE_POINTER = /\s+on (?:the (?:next|previous|opposite|following) page|pages? \d+(?: and \d+)?)/gi;
+
 function slug(text) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
@@ -82,7 +90,7 @@ function parsePreGameForm(page, warn) {
   for (const list of lists) {
     if (!list.prompt) warn(`Appendix A: "${list.name}" has a heading but no prompt.`);
   }
-  return { intro: intro.join(' ').trim(), lists };
+  return { intro: intro.join(' ').replaceAll(PAGE_POINTER, '').trim(), lists };
 }
 
 /**

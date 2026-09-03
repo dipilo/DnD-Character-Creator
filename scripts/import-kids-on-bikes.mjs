@@ -749,7 +749,13 @@ async function readRulebook(file) {
     return {
       preGameForm: { title: '', intro: '', lists: [], contentWarnings: [], additionalPrompt: '' },
       poweredCharacterAspects: { title: '', sections: [] },
-      poweredCharacter: { title: '', sections: [], powerTokens: null, aspectsPerPlayer: null },
+      poweredCharacter: {
+        title: '',
+        sections: [],
+        powerTokens: null,
+        aspectsPerPlayer: null,
+        powerCheck: { equation: '', factors: [], consequences: [] },
+      },
     };
   }
   // Read once: the whole book is 188 pages and both readers find their own sections by heading.

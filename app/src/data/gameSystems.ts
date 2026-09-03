@@ -6,7 +6,7 @@
  * component branches on a system id, and nothing about a system is spelled out in a page.
  */
 
-import { Bike, ClipboardList, Download, FlaskConical, Sparkles, Sword, Users } from 'lucide-react';
+import { Bike, ClipboardList, Download, FlaskConical, Sword, Users, Zap } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export type GameSystemId = 'dnd-5e' | 'kids-on-bikes';
@@ -229,7 +229,7 @@ export const GAME_SYSTEMS: Record<GameSystemId, GameSystemDefinition> = {
     ],
     campaignTabs: [
       { to: 'pre-game', label: 'Pre-Game Form', icon: ClipboardList },
-      { to: 'powered', label: 'Powered Character', icon: Sparkles },
+      { to: 'powered', label: 'Powered Character', icon: Zap },
     ],
     available: true,
     hasSelectableSources: false,

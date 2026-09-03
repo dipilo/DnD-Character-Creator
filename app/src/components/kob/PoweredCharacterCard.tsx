@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { DIE_FACES, getStatName, kob } from '@/data/gameSystems/kidsOnBikes/rules';
+import { PowerCheckPanel } from './PowerCheckPanel';
 import { cn } from '@/lib/utils';
 import { rollOnScreen } from '@/store/diceTrayStore';
 import type { PoweredCharacter, PoweredCharacterAspect } from '@/lib/api';
@@ -81,6 +82,10 @@ export function PoweredCharacterCard({ character, seats, busy, onSpend, onMoveAs
           busy={busy}
           onSpend={onSpend}
         />
+
+        <Separator />
+
+        <PowerCheckPanel name={data.name} spent={data.powerTokens.spent} busy={busy} onSpend={onSpend} />
 
         <Separator />
 

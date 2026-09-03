@@ -210,11 +210,45 @@ export interface KobPoweredCharacterAspects {
  * from its own text rather than written into the app. Null means the sentence was not found, and
  * `meta.warnings` says so.
  */
+/** One step of a difficulty: "Low: +1 (e.g., sending a wave of force in all directions...)". */
+export interface KobPowerCheckOption {
+  id: string;
+  label: string;
+  modifier: number;
+  /** What the book prints in brackets after the modifier, as printed. */
+  examples: string;
+}
+
+export interface KobPowerCheckFactor {
+  id: string;
+  name: string;
+  /** The book's own line under the heading: "How precise the Powered Character is trying to be." */
+  question: string;
+  options: KobPowerCheckOption[];
+  /** A qualification the list ends on. Only Scope has one. */
+  note: string;
+}
+
+/** What spending this many Power Tokens on one attempt costs the Powered Character. */
+export interface KobPowerCheckConsequence {
+  tokens: number;
+  text: string;
+}
+
+export interface KobPowerCheck {
+  /** "amount of experience + deviation + scope + degree of control", as the chapter states it. */
+  equation: string;
+  factors: KobPowerCheckFactor[];
+  consequences: KobPowerCheckConsequence[];
+}
+
 export interface KobPoweredCharacterRules {
   title: string;
+  /** The chapter as prose. Imported for the record; no screen renders it. */
   sections: KobRuleSection[];
   powerTokens: number | null;
   aspectsPerPlayer: number | null;
+  powerCheck: KobPowerCheck;
 }
 
 export interface KobContentMeta {
