@@ -5,15 +5,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
+import { getGameSystem } from '@/data/gameSystems';
+import type { GameSystemCampaignTab } from '@/data/gameSystems';
 import { isCampaignOwner, useCampaignStore } from '@/store/campaignStore';
 
-const TABS = [
+/** The tabs every campaign has, whatever it is played with. */
+const SHARED_TABS: GameSystemCampaignTab[] = [
   { to: 'schedule', label: 'Schedule', icon: CalendarRange },
   { to: 'roster', label: 'Roster', icon: Users },
   { to: 'party', label: 'Party', icon: Swords },
   { to: 'groups', label: 'Groups', icon: UsersRound },
   { to: 'members', label: 'Members & invites', icon: Mail },
-] as const;
+];
 
 /**
  * Resolves the campaign in the URL and the caller's membership in it, then hands both to the tab
@@ -26,6 +29,13 @@ export function CampaignLayout() {
   const { campaigns, membership, loadCampaigns, loadMembership, setActiveCampaign } = useCampaignStore();
 
   const campaign = useMemo(() => campaigns.find((c) => c.id === campaignId) ?? null, [campaigns, campaignId]);
+
+  // A campaign belongs to one game, so its own system decides which extra tabs it has. The list
+  // is the registry's; `CampaignLayout` composes it with the shared ones and names no system.
+  const tabs = useMemo(
+    () => [...SHARED_TABS, ...getGameSystem(campaign?.system_id).campaignTabs],
+    [campaign?.system_id],
+  );
 
   useEffect(() => {
     if (!Number.isFinite(campaignId)) return;
@@ -65,11 +75,11 @@ export function CampaignLayout() {
         {isCampaignOwner(membership) ? <Badge variant="secondary">Owner</Badge> : null}
       </div>
 
-      {/* Five tabs wrap to three rows on a phone and the section header stops reading as one
-          control. A single scrolling row keeps them in one line at any width. */}
+      {/* Five tabs already wrap to three rows on a phone, and a system that adds its own makes it
+          worse. A single scrolling row keeps them in one line at any width. */}
       <nav className="scroll-strip -mx-3 border-b px-3 pb-2 short:pb-1 sm:mx-0 sm:px-0">
         <div className="flex min-w-max gap-1">
-          {TABS.map(({ to, label, icon: Icon }) => (
+          {tabs.map(({ to, label, icon: Icon }) => (
             <NavLink key={to} to={to}>
               {({ isActive }) => (
                 <span

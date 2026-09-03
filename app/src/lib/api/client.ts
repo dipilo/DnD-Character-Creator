@@ -105,7 +105,7 @@ export async function apiRequest<T>(method: string, path: string, options: Reque
       timedOut ? 'request_timeout' : 'network_error',
       null,
       timedOut
-        ? `${method} ${path} got no answer in ${REQUEST_TIMEOUT_MS / 1000} seconds. The server may be waking up.`
+        ? `${method} ${path} got no answer in ${REQUEST_TIMEOUT_MS / 1000} seconds.`
         : `${method} ${path} did not reach the server: ${message}`,
     );
   }

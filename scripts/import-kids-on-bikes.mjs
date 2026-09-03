@@ -5,10 +5,17 @@
  *
  * The vault's notes are the source document, the same way the D&D Beyond HTML dumps are for 5e:
  * nothing here is transcribed into the app by hand, and a gap in the vault is reported rather
- * than filled in. Run it with the vault path, or let it use the default:
+ * than filled in.
+ *
+ * The rulebook PDF beside the vault is the second source, and only for the chapters the vault has
+ * no note for: appendices A (the Pre-Game Form), B (the content warnings) and K (the Powered
+ * Character's aspects), and chapter 5's rules for playing one. It is read on the same terms; see
+ * `lib/kobAppendices.mjs` and `lib/kobChapters.mjs`. A checkout with no rulebook still regenerates
+ * everything the vault supplies, and says what it could not reach.
  *
  *   node scripts/import-kids-on-bikes.mjs
  *   node scripts/import-kids-on-bikes.mjs --vault "C:/…/Obsidian Vault/TTRPG/Kids on Bikes"
+ *   node scripts/import-kids-on-bikes.mjs --rulebook "C:/…/Core Rulebook.pdf"
  *
  * Output: app/src/data/gameSystems/kidsOnBikes/generated.ts
  */
@@ -17,10 +24,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { readRulebookAppendices } from './lib/kobAppendices.mjs';
+import { readPoweredCharacters } from './lib/kobChapters.mjs';
+import { readAllPages } from './lib/pdfText.mjs';
+
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '..');
 
 const DEFAULT_VAULT = 'C:/Users/sgibe/Documents/Obsidian Vault/TTRPG/Kids on Bikes';
+const RULEBOOK_IN_VAULT = ['Source Materials', 'Kids_on_Bikes_Second_Edition_Core_Rulebook.pdf'];
 const OUTPUT = path.join(
   repoRoot,
   'app',
@@ -53,11 +65,13 @@ function warn(message) {
 }
 
 function parseArgs(argv) {
-  const args = { vault: DEFAULT_VAULT };
+  const args = { vault: DEFAULT_VAULT, rulebook: null };
   for (let i = 0; i < argv.length; i += 1) {
-    if (argv[i] === '--vault' && argv[i + 1]) {
-      args.vault = argv[i + 1];
-      i += 1;
+    for (const flag of ['vault', 'rulebook']) {
+      if (argv[i] === `--${flag}` && argv[i + 1]) {
+        args[flag] = argv[i + 1];
+        i += 1;
+      }
     }
   }
   return args;
@@ -710,10 +724,11 @@ function crossCheck({ tropes, strengths, flaws, bikes }) {
 function renderModule(data) {
   const body = JSON.stringify(data, null, 2);
   return `// GENERATED FILE — do not edit by hand.
-// Source: an Obsidian vault of Kids on Bikes (2nd edition) notes.
+// Source: an Obsidian vault of Kids on Bikes (2nd edition) notes, and the rulebook PDF for the
+// three appendices the vault has no note for.
 // Regenerate with: node scripts/import-kids-on-bikes.mjs
 //
-// Every value below is read out of the vault's notes. Anything the notes do not say is absent
+// Every value below is read out of those sources. Anything they do not say is absent
 // here rather than invented; \`meta.warnings\` records what the import could not resolve.
 
 import type { KidsOnBikesContent } from './types';
@@ -724,7 +739,28 @@ export default kidsOnBikesContent;
 `;
 }
 
-function main() {
+/**
+ * Appendices A, B and K, or empty shapes plus a warning when the rulebook is not beside the vault.
+ * A gap here reads the same way a missing note does: reported, never invented.
+ */
+async function readRulebook(file) {
+  if (!fs.existsSync(file)) {
+    warn(`Rulebook not found at ${file} — the Pre-Game Form, the content warnings and the Powered Character did not import. Pass --rulebook "<path>".`);
+    return {
+      preGameForm: { title: '', intro: '', lists: [], contentWarnings: [], additionalPrompt: '' },
+      poweredCharacterAspects: { title: '', sections: [] },
+      poweredCharacter: { title: '', sections: [], powerTokens: null, aspectsPerPlayer: null },
+    };
+  }
+  // Read once: the whole book is 188 pages and both readers find their own sections by heading.
+  const pages = await readAllPages(file);
+  return {
+    ...readRulebookAppendices(pages, warn),
+    poweredCharacter: readPoweredCharacters(pages, warn),
+  };
+}
+
+async function main() {
   const args = parseArgs(process.argv.slice(2));
   const vault = args.vault;
 
@@ -734,6 +770,8 @@ function main() {
     process.exitCode = 1;
     return;
   }
+
+  const rulebook = await readRulebook(args.rulebook ?? path.join(vault, ...RULEBOOK_IN_VAULT));
 
   const tropesNote = readNote(vault, 'Appendices', 'Tropes.md');
   const strengthsNote = readNote(vault, 'Appendices', 'Strengths.md');
@@ -771,7 +809,7 @@ function main() {
     meta: {
       systemId: 'kids-on-bikes',
       label: 'Kids on Bikes (2nd Edition)',
-      source: 'Obsidian vault notes',
+      source: 'Obsidian vault notes; rulebook chapter 5 and appendices A, B and K',
       importedAt: new Date().toISOString().slice(0, 10),
       warnings,
     },
@@ -786,6 +824,9 @@ function main() {
     bondedActions,
     relationshipQuestions,
     playRules: playNote ? parsePlayRules(playNote) : { sections: [], difficulties: [] },
+    preGameForm: rulebook.preGameForm,
+    poweredCharacterAspects: rulebook.poweredCharacterAspects,
+    poweredCharacter: rulebook.poweredCharacter,
   };
 
   fs.mkdirSync(path.dirname(OUTPUT), { recursive: true });
@@ -797,7 +838,10 @@ function main() {
       `${bikes.colors.length} bike colours, ${bikes.upgrades.length} upgrades, ` +
       `${bondedActions.actions.length} bonded actions, ` +
       `${data.playRules.sections.length} play-rule sections, ${data.playRules.difficulties.length} difficulty bands, ` +
-      `${relationshipQuestions.positive.length}/${relationshipQuestions.negative.length}/${relationshipQuestions.stranger.length} relationship questions`,
+      `${relationshipQuestions.positive.length}/${relationshipQuestions.negative.length}/${relationshipQuestions.stranger.length} relationship questions, ` +
+      `${rulebook.preGameForm.lists.length} pre-game lists, ${rulebook.preGameForm.contentWarnings.length} content warnings, ` +
+      `${rulebook.poweredCharacterAspects.sections.reduce((total, section) => total + section.groups.length, 0)} aspect tables, ` +
+      `${rulebook.poweredCharacter.sections.length} Powered Character sections`,
   );
   if (warnings.length > 0) {
     console.log(`  ${warnings.length} warning(s):`);
@@ -805,4 +849,4 @@ function main() {
   }
 }
 
-main();
+await main();

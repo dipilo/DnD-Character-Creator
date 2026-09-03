@@ -21,12 +21,16 @@ const health = (req, res) => {
 router.get('/health', health);
 router.get('/api/health', health);
 
-  // Lightweight DB diagnostics (optional token-protected)
+  // Lightweight DB diagnostics, gated on DIAG_TOKEN.
+  //
+  // This answers with the database URL and every table's schema, so an unset token used to mean
+  // "publish it": the route was live and unauthenticated on the deployed host. Absent or wrong
+  // both read as 404 rather than 403, for the same reason a character id does.
   router.get('/diag/db', async (req, res) => {
     try {
       const token = process.env.DIAG_TOKEN || process.env.DIAGNOSTIC_TOKEN;
-      if (token && req.get('X-Diag-Token') !== token) {
-        return res.status(403).json({ error: 'forbidden' });
+      if (!token || req.get('X-Diag-Token') !== token) {
+        return res.status(404).json({ error: 'not_found' });
       }
 
       const expected = [

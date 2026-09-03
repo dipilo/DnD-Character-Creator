@@ -195,6 +195,11 @@ router.delete('/api/campaigns/:campaignId', requireCampaignAccess('owner'), asyn
     await db.transaction(async (trx) => {
       await trx.run('DELETE FROM invites WHERE campaign_id = ?', cid);
       await trx.run('DELETE FROM campaign_members WHERE campaign_id = ?', cid);
+      // A Pre-Game Form is scoped to one table and means nothing away from it, so unlike a
+      // character it goes with the campaign rather than being detached from it.
+      await trx.run('DELETE FROM pre_game_forms WHERE campaign_id = ?', cid);
+      // The Powered Character belongs to the table, not to any of its players.
+      await trx.run('DELETE FROM powered_characters WHERE campaign_id = ?', cid);
       await trx.run('UPDATE availability SET campaign_id = NULL WHERE campaign_id = ?', cid);
       await trx.run('UPDATE players SET campaign_id = NULL WHERE campaign_id = ?', cid);
       // A character belongs to a user, not to a campaign (MERGE_PLAN.md §9): deleting the campaign
@@ -239,6 +244,10 @@ router.post('/api/campaigns/:campaignId/leave', requireCampaignAccess(), async (
 
     // Remove user from campaign_members
     await db.run('DELETE FROM campaign_members WHERE campaign_id = ? AND user_id = ?', campaignId, user.id);
+    // Their Pre-Game Form goes with them. It is a statement about playing at *this* table,
+    // so leaving it feeding the compiled merge would report a consent nobody at the table
+    // still holds.
+    await db.run('DELETE FROM pre_game_forms WHERE campaign_id = ? AND user_id = ?', campaignId, user.id);
     await detachUserCharacters(campaignId, user.id);
 
     // Clean up any orphaned campaign-scoped users
@@ -688,6 +697,10 @@ router.delete('/api/campaigns/:campaignId/members/:memberId', requireCampaignAcc
         member.player_id,
       );
     }
+    // The removed member's Pre-Game Form goes with them. It is a statement about playing at *this* table,
+    // so leaving it feeding the compiled merge would report a consent nobody at the table
+    // still holds.
+    await db.run('DELETE FROM pre_game_forms WHERE campaign_id = ? AND user_id = ?', req.campaign.id, member.user_id);
     await detachUserCharacters(req.campaign.id, member.user_id);
     await cleanupOrphanedUser(member.user_id);
     res.json({ ok: true });

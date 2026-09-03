@@ -6,7 +6,7 @@
  * component branches on a system id, and nothing about a system is spelled out in a page.
  */
 
-import { Bike, Download, FlaskConical, Sword, Users } from 'lucide-react';
+import { Bike, ClipboardList, Download, FlaskConical, Sparkles, Sword, Users } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export type GameSystemId = 'dnd-5e' | 'kids-on-bikes';
@@ -59,6 +59,14 @@ export interface GameSystemNavItem {
   description?: string;
 }
 
+/** One tab a game system adds inside a campaign. */
+export interface GameSystemCampaignTab {
+  /** Relative to `/campaign/:campaignId`. */
+  to: string;
+  label: string;
+  icon: LucideIcon;
+}
+
 export interface GameSystemDefinition {
   id: GameSystemId;
   /** Full title, used in headings and the system picker. */
@@ -86,6 +94,15 @@ export interface GameSystemDefinition {
   routePrefixes: string[];
   /** This system's own nav destinations, shown while it is the active game. */
   navItems: GameSystemNavItem[];
+  /**
+   * Tabs this system adds to a campaign, beside the shared Schedule, Roster, Party, Groups and
+   * Members. `to` is relative to `/campaign/:campaignId`.
+   *
+   * A campaign belongs to one game, so which of these are shown follows the campaign's own
+   * `system_id` — the same reason `hasSelectableSources` lives here rather than as an id check in
+   * `CampaignLayout`.
+   */
+  campaignTabs: GameSystemCampaignTab[];
   /** False while a system is still being built out — it stays visible but is not selectable. */
   available: boolean;
   /**
@@ -156,6 +173,7 @@ export const GAME_SYSTEMS: Record<GameSystemId, GameSystemDefinition> = {
         description: 'Make your own species, classes, spells, feats, and monsters.',
       },
     ],
+    campaignTabs: [],
     available: true,
     hasSelectableSources: true,
     dice: {
@@ -208,6 +226,10 @@ export const GAME_SYSTEMS: Record<GameSystemId, GameSystemDefinition> = {
         match: '/kob',
         description: 'Trope, age, Strengths and a Flaw — then the bike. Open one or start another.',
       },
+    ],
+    campaignTabs: [
+      { to: 'pre-game', label: 'Pre-Game Form', icon: ClipboardList },
+      { to: 'powered', label: 'Powered Character', icon: Sparkles },
     ],
     available: true,
     hasSelectableSources: false,

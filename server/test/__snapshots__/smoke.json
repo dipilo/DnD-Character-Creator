@@ -1,5 +1,5 @@
 {
-  "requests": 183,
+  "requests": 205,
   "results": [
     {
       "name": "root",
@@ -16,6 +16,14 @@
         "status": "healthy",
         "timestamp": "<volatile>",
         "uptime": "<volatile>"
+      }
+    },
+    {
+      "name": "diag-db-no-token",
+      "request": "GET /diag/db",
+      "status": 404,
+      "body": {
+        "error": "not_found"
       }
     },
     {
@@ -3029,6 +3037,565 @@
       }
     },
     {
+      "name": "pre-game-form-without-campaign",
+      "request": "GET /api/pre-game-form",
+      "status": 400,
+      "body": {
+        "error": "campaign_id required"
+      }
+    },
+    {
+      "name": "pre-game-form-before-answering",
+      "request": "GET /api/pre-game-form?campaign_id=2",
+      "status": 200,
+      "body": {
+        "form": null,
+        "ok": true
+      }
+    },
+    {
+      "name": "pre-game-form-save",
+      "request": "PUT /api/pre-game-form",
+      "status": 200,
+      "body": {
+        "form": {
+          "campaign_id": 2,
+          "data": {
+            "lists": {
+              "wish-list": {
+                "notes": [
+                  "Bikes at dusk"
+                ],
+                "warnings": [
+                  "Bugs"
+                ]
+              }
+            }
+          },
+          "owner_name": null,
+          "updated_at": "<volatile>",
+          "user_id": 2
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "pre-game-form-save-not-an-object",
+      "request": "PUT /api/pre-game-form",
+      "status": 400,
+      "body": {
+        "error": "data_must_be_an_object"
+      }
+    },
+    {
+      "name": "pre-game-form-save-ellis",
+      "request": "PUT /api/pre-game-form",
+      "status": 200,
+      "body": {
+        "form": {
+          "campaign_id": 2,
+          "data": {
+            "lists": {
+              "detour-list": {
+                "notes": [
+                  "Nothing about hospitals"
+                ],
+                "warnings": [
+                  "Gore"
+                ]
+              },
+              "wish-list": {
+                "notes": [],
+                "warnings": [
+                  "Bugs"
+                ]
+              }
+            }
+          },
+          "owner_name": null,
+          "updated_at": "<volatile>",
+          "user_id": 4
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "pre-game-form-mine",
+      "request": "GET /api/pre-game-form?campaign_id=2",
+      "status": 200,
+      "body": {
+        "form": {
+          "campaign_id": 2,
+          "data": {
+            "lists": {
+              "wish-list": {
+                "notes": [
+                  "Bikes at dusk"
+                ],
+                "warnings": [
+                  "Bugs"
+                ]
+              }
+            }
+          },
+          "owner_name": null,
+          "updated_at": "<volatile>",
+          "user_id": 2
+        },
+        "ok": true
+      }
+    },
+    {
+      "name": "pre-game-form-summary",
+      "request": "GET /api/pre-game-form/summary?campaign_id=2",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "summary": {
+          "lists": {
+            "detour-list": [
+              "Gore",
+              "Nothing about hospitals"
+            ],
+            "wish-list": [
+              "Bikes at dusk",
+              "Bugs"
+            ]
+          },
+          "respondents": 2
+        }
+      }
+    },
+    {
+      "name": "pre-game-forms-as-member",
+      "request": "GET /api/pre-game-forms?campaign_id=2",
+      "status": 403,
+      "body": {
+        "error": "owner_required"
+      }
+    },
+    {
+      "name": "pre-game-forms-as-owner",
+      "request": "GET /api/pre-game-forms?campaign_id=2",
+      "status": 200,
+      "body": {
+        "forms": [
+          {
+            "campaign_id": 2,
+            "data": {
+              "lists": {
+                "wish-list": {
+                  "notes": [
+                    "Bikes at dusk"
+                  ],
+                  "warnings": [
+                    "Bugs"
+                  ]
+                }
+              }
+            },
+            "owner_name": "bob",
+            "updated_at": "<volatile>",
+            "user_id": 2
+          },
+          {
+            "campaign_id": 2,
+            "data": {
+              "lists": {
+                "detour-list": {
+                  "notes": [
+                    "Nothing about hospitals"
+                  ],
+                  "warnings": [
+                    "Gore"
+                  ]
+                },
+                "wish-list": {
+                  "notes": [],
+                  "warnings": [
+                    "Bugs"
+                  ]
+                }
+              }
+            },
+            "owner_name": "Ellis",
+            "updated_at": "<volatile>",
+            "user_id": 4
+          }
+        ],
+        "ok": true
+      }
+    },
+    {
+      "name": "powered-character-create-as-member",
+      "request": "POST /api/powered-characters",
+      "status": 403,
+      "body": {
+        "error": "owner_required"
+      }
+    },
+    {
+      "name": "powered-character-create",
+      "request": "POST /api/powered-characters",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "powered_character": {
+          "campaign_id": 2,
+          "data": {
+            "aspects": [
+              {
+                "active": false,
+                "hidden": false,
+                "holder": null,
+                "id": "a1",
+                "text": "Flinches at sirens"
+              },
+              {
+                "active": false,
+                "hidden": true,
+                "holder": null,
+                "id": "a2",
+                "text": "Can stop a clock"
+              }
+            ],
+            "concept": "Remembers a town that is not there",
+            "fears": [
+              {
+                "id": "f1",
+                "revealed": false,
+                "text": "Running water"
+              }
+            ],
+            "hiddenAspects": 0,
+            "hiddenFears": 0,
+            "name": "The Boy in the Wall",
+            "powerTokens": {
+              "pool": 7,
+              "spent": 0
+            },
+            "stats": {
+              "brains": "d12",
+              "grit": "d8"
+            }
+          },
+          "id": 1,
+          "is_owner": true,
+          "updated_at": "<volatile>",
+          "version": 1
+        }
+      }
+    },
+    {
+      "name": "powered-characters-as-owner",
+      "request": "GET /api/powered-characters?campaign_id=2",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "powered_characters": [
+          {
+            "campaign_id": 2,
+            "data": {
+              "aspects": [
+                {
+                  "active": false,
+                  "hidden": false,
+                  "holder": null,
+                  "id": "a1",
+                  "text": "Flinches at sirens"
+                },
+                {
+                  "active": false,
+                  "hidden": true,
+                  "holder": null,
+                  "id": "a2",
+                  "text": "Can stop a clock"
+                }
+              ],
+              "concept": "Remembers a town that is not there",
+              "fears": [
+                {
+                  "id": "f1",
+                  "revealed": false,
+                  "text": "Running water"
+                }
+              ],
+              "hiddenAspects": 0,
+              "hiddenFears": 0,
+              "name": "The Boy in the Wall",
+              "powerTokens": {
+                "pool": 7,
+                "spent": 0
+              },
+              "stats": {
+                "brains": "d12",
+                "grit": "d8"
+              }
+            },
+            "id": 1,
+            "is_owner": true,
+            "updated_at": "<volatile>",
+            "version": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "powered-characters-as-member",
+      "request": "GET /api/powered-characters?campaign_id=2",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "powered_characters": [
+          {
+            "campaign_id": 2,
+            "data": {
+              "aspects": [
+                {
+                  "active": false,
+                  "hidden": false,
+                  "holder": null,
+                  "id": "a1",
+                  "text": "Flinches at sirens"
+                }
+              ],
+              "concept": "Remembers a town that is not there",
+              "fears": [],
+              "hiddenAspects": 1,
+              "hiddenFears": 1,
+              "name": "The Boy in the Wall",
+              "powerTokens": {
+                "pool": 7,
+                "spent": 0
+              },
+              "stats": {
+                "brains": "d12",
+                "grit": "d8"
+              }
+            },
+            "id": 1,
+            "is_owner": false,
+            "updated_at": "<volatile>",
+            "version": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "powered-character-play",
+      "request": "PUT /api/powered-characters/1/play",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "powered_character": {
+          "campaign_id": 2,
+          "data": {
+            "aspects": [
+              {
+                "active": true,
+                "hidden": false,
+                "holder": null,
+                "id": "a1",
+                "text": "Flinches at sirens"
+              }
+            ],
+            "concept": "Remembers a town that is not there",
+            "fears": [],
+            "hiddenAspects": 1,
+            "hiddenFears": 1,
+            "name": "The Boy in the Wall",
+            "powerTokens": {
+              "pool": 7,
+              "spent": 2
+            },
+            "stats": {
+              "brains": "d12",
+              "grit": "d8"
+            }
+          },
+          "id": 1,
+          "is_owner": false,
+          "updated_at": "<volatile>",
+          "version": 2
+        }
+      }
+    },
+    {
+      "name": "powered-character-edit-as-member",
+      "request": "PUT /api/powered-characters/1",
+      "status": 403,
+      "body": {
+        "error": "owner_required"
+      }
+    },
+    {
+      "name": "powered-character-edit-stale",
+      "request": "PUT /api/powered-characters/1",
+      "status": 409,
+      "body": {
+        "error": "version_conflict",
+        "powered_character": {
+          "campaign_id": 2,
+          "data": {
+            "aspects": [
+              {
+                "active": true,
+                "hidden": false,
+                "holder": null,
+                "id": "a1",
+                "text": "Flinches at sirens"
+              },
+              {
+                "active": false,
+                "hidden": true,
+                "holder": null,
+                "id": "a2",
+                "text": "Can stop a clock"
+              }
+            ],
+            "concept": "Remembers a town that is not there",
+            "fears": [
+              {
+                "id": "f1",
+                "revealed": false,
+                "text": "Running water"
+              }
+            ],
+            "hiddenAspects": 0,
+            "hiddenFears": 0,
+            "name": "The Boy in the Wall",
+            "powerTokens": {
+              "pool": 7,
+              "spent": 2
+            },
+            "stats": {
+              "brains": "d12",
+              "grit": "d8"
+            }
+          },
+          "id": 1,
+          "is_owner": true,
+          "updated_at": "<volatile>",
+          "version": 2
+        }
+      }
+    },
+    {
+      "name": "powered-character-reveal-fear",
+      "request": "PUT /api/powered-characters/1",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "powered_character": {
+          "campaign_id": 2,
+          "data": {
+            "aspects": [
+              {
+                "active": true,
+                "hidden": false,
+                "holder": null,
+                "id": "a1",
+                "text": "Flinches at sirens"
+              },
+              {
+                "active": false,
+                "hidden": false,
+                "holder": null,
+                "id": "a2",
+                "text": "Can stop a clock"
+              }
+            ],
+            "concept": "",
+            "fears": [
+              {
+                "id": "f1",
+                "revealed": true,
+                "text": "Running water"
+              }
+            ],
+            "hiddenAspects": 0,
+            "hiddenFears": 0,
+            "name": "The Boy in the Wall",
+            "powerTokens": {
+              "pool": 7,
+              "spent": 2
+            },
+            "stats": {
+              "brains": "d12",
+              "grit": "d8"
+            }
+          },
+          "id": 1,
+          "is_owner": true,
+          "updated_at": "<volatile>",
+          "version": 3
+        }
+      }
+    },
+    {
+      "name": "powered-characters-after-reveal",
+      "request": "GET /api/powered-characters?campaign_id=2",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "powered_characters": [
+          {
+            "campaign_id": 2,
+            "data": {
+              "aspects": [
+                {
+                  "active": true,
+                  "hidden": false,
+                  "holder": null,
+                  "id": "a1",
+                  "text": "Flinches at sirens"
+                },
+                {
+                  "active": false,
+                  "hidden": false,
+                  "holder": null,
+                  "id": "a2",
+                  "text": "Can stop a clock"
+                }
+              ],
+              "concept": "",
+              "fears": [
+                {
+                  "id": "f1",
+                  "revealed": true,
+                  "text": "Running water"
+                }
+              ],
+              "hiddenAspects": 0,
+              "hiddenFears": 0,
+              "name": "The Boy in the Wall",
+              "powerTokens": {
+                "pool": 7,
+                "spent": 2
+              },
+              "stats": {
+                "brains": "d12",
+                "grit": "d8"
+              }
+            },
+            "id": 1,
+            "is_owner": false,
+            "updated_at": "<volatile>",
+            "version": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "powered-character-in-another-campaign",
+      "request": "GET /api/powered-characters?campaign_id=1",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "powered_characters": []
+      }
+    },
+    {
       "name": "remove-member-as-member",
       "request": "DELETE /api/campaigns/2/members/8",
       "status": 403,
@@ -3121,6 +3688,22 @@
       "status": 403,
       "body": {
         "error": "not_a_member"
+      }
+    },
+    {
+      "name": "pre-game-form-as-removed-member",
+      "request": "GET /api/pre-game-form/summary?campaign_id=2",
+      "status": 403,
+      "body": {
+        "error": "not_a_member"
+      }
+    },
+    {
+      "name": "powered-character-play-as-removed-member",
+      "request": "PUT /api/powered-characters/1/play",
+      "status": 404,
+      "body": {
+        "error": "powered_character_not_found"
       }
     },
     {

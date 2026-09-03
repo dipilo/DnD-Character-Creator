@@ -3,6 +3,8 @@ export * from './auth';
 export * from './characters';
 export * from './campaigns';
 export * from './players';
+export * from './poweredCharacters';
+export * from './preGameForms';
 export * from './availability';
 export * from './groups';
 export * from './invites';

@@ -25,6 +25,8 @@ const usersRoutes = require('./routes/users');
 const availabilityRoutes = require('./routes/availability');
 const runtimeRoutes = require('./routes/runtime');
 const charactersRoutes = require('./routes/characters');
+const preGameFormRoutes = require('./routes/preGameForms');
+const poweredCharacterRoutes = require('./routes/poweredCharacters');
 
 const app = express();
 // Behind a reverse proxy (Render, Vercel, etc.), trust the first proxy hop
@@ -124,6 +126,8 @@ app.use(availabilityRoutes);
 // New in Phase 2, so it has no original position to preserve; it sits last because everything
 // above it is the scheduler's declaration order and nothing here overlaps those paths.
 app.use(charactersRoutes);
+app.use(preGameFormRoutes);
+app.use(poweredCharacterRoutes);
 
 const port = config.port || 3001;
 

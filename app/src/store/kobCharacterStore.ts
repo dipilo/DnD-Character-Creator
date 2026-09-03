@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { KobBackpackCanvas, KobCharacter, KobConsentSheet } from '@/types/kob';
-import { KOB_STAT_IDS, statDiceForTrope } from '@/data/gameSystems/kidsOnBikes/rules';
+import { KOB_STAT_IDS, statDiceForTrope } from '@/data/gameSystems/kidsOnBikes/identity';
 import type { KobDie, KobStatId } from '@/data/gameSystems/kidsOnBikes/types';
 import { createDebouncedLocalStorage } from '@/lib/debouncedStorage';
 import type { CharacterSyncMeta, PendingSeat } from '@/store/syncTypes';

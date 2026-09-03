@@ -257,6 +257,35 @@ async function ensureSchema(db) {
     FOREIGN KEY(character_id) REFERENCES characters(id)
   )`);
 
+  // The Powered Character (Kids on Bikes, chapter 5). It belongs to a campaign rather than to a
+  // user, because the whole table co-controls it — which is also why `version` is here: the GM
+  // edits the document while players spend Power Tokens against the same row.
+  await db.run(`CREATE TABLE IF NOT EXISTS powered_characters (
+    id INTEGER PRIMARY KEY,
+    campaign_id INTEGER NOT NULL,
+    data TEXT NOT NULL,
+    version INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY(campaign_id) REFERENCES campaigns(id)
+  )`);
+
+  // The Pre-Game Form (Kids on Bikes, Appendix A). One row per member per campaign, holding that
+  // member's own answers as one JSON document — the same posture as `characters.data`, except that
+  // `server/lib/preGameForm.js` reads inside it, because the compiled merge the rest of the table
+  // sees is a privacy boundary and cannot be assembled by a client that was never sent the forms.
+  await db.run(`CREATE TABLE IF NOT EXISTS pre_game_forms (
+    id INTEGER PRIMARY KEY,
+    campaign_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    data TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now')),
+    UNIQUE(campaign_id, user_id),
+    FOREIGN KEY(campaign_id) REFERENCES campaigns(id),
+    FOREIGN KEY(user_id) REFERENCES users(id)
+  )`);
+
   await db.run(`CREATE TABLE IF NOT EXISTS availability (
     id INTEGER PRIMARY KEY,
     player_id INTEGER,
@@ -384,6 +413,8 @@ async function ensureSchema(db) {
   await safeCreateIndex('CREATE UNIQUE INDEX IF NOT EXISTS idx_characters_share_token ON characters(share_token)', ['share_token'], 'characters');
   await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_character_grants_character ON character_grants(character_id)', ['character_id'], 'character_grants');
   await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_character_grants_subject ON character_grants(subject_type, subject_id)', ['subject_id'], 'character_grants');
+  await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_pre_game_forms_campaign ON pre_game_forms(campaign_id)', ['campaign_id'], 'pre_game_forms');
+  await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_powered_characters_campaign ON powered_characters(campaign_id)', ['campaign_id'], 'powered_characters');
 }
 
 module.exports = { ensureSchema };

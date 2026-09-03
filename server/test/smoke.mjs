@@ -102,7 +102,8 @@ const mask = (s) => masked.reduce((acc, secret) => acc.replaceAll(secret, '<gene
 const steps = [
   { name: 'root', method: 'GET', path: '/' },
   { name: 'health', method: 'GET', path: '/health' },
-  { name: 'diag-db', method: 'GET', path: '/diag/db' },
+  { name: 'diag-db-no-token', method: 'GET', path: '/diag/db' },
+  { name: 'diag-db', method: 'GET', path: '/diag/db', headers: { 'X-Diag-Token': 'smoke-diag-token' } },
   { name: 'discord-authorize-unconfigured', method: 'GET', path: '/auth/discord', redirect: 'manual' },
 
   { name: 'signup-passwordless-without-campaign', method: 'POST', path: '/auth/signup', body: { username: 'alice' } },
@@ -317,6 +318,39 @@ const steps = [
   { name: 'join-camp2-by-id', method: 'POST', path: () => `/api/campaigns/${ctx.camp2}/members`, headers: () => asUser('dara') },
   { name: 'camp2-members-after-direct-join', method: 'GET', path: () => `/api/campaigns/${ctx.camp2}/members`, headers: () => asUser('alice'), capture: (j) => { ctx.camp2Owner = j.members?.find((m) => m.role === 'owner')?.id; ctx.camp2Dara = j.members?.find((m) => m.user_id === ctx.dara)?.id; } },
 
+  // The Pre-Game Form. Who may read what is the whole feature: your own form, the table's
+  // compiled answers with nobody's name on them, and — for the owner alone — each form as written.
+  { name: 'pre-game-form-without-campaign', method: 'GET', path: '/api/pre-game-form', headers: () => asUser('bob') },
+  { name: 'pre-game-form-before-answering', method: 'GET', path: () => `/api/pre-game-form?campaign_id=${ctx.camp2}`, headers: () => asUser('bob') },
+  // A bogus list id, a duplicate, a non-string and a list that is not an object: all dropped on
+  // the way in, because a list nobody can see in the form is one nobody can revoke from the merge.
+  { name: 'pre-game-form-save', method: 'PUT', path: '/api/pre-game-form', headers: () => asUser('bob'), body: () => ({ campaign_id: ctx.camp2, data: { lists: { 'wish-list': { warnings: ['Bugs', 'Bugs', 42], notes: ['  Bikes at dusk  '] }, 'Not A Slug': { warnings: ['leaked'] }, 'detour-list': 'nope' } } }) },
+  { name: 'pre-game-form-save-not-an-object', method: 'PUT', path: '/api/pre-game-form', headers: () => asUser('bob'), body: () => ({ campaign_id: ctx.camp2, data: 'nope' }) },
+  { name: 'pre-game-form-save-ellis', method: 'PUT', path: '/api/pre-game-form', headers: () => asUser('ellis'), body: () => ({ campaign_id: ctx.camp2, data: { lists: { 'wish-list': { warnings: ['Bugs'], notes: [] }, 'detour-list': { warnings: ['Gore'], notes: ['Nothing about hospitals'] } } } }) },
+  { name: 'pre-game-form-mine', method: 'GET', path: () => `/api/pre-game-form?campaign_id=${ctx.camp2}`, headers: () => asUser('bob') },
+  // Two people answered and "Bugs" is on both wish lists; the merge says it once and says nothing
+  // about who wrote it.
+  { name: 'pre-game-form-summary', method: 'GET', path: () => `/api/pre-game-form/summary?campaign_id=${ctx.camp2}`, headers: () => asUser('bob') },
+  { name: 'pre-game-forms-as-member', method: 'GET', path: () => `/api/pre-game-forms?campaign_id=${ctx.camp2}`, headers: () => asUser('bob') },
+  { name: 'pre-game-forms-as-owner', method: 'GET', path: () => `/api/pre-game-forms?campaign_id=${ctx.camp2}`, headers: () => asUser('alice') },
+
+  // The Powered Character. The GM owns the document; every member writes the play state; and what
+  // the GM held back never leaves the server — the counts do, because the table can see the cards
+  // are face down.
+  { name: 'powered-character-create-as-member', method: 'POST', path: '/api/powered-characters', headers: () => asUser('bob'), body: () => ({ campaign_id: ctx.camp2, data: { name: 'Not yours' } }) },
+  { name: 'powered-character-create', method: 'POST', path: '/api/powered-characters', headers: () => asUser('alice'), body: () => ({ campaign_id: ctx.camp2, data: { name: 'The Boy in the Wall', concept: 'Remembers a town that is not there', stats: { brains: 'd12', grit: 'd8' }, powerTokens: { pool: 7, spent: 0 }, aspects: [{ id: 'a1', text: 'Flinches at sirens' }, { id: 'a2', text: 'Can stop a clock', hidden: true }], fears: [{ id: 'f1', text: 'Running water' }] } }), capture: (j) => { ctx.pc = j.powered_character?.id; ctx.pcVersion = j.powered_character?.version; } },
+  { name: 'powered-characters-as-owner', method: 'GET', path: () => `/api/powered-characters?campaign_id=${ctx.camp2}`, headers: () => asUser('alice') },
+  { name: 'powered-characters-as-member', method: 'GET', path: () => `/api/powered-characters?campaign_id=${ctx.camp2}`, headers: () => asUser('bob') },
+  // A player spends two Power Tokens and turns an Aspect sideways; the id they cannot see is
+  // silently ignored, and so is the name they tried to change.
+  { name: 'powered-character-play', method: 'PUT', path: () => `/api/powered-characters/${ctx.pc}/play`, headers: () => asUser('bob'), body: { spent: 2, name: 'Renamed', aspects: [{ id: 'a1', active: true }, { id: 'a2', active: true }] } },
+  { name: 'powered-character-edit-as-member', method: 'PUT', path: () => `/api/powered-characters/${ctx.pc}`, headers: () => asUser('bob'), body: () => ({ version: 1, data: { name: 'Hijacked' } }) },
+  // The GM's edit was written against the card as it was before that move, so it is refused.
+  { name: 'powered-character-edit-stale', method: 'PUT', path: () => `/api/powered-characters/${ctx.pc}`, headers: () => asUser('alice'), body: () => ({ version: ctx.pcVersion, data: { name: 'Stale' } }) },
+  { name: 'powered-character-reveal-fear', method: 'PUT', path: () => `/api/powered-characters/${ctx.pc}`, headers: () => asUser('alice'), body: () => ({ version: ctx.pcVersion + 1, data: { name: 'The Boy in the Wall', stats: { brains: 'd12', grit: 'd8' }, powerTokens: { pool: 7, spent: 2 }, aspects: [{ id: 'a1', text: 'Flinches at sirens', active: true }, { id: 'a2', text: 'Can stop a clock' }], fears: [{ id: 'f1', text: 'Running water', revealed: true }] } }) },
+  { name: 'powered-characters-after-reveal', method: 'GET', path: () => `/api/powered-characters?campaign_id=${ctx.camp2}`, headers: () => asUser('bob') },
+  { name: 'powered-character-in-another-campaign', method: 'GET', path: () => `/api/powered-characters?campaign_id=${ctx.camp}`, headers: () => asUser('ellis') },
+
   // The owner's two removals. Neither destroys anything: a removed member's seat goes back to
   // unclaimed, and a character taken off the table is only unshared.
   { name: 'remove-member-as-member', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp2}/members/${ctx.camp2Dara}`, headers: () => asUser('bob') },
@@ -325,6 +359,8 @@ const steps = [
   { name: 'remove-member-again', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp2}/members/${ctx.camp2Dara}`, headers: () => asUser('alice') },
   { name: 'camp2-members-after-removal', method: 'GET', path: () => `/api/campaigns/${ctx.camp2}/members`, headers: () => asUser('alice') },
   { name: 'removed-member-cannot-read-camp2', method: 'GET', path: () => `/api/campaigns/${ctx.camp2}/members`, headers: () => asUser('dara') },
+  { name: 'pre-game-form-as-removed-member', method: 'GET', path: () => `/api/pre-game-form/summary?campaign_id=${ctx.camp2}`, headers: () => asUser('dara') },
+  { name: 'powered-character-play-as-removed-member', method: 'PUT', path: () => `/api/powered-characters/${ctx.pc}/play`, headers: () => asUser('dara'), body: { spent: 99 } },
 
   { name: 'seat-character-in-camp2', method: 'PUT', path: '/api/characters/char-imported/seat', headers: () => asUser('alice'), body: () => ({ campaign_id: ctx.camp2 }) },
   { name: 'remove-campaign-character-as-member', method: 'DELETE', path: () => `/api/campaigns/${ctx.camp2}/characters/char-imported`, headers: () => asUser('bob') },
@@ -432,6 +468,8 @@ async function main() {
       // not what it is testing. Raising them here is what lets the step list keep growing.
       RATE_LIMIT_MAX: '100000',
       AUTH_RATE_LIMIT_MAX: '100000',
+      // /diag/db is deny-by-default now, so the scenario has to hold the token to reach it.
+      DIAG_TOKEN: 'smoke-diag-token',
     },
     stdio: ['ignore', 'pipe', 'pipe'],
   });

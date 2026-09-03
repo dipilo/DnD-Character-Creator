@@ -37,6 +37,8 @@ const SchedulePage = lazy(() => import('@/pages/campaign/SchedulePage').then((mo
 const RosterPage = lazy(() => import('@/pages/campaign/RosterPage').then((module) => ({ default: module.RosterPage })));
 const GroupsPage = lazy(() => import('@/pages/campaign/GroupsPage').then((module) => ({ default: module.GroupsPage })));
 const MembersPage = lazy(() => import('@/pages/campaign/MembersPage').then((module) => ({ default: module.MembersPage })));
+const PreGameFormPage = lazy(() => import('@/pages/campaign/PreGameFormPage').then((module) => ({ default: module.PreGameFormPage })));
+const PoweredCharacterPage = lazy(() => import('@/pages/campaign/PoweredCharacterPage').then((module) => ({ default: module.PoweredCharacterPage })));
 const InviteLandingPage = lazy(() => import('@/pages/campaign/InviteLandingPage').then((module) => ({ default: module.InviteLandingPage })));
 // Kids on Bikes. A second game system, so its screens are lazy for the same reason the campaign
 // ones are: nobody building a D&D character should download another game's content.
@@ -128,6 +130,8 @@ function App() {
                 <Route path="party/:characterId/edit" element={<CampaignCharacterEditPage />} />
                 <Route path="groups" element={<GroupsPage />} />
                 <Route path="members" element={<MembersPage />} />
+                <Route path="pre-game" element={<PreGameFormPage />} />
+                <Route path="powered" element={<PoweredCharacterPage />} />
               </Route>
 
               {/* A branch that matches no child falls through to here, so a wrong link inside a

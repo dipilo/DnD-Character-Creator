@@ -10,7 +10,7 @@
  * Direction still holds: this module imports the stores and no store imports it.
  */
 import { DEFAULT_GAME_SYSTEM_ID, type GameSystemId } from '@/data/gameSystems';
-import { describeKobCharacter, fullName } from '@/data/gameSystems/kidsOnBikes/rules';
+import { fullName } from '@/data/gameSystems/kidsOnBikes/identity';
 import { useCharacterStore } from '@/store/characterStore';
 import { useKobCharacterStore } from '@/store/kobCharacterStore';
 import type { CharacterSyncMeta, PendingSeat } from '@/store/syncTypes';
@@ -107,7 +107,12 @@ const kobAdapter: DocumentStoreAdapter<KobCharacter> = {
   clearPendingDelete: (id) => kobStore().clearPendingDelete(id),
   setPendingSeat: (id, seat) => kobStore().setPendingSeat(id, seat),
   nameOf: (document) => fullName(document) || 'Unnamed',
-  describe: (document) => Promise.resolve(describeKobCharacter(document)),
+  // Dynamic for the same reason as the D&D adapter above: naming the trope and the age needs the
+  // imported content pack, and a static import of it here puts all of it in the boot graph.
+  describe: async (document) => {
+    const { describeKobCharacter } = await import('@/data/gameSystems/kidsOnBikes/rules');
+    return describeKobCharacter(document);
+  },
   withId: (document, id) => (document.id === id ? document : { ...document, id }),
   conflictCopy: (document) => ({
     ...document,

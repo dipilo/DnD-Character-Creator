@@ -148,6 +148,75 @@ export interface KobPlayRules {
   difficulties: KobDifficultyBand[];
 }
 
+/** One of the Pre-Game Form's four lists (Appendix A), with the question the book prints under it. */
+export interface KobPreGameList {
+  id: string;
+  name: string;
+  prompt: string;
+}
+
+/**
+ * Appendix A and Appendix B, which the form asks for together: the four lists, and the picklist
+ * of themes the first of them says to reference.
+ */
+export interface KobPreGameForm {
+  title: string;
+  intro: string;
+  lists: KobPreGameList[];
+  contentWarnings: string[];
+  /** The book's own heading over the blank rules a table adds its own warnings on. */
+  additionalPrompt: string;
+}
+
+export interface KobAspectEntry {
+  roll: number;
+  text: string;
+}
+
+/**
+ * One numbered table under a prompt. Most have a single unlabelled list; the Powers table has two,
+ * headed "Heads" and "Tails", because it is rolled with a coin as well as a die.
+ */
+export interface KobAspectVariant {
+  label: string;
+  entries: KobAspectEntry[];
+}
+
+export interface KobAspectGroup {
+  id: string;
+  prompt: string;
+  variants: KobAspectVariant[];
+}
+
+/** A "Fill in the Blanks" heading and the tables printed under it. */
+export interface KobAspectSection {
+  id: string;
+  name: string;
+  /** The die the heading names, e.g. "d12". */
+  die: string;
+  groups: KobAspectGroup[];
+}
+
+/** Appendix K: what the players fill in about a Powered Character. */
+export interface KobPoweredCharacterAspects {
+  title: string;
+  sections: KobAspectSection[];
+}
+
+/**
+ * Chapter 5, the Powered Character: the co-controlled character the GM introduces.
+ *
+ * `powerTokens` and `aspectsPerPlayer` are the two counts the chapter states in a sentence, read
+ * from its own text rather than written into the app. Null means the sentence was not found, and
+ * `meta.warnings` says so.
+ */
+export interface KobPoweredCharacterRules {
+  title: string;
+  sections: KobRuleSection[];
+  powerTokens: number | null;
+  aspectsPerPlayer: number | null;
+}
+
 export interface KobContentMeta {
   systemId: string;
   label: string;
@@ -170,4 +239,7 @@ export interface KidsOnBikesContent {
   bondedActions: KobBondedActions;
   relationshipQuestions: KobRelationshipQuestions;
   playRules: KobPlayRules;
+  preGameForm: KobPreGameForm;
+  poweredCharacterAspects: KobPoweredCharacterAspects;
+  poweredCharacter: KobPoweredCharacterRules;
 }

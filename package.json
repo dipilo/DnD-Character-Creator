@@ -27,6 +27,7 @@
     "generate:free-core": "node scripts/generate-free-core-sources.mjs"
   },
   "devDependencies": {
-    "febdnddata": "^1.0.0-09f6c01"
+    "febdnddata": "^1.0.0-09f6c01",
+    "pdfjs-dist": "^6.3.289"
   }
 }

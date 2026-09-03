@@ -470,3 +470,79 @@ export interface SheetImportResult {
   detail: SheetPlanDetail;
   players: Player[];
 }
+
+/**
+ * One list of the Pre-Game Form. `warnings` are picked from Appendix B's list, `notes` are the
+ * player's own lines; both are the author's words and the compiled merge carries both.
+ */
+export interface PreGameFormList {
+  warnings: string[];
+  notes: string[];
+}
+
+export interface PreGameFormData {
+  lists: Record<string, PreGameFormList>;
+}
+
+export interface PreGameForm {
+  campaign_id: number;
+  user_id: number;
+  owner_name: string | null;
+  data: PreGameFormData;
+  updated_at: string | null;
+}
+
+/**
+ * The table's answers with nobody's name on them. `respondents` is a count and not a roster, for
+ * the same reason the lines carry no author.
+ */
+export interface PreGameFormSummary {
+  respondents: number;
+  lists: Record<string, string[]>;
+}
+
+/** One Aspect of a Powered Character. A hidden one never leaves the server for a player. */
+export interface PoweredCharacterAspect {
+  id: string;
+  text: string;
+  /** The seat this Aspect sits in front of, or null while it is still in the middle of the table. */
+  holder: number | null;
+  /** Turned sideways, the book's signal that this Aspect is what the moment is about. */
+  active: boolean;
+  hidden: boolean;
+}
+
+export interface PoweredCharacterFear {
+  id: string;
+  text: string;
+  revealed: boolean;
+}
+
+export interface PoweredCharacterData {
+  name: string;
+  concept: string;
+  /** Stat id to die, e.g. `{ brains: 'd12' }`. */
+  stats: Record<string, string>;
+  powerTokens: { pool: number; spent: number };
+  aspects: PoweredCharacterAspect[];
+  fears: PoweredCharacterFear[];
+  /** How many cards are face down. The text is not sent; the count is, because the table sees them. */
+  hiddenAspects: number;
+  hiddenFears: number;
+}
+
+export interface PoweredCharacter {
+  id: number;
+  campaign_id: number;
+  version: number;
+  /** Whether the caller runs this campaign, and so may write the document rather than only play it. */
+  is_owner: boolean;
+  data: PoweredCharacterData;
+  updated_at: string | null;
+}
+
+/** What every member may write: Power Tokens spent, and which Aspects are turned and in front of whom. */
+export interface PoweredCharacterPlayPatch {
+  spent?: number;
+  aspects?: { id: string; active?: boolean; holder?: number | null }[];
+}
