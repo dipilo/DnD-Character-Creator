@@ -2608,12 +2608,21 @@ const extractSubclassRows = (raw) => {
   return rows;
 };
 
+// "<Something> Spells" is not always a class's spell list. The 2014 Basic Rules index the spell
+// descriptions alphabetically under "A Spells" … "Z Spells", and the chapter also carries
+// "Beast Spells", "Signature Spells" and "Known and Prepared Spells" — every one of which used to
+// become a class, so all 304 spells listed their own initial as a class they belong to. The name
+// has to resolve to a real class.
 const extractSpellClassMap = (raw) => {
   const classesBySpellId = new Map();
   const blocks = [...collectHeadingBlocks(raw, 2), ...collectHeadingBlocks(raw, 3)].filter((block) => / spells$/i.test(block.title));
 
   for (const block of blocks) {
     const className = block.title.replace(/ spells$/i, '').trim();
+    if (!getClassIdFromName(className)) {
+      continue;
+    }
+
     for (const match of block.content.matchAll(/href="#([^"]+)"/gi)) {
       const spellId = match[1];
       if (!classesBySpellId.has(spellId)) {

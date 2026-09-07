@@ -153,3 +153,23 @@
   width: 100%;
   height: 100%;
 }
+/* The play sheet is a dense document, not a page of cards. shadcn's Card is py-6/gap-6/px-6, which
+   costs ~72px of chrome per panel — with a dozen panels that is most of a laptop screen spent on
+   padding, and it is why so much of the sheet could only be reached by scrolling. Scoped to the
+   sheet so nothing else in the app changes.
+   IMPORTANT: outside @layer, because the attribute selectors target shadcn's data-slot values
+   rather than class names Tailwind's scanner can see. */
+.sheet-dense [data-slot='card'] {
+  gap: 0.75rem;
+  padding-block: 0.875rem;
+}
+
+.sheet-dense [data-slot='card-header'],
+.sheet-dense [data-slot='card-content'],
+.sheet-dense [data-slot='card-footer'] {
+  padding-inline: 0.875rem;
+}
+
+.sheet-dense [data-slot='card-header'] {
+  gap: 0.25rem;
+}

@@ -40,14 +40,17 @@ export function CharacterSheetPage() {
     );
   }
 
-  const handleEdit = () => {
+  /** Open the builder on a particular step. The character has to be loaded into it first. */
+  const handleOpenBuilder = (path: string) => {
     if (!loadCharacterIntoBuilder(character.id)) {
       toast.error('Character could not be opened in the builder');
       return;
     }
 
-    navigate('/builder/review');
+    navigate(path);
   };
+
+  const handleEdit = () => handleOpenBuilder('/builder/review');
 
   const handleDelete = () => {
     if (confirm(`Are you sure you want to delete ${character.name}?`)) {
@@ -80,6 +83,7 @@ export function CharacterSheetPage() {
     <CharacterSheetView
       character={character}
       onChange={handleChange}
+      onOpenBuilder={handleOpenBuilder}
       leading={(
         <Button variant="outline" size="sm" className="coarse:min-h-11" onClick={() => navigate('/characters')}>
           <ArrowLeft className="mr-2 h-4 w-4" />

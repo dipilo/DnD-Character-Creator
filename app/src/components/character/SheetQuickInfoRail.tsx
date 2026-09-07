@@ -7,10 +7,9 @@
 //
 // It writes nothing of its own. The hit-point panel hands its patches back through the single
 // optional `onChange`, and a roll goes to the shared dice tray, which changes no document.
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { rollD20 } from '@/lib/d20Rolls';
-import { formatModifier, type SheetVitals } from '@/lib/sheetDerivations';
+import { ABILITY_ABBREVIATIONS, formatModifier, type SheetVitals } from '@/lib/sheetDerivations';
 import type { DerivedArmorClass } from '@/lib/builderRules';
 import { SheetHitPointsPanel } from '@/components/character/SheetHitPointsPanel';
 import { SheetVitalsPanel } from '@/components/character/SheetVitalsPanel';
@@ -97,7 +96,10 @@ export function SheetQuickInfoRail({
         />
       )}
 
-      <div className={cn('grid gap-2', railIsColumn ? 'grid-cols-2' : 'grid-cols-3 sm:gap-4')}>
+      {/* Three across in the rail as well: two columns of tall boxes cost a third of the column's
+          height before the first panel, which is what pushed saves and skills off the screen. The
+          label is the three-letter form there, because "CONSTITUTION" does not fit a 95px box. */}
+      <div className={cn('grid gap-2', railIsColumn ? 'grid-cols-3' : 'grid-cols-3 sm:gap-4')}>
         {Object.entries(abilityScores).map(([ability, score]) => {
           const mod = calculateModifier(score);
           const bonus = abilityBonusFor(ability as keyof AbilityScores);
@@ -106,7 +108,7 @@ export function SheetQuickInfoRail({
             <button
               key={ability}
               type="button"
-              className="min-h-11 rounded-lg border bg-card p-2 text-center transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:p-3"
+              className="min-h-11 rounded-lg border bg-card p-2 text-center transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
               onClick={() =>
                 void rollD20({
                   modifier: mod,
@@ -115,16 +117,19 @@ export function SheetQuickInfoRail({
                 })
               }
             >
-              <p className="mb-1 text-xs uppercase text-muted-foreground">{ability}</p>
-              <p className="text-2xl font-bold">{score}</p>
-              <Badge variant={mod >= 0 ? 'default' : 'secondary'} className="mt-1">
-                {formatModifier(mod)}
-              </Badge>
-              {bonus !== 0 && (
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Base {baseAbilityScores[ability as keyof AbilityScores]}, bonus {formatModifier(bonus)}
-                </p>
-              )}
+              <p className="text-[0.65rem] font-medium uppercase leading-4 tracking-wide text-muted-foreground">
+                {railIsColumn ? ABILITY_ABBREVIATIONS[ability as keyof AbilityScores] : ability}
+              </p>
+              <p className="text-xl font-bold leading-6 tabular-nums">{formatModifier(mod)}</p>
+              <p className="text-xs leading-4 text-muted-foreground tabular-nums">
+                {score}
+                {bonus === 0 ? null : (
+                  <span className="ml-1">
+                    ({baseAbilityScores[ability as keyof AbilityScores]}
+                    {formatModifier(bonus)})
+                  </span>
+                )}
+              </p>
             </button>
           );
         })}
@@ -134,8 +139,10 @@ export function SheetQuickInfoRail({
 
       {railIsColumn ? (
         <>
-          <ArmorClassCard armor={armor} />
-          <ProficiencyBonusCard proficiencyBonus={proficiencyBonus} totalLevel={totalLevel} />
+          <div className="grid grid-cols-2 gap-3">
+            <ArmorClassCard armor={armor} />
+            <ProficiencyBonusCard proficiencyBonus={proficiencyBonus} totalLevel={totalLevel} />
+          </div>
           <SheetVitalsPanel vitals={vitals} variant="rail" />
         </>
       ) : null}
@@ -150,8 +157,8 @@ export function ArmorClassCard({ armor }: Readonly<{ armor: DerivedArmorClass }>
         <CardTitle className="text-sm text-muted-foreground">Armor Class</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-3xl font-bold">{armor.value}</p>
-        <p className="mt-1 text-xs text-muted-foreground">{armor.source}</p>
+        <p className="text-2xl font-bold leading-7">{armor.value}</p>
+        <p className="mt-0.5 text-xs leading-4 text-muted-foreground">{armor.source}</p>
         {!armor.proficient && (
           <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
             Current armor is equipped without matching proficiency.
@@ -172,8 +179,8 @@ export function ProficiencyBonusCard({
         <CardTitle className="text-sm text-muted-foreground">Proficiency Bonus</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-3xl font-bold">{formatModifier(proficiencyBonus)}</p>
-        <p className="mt-1 text-xs text-muted-foreground">Level {totalLevel}</p>
+        <p className="text-2xl font-bold leading-7">{formatModifier(proficiencyBonus)}</p>
+        <p className="mt-0.5 text-xs leading-4 text-muted-foreground">Level {totalLevel}</p>
       </CardContent>
     </Card>
   );

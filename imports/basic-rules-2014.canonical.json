@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2014 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-09-06T21:19:47.492Z",
+    "importedAt": "2026-09-07T11:13:01.553Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -6729,8 +6729,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "A"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -6754,8 +6753,7 @@
         "concentration": false,
         "classes": [
           "Cleric",
-          "Paladin",
-          "A"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -6778,8 +6776,7 @@
         "concentration": false,
         "classes": [
           "Ranger",
-          "Wizard",
-          "A"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -6801,8 +6798,7 @@
         "concentration": true,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "A"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -6827,8 +6823,7 @@
         "classes": [
           "Bard",
           "Druid",
-          "Ranger",
-          "A"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -6853,8 +6848,7 @@
         "classes": [
           "Bard",
           "Druid",
-          "Ranger",
-          "A"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -6875,8 +6869,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Druid",
-          "A"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -6902,8 +6895,7 @@
         "concentration": false,
         "classes": [
           "Cleric",
-          "Wizard",
-          "A"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -6927,8 +6919,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "A"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -6949,8 +6940,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Druid",
-          "A"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -6973,8 +6963,7 @@
         "concentration": true,
         "classes": [
           "Cleric",
-          "Wizard",
-          "A"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -6997,8 +6986,7 @@
         "concentration": false,
         "classes": [
           "Druid",
-          "Wizard",
-          "A"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7020,8 +7008,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Wizard",
-          "A"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7044,8 +7031,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Wizard",
-          "A"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7072,8 +7058,7 @@
         "classes": [
           "Cleric",
           "Warlock",
-          "Wizard",
-          "A"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7097,8 +7082,7 @@
         "ritual": true,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "A"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7123,8 +7107,7 @@
         "concentration": false,
         "classes": [
           "Bard",
-          "Druid",
-          "A"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7148,8 +7131,7 @@
         "concentration": true,
         "classes": [
           "Bard",
-          "Cleric",
-          "B"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7176,8 +7158,7 @@
           "Paladin",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "B"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7200,8 +7181,7 @@
         "concentration": true,
         "classes": [
           "Druid",
-          "Ranger",
-          "B"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7222,8 +7202,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Cleric",
-          "B"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7247,8 +7226,7 @@
         "classes": [
           "Bard",
           "Cleric",
-          "Wizard",
-          "B"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7269,8 +7247,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Cleric",
-          "B"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7294,8 +7271,7 @@
         "concentration": true,
         "classes": [
           "Cleric",
-          "Paladin",
-          "B"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7320,8 +7296,7 @@
           "Druid",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "B"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7345,8 +7320,7 @@
           "Bard",
           "Cleric",
           "Sorcerer",
-          "Wizard",
-          "B"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7368,8 +7342,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "B"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7390,8 +7363,7 @@
         "concentration": true,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "B"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7412,8 +7384,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Paladin",
-          "B"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7436,8 +7407,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "B"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7459,8 +7429,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Druid",
-          "C"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7482,8 +7451,7 @@
         "concentration": true,
         "classes": [
           "Bard",
-          "Cleric",
-          "C"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7509,8 +7477,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7536,8 +7503,7 @@
           "Druid",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7560,8 +7526,7 @@
         "classes": [
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7586,8 +7551,7 @@
         "classes": [
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7613,8 +7577,7 @@
           "Bard",
           "Cleric",
           "Sorcerer",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7644,8 +7607,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7668,8 +7630,7 @@
         "concentration": true,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7695,8 +7656,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7718,8 +7678,7 @@
         "concentration": false,
         "classes": [
           "Cleric",
-          "Paladin",
-          "C"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7741,8 +7700,7 @@
         "ritual": true,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "C"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7764,8 +7722,7 @@
         "concentration": false,
         "classes": [
           "Druid",
-          "Ranger",
-          "C"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7790,8 +7747,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7812,8 +7768,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Bard",
-          "C"
+          "Bard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7837,8 +7792,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7864,8 +7818,7 @@
           "Bard",
           "Druid",
           "Sorcerer",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7888,8 +7841,7 @@
         "concentration": true,
         "classes": [
           "Druid",
-          "Ranger",
-          "C"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7911,8 +7863,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Cleric",
-          "C"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7939,8 +7890,7 @@
         "concentration": true,
         "classes": [
           "Druid",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7963,8 +7913,7 @@
         "concentration": true,
         "classes": [
           "Druid",
-          "Warlock",
-          "C"
+          "Warlock"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -7987,8 +7936,7 @@
         "concentration": true,
         "classes": [
           "Druid",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8012,8 +7960,7 @@
         "concentration": true,
         "classes": [
           "Druid",
-          "Ranger",
-          "C"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8034,8 +7981,7 @@
         "concentration": false,
         "classes": [
           "Warlock",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8054,8 +8000,7 @@
         "concentration": false,
         "classes": [
           "Cleric",
-          "Druid",
-          "C"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8078,8 +8023,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8103,8 +8047,7 @@
         "concentration": false,
         "classes": [
           "Cleric",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8128,8 +8071,7 @@
         "classes": [
           "Cleric",
           "Druid",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8153,8 +8095,7 @@
         "classes": [
           "Cleric",
           "Druid",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8177,8 +8118,7 @@
         "classes": [
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8200,8 +8140,7 @@
         "concentration": false,
         "classes": [
           "Cleric",
-          "Paladin",
-          "C"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8225,8 +8164,7 @@
         "concentration": false,
         "classes": [
           "Cleric",
-          "Druid",
-          "C"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8253,8 +8191,7 @@
         "classes": [
           "Cleric",
           "Warlock",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8278,8 +8215,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "C"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8305,8 +8241,7 @@
           "Cleric",
           "Druid",
           "Paladin",
-          "Ranger",
-          "C"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8331,8 +8266,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "D"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8355,8 +8289,7 @@
         "classes": [
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "D"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8381,8 +8314,7 @@
           "Druid",
           "Ranger",
           "Sorcerer",
-          "Wizard",
-          "D"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8407,8 +8339,7 @@
           "Druid",
           "Paladin",
           "Ranger",
-          "Sorcerer",
-          "D"
+          "Sorcerer"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8430,8 +8361,7 @@
         "concentration": false,
         "classes": [
           "Cleric",
-          "Paladin",
-          "D"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8455,8 +8385,7 @@
         "concentration": true,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "D"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8477,8 +8406,7 @@
         "concentration": false,
         "classes": [
           "Warlock",
-          "Wizard",
-          "D"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8500,8 +8428,7 @@
         "concentration": true,
         "classes": [
           "Cleric",
-          "Paladin",
-          "D"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8528,8 +8455,7 @@
           "Paladin",
           "Ranger",
           "Sorcerer",
-          "Wizard",
-          "D"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8554,8 +8480,7 @@
           "Cleric",
           "Druid",
           "Paladin",
-          "Ranger",
-          "D"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8579,8 +8504,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "D"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8603,8 +8527,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "D"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8627,8 +8550,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "D"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8652,8 +8574,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "D"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8676,8 +8597,7 @@
         "concentration": true,
         "classes": [
           "Cleric",
-          "Paladin",
-          "D"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8705,8 +8625,7 @@
           "Paladin",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "D"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8730,8 +8649,7 @@
         "ritual": true,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "D"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8752,8 +8670,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Paladin",
-          "D"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8773,8 +8690,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "D"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8797,8 +8713,7 @@
         "concentration": true,
         "classes": [
           "Druid",
-          "Sorcerer",
-          "D"
+          "Sorcerer"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8823,8 +8738,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "D"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8848,8 +8762,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "D"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8875,8 +8788,7 @@
         "classes": [
           "Bard",
           "Warlock",
-          "Wizard",
-          "D"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8897,8 +8809,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Druid",
-          "D"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8924,8 +8835,7 @@
         "classes": [
           "Cleric",
           "Druid",
-          "Sorcerer",
-          "E"
+          "Sorcerer"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8946,8 +8856,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Warlock",
-          "E"
+          "Warlock"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8973,8 +8882,7 @@
           "Bard",
           "Cleric",
           "Druid",
-          "Sorcerer",
-          "E"
+          "Sorcerer"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -8997,8 +8905,7 @@
         "concentration": true,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "E"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9019,8 +8926,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Druid",
-          "E"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9042,8 +8948,7 @@
         "concentration": false,
         "classes": [
           "Bard",
-          "Warlock",
-          "E"
+          "Warlock"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9069,8 +8974,7 @@
           "Cleric",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "E"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9093,8 +8997,7 @@
         "classes": [
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "E"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9118,8 +9021,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "E"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9140,8 +9042,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9162,8 +9063,7 @@
         "concentration": true,
         "classes": [
           "Bard",
-          "Druid",
-          "F"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9187,8 +9087,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9213,8 +9112,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9237,8 +9135,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9266,8 +9163,7 @@
           "Bard",
           "Druid",
           "Warlock",
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9291,8 +9187,7 @@
         "ritual": true,
         "concentration": false,
         "classes": [
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9313,8 +9208,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Paladin",
-          "F"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9342,8 +9236,7 @@
         "classes": [
           "Bard",
           "Cleric",
-          "Druid",
-          "F"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9366,8 +9259,7 @@
         "classes": [
           "Cleric",
           "Druid",
-          "Ranger",
-          "F"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9390,8 +9282,7 @@
         "classes": [
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9415,8 +9306,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9438,8 +9328,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9461,8 +9350,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9485,8 +9373,7 @@
         "classes": [
           "Cleric",
           "Druid",
-          "Sorcerer",
-          "F"
+          "Sorcerer"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9509,8 +9396,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Druid",
-          "F"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9533,8 +9419,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "F"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9560,8 +9445,7 @@
         "concentration": true,
         "classes": [
           "Druid",
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9586,8 +9470,7 @@
         "concentration": true,
         "classes": [
           "Warlock",
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9612,8 +9495,7 @@
         "classes": [
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9638,8 +9520,7 @@
           "Druid",
           "Ranger",
           "Sorcerer",
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9664,8 +9545,7 @@
         "ritual": true,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "F"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9690,8 +9570,7 @@
         "classes": [
           "Bard",
           "Warlock",
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9716,8 +9595,7 @@
           "Bard",
           "Druid",
           "Warlock",
-          "Wizard",
-          "F"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9743,8 +9621,7 @@
           "Bard",
           "Cleric",
           "Druid",
-          "Ranger",
-          "F"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9768,8 +9645,7 @@
         "classes": [
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "G"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9794,8 +9670,7 @@
         "classes": [
           "Cleric",
           "Sorcerer",
-          "Wizard",
-          "G"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9820,8 +9695,7 @@
           "Cleric",
           "Druid",
           "Paladin",
-          "Wizard",
-          "G"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9845,8 +9719,7 @@
         "concentration": false,
         "classes": [
           "Cleric",
-          "Wizard",
-          "G"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9867,8 +9740,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Druid",
-          "G"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9889,8 +9761,7 @@
         "concentration": false,
         "classes": [
           "Bard",
-          "Warlock",
-          "G"
+          "Warlock"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9914,8 +9785,7 @@
         "concentration": true,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "G"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9941,8 +9811,7 @@
         "classes": [
           "Bard",
           "Cleric",
-          "Wizard",
-          "G"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9965,8 +9834,7 @@
         "concentration": false,
         "classes": [
           "Druid",
-          "Ranger",
-          "G"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -9988,8 +9856,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Wizard",
-          "G"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10012,8 +9879,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "G"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10038,8 +9904,7 @@
         "classes": [
           "Bard",
           "Cleric",
-          "Druid",
-          "G"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10059,8 +9924,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "G"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10087,8 +9951,7 @@
         "concentration": false,
         "classes": [
           "Bard",
-          "Wizard",
-          "G"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10110,8 +9973,7 @@
         "concentration": true,
         "classes": [
           "Cleric",
-          "Druid",
-          "G"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10133,8 +9995,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "G"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10158,8 +10019,7 @@
         "classes": [
           "Druid",
           "Sorcerer",
-          "Wizard",
-          "G"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10185,8 +10045,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "H"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10213,8 +10072,7 @@
           "Bard",
           "Druid",
           "Warlock",
-          "Wizard",
-          "H"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10235,8 +10093,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "H"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10259,8 +10116,7 @@
         "concentration": true,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "H"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10283,8 +10139,7 @@
         "concentration": false,
         "classes": [
           "Cleric",
-          "Druid",
-          "H"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10307,8 +10162,7 @@
         "classes": [
           "Bard",
           "Cleric",
-          "Druid",
-          "H"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10332,8 +10186,7 @@
         "concentration": true,
         "classes": [
           "Bard",
-          "Druid",
-          "H"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10355,8 +10208,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Warlock",
-          "H"
+          "Warlock"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10381,8 +10233,7 @@
         "concentration": false,
         "classes": [
           "Cleric",
-          "Druid",
-          "H"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10405,8 +10256,7 @@
         "concentration": true,
         "classes": [
           "Bard",
-          "Paladin",
-          "H"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10433,8 +10283,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "H"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10463,8 +10312,7 @@
           "Druid",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "H"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10488,8 +10336,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Cleric",
-          "H"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10510,8 +10357,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Ranger",
-          "H"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10535,8 +10381,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "H"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10561,8 +10406,7 @@
         "classes": [
           "Druid",
           "Sorcerer",
-          "Wizard",
-          "I"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10585,8 +10429,7 @@
         "concentration": false,
         "classes": [
           "Bard",
-          "Wizard",
-          "I"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10610,8 +10453,7 @@
         "classes": [
           "Bard",
           "Warlock",
-          "Wizard",
-          "I"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10636,8 +10478,7 @@
         "concentration": false,
         "classes": [
           "Warlock",
-          "Wizard",
-          "I"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10659,8 +10500,7 @@
         "concentration": true,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "I"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10682,8 +10522,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "I"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10710,8 +10549,7 @@
         "classes": [
           "Cleric",
           "Druid",
-          "Sorcerer",
-          "I"
+          "Sorcerer"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10737,8 +10575,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "I"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10763,8 +10600,7 @@
           "Druid",
           "Ranger",
           "Sorcerer",
-          "Wizard",
-          "J"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10786,8 +10622,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "K"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10813,8 +10648,7 @@
         "classes": [
           "Bard",
           "Cleric",
-          "Wizard",
-          "L"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10839,8 +10673,7 @@
           "Cleric",
           "Druid",
           "Paladin",
-          "Ranger",
-          "L"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10863,8 +10696,7 @@
         "concentration": true,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "L"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10888,8 +10720,7 @@
           "Bard",
           "Cleric",
           "Sorcerer",
-          "Wizard",
-          "L"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10915,8 +10746,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "L"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10940,8 +10770,7 @@
         "classes": [
           "Bard",
           "Druid",
-          "Ranger",
-          "L"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10968,8 +10797,7 @@
           "Druid",
           "Paladin",
           "Ranger",
-          "Wizard",
-          "L"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -10996,8 +10824,7 @@
           "Druid",
           "Paladin",
           "Ranger",
-          "Wizard",
-          "L"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11023,8 +10850,7 @@
           "Bard",
           "Druid",
           "Ranger",
-          "Wizard",
-          "L"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11047,8 +10873,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11072,8 +10897,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11100,8 +10924,7 @@
           "Cleric",
           "Paladin",
           "Warlock",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11126,8 +10949,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11150,8 +10972,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11175,8 +10996,7 @@
         "concentration": false,
         "classes": [
           "Bard",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11199,8 +11019,7 @@
         "concentration": true,
         "classes": [
           "Paladin",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11226,8 +11045,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11251,8 +11069,7 @@
         "classes": [
           "Bard",
           "Cleric",
-          "Druid",
-          "M"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11273,8 +11090,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "M"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11295,8 +11111,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "M"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11321,8 +11136,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11343,8 +11157,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11366,8 +11179,7 @@
         "concentration": false,
         "classes": [
           "Cleric",
-          "Druid",
-          "M"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11393,8 +11205,7 @@
           "Cleric",
           "Druid",
           "Sorcerer",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11418,8 +11229,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11441,8 +11251,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11464,8 +11273,7 @@
         "concentration": false,
         "classes": [
           "Bard",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11489,8 +11297,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11513,8 +11320,7 @@
         "classes": [
           "Bard",
           "Druid",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11537,8 +11343,7 @@
         "classes": [
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11559,8 +11364,7 @@
         "concentration": true,
         "classes": [
           "Bard",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11582,8 +11386,7 @@
         "classes": [
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11606,8 +11409,7 @@
         "concentration": true,
         "classes": [
           "Bard",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11630,8 +11432,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Druid",
-          "M"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11655,8 +11456,7 @@
         "concentration": true,
         "classes": [
           "Bard",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11682,8 +11482,7 @@
         "classes": [
           "Druid",
           "Sorcerer",
-          "Wizard",
-          "M"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11708,8 +11507,7 @@
         "classes": [
           "Bard",
           "Ranger",
-          "Wizard",
-          "N"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11730,8 +11528,7 @@
         "concentration": true,
         "classes": [
           "Bard",
-          "Wizard",
-          "O"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11754,8 +11551,7 @@
         "concentration": true,
         "classes": [
           "Druid",
-          "Ranger",
-          "P"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11777,8 +11573,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11800,8 +11595,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11822,8 +11616,7 @@
         "ritual": true,
         "concentration": false,
         "classes": [
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11844,8 +11637,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "P"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11873,8 +11665,7 @@
           "Bard",
           "Cleric",
           "Druid",
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11902,8 +11693,7 @@
           "Druid",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11926,8 +11716,7 @@
         "classes": [
           "Bard",
           "Druid",
-          "Ranger",
-          "P"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11951,8 +11740,7 @@
           "Druid",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -11977,8 +11765,7 @@
           "Bard",
           "Druid",
           "Sorcerer",
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12001,8 +11788,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12025,8 +11811,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12047,8 +11832,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "P"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12072,8 +11856,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12095,8 +11878,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12117,8 +11899,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12139,8 +11920,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Druid",
-          "P"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12163,8 +11943,7 @@
         "concentration": false,
         "classes": [
           "Bard",
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12187,8 +11966,7 @@
         "concentration": true,
         "classes": [
           "Bard",
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12213,8 +11991,7 @@
           "Druid",
           "Ranger",
           "Sorcerer",
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12240,8 +12017,7 @@
           "Cleric",
           "Paladin",
           "Warlock",
-          "Wizard",
-          "P"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12265,8 +12041,7 @@
           "Cleric",
           "Druid",
           "Paladin",
-          "Ranger",
-          "P"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12289,8 +12064,7 @@
         "classes": [
           "Cleric",
           "Druid",
-          "Paladin",
-          "P"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12315,8 +12089,7 @@
         "classes": [
           "Bard",
           "Cleric",
-          "Paladin",
-          "R"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12338,8 +12111,7 @@
         "concentration": true,
         "classes": [
           "Warlock",
-          "Wizard",
-          "R"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12361,8 +12133,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "R"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12386,8 +12157,7 @@
         "classes": [
           "Bard",
           "Cleric",
-          "Druid",
-          "R"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12411,8 +12181,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Druid",
-          "R"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12436,8 +12205,7 @@
           "Cleric",
           "Paladin",
           "Warlock",
-          "Wizard",
-          "R"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12460,8 +12228,7 @@
         "concentration": true,
         "classes": [
           "Cleric",
-          "Druid",
-          "R"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12486,8 +12253,7 @@
         "concentration": false,
         "classes": [
           "Bard",
-          "Cleric",
-          "R"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12511,8 +12277,7 @@
         "classes": [
           "Druid",
           "Sorcerer",
-          "Wizard",
-          "R"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12536,8 +12301,7 @@
         "concentration": false,
         "classes": [
           "Cleric",
-          "Paladin",
-          "R"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12559,8 +12323,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Wizard",
-          "R"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12581,8 +12344,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "S"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12604,8 +12366,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "S"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12628,8 +12389,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12659,8 +12419,7 @@
           "Cleric",
           "Druid",
           "Warlock",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12684,8 +12443,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12708,8 +12466,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12733,8 +12490,7 @@
         "classes": [
           "Bard",
           "Cleric",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12761,8 +12517,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12787,8 +12542,7 @@
         "concentration": true,
         "classes": [
           "Druid",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12814,8 +12568,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12837,8 +12590,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12861,8 +12613,7 @@
         "concentration": true,
         "classes": [
           "Cleric",
-          "Paladin",
-          "S"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12886,8 +12637,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Druid",
-          "S"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12909,8 +12659,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12933,8 +12682,7 @@
         "classes": [
           "Bard",
           "Cleric",
-          "Ranger",
-          "S"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12958,8 +12706,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -12985,8 +12732,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13013,8 +12759,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13038,8 +12783,7 @@
         "classes": [
           "Druid",
           "Sorcerer",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13062,8 +12806,7 @@
         "concentration": true,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13084,8 +12827,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "S"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13108,8 +12850,7 @@
         "classes": [
           "Bard",
           "Druid",
-          "Ranger",
-          "S"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13132,8 +12873,7 @@
         "concentration": false,
         "classes": [
           "Bard",
-          "Cleric",
-          "S"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13156,8 +12896,7 @@
         "classes": [
           "Bard",
           "Druid",
-          "Ranger",
-          "S"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13181,8 +12920,7 @@
         "classes": [
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13206,8 +12944,7 @@
         "concentration": true,
         "classes": [
           "Druid",
-          "Ranger",
-          "S"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13230,8 +12967,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Cleric",
-          "S"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13253,8 +12989,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "S"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13278,8 +13013,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13304,8 +13038,7 @@
         "classes": [
           "Cleric",
           "Druid",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13331,8 +13064,7 @@
           "Druid",
           "Ranger",
           "Sorcerer",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13353,8 +13085,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Druid",
-          "S"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13378,8 +13109,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13403,8 +13133,7 @@
         "classes": [
           "Druid",
           "Sorcerer",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13428,8 +13157,7 @@
         "classes": [
           "Druid",
           "Sorcerer",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13457,8 +13185,7 @@
         "classes": [
           "Bard",
           "Cleric",
-          "Wizard",
-          "S"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13480,8 +13207,7 @@
         "concentration": true,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "T"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13503,8 +13229,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "T"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13528,8 +13253,7 @@
         "classes": [
           "Bard",
           "Sorcerer",
-          "Wizard",
-          "T"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13549,8 +13273,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "T"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13575,8 +13298,7 @@
           "Bard",
           "Druid",
           "Sorcerer",
-          "Wizard",
-          "T"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13597,8 +13319,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "T"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13623,8 +13344,7 @@
           "Cleric",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "T"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13645,8 +13365,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Druid",
-          "T"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13668,8 +13387,7 @@
         "concentration": true,
         "classes": [
           "Druid",
-          "Ranger",
-          "T"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13695,8 +13413,7 @@
         "classes": [
           "Bard",
           "Warlock",
-          "Wizard",
-          "T"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13721,8 +13438,7 @@
         "concentration": false,
         "classes": [
           "Cleric",
-          "Druid",
-          "T"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13750,8 +13466,7 @@
           "Cleric",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "T"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13774,8 +13489,7 @@
           "Bard",
           "Sorcerer",
           "Warlock",
-          "Wizard",
-          "T"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13799,8 +13513,7 @@
         "classes": [
           "Bard",
           "Warlock",
-          "Wizard",
-          "U"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13823,8 +13536,7 @@
         "concentration": true,
         "classes": [
           "Warlock",
-          "Wizard",
-          "V"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13844,8 +13556,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Bard",
-          "V"
+          "Bard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13870,8 +13581,7 @@
         "classes": [
           "Druid",
           "Sorcerer",
-          "Wizard",
-          "W"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13893,8 +13603,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Wizard",
-          "W"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13917,8 +13626,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Wizard",
-          "W"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13942,8 +13650,7 @@
         "classes": [
           "Druid",
           "Sorcerer",
-          "Wizard",
-          "W"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13966,8 +13673,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Druid",
-          "W"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -13990,8 +13696,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "W"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -14016,8 +13721,7 @@
           "Druid",
           "Ranger",
           "Sorcerer",
-          "Wizard",
-          "W"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -14042,8 +13746,7 @@
           "Cleric",
           "Druid",
           "Ranger",
-          "Sorcerer",
-          "W"
+          "Sorcerer"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -14066,8 +13769,7 @@
         "concentration": true,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "W"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -14088,8 +13790,7 @@
         "ritual": false,
         "concentration": true,
         "classes": [
-          "Wizard",
-          "W"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -14111,8 +13812,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Druid",
-          "W"
+          "Druid"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -14135,8 +13835,7 @@
         "concentration": true,
         "classes": [
           "Druid",
-          "Ranger",
-          "W"
+          "Ranger"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -14157,8 +13856,7 @@
         "concentration": false,
         "classes": [
           "Sorcerer",
-          "Wizard",
-          "W"
+          "Wizard"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -14178,8 +13876,7 @@
         "ritual": false,
         "concentration": false,
         "classes": [
-          "Cleric",
-          "W"
+          "Cleric"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
@@ -14202,8 +13899,7 @@
         "classes": [
           "Bard",
           "Cleric",
-          "Paladin",
-          "Z"
+          "Paladin"
         ],
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"

@@ -22,7 +22,7 @@ import { dedupeByNamePreferringEdition } from '@/lib/contentSelection';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Link } from 'react-router-dom';
 import { SpellDetail } from '@/components/spells/SpellDetail';
-import { spellReferencePath } from '@/components/spells/spellFormatting';
+import { formatSpellSubtitle, spellReferencePath } from '@/components/spells/spellFormatting';
 import { ChevronDown, ExternalLink } from 'lucide-react';
 
 type SpellSortMode = 'level-asc' | 'level-desc' | 'name' | 'source';
@@ -346,19 +346,13 @@ export function SpellsSelectionPage() {
                       </div>
                       <div>
                         <CardTitle className="text-base">{spell.name}</CardTitle>
-                        <CardDescription className="text-xs">{spell.source}</CardDescription>
+                        <CardDescription className="text-xs">{formatSpellSubtitle(spell)}</CardDescription>
                       </div>
                     </div>
                     {selected && <Badge>Selected</Badge>}
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3 pt-0">
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary">{formatSpellLevel(spell.level)}</Badge>
-                    <Badge variant="outline">{spell.school}</Badge>
-                    {spell.ritual && <Badge variant="outline">Ritual</Badge>}
-                    {spell.concentration && <Badge variant="outline">Concentration</Badge>}
-                  </div>
                   {/* The description used to be clamped to three lines inside a card that was
                       itself the add button, so the rest of a spell could not be read at all. */}
                   <Collapsible>

@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
 import { SpellDetail } from '@/components/spells/SpellDetail';
 import { formatSpellLevel, spellReferencePath } from '@/components/spells/spellFormatting';
+import { deriveSpellAttackOrSave, deriveSpellDamageOrEffect } from '@/lib/spellFacets';
 import type { Spell } from '@/types/dnd';
 
 export interface SpellListEntry {
@@ -62,28 +63,45 @@ export function SpellList({ entries, emptyMessage }: SpellListProps) {
 }
 
 function SpellListRow({ entry }: Readonly<{ entry: SpellListEntry }>) {
+  const spell = entry.spell;
+  // What the row can say without being opened: the school, what the spell rolls against and what it
+  // does. Three facts a player checks constantly, and all three used to need a disclosure.
+  const meta = spell
+    ? [
+        spell.school,
+        deriveSpellAttackOrSave(spell).map((facet) => facet.label).join(', '),
+        deriveSpellDamageOrEffect(spell).map((effect) => effect.label).join(', ')
+      ].filter(Boolean)
+    : [];
+
   return (
     <AccordionItem value={entry.id} className="px-3 last:border-b-0">
-      <div className="flex flex-wrap items-center gap-2">
-        <AccordionTrigger className="min-w-0 flex-1 py-3">
-          <span className="flex min-w-0 flex-wrap items-center gap-2 text-left">
-            <span className="break-words font-medium">{entry.spell?.name ?? entry.name}</span>
-            <span className="text-xs text-muted-foreground">
-              {entry.spell ? `${formatSpellLevel(entry.level)} · ${entry.spell.school}` : formatSpellLevel(entry.level)}
+      {/* The name column keeps a minimum width of its own, so a row with three controls wraps the
+          controls onto their own line rather than squeezing the name into one word per line. */}
+      <div className="flex flex-wrap items-center gap-x-3">
+        <AccordionTrigger className="min-w-[11rem] flex-1 py-3 hover:no-underline">
+          <span className="flex min-w-0 flex-col gap-1 text-left">
+            <span className="flex flex-wrap items-center gap-2">
+              <span className="break-words font-medium leading-5">{spell?.name ?? entry.name}</span>
+              {(entry.tags ?? []).map((tag) => (
+                <Badge key={tag} variant="secondary">{tag}</Badge>
+              ))}
             </span>
-            {(entry.tags ?? []).map((tag) => (
-              <Badge key={tag} variant="secondary">{tag}</Badge>
-            ))}
+            <span className="text-xs font-normal leading-4 text-muted-foreground">
+              {meta.length > 0 ? meta.join(' · ') : formatSpellLevel(entry.level)}
+            </span>
           </span>
         </AccordionTrigger>
-        {entry.actions ? <div className="flex flex-wrap items-center gap-2 py-2">{entry.actions}</div> : null}
+        {entry.actions ? (
+          <div className="flex shrink-0 flex-wrap items-center gap-2 py-2">{entry.actions}</div>
+        ) : null}
       </div>
       <AccordionContent className="pb-4">
-        {entry.spell ? (
+        {spell ? (
           <div>
-            <SpellDetail spell={entry.spell} />
+            <SpellDetail spell={spell} />
             <Button asChild variant="outline" size="sm" className="mt-3 min-h-11">
-              <Link to={spellReferencePath(entry.spell.id)}>
+              <Link to={spellReferencePath(spell.id)}>
                 Open spell page
                 <ExternalLink className="ml-2 h-4 w-4" />
               </Link>

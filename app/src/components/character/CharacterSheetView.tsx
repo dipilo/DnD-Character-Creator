@@ -50,6 +50,9 @@ import { SheetEquipmentPanel } from '@/components/character/SheetEquipmentPanel'
 import { SheetResourcesPanel, type HitDicePool } from '@/components/character/SheetResourcesPanel';
 import { SheetSpellsPanel, type SheetSpellEntry } from '@/components/character/SheetSpellsPanel';
 import { SheetFeatureList } from '@/components/character/SheetFeatureList';
+import { SheetLevelUpButton } from '@/components/character/SheetLevelUpButton';
+import { AdvancementTasks } from '@/components/character/AdvancementTasks';
+import { deriveAdvancementTasks } from '@/lib/characterAdvancement';
 import { getChosenFeatureOptions } from '@/lib/featureOptions';
 import { SheetSpellcastingCard, SheetVitalsPanel } from '@/components/character/SheetVitalsPanel';
 import {
@@ -79,9 +82,22 @@ interface CharacterSheetViewProps {
    * spell edit hands back a patch; the page decides what to do with it.
    */
   onChange?: (patch: Partial<Character>) => void;
+  /**
+   * How an unfinished choice is opened. The sheet cannot navigate into the builder on its own —
+   * the character has to be loaded into it first — so the page that owns that does it. Without
+   * this the outstanding choices are still listed, and only the links are gone.
+   */
+  onOpenBuilder?: (path: string) => void;
 }
 
-export function CharacterSheetView({ character, actions, leading, note, onChange }: Readonly<CharacterSheetViewProps>) {
+export function CharacterSheetView({
+  character,
+  actions,
+  leading,
+  note,
+  onChange,
+  onOpenBuilder
+}: Readonly<CharacterSheetViewProps>) {
   const { backgrounds, classes: classCatalogue, equipment, feats, spells: spellCatalogue } = useContentLibrary();
   const { railIsColumn, railIsSticky } = useSheetLayout();
 
@@ -390,6 +406,21 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
     ]);
   }, [allFeatData, classCatalogue, preferredEdition]);
 
+  // Everything this character has earned from its levels and not yet chosen. Derived from the same
+  // classes, species and feats the rest of the sheet reads, so nothing here names a class feature.
+  const advancementTasks = useMemo(() => {
+    return deriveAdvancementTasks({
+      character,
+      resolvedClasses,
+      species,
+      variant,
+      background,
+      featCatalogue: feats,
+      feats: allFeatData,
+      spellcastingRules
+    });
+  }, [allFeatData, background, character, feats, resolvedClasses, species, spellcastingRules, variant]);
+
   const hasSpellcasting = selectedSpells.length > 0
     || vitals.spellcasting.length > 0
     || spellcastingRules.slotsByLevel.some((count) => count > 0)
@@ -398,7 +429,9 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
     character.abilityScoreBonuses?.[ability] ?? derivedAbilityBonuses[ability] ?? 0;
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    // `sheet-dense` tightens every Card inside the sheet (index.css). A play sheet is a document a
+    // player reads at speed, and shadcn's default card chrome is most of a laptop screen.
+    <div className="sheet-dense space-y-4 sm:space-y-6">
       {/* The header is not sticky. In landscape there are ~390px of height, and a pinned header on
           top of a pinned rail leaves no room for the thing being read. */}
       <div className="flex flex-wrap items-center gap-3 sm:gap-4">
@@ -413,6 +446,11 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
         <div className="flex flex-wrap items-center gap-2">
           {onChange ? (
             <>
+              <SheetLevelUpButton
+                character={character}
+                resolvedClasses={resolvedClasses}
+                onChange={onChange}
+              />
               <Button
                 type="button"
                 size="sm"
@@ -437,6 +475,8 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
       </div>
 
       <AdvantageToggle />
+
+      <AdvancementTasks tasks={advancementTasks} onOpen={onOpenBuilder} />
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] lg:gap-6">
         <div
@@ -484,20 +524,27 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
             </TabsContent>
           )}
 
-          <TabsContent value="actions" className="space-y-4">
+          {/* Two columns from xl: the rail is a tall column and the content beside it was mostly
+              empty, so what a player uses in a fight fits on one screen instead of scrolling. */}
+          <TabsContent
+            value="actions"
+            className="space-y-4 xl:grid xl:grid-cols-2 xl:items-start xl:gap-4 xl:space-y-0"
+          >
             <SheetAttacksPanel attacks={attacks} />
 
-            <SheetResourcesPanel
-              character={character}
-              hitDice={hitDicePools}
-              slotsByLevel={spellcastingRules.slotsByLevel}
-              pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
-              classResources={classResources}
-              constitutionModifier={calculateModifier(displayedAbilityScores.constitution)}
-              onChange={onChange}
-            />
+            <div className="space-y-4">
+              <SheetResourcesPanel
+                character={character}
+                hitDice={hitDicePools}
+                slotsByLevel={spellcastingRules.slotsByLevel}
+                pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
+                classResources={classResources}
+                constitutionModifier={calculateModifier(displayedAbilityScores.constitution)}
+                onChange={onChange}
+              />
 
-            <SheetTurnCard timedFeatures={timedFeatures} />
+              <SheetTurnCard timedFeatures={timedFeatures} />
+            </div>
           </TabsContent>
 
           {hasSpellcasting ? (

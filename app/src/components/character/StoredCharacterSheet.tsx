@@ -19,9 +19,18 @@ interface StoredCharacterSheetProps {
   note?: ReactNode;
   /** Omitting it is what renders the sheet read-only, exactly as in either view on its own. */
   onChange?: (patch: Partial<StoredCharacterDocument>) => void;
+  /** Follows an unfinished-choice link. Only the 5e sheet has one; see `CharacterSheetView`. */
+  onOpenBuilder?: (path: string) => void;
 }
 
-export function StoredCharacterSheet({ document, actions, leading, note, onChange }: Readonly<StoredCharacterSheetProps>) {
+export function StoredCharacterSheet({
+  document,
+  actions,
+  leading,
+  note,
+  onChange,
+  onOpenBuilder
+}: Readonly<StoredCharacterSheetProps>) {
   if (isKobDocument(document)) {
     return (
       <KobSheetView
@@ -41,6 +50,7 @@ export function StoredCharacterSheet({ document, actions, leading, note, onChang
       leading={leading}
       note={note}
       onChange={onChange as ((patch: Partial<Character>) => void) | undefined}
+      onOpenBuilder={onOpenBuilder}
     />
   );
 }

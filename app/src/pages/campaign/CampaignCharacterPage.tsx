@@ -80,15 +80,17 @@ export function CampaignCharacterPage() {
   //
   // `document` rather than `record.data`: an inline edit made on this page may not have been
   // pushed yet, and the builder must open what is on screen.
-  const handleEditInBuilder = () => {
+  const openBuilderAt = (path: string) => {
     if (!record) return;
     if (systemId === 'kids-on-bikes') {
       navigate(`/campaign/${campaignId}/party/${record.id}/edit`);
       return;
     }
     loadDocumentIntoBuilder(document as Character, { id: record.id, version: record.version, campaignId });
-    navigate('/builder/review');
+    navigate(path);
   };
+
+  const handleEditInBuilder = () => openBuilderAt('/builder/review');
 
   const handleExportPDF = async () => {
     if (isKobDocument(document)) return;
@@ -114,6 +116,7 @@ export function CampaignCharacterPage() {
         leading={backToParty}
         note={<SheetNote isOwn={isOwn} mayEdit={mayEdit} saving={saving} />}
         onChange={mayEdit ? applyPatch : undefined}
+        onOpenBuilder={mayOpenBuilder ? openBuilderAt : undefined}
         actions={(
           <>
             {isOwn ? (

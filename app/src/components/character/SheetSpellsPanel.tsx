@@ -2,12 +2,12 @@
 // it costs it from.
 //
 // The list leads with a spell's name and level and puts everything else behind a disclosure, which
-// is what a player reads down at the table. Casting spends the slot the player picks — the panel
-// never guesses which, because casting a 1st-level spell with a 3rd-level slot is a real choice.
+// is what a player reads down at the table. Cast spends the lowest slot that can carry the spell,
+// which is what casting it normally means; the caret beside it is where upcasting lives, so a
+// bigger slot stays a real choice rather than the only way to cast.
 //
 // Same posture as every other sheet panel: it holds no state and writes nothing of its own, so a
 // campaign-mate reading a shared sheet gets the same component with no `onChange`.
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -16,14 +16,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { Trash2 } from 'lucide-react';
+import { ChevronDown, Trash2 } from 'lucide-react';
 import { SheetCatalogPicker, type CatalogPickerItem } from '@/components/character/SheetCatalogPicker';
 import { SlotRow } from '@/components/character/SlotRow';
 import { SpellList, type SpellListEntry } from '@/components/spells/SpellList';
 import { formatSpellLevel } from '@/components/spells/spellFormatting';
 import { getSlotsUsed, setPactSlotsUsed, setSpellSlotsUsed } from '@/lib/sheetPlayState';
+import { deriveSpellAttackOrSave, deriveSpellDice } from '@/lib/spellFacets';
+import { rollD20 } from '@/lib/d20Rolls';
+import { rollOnScreen } from '@/store/diceTrayStore';
 import type { DerivedSpellcastingStats } from '@/lib/sheetDerivations';
-import { formatModifier } from '@/lib/sheetDerivations';
 import type { Character, Spell } from '@/types/dnd';
 
 /** One spell as the sheet holds it: the stored entry, resolved where the library knows it. */
@@ -81,6 +83,89 @@ function castableSlots(
   return slots;
 }
 
+/**
+ * The class a spell is cast as. `character.spells` records no class, so a multiclass caster has no
+ * stored answer: the strongest attack bonus is used and the roll is labelled with the class it came
+ * from, which keeps the choice visible rather than silent.
+ */
+function primaryCastingStat(castingStats: readonly DerivedSpellcastingStats[]) {
+  return castingStats.reduce<DerivedSpellcastingStats | undefined>(
+    (best, stat) => (best && best.attackBonus >= stat.attackBonus ? best : stat),
+    undefined
+  );
+}
+
+interface CastControlsProps {
+  readonly entry: SheetSpellEntry;
+  readonly slots: readonly CastableSlot[];
+  readonly canSpend: boolean;
+  readonly onCast: (slot?: CastableSlot) => void;
+}
+
+/**
+ * Cast, and the slot it costs. A cantrip costs nothing so it casts on one click, and a levelled
+ * spell spends its lowest usable slot on that same click; the caret beside it is where upcasting
+ * lives, so a bigger slot stays a real choice without being the only way to cast.
+ */
+function CastControls({ entry, slots, canSpend, onCast }: CastControlsProps) {
+  if (entry.level === 0) {
+    return (
+      <Button type="button" size="sm" variant="outline" className="min-h-11" onClick={() => onCast()}>
+        Cast
+      </Button>
+    );
+  }
+
+  if (!canSpend) return null;
+
+  if (slots.length === 0) {
+    return (
+      <Button type="button" size="sm" variant="outline" className="min-h-11" disabled>
+        No slots
+      </Button>
+    );
+  }
+
+  const [lowest, ...higher] = slots;
+  const lowestLabel = lowest.pact ? `pact ${lowest.level}` : `level ${lowest.level}`;
+
+  return (
+    <div className="flex items-center">
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        className={higher.length > 0 ? 'min-h-11 rounded-r-none border-r-0' : 'min-h-11'}
+        onClick={() => onCast(lowest)}
+      >
+        Cast ({lowestLabel})
+      </Button>
+      {higher.length > 0 ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="min-h-11 rounded-l-none px-2"
+              aria-label={`Cast ${entry.name} with a higher slot`}
+            >
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {higher.map((slot) => (
+              <DropdownMenuItem key={`${slot.pact ? 'pact' : 'slot'}-${slot.level}`} onSelect={() => onCast(slot)}>
+                {slot.pact ? `Pact slot (level ${slot.level})` : `Level ${slot.level} slot`} · {slot.remaining} left
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : null}
+    </div>
+  );
+}
+
 export function SheetSpellsPanel({
   character,
   spells,
@@ -130,6 +215,26 @@ export function SheetSpellsPanel({
       : setSpellSlotsUsed(character, slot.level, used, total));
   };
 
+  const castingStat = primaryCastingStat(castingStats);
+
+  /**
+   * Casting is the slot and the throw together: spending a slot without rolling the attack the
+   * spell states leaves the player hunting for the number elsewhere on the sheet.
+   */
+  const castSpell = (entry: SheetSpellEntry, slot?: CastableSlot) => {
+    if (slot) castWith(slot);
+    const spell = entry.spell;
+    if (!spell) return;
+    const attack = deriveSpellAttackOrSave(spell).find((facet) => facet.kind === 'attack');
+    if (attack && castingStat) {
+      void rollD20({
+        modifier: castingStat.attackBonus,
+        label: `${spell.name} attack`,
+        detail: `${castingStat.className} · ${attack.label}`
+      });
+    }
+  };
+
   const entries: SpellListEntry[] = spells.map((entry) => {
     const tags: string[] = [];
     if (entry.grantedBy) tags.push(entry.grantedBy);
@@ -137,6 +242,7 @@ export function SheetSpellsPanel({
     else if (entry.prepared && entry.level > 0) tags.push('Prepared');
 
     const slots = entry.level > 0 ? castableSlots(character, slotsByLevel, pactSlotsByLevel, entry.level) : [];
+    const dice = entry.spell ? deriveSpellDice(entry.spell) : undefined;
 
     return {
       id: entry.id,
@@ -144,23 +250,28 @@ export function SheetSpellsPanel({
       level: entry.level,
       spell: entry.spell,
       tags,
-      actions: onChange ? (
+      actions: (
         <>
-          {entry.level > 0 && slots.length > 0 ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button type="button" size="sm" variant="outline" className="min-h-11">Cast</Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {slots.map((slot) => (
-                  <DropdownMenuItem key={`${slot.pact ? 'pact' : 'slot'}-${slot.level}`} onSelect={() => castWith(slot)}>
-                    {slot.pact ? `Pact slot (level ${slot.level})` : `Level ${slot.level} slot`} · {slot.remaining} left
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <CastControls
+            entry={entry}
+            slots={slots}
+            canSpend={Boolean(onChange)}
+            onCast={(slot) => castSpell(entry, slot)}
+          />
+          {/* Rolling changes nothing about the character, so a campaign-mate reading a shared sheet
+              gets this button too. */}
+          {dice ? (
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              className="min-h-11 tabular-nums"
+              onClick={() => void rollOnScreen({ notation: dice, label: `${entry.name} damage`, detail: dice })}
+            >
+              {dice}
+            </Button>
           ) : null}
-          {entry.level > 0 && !entry.alwaysPrepared && !entry.grantedBy ? (
+          {onChange && entry.level > 0 && !entry.alwaysPrepared && !entry.grantedBy ? (
             <Button
               type="button"
               size="sm"
@@ -172,7 +283,7 @@ export function SheetSpellsPanel({
               {entry.prepared ? 'Prepared' : 'Prepare'}
             </Button>
           ) : null}
-          {entry.grantedBy ? null : (
+          {onChange && !entry.grantedBy ? (
             <Button
               type="button"
               variant="ghost"
@@ -183,34 +294,14 @@ export function SheetSpellsPanel({
             >
               <Trash2 className="h-4 w-4" />
             </Button>
-          )}
+          ) : null}
         </>
-      ) : null
+      )
     };
   });
 
   return (
     <div className="space-y-4">
-      {castingStats.length > 0 ? (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Spellcasting</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-3 sm:grid-cols-2">
-            {castingStats.map((stat) => (
-              <div key={stat.className} className="rounded-lg border p-3">
-                <p className="text-sm font-medium">{stat.className}</p>
-                <div className="mt-1 flex flex-wrap gap-2">
-                  <Badge variant="secondary">Save DC {stat.saveDc}</Badge>
-                  <Badge variant="secondary">Attack {formatModifier(stat.attackBonus)}</Badge>
-                  <Badge variant="outline">{stat.ability.slice(0, 3).toUpperCase()}</Badge>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      ) : null}
-
       {hasSlots ? (
         <Card>
           <CardHeader className="pb-3">

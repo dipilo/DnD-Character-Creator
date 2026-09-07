@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import { SpellDetail } from '@/components/spells/SpellDetail';
-import { formatSpellSubtitle } from '@/components/spells/spellFormatting';
 
 export function SpellReferencePage() {
   const { spellId } = useParams<{ spellId: string }>();
@@ -31,7 +30,6 @@ export function SpellReferencePage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">{spell.name}</CardTitle>
-          <p className="text-sm text-muted-foreground">{formatSpellSubtitle(spell)}</p>
         </CardHeader>
         <CardContent>
           <SpellDetail spell={spell} />

@@ -13,23 +13,36 @@ export function Stat({
   value,
   hint,
   roll,
-}: Readonly<{ label: string; value: string; hint?: string; roll?: { label: string; modifier: number } }>) {
+  compact,
+}: Readonly<{
+  label: string;
+  value: string;
+  hint?: string;
+  roll?: { label: string; modifier: number };
+  /** The rail's version: one size down, because the column is 19rem wide and very tall. */
+  compact?: boolean;
+}>) {
   const body = (
     <>
-      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-1 text-2xl font-bold tabular-nums">{value}</p>
-      {hint ? <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p> : null}
+      <p className="text-[0.65rem] font-medium uppercase leading-4 tracking-wide text-muted-foreground">{label}</p>
+      <p className={cn('font-bold tabular-nums', compact ? 'text-lg leading-6' : 'mt-1 text-2xl')}>{value}</p>
+      {hint ? <p className="mt-0.5 text-xs leading-4 text-muted-foreground">{hint}</p> : null}
     </>
   );
 
+  const shell = cn('rounded-lg border bg-card text-center', compact ? 'p-2' : 'p-3');
+
   if (!roll) {
-    return <div className="rounded-lg border bg-card p-3 text-center">{body}</div>;
+    return <div className={shell}>{body}</div>;
   }
 
   return (
     <button
       type="button"
-      className="min-h-11 rounded-lg border bg-card p-3 text-center transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      className={cn(
+        shell,
+        'min-h-11 transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
+      )}
       onClick={() => void rollD20({ modifier: roll.modifier, label: roll.label })}
     >
       {body}
@@ -57,22 +70,23 @@ export function SheetVitalsPanel({
   const inRail = variant === 'rail';
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* No proficiency bonus here: the rail already leads with one, and two copies of the same
           number read as two different stats. */}
-      <div className={cn('grid gap-3', inRail ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5')}>
+      <div className={cn('grid gap-2', inRail ? 'grid-cols-3' : 'grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5')}>
         <Stat
           label="Initiative"
           value={formatModifier(vitals.initiative)}
+          compact={inRail}
           roll={{ label: 'Initiative', modifier: vitals.initiative }}
         />
-        <Stat label="Speed" value={`${vitals.speed} ft`} />
-        <Stat label="Passive Perc." value={String(vitals.passivePerception)} />
-        <Stat label="Passive Inv." value={String(vitals.passiveInvestigation)} />
-        <Stat label="Passive Ins." value={String(vitals.passiveInsight)} />
+        <Stat label="Speed" value={`${vitals.speed} ft`} compact={inRail} />
+        <Stat label="Passive Perc." value={String(vitals.passivePerception)} compact={inRail} />
+        <Stat label="Passive Inv." value={String(vitals.passiveInvestigation)} compact={inRail} />
+        <Stat label="Passive Ins." value={String(vitals.passiveInsight)} compact={inRail} />
       </div>
 
-      <div className={cn('grid gap-4', inRail ? '' : 'lg:grid-cols-3')}>
+      <div className={cn('grid gap-3', inRail ? '' : 'lg:grid-cols-3')}>
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Saving Throws</CardTitle>
@@ -83,7 +97,7 @@ export function SheetVitalsPanel({
                 key={save.ability}
                 type="button"
                 className={cn(
-                  'flex min-h-11 w-full items-center justify-between rounded px-2 py-1.5 text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                  'flex min-h-9 w-full items-center justify-between rounded px-2 py-1 text-sm transition-colors hover:bg-accent coarse:min-h-11 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
                   save.proficient && 'bg-accent',
                 )}
                 onClick={() =>
@@ -119,7 +133,7 @@ export function SheetVitalsPanel({
                   key={skill.name}
                   type="button"
                   className={cn(
-                    'flex min-h-11 w-full items-center justify-between gap-2 rounded px-2 py-1.5 text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                    'flex min-h-9 w-full items-center justify-between gap-2 rounded px-2 py-1 text-sm transition-colors hover:bg-accent coarse:min-h-11 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
                     skill.proficient && 'bg-accent',
                   )}
                   onClick={() => rollCheck(skill.name, skill.modifier)}

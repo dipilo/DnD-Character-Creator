@@ -8,6 +8,8 @@ import { ChevronLeft, ChevronRight, Swords, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { getRuntimeClassById, getRuntimeSubclass } from '@/data';
 import { updateCharacterClassEntry } from '@/lib/builderRules';
+import { useAdvancementTasks } from '@/hooks/useAdvancementTasks';
+import { AdvancementTasks } from '@/components/character/AdvancementTasks';
 
 const classDetailTabLabels = {
   features: 'Features',
@@ -54,6 +56,9 @@ export function CharacterBuilderPage() {
   const remoteEditing = builderState.remoteEditing;
   const [classLevelDrafts, setClassLevelDrafts] = useState<Record<string, string>>({});
   const stepRailRef = useRef<HTMLDivElement>(null);
+  // Everything a level has granted and nobody has chosen: shown here as well as on the sheet, so a
+  // level raised in either place says the same thing about what is now outstanding.
+  const advancementTasks = useAdvancementTasks(builderState.character);
   const isAbilityScoresRoute = location.pathname.startsWith('/builder/ability-scores');
   const isSubclassRoute = location.pathname.startsWith('/builder/subclass');
   const subclassRouteParts = isSubclassRoute ? location.pathname.split('/') : [];
@@ -336,6 +341,12 @@ export function CharacterBuilderPage() {
           </Card>
         </div>
       )}
+
+      {advancementTasks.length > 0 ? (
+        <div className={shellClassName}>
+          <AdvancementTasks tasks={advancementTasks} />
+        </div>
+      ) : null}
 
       {isAbilityScoresRoute ? (
         <Outlet />
