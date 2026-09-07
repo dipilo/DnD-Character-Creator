@@ -11,6 +11,7 @@
 import { useMemo, type ReactNode } from 'react';
 import {
   getRuntimeClassById,
+  getRuntimeCombatActions,
   getRuntimeEquipmentById,
   getRuntimeFeatById,
   getRuntimeSpeciesById,
@@ -61,8 +62,8 @@ import {
   ProficiencyBonusCard,
   SheetQuickInfoRail
 } from '@/components/character/SheetQuickInfoRail';
-import { useSheetLayout } from '@/components/character/useSheetLayout';
-import type { AbilityScores, Character, Feature, Spell } from '@/types/dnd';
+import { useFitsViewport, useSheetLayout } from '@/components/character/useSheetLayout';
+import type { AbilityScores, Character, Feature } from '@/types/dnd';
 
 const humanizeFallbackId = (value: string) => value.split('-').filter(Boolean).join(' ');
 const isDefined = <T,>(value: T | null | undefined): value is T => Boolean(value);
@@ -101,6 +102,8 @@ export function CharacterSheetView({
 }: Readonly<CharacterSheetViewProps>) {
   const { backgrounds, classes: classCatalogue, equipment, feats, spells: spellCatalogue } = useContentLibrary();
   const { railIsColumn, railIsSticky } = useSheetLayout();
+  // 4rem of pinned header plus a rem of breathing room.
+  const { ref: railRef, fits: railFits } = useFitsViewport(80);
 
   const species = getRuntimeSpeciesById(character.speciesId);
   const variant = character.variantId ? getRuntimeSpeciesVariant(character.speciesId, character.variantId) : undefined;
@@ -421,16 +424,15 @@ export function CharacterSheetView({
     });
   }, [allFeatData, background, character, feats, resolvedClasses, species, spellcastingRules, variant]);
 
-  // The Actions table casts too, so it needs the resolved spell behind a row's id and the class a
-  // cast is made as — the same answer the Spells tab reaches, from the same function.
-  const spellsById = useMemo(() => {
-    const index = new Map<string, Spell>();
-    for (const entry of selectedSpells) {
-      if (entry.spell) index.set(entry.id, entry.spell);
-    }
-    return index;
-  }, [selectedSpells]);
   const castingStat = useMemo(() => primaryCastingStat(vitals.spellcasting), [vitals.spellcasting]);
+
+  // Both printings state Dodge and Disengage, and their wordings differ — so the character gets the
+  // list from the printing it plays, resolved the same way a feat's spells are.
+  const combatActions = useMemo(() => {
+    return getRuntimeCombatActions().filter(
+      (action) => getRulesEdition(action.sourceId, action.source) === preferredEdition
+    );
+  }, [preferredEdition]);
 
   const hasSpellcasting = selectedSpells.length > 0
     || vitals.spellcasting.length > 0
@@ -490,13 +492,10 @@ export function CharacterSheetView({
       <AdvancementTasks tasks={advancementTasks} onOpen={onOpenBuilder} />
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] lg:gap-6">
-        <div
-          className={
-            railIsSticky
-              ? 'lg:sticky lg:top-16 lg:max-h-[calc(100dvh-5rem)] lg:overflow-y-auto lg:overscroll-contain lg:pr-1'
-              : undefined
-          }
-        >
+        {/* Pinned only while the whole rail fits under the header. A taller one scrolls with the
+            page, because giving it a scrollbar of its own makes reaching its bottom two gestures on
+            two surfaces. */}
+        <div ref={railRef} className={railIsSticky && railFits ? 'lg:sticky lg:top-16' : undefined}>
           <SheetQuickInfoRail
             character={characterWithResolvedHp}
             abilityScores={displayedAbilityScores}
@@ -545,8 +544,8 @@ export function CharacterSheetView({
               features={activeFeaturesWithChoices}
               classResources={classResources}
               castingStat={castingStat}
+              combatActions={combatActions}
               characterLevel={totalLevel}
-              spellsById={spellsById}
               slotsByLevel={spellcastingRules.slotsByLevel}
               pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
               onChange={onChange}

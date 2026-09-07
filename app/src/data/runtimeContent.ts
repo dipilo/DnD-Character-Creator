@@ -1,4 +1,4 @@
-import type { Background, Class, ClassResource, Equipment, Feature, FeatureOption, Feat, Monster, Species, SpeciesVariant, Spell, SpellcastingProgression, Subclass } from '@/types/dnd';
+import type { Background, Class, ClassResource, CombatAction, Equipment, Feature, FeatureOption, Feat, Monster, Species, SpeciesVariant, Spell, SpellcastingProgression, Subclass } from '@/types/dnd';
 import { backgrounds as staticBackgrounds } from './backgrounds';
 import { classes as staticClasses } from './classes';
 import { species as staticSpecies } from './species';
@@ -23,6 +23,7 @@ const staticFeats = () => getImportedBucket('feats') as Feat[];
 const staticEquipment = () => getImportedBucket('equipment') as Equipment[];
 const staticMonsters = () => getImportedBucket('monsters') as Monster[];
 const staticSubclasses = () => getImportedBucket('subclasses') as Subclass[];
+const staticCombatActions = () => getImportedBucket('combatActions') as CombatAction[];
 const unsupportedStaticSourceIds = new Set(['phb-2014', 'phb-2024']);
 const isUnsupportedLegacyStaticEntry = (sourceId?: string) => {
   return sourceId ? unsupportedStaticSourceIds.has(sourceId) : false;
@@ -1398,6 +1399,17 @@ export const getRuntimeEquipment = memoizeRuntime('equipment', () => {
 });
 
 export const getRuntimeMonsters = memoizeRuntime('monsters', () => mergeDynamicBucket(staticMonsters(), 'monsters').map(sanitizeMonster));
+
+/**
+ * The actions every character can take, as each printing lists them. Not a `ContentBucketKey`:
+ * nobody picks one, so it has no store bucket and an imported pack contributes through its own
+ * optional field.
+ */
+export const getRuntimeCombatActions = memoizeRuntime('combat-actions', () => {
+  const { importedPacks } = useContentStore.getState();
+  const imported = importedPacks.flatMap((pack) => pack.content.combatActions ?? []);
+  return mergeCollectionsById(staticCombatActions(), imported);
+});
 
 export const getRuntimeSpeciesById = memoizeRuntimeIndex('species:index', getRuntimeSpecies);
 

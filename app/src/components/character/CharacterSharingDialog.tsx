@@ -149,7 +149,7 @@ export function CharacterSharingDialog({ characterId, characterName }: Readonly<
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button size="sm" variant="outline" className="min-h-11">
           <Share2 className="mr-2 h-4 w-4" />
           Share
         </Button>

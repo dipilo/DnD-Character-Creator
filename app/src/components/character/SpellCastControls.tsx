@@ -1,8 +1,10 @@
 // Cast, and the slot it costs.
 //
-// A cantrip costs nothing so it casts on one click, and a levelled spell spends its lowest usable
-// slot on that same click; the caret beside it is where upcasting lives, so a bigger slot stays a
-// real choice without being the only way to cast.
+// A cantrip costs nothing so it says At Will, and a levelled spell spends its lowest usable slot on
+// one click; the caret beside it is where upcasting lives, so a bigger slot stays a real choice
+// without being the only way to cast. The button names the act, not the bookkeeping — which slot
+// went is read off the slot track, and "Cast (pact 3)" was a label restating what the row below it
+// already shows.
 //
 // Shared by the Spells tab and the Actions table, which both offer a cast of the same spell.
 import { Button } from '@/components/ui/button';
@@ -28,7 +30,7 @@ export function SpellCastControls({ spellName, spellLevel, slots, canSpend, onCa
   if (spellLevel === 0) {
     return (
       <Button type="button" size="sm" variant="outline" className="min-h-11" onClick={() => onCast()}>
-        Cast
+        At Will
       </Button>
     );
   }
@@ -44,7 +46,6 @@ export function SpellCastControls({ spellName, spellLevel, slots, canSpend, onCa
   }
 
   const [lowest, ...higher] = slots;
-  const lowestLabel = lowest.pact ? `pact ${lowest.level}` : `level ${lowest.level}`;
 
   return (
     <div className="flex items-center">
@@ -55,7 +56,7 @@ export function SpellCastControls({ spellName, spellLevel, slots, canSpend, onCa
         className={higher.length > 0 ? 'min-h-11 rounded-r-none border-r-0' : 'min-h-11'}
         onClick={() => onCast(lowest)}
       >
-        Cast ({lowestLabel})
+        Cast
       </Button>
       {higher.length > 0 ? (
         <DropdownMenu>

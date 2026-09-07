@@ -25,6 +25,38 @@ export function detectActionTiming(text: string): ActionTiming | null {
 }
 
 /* -------------------------------------------------------------------------- *
+ * Attacks per Action
+ * -------------------------------------------------------------------------- */
+
+const ATTACK_COUNT_WORDS: Record<string, number> = {
+  twice: 2,
+  'three times': 3,
+  'four times': 4,
+  'five times': 5
+};
+
+const EXTRA_ATTACK_PATTERN = /\battack (twice|three times|four times|five times)\b/gi;
+const ATTACK_ACTION_PATTERN = /\bAttack action\b/i;
+
+/**
+ * How many attacks the Attack action buys this character, read from the features they have.
+ *
+ * Both printings state it the same way — "you can attack twice, instead of once, whenever you take
+ * the Attack action" — and the Fighter's later grants restate the sentence with a bigger number, so
+ * the highest a feature states is the answer and a character with no such feature attacks once.
+ */
+export function deriveAttacksPerAction(features: readonly Feature[]): number {
+  let most = 1;
+  for (const feature of features) {
+    if (!ATTACK_ACTION_PATTERN.test(feature.description)) continue;
+    for (const match of feature.description.matchAll(EXTRA_ATTACK_PATTERN)) {
+      most = Math.max(most, ATTACK_COUNT_WORDS[match[1].toLowerCase()] ?? 1);
+    }
+  }
+  return most;
+}
+
+/* -------------------------------------------------------------------------- *
  * Unarmed Strike
  * -------------------------------------------------------------------------- */
 

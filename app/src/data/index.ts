@@ -16,6 +16,7 @@ export {
 	getRuntimeFeatById,
 	getRuntimeFeats,
 	getRuntimeMonsterById,
+	getRuntimeCombatActions,
 	getRuntimeMonsters,
 	getRuntimeSpeciesById,
 	getRuntimeSpeciesVariant,

@@ -9,7 +9,9 @@
  * Nothing here is a list of actions written in the app. A weapon's row comes from the equipment, a
  * spell's from the spell's own statblock and sentences, and a feature's from the sentence that says
  * when it is used — `detectActionTiming`, exactly as the turn list already read it. A feature that
- * states no timing and spends no pool appears in no row rather than being guessed into one.
+ * states no timing and spends no pool appears in no row rather than being guessed into one. Even
+ * Dodge and Disengage are imported: each printing labels its own list, and `combatActions` carries
+ * it.
  */
 import { detectActionTiming, type ActionTiming } from '@/lib/sheetCombat';
 import {
@@ -20,7 +22,7 @@ import {
 } from '@/lib/spellFacets';
 import { ABILITY_ABBREVIATIONS, type DerivedAttack, type DerivedSpellcastingStats } from '@/lib/sheetDerivations';
 import type { ResolvedClassResource } from '@/lib/sheetPlayState';
-import type { Feature, Spell } from '@/types/dnd';
+import type { CombatAction, Feature, Spell } from '@/types/dnd';
 
 /** The chips over the list, in D&D Beyond's own order. */
 export type SheetActionFilter = 'all' | 'attack' | ActionTiming | 'other' | 'limited-use';
@@ -62,12 +64,24 @@ export const SHEET_ACTION_GROUP_ORDER: readonly SheetActionGroup[] = [
   'other'
 ];
 
+/**
+ * One line of the Damage column.
+ *
+ * A weapon with Versatile states two of them, and which one is thrown is the player's choice as
+ * they swing — so they are two buttons, not one label reading "1d6+1 (1d8+1)".
+ */
+export interface SheetActionDamage {
+  /** What a click throws. Absent where the row states an effect rather than dice. */
+  notation?: string;
+  label: string;
+}
+
 export interface SheetActionEntry {
   id: string;
   name: string;
   /** The line under the name: "Melee Weapon", "Cantrip · Evocation", the class that grants it. */
   meta?: string;
-  kind: 'weapon' | 'spell' | 'feature';
+  kind: 'weapon' | 'spell' | 'feature' | 'combat-action';
   group: SheetActionGroup;
   /** True for a row the attack table would hold: it rolls to hit, or it is a weapon. */
   isAttack: boolean;
@@ -78,10 +92,8 @@ export interface SheetActionEntry {
   attackBonus?: number;
   /** "DEX 15" — the save the row calls for, with this character's DC. */
   saveLabel?: string;
-  /** What a damage click throws, already scaled to this character's level. */
-  damageNotation?: string;
-  /** What the Damage column prints: the notation plus the type the text names. */
-  damageLabel?: string;
+  /** The Damage column, already scaled to this character's level. One line per choice. */
+  damages: SheetActionDamage[];
   notes?: string;
   description?: string;
   /** The pool this row spends, when its source states one. */
@@ -110,8 +122,12 @@ function weaponRows(attacks: readonly DerivedAttack[]): SheetActionEntry[] {
     time: 'Action',
     range: attackRange(attack),
     attackBonus: attack.attackBonus,
-    damageNotation: attack.damage,
-    damageLabel: attack.versatileDamage ? `${attack.damage} (${attack.versatileDamage})` : attack.damage,
+    damages: [
+      { notation: attack.damage, label: attack.damage },
+      ...(attack.versatileDamage
+        ? [{ notation: attack.versatileDamage, label: `${attack.versatileDamage} (two-handed)` }]
+        : [])
+    ],
     notes: [attack.proficient ? '' : 'Not proficient', ...attack.properties].filter(Boolean).join(', ') || undefined
   }));
 }
@@ -164,9 +180,8 @@ function spellMeta(spell: Spell, level: number, grantedBy?: string): string {
 }
 
 /**
- * A spell's row. Both halves of Hit/DC come from the spell's own sentences and this character's own
- * casting stats: the attack bonus is the caster's, and the DC is the caster's, so a spell that
- * states neither prints neither.
+ * A spell's row, for the spells this character attacks with. The bonus is the caster's and the save
+ * is the caster's, both read from the spell's own sentences.
  */
 function spellRows(
   spells: readonly SpellActionSource[],
@@ -185,10 +200,12 @@ function spellRows(
     const dice = deriveSpellDice(spell, { characterLevel, slotLevel: spell.level });
     const effects = deriveSpellDamageOrEffect(spell).map((effect) => effect.label);
 
-    // A spell earns a row by having something to put in Hit/DC or Damage. Detect Magic and Mage
-    // Hand are spells a player reads on the Spells tab, not things they do in a round, and listing
-    // every prepared spell here would make the Actions tab a second copy of that tab.
-    if (!makesAttack && !save && effects.length === 0) continue;
+    // This table is the attack table. A spell that rolls no attack is read and cast on the Spells
+    // tab, which prints the same columns plus Time — listing it here as well made the Actions tab a
+    // second copy of that tab, under a heading that says these are the things you attack with.
+    if (!makesAttack) continue;
+
+    const damageLabel = [dice, effects.join(', ')].filter(Boolean).join(' ');
 
     rows.push({
       id: `spell-${entry.id}`,
@@ -196,13 +213,12 @@ function spellRows(
       meta: spellMeta(spell, entry.level, entry.grantedBy),
       kind: 'spell',
       group: castingTimeGroup(spell.castingTime),
-      isAttack: makesAttack,
+      isAttack: true,
       time: spell.castingTime || undefined,
       range: spell.range || undefined,
-      attackBonus: makesAttack ? castingStat?.attackBonus : undefined,
+      attackBonus: castingStat?.attackBonus,
       saveLabel: saveLabel(save, castingStat),
-      damageNotation: dice,
-      damageLabel: [dice, effects.join(', ')].filter(Boolean).join(' ') || undefined,
+      damages: damageLabel ? [{ notation: dice, label: damageLabel }] : [],
       notes: spellNotes(spell),
       description: spell.description,
       spellId: entry.id,
@@ -255,8 +271,7 @@ function featureRows(
       group: timing ?? 'other',
       isAttack: false,
       time: timing ? TIMING_TIME_LABELS[timing] : undefined,
-      damageNotation: dice,
-      damageLabel: dice,
+      damages: dice ? [{ notation: dice, label: dice }] : [],
       notes: resource?.resetsOn ? `Recharges on a ${resource.resetsOn} rest` : undefined,
       description: feature.description,
       resourceKey: resource?.key
@@ -264,6 +279,29 @@ function featureRows(
   }
 
   return rows;
+}
+
+/* -------------------------------------------------------------------------- *
+ * Actions in Combat
+ * -------------------------------------------------------------------------- */
+
+/**
+ * The actions everybody has, in the group the book's own label puts them in. They are the same row
+ * shape as everything else — a name, and the rule behind it — so they print in the same table.
+ */
+function combatActionRows(actions: readonly CombatAction[]): SheetActionEntry[] {
+  return actions.map((action) => ({
+    id: `combat-action-${action.id}`,
+    name: action.name,
+    meta: action.source,
+    kind: 'combat-action' as const,
+    group: (SHEET_ACTION_GROUP_ORDER as readonly string[]).includes(action.timing)
+      ? (action.timing as SheetActionGroup)
+      : 'other',
+    isAttack: false,
+    damages: [],
+    description: action.description
+  }));
 }
 
 /* -------------------------------------------------------------------------- *
@@ -279,6 +317,8 @@ export interface SheetActionsInput {
   castingStat?: DerivedSpellcastingStats;
   /** Total level, which is what a cantrip's damage table keys off. */
   characterLevel: number;
+  /** What every character can do, from the printing this character plays. */
+  combatActions?: readonly CombatAction[];
 }
 
 export function deriveSheetActions({
@@ -287,12 +327,14 @@ export function deriveSheetActions({
   features,
   classResources,
   castingStat,
-  characterLevel
+  characterLevel,
+  combatActions = []
 }: SheetActionsInput): SheetActionEntry[] {
   return [
     ...weaponRows(attacks),
     ...spellRows(spells, castingStat, characterLevel),
-    ...featureRows(features, classResources)
+    ...featureRows(features, classResources),
+    ...combatActionRows(combatActions)
   ];
 }
 

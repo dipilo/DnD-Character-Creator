@@ -48,7 +48,8 @@ export const createEmptyImportedContentBucket = () => ({
   equipment: [],
   feats: [],
   monsters: [],
-  ua: []
+  ua: [],
+  combatActions: []
 });
 
 export const countContentEntries = (content) => {
@@ -296,6 +297,20 @@ const sanitizeContent = (content, source) => {
       .map((entry, index) => normalizeEntity(entry, source, bucket.slice(0, -1) || bucket, index))
       .filter(Boolean);
   }
+
+  // Not one of `contentBucketKeys`: an action every character already has is not an entry anybody
+  // picks, so it is neither counted in a pack's total nor offered in the homebrew hub.
+  sanitized.combatActions = (Array.isArray(content?.combatActions) ? content.combatActions : [])
+    .filter((entry) => isObject(entry) && entry.name && entry.timing)
+    .map((entry) => ({
+      id: String(entry.id ?? ''),
+      name: String(entry.name),
+      timing: String(entry.timing),
+      description: String(entry.description ?? ''),
+      source: String(entry.source ?? source.label ?? ''),
+      sourceId: source.sourceId
+    }))
+    .filter((entry) => entry.id && entry.description);
 
   return sanitized;
 };
@@ -2549,12 +2564,85 @@ const extractCompendiumSpells = (raw, label, sourceId, classNamesBySpellKey = un
     .filter((entry) => entry?.description && entry.castingTime && entry.range && entry.duration);
 };
 
+/* -------------------------------------------------------------------------- *
+ * Actions in Combat
+ * -------------------------------------------------------------------------- */
+
+// Both printings label these themselves, in different places, and neither list is written here.
+// 2024's rules glossary stamps the timing onto the heading — "Dodge [Action]" — and 2014 collects
+// them under a chapter section of its own, "Actions in Combat", whose every child is an action.
+const glossaryActionHeadingPattern = /^(.+?)\s*\[(Action|Bonus Action|Reaction)\]$/i;
+
+const combatActionTimings = {
+  action: 'action',
+  'bonus action': 'bonus-action',
+  reaction: 'reaction'
+};
+
+const toCombatAction = (block, timing, label, sourceId, name) => {
+  const description = stripTrailingChrome(extractStructuredTexts(sliceSectionBody(block.content)).join(' '));
+  if (!description) {
+    return null;
+  }
+
+  return {
+    id: toSourceSpecificId(sourceId, name),
+    name: repairMojibake(name),
+    timing,
+    description: repairMojibake(description),
+    source: label,
+    sourceId
+  };
+};
+
+const extractGlossaryCombatActions = (raw, label, sourceId) => {
+  const actions = [];
+
+  for (const block of collectHeadingBlocks(raw, 3)) {
+    const match = glossaryActionHeadingPattern.exec(block.title.trim());
+    if (!match) {
+      continue;
+    }
+
+    const timing = combatActionTimings[match[2].toLowerCase()];
+    const action = timing ? toCombatAction(block, timing, label, sourceId, match[1].trim()) : null;
+    if (action) {
+      actions.push(action);
+    }
+  }
+
+  return actions;
+};
+
+const extractActionsInCombatSection = (raw, label, sourceId) => {
+  const section = collectHeadingBlocks(raw, 2).find((block) => normalizeLabel(block.title) === 'actionsincombat');
+  if (!section) {
+    return [];
+  }
+
+  return collectHeadingBlocks(section.content, 3)
+    .map((block) => toCombatAction(block, 'action', label, sourceId, block.title.trim()))
+    .filter(Boolean);
+};
+
+// A name the book states twice — 2014 reprints "Attack" in more than one chapter — is one action.
+const extractCombatActions = (raw, label, sourceId) => {
+  const byName = new Map();
+  for (const action of [...extractGlossaryCombatActions(raw, label, sourceId), ...extractActionsInCombatSection(raw, label, sourceId)]) {
+    if (!byName.has(action.id)) {
+      byName.set(action.id, action);
+    }
+  }
+  return [...byName.values()];
+};
+
 const extractBasicRulesContent = (raw, label, sourceId) => {
   const content = createEmptyImportedContentBucket();
   content.classes = extractBasicRulesClasses(raw, label, sourceId);
   content.subclasses = extractBasicRulesSubclasses(raw, label, sourceId);
   content.species = extractBasicRulesSpecies(raw, label, sourceId);
   content.spells = extractCompendiumSpells(raw, label, sourceId);
+  content.combatActions = extractCombatActions(raw, label, sourceId);
   if (sourceId === 'basic-rules-2024') {
     content.monsters = extractBasicRules2024Monsters(raw, label, sourceId);
   }
@@ -3310,6 +3398,21 @@ const extractCompendiumSpecies = (raw, label, sourceId, { speciesHeadingLevel = 
     .filter(Boolean);
 };
 
+// This document labels the timing of every action it lists, so a timing it never labels is a gap in
+// the source rather than one to fill in: the free-rules subsets carry no Opportunity Attack.
+const describeCombatActionCoverage = (actions) => {
+  if (!Array.isArray(actions) || actions.length === 0) {
+    return [];
+  }
+
+  const missing = ['bonus-action', 'reaction'].filter((timing) => !actions.some((entry) => entry.timing === timing));
+  if (missing.length === 0) {
+    return [];
+  }
+
+  return [`Extracted ${actions.length} actions in combat; this document labels none as ${missing.join(' or ')}.`];
+};
+
 const determineParsedDocumentContent = ({ raw, label, sourceId, looksLikeHtml, shouldExtractXanathar, shouldExtractBasicRules, shouldExtractTashas }) => {
   if (!looksLikeHtml) {
     return createEmptyImportedContentBucket();
@@ -3420,7 +3523,8 @@ export const parseDocumentToCanonicalSourcePackage = ({
       'Document structure extracted from a raw source file.',
       extractedCount > 0
         ? `Semantic extraction mapped ${extractedCount} entries into canonical content buckets.`
-        : 'Content buckets remain empty until the document is mapped into concrete entities.'
+        : 'Content buckets remain empty until the document is mapped into concrete entities.',
+      ...describeCombatActionCoverage(extractedContent.combatActions)
     ]
   };
 };

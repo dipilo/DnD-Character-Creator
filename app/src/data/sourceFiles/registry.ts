@@ -53,13 +53,14 @@ const aggregateBucketEntries = <K extends keyof ImportedContentSourceFile['conte
   modules: SourceModuleRegistryEntry[],
   bucket: K
 ) => {
-  const passthrough: Array<ImportedContentSourceFile['content'][K][number]> = [];
-  const dedupedById = new Map<string, { entry: ImportedContentSourceFile['content'][K][number]; priority: number; order: number }>();
+  const passthrough: Array<NonNullable<ImportedContentSourceFile['content'][K]>[number]> = [];
+  const dedupedById = new Map<string, { entry: NonNullable<ImportedContentSourceFile['content'][K]>[number]; priority: number; order: number }>();
   let order = 0;
 
   modules.forEach(({ source }) => {
     const priority = sourceOriginPriority(source);
-    source.content[bucket].forEach((entry) => {
+    // `combatActions` is optional on the bucket, and a pack written before it carries none.
+    (source.content[bucket] ?? []).forEach((entry) => {
       if (hasEntryId(entry)) {
         const current = dedupedById.get(entry.id);
         if (!current) {
@@ -79,9 +80,9 @@ const aggregateBucketEntries = <K extends keyof ImportedContentSourceFile['conte
 
   const dedupedEntries = Array.from(dedupedById.values())
     .sort((left, right) => left.order - right.order)
-    .map((entry) => entry.entry) as ImportedContentSourceFile['content'][K];
+    .map((entry) => entry.entry) as NonNullable<ImportedContentSourceFile['content'][K]>;
 
-  return [...dedupedEntries, ...passthrough] as ImportedContentSourceFile['content'][K];
+  return [...dedupedEntries, ...passthrough] as NonNullable<ImportedContentSourceFile['content'][K]>;
 };
 
 export const sourceFileRegistry: ImportedContentSourceFile[] = sourceModuleRegistry.map((entry) => entry.source);
@@ -108,7 +109,9 @@ export const getSourceEntryCount = (sourceId: string) => {
     return 0;
   }
 
-  const buckets = Object.keys(matchingModules[0].source.content) as Array<keyof ImportedContentSourceFile['content']>;
+  // An action every character already has is not an entry a player picks, so it is not counted.
+  const buckets = Object.keys(matchingModules[0].source.content)
+    .filter((bucket) => bucket !== 'combatActions') as Array<keyof ImportedContentSourceFile['content']>;
   return buckets.reduce((total, bucket) => total + aggregateBucketEntries(matchingModules, bucket).length, 0);
 };
 
@@ -119,7 +122,7 @@ const allSourceBuckets = new Map<string, unknown>();
 export const getSourceBuckets = <K extends keyof ImportedContentSourceFile['content']>(bucket: K) => {
   const cached = allSourceBuckets.get(bucket as string);
   if (cached) {
-    return cached as ImportedContentSourceFile['content'][K];
+    return cached as NonNullable<ImportedContentSourceFile['content'][K]>;
   }
 
   const entries = aggregateBucketEntries(sourceModuleRegistry, bucket);

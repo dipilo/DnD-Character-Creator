@@ -4,6 +4,7 @@ import type {
   AbilityScores,
   Background,
   Class,
+  CombatAction,
   Equipment,
   EquipmentOption,
   Feat,
@@ -335,6 +336,15 @@ export const monsterSchema: z.ZodType<Monster> = z.object({
   sourceId: z.string().min(1).optional()
 });
 
+const combatActionSchema: z.ZodType<CombatAction> = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  timing: z.string().min(1),
+  description: z.string(),
+  source: z.string(),
+  sourceId: z.string().min(1).optional()
+});
+
 export const importedContentBucketSchema: z.ZodType<ImportedContentBucket> = z.object({
   species: z.array(speciesSchema),
   classes: z.array(classSchema),
@@ -344,7 +354,8 @@ export const importedContentBucketSchema: z.ZodType<ImportedContentBucket> = z.o
   equipment: z.array(equipmentSchema),
   feats: z.array(featSchema),
   monsters: z.array(monsterSchema),
-  ua: z.array(z.record(z.string(), z.unknown()))
+  ua: z.array(z.record(z.string(), z.unknown())),
+  combatActions: z.array(combatActionSchema).optional()
 });
 
 export const importedContentSectionSchema: z.ZodType<ImportedContentSection> = z.object({
@@ -400,7 +411,8 @@ export const createEmptyImportedContentBucket = (): ImportedContentBucket => ({
   equipment: [],
   feats: [],
   monsters: [],
-  ua: []
+  ua: [],
+  combatActions: []
 });
 
 export const createEmptyCanonicalSourcePackage = (

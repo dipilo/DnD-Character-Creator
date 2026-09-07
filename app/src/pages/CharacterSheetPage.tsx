@@ -92,16 +92,16 @@ export function CharacterSheetPage() {
       )}
       actions={(
         <>
-          <Button className="coarse:min-h-11" onClick={handleEdit}>
+          <Button size="sm" className="min-h-11" onClick={handleEdit}>
             <Pencil className="mr-2 h-4 w-4" />
             Edit
           </Button>
           {signedIn ? <CharacterSharingDialog characterId={character.id} characterName={character.name} /> : null}
-          <Button variant="outline" className="coarse:min-h-11" onClick={handleExportPDF}>
+          <Button size="sm" variant="outline" className="min-h-11" onClick={handleExportPDF}>
             <FileDown className="mr-2 h-4 w-4" />
             Export PDF
           </Button>
-          <Button variant="destructive" className="coarse:min-h-11" onClick={handleDelete}>
+          <Button size="sm" variant="destructive" className="min-h-11" onClick={handleDelete}>
             <Trash2 className="mr-2 h-4 w-4" />
             Delete
           </Button>

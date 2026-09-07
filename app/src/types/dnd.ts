@@ -42,6 +42,21 @@ export interface CharacterFeatureSelection {
   optionId?: string;
 }
 
+/**
+ * One of the actions every character can take, as the book lists them: the 2024 rules glossary
+ * labels each with its own timing ("Dodge [Action]"), and the 2014 combat chapter collects them
+ * under "Actions in Combat". Nothing about them is written in the app.
+ */
+export interface CombatAction {
+  id: string;
+  name: string;
+  /** 'action' | 'bonus-action' | 'reaction', as the book labels it. */
+  timing: string;
+  description: string;
+  source: string;
+  sourceId?: string;
+}
+
 export interface FeatureOptionPrerequisites {
   text?: string;
   minimumLevel?: number;

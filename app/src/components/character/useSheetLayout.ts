@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
 export interface SheetLayout {
   /** The persistent quick-info rail is a side column rather than a strip above the tabs. */
@@ -45,4 +45,37 @@ function subscribe(onChange: () => void): () => void {
  */
 export function useSheetLayout(): SheetLayout {
   return useSyncExternalStore(subscribe, readLayout, () => SERVER_LAYOUT);
+}
+
+/**
+ * Whether an element is short enough to pin without a scrollbar of its own.
+ *
+ * A sticky column taller than the viewport needs `overflow-y: auto` to reach its own bottom, and
+ * that is a second scrolling surface stacked on the page's: getting to the end of one column then
+ * means scrolling two things, which is what the rail felt like. A column that does not fit is not
+ * pinned at all and scrolls with the page, so there is only ever one surface to move.
+ *
+ * The measurement lands in the observer's callback rather than in the effect body, which is what
+ * keeps it clear of `react-hooks/set-state-in-effect`.
+ */
+export function useFitsViewport(reservedPx: number) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [fits, setFits] = useState(true);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node || typeof ResizeObserver === 'undefined') return undefined;
+
+    const measure = () => setFits(node.scrollHeight <= window.innerHeight - reservedPx);
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    window.addEventListener('resize', measure);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [reservedPx]);
+
+  return { ref, fits };
 }

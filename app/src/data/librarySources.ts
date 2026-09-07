@@ -1,6 +1,7 @@
 import type {
   Background,
   Class,
+  CombatAction,
   Equipment,
   Feat,
   Monster,
@@ -30,6 +31,12 @@ export interface ImportedContentBucket {
   feats: Feat[];
   monsters: Monster[];
   ua: Array<Record<string, unknown>>;
+  /**
+   * The actions every character can take. Not one of `contentBucketKeys` — nobody picks one — so it
+   * is neither counted in a pack's entry total nor listed in the homebrew hub. A pack generated
+   * before it carries none, which is why every read guards the array.
+   */
+  combatActions?: CombatAction[];
 }
 
 export interface ImportedContentDocument {

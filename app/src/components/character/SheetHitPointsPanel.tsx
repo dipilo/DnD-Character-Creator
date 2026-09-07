@@ -106,31 +106,30 @@ export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPo
           {exhaustion > 0 ? <Badge variant="destructive">Exhaustion {exhaustion}</Badge> : null}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex flex-wrap items-baseline gap-3">
-          <p className="text-3xl font-bold tabular-nums">{hp.current}/{hp.maximum}</p>
+      <CardContent className="space-y-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <p className="text-3xl font-bold leading-none tabular-nums">{hp.current}/{hp.maximum}</p>
           {hp.temporary > 0 ? <Badge variant="outline">+{hp.temporary} temp</Badge> : null}
         </div>
 
+        {/* One line. The amount box used to carry a stacked label with the three buttons wrapping
+            under it, which is three rows of a 19rem rail spent on one entry field. */}
         {onChange ? (
-          <div className="flex flex-wrap items-end gap-2">
-            <div className="min-w-[6rem] flex-1">
-              <Label htmlFor="hp-amount" className="text-xs uppercase tracking-wide text-muted-foreground">
-                Amount
-              </Label>
-              <Input
-                id="hp-amount"
-                inputMode="numeric"
-                value={amount}
-                onChange={(event) => setAmount(event.target.value.replaceAll(/[^0-9]/g, ''))}
-                placeholder="0"
-                className="mt-1 coarse:min-h-11"
-              />
-            </div>
+          <div className="flex items-stretch gap-1">
+            <Label htmlFor="hp-amount" className="sr-only">Amount</Label>
+            <Input
+              id="hp-amount"
+              inputMode="numeric"
+              value={amount}
+              onChange={(event) => setAmount(event.target.value.replaceAll(/\D/g, ''))}
+              placeholder="0"
+              className="h-11 w-14 shrink-0 text-center"
+            />
             <Button
               type="button"
+              size="sm"
               variant="destructive"
-              className="min-h-11"
+              className="min-h-11 flex-1 px-1"
               disabled={usableAmount === 0}
               onClick={() => apply(applyDamage(character, usableAmount))}
             >
@@ -138,7 +137,8 @@ export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPo
             </Button>
             <Button
               type="button"
-              className="min-h-11"
+              size="sm"
+              className="min-h-11 flex-1 px-1"
               disabled={usableAmount === 0}
               onClick={() => apply(applyHealing(character, usableAmount))}
             >
@@ -146,12 +146,13 @@ export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPo
             </Button>
             <Button
               type="button"
+              size="sm"
               variant="outline"
-              className="min-h-11"
+              className="min-h-11 flex-1 px-1"
               disabled={usableAmount === 0}
               onClick={() => apply(setTemporaryHitPoints(character, usableAmount))}
             >
-              Temp HP
+              Temp
             </Button>
           </div>
         ) : null}
@@ -189,41 +190,43 @@ export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPo
         ) : null}
 
         {onChange ? (
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-stretch gap-1">
             <Button
               type="button"
               size="sm"
               variant={character.inspiration ? 'default' : 'outline'}
-              className="min-h-11"
+              className="min-h-11 flex-1 px-1"
               aria-pressed={Boolean(character.inspiration)}
               onClick={() => onChange({ inspiration: !character.inspiration })}
             >
               Inspiration
             </Button>
-            <div className="flex items-center gap-1">
-              <span className="text-xs uppercase tracking-wide text-muted-foreground">Exhaustion</span>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                className="min-h-11"
-                disabled={exhaustion === 0}
-                onClick={() => onChange(setExhaustion(exhaustion - 1))}
-              >
-                −
-              </Button>
-              <span className="w-6 text-center tabular-nums">{exhaustion}</span>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                className="min-h-11"
-                disabled={exhaustion >= MAX_EXHAUSTION}
-                onClick={() => onChange(setExhaustion(exhaustion + 1))}
-              >
-                +
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="min-h-11 w-11 shrink-0 px-0"
+              aria-label="Lower exhaustion"
+              disabled={exhaustion === 0}
+              onClick={() => onChange(setExhaustion(exhaustion - 1))}
+            >
+              −
+            </Button>
+            <span className="flex w-12 shrink-0 flex-col items-center justify-center leading-none">
+              <span className="text-[0.6rem] uppercase tracking-wide text-muted-foreground">Exh</span>
+              <span className="text-sm tabular-nums">{exhaustion}</span>
+            </span>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="min-h-11 w-11 shrink-0 px-0"
+              aria-label="Raise exhaustion"
+              disabled={exhaustion >= MAX_EXHAUSTION}
+              onClick={() => onChange(setExhaustion(exhaustion + 1))}
+            >
+              +
+            </Button>
           </div>
         ) : null}
 
@@ -248,14 +251,16 @@ export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPo
           </div>
 
           {conditionsOpen && onChange ? (
-            <div className="flex flex-wrap gap-1.5">
+            // An even grid, not a wrapped row: fourteen chips of fourteen widths read as a ragged
+            // block, and two columns is also what keeps each one a thumb target in a 19rem rail.
+            <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-2">
               {CONDITION_NAMES.map((condition) => (
                 <Button
                   key={condition}
                   type="button"
                   size="sm"
                   variant={conditions.includes(condition) ? 'default' : 'outline'}
-                  className="coarse:min-h-11"
+                  className="min-h-9 w-full px-1 text-xs coarse:min-h-11"
                   aria-pressed={conditions.includes(condition)}
                   onClick={() => onChange(toggleCondition(character, condition))}
                 >

@@ -46,7 +46,7 @@ export function KobSheetPage() {
       )}
       actions={(
         <>
-          <Button asChild variant="secondary" className="min-h-11">
+          <Button asChild size="sm" variant="secondary" className="min-h-11">
             <Link to={`/kob/builder/${character.id}`}>
               <Pencil className="h-4 w-4" />
               Edit

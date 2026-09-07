@@ -1,4 +1,6 @@
-// The table every action row is printed in: Name, Time, Range, Hit/DC, Damage, Notes.
+// The table every action row is printed in: what it is done with, then Name, Time, Range, Hit/DC,
+// Damage, Notes. The Actions tab drops Time — everything in it is taken on your turn — and the
+// Spells tab keeps it, because a casting time is the spell's own and varies.
 //
 // D&D Beyond's attack table has fixed columns and ours was a card per weapon, so the same six facts
 // sat in a different place on every row and a player had to read each card to find one number.
@@ -11,11 +13,18 @@ import { useState, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-/** Name, Time, Range, Hit/DC, Damage, Notes, then whatever the row can be *done* with. */
-const GRID_COLUMNS =
-  'lg:grid-cols-[minmax(8rem,2.2fr)_5.5rem_5.5rem_5.5rem_minmax(6rem,1.2fr)_minmax(4rem,1fr)_minmax(0,auto)]';
+// Cast / Use first, then Name, Time (where the table prints it), Range, Hit/DC, Damage, Notes.
+//
+// Every track is `minmax(0, …)`. A track with an intrinsic minimum is as wide as its widest child
+// insists on being, so one long damage line or one wide control group pushed the whole grid past
+// the card it sits in — which is what reads as text escaping its container.
+const GRID_WITH_TIME =
+  'lg:grid-cols-[minmax(0,10rem)_minmax(0,2.2fr)_minmax(0,5.5rem)_minmax(0,5.5rem)_minmax(0,5.5rem)_minmax(0,1.4fr)_minmax(0,1fr)]';
+const GRID_WITHOUT_TIME =
+  'lg:grid-cols-[minmax(0,10rem)_minmax(0,2.2fr)_minmax(0,5.5rem)_minmax(0,5.5rem)_minmax(0,1.4fr)_minmax(0,1fr)]';
 
-const HEADINGS = ['Name', 'Time', 'Range', 'Hit / DC', 'Damage', 'Notes'] as const;
+const HEADINGS_WITH_TIME = ['', 'Time', 'Range', 'Hit / DC', 'Damage', 'Notes'] as const;
+const HEADINGS_WITHOUT_TIME = ['', 'Range', 'Hit / DC', 'Damage', 'Notes'] as const;
 
 export interface SheetActionTableRow {
   id: string;
@@ -65,7 +74,7 @@ function Cell({
   );
 }
 
-function ActionRow({ row }: Readonly<{ row: SheetActionTableRow }>) {
+function ActionRow({ row, showTime }: Readonly<{ row: SheetActionTableRow; showTime: boolean }>) {
   const [open, setOpen] = useState(false);
   const expandable = Boolean(row.detail);
 
@@ -83,9 +92,22 @@ function ActionRow({ row }: Readonly<{ row: SheetActionTableRow }>) {
       <div
         className={cn(
           'flex flex-wrap items-baseline gap-x-3 gap-y-1 px-3 py-2 lg:grid lg:items-center lg:gap-2',
-          GRID_COLUMNS
+          showTime ? GRID_WITH_TIME : GRID_WITHOUT_TIME
         )}
       >
+        {/* Leading, so the row starts with the thing it is *done* with rather than ending on a
+            control group that was competing with the name for the same width. */}
+        <div
+          className={cn(
+            'order-first flex w-full min-w-0 flex-wrap items-center gap-1 lg:w-auto',
+            // The cell stays in the grid above `lg` — the columns are placed in order, so a missing
+            // child shifts every one after it — and costs no line below it.
+            row.controls === undefined && 'hidden lg:flex'
+          )}
+        >
+          {row.controls}
+        </div>
+
         <div className="w-full min-w-0 lg:w-auto">
           {expandable ? (
             <button
@@ -104,19 +126,13 @@ function ActionRow({ row }: Readonly<{ row: SheetActionTableRow }>) {
           )}
         </div>
 
-        <Cell label="Time">{row.time}</Cell>
+        {showTime ? <Cell label="Time">{row.time}</Cell> : null}
         <Cell label="Range">{row.range}</Cell>
         <Cell label="Hit / DC">{row.hit}</Cell>
-        <Cell label="Damage">{row.damage}</Cell>
+        <Cell label="Damage" className="items-start">{row.damage}</Cell>
         <Cell label="Notes" className="w-full lg:w-auto">
           {row.notes ? <span className="text-xs text-muted-foreground">{row.notes}</span> : undefined}
         </Cell>
-
-        {row.controls ? (
-          <div className="flex w-full flex-wrap items-center gap-1 lg:w-auto lg:justify-end">
-            {row.controls}
-          </div>
-        ) : null}
       </div>
 
       {open && row.detail ? <div className="px-3 pb-3">{row.detail}</div> : null}
@@ -126,26 +142,36 @@ function ActionRow({ row }: Readonly<{ row: SheetActionTableRow }>) {
 
 export function SheetActionTable({
   rows,
-  emptyMessage
-}: Readonly<{ rows: readonly SheetActionTableRow[]; emptyMessage: string }>) {
+  emptyMessage,
+  showTime = true,
+  nameHeading = 'Name'
+}: Readonly<{
+  rows: readonly SheetActionTableRow[];
+  emptyMessage: string;
+  showTime?: boolean;
+  /** What the name column is called. The attack table calls it Attack, which is what it holds. */
+  nameHeading?: string;
+}>) {
   if (rows.length === 0) {
     return <p className="text-sm text-muted-foreground">{emptyMessage}</p>;
   }
+
+  const headings = ['', nameHeading, ...(showTime ? HEADINGS_WITH_TIME : HEADINGS_WITHOUT_TIME).slice(1)];
 
   return (
     <div className="overflow-hidden rounded-lg border">
       <div
         className={cn(
           'hidden border-b bg-muted/40 px-3 py-1.5 text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground lg:grid lg:gap-2',
-          GRID_COLUMNS
+          showTime ? GRID_WITH_TIME : GRID_WITHOUT_TIME
         )}
       >
-        {HEADINGS.map((heading) => (
-          <span key={heading}>{heading}</span>
+        {headings.map((heading, index) => (
+          <span key={heading || `column-${index}`}>{heading}</span>
         ))}
       </div>
       {rows.map((row) => (
-        <ActionRow key={row.id} row={row} />
+        <ActionRow key={row.id} row={row} showTime={showTime} />
       ))}
     </div>
   );
