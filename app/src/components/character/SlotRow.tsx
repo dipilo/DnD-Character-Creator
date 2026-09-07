@@ -29,7 +29,7 @@ export function SlotRow({ label, total, used, onSetUsed }: SlotRowProps) {
               disabled={!onSetUsed}
               onClick={() => onSetUsed?.(next)}
               className={cn(
-                'h-5 w-5 rounded-sm border transition',
+                'h-5 w-5 rounded-sm border transition coarse:h-11 coarse:w-7',
                 spent ? 'border-muted-foreground/40 bg-transparent' : 'border-primary bg-primary',
                 onSetUsed ? 'cursor-pointer' : 'cursor-default'
               )}

@@ -19,6 +19,7 @@ import {
   getRuntimeSubclass,
   useContentLibrary
 } from '@/data';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -41,24 +42,27 @@ import {
 import { deriveAttacks, deriveSheetVitals } from '@/lib/sheetDerivations';
 import { deriveDefences, deriveTimedFeatures, deriveUnarmedStrike } from '@/lib/sheetCombat';
 import { resolveFeatOptionChoicePool, resolveFeatSpellEntries } from '@/lib/featGrants';
-import { resolveClassResources } from '@/lib/sheetPlayState';
-import { rollD20 } from '@/lib/d20Rolls';
+import { applyLongRest, applyShortRest, resolveClassResources } from '@/lib/sheetPlayState';
 import { SheetAttacksPanel } from '@/components/character/SheetAttacksPanel';
-import { SheetCombatPanel } from '@/components/character/SheetCombatPanel';
+import { SheetDefencesCard, SheetTurnCard } from '@/components/character/SheetCombatPanel';
 import { AdvantageToggle } from '@/components/character/AdvantageToggle';
 import { SheetEquipmentPanel } from '@/components/character/SheetEquipmentPanel';
-import { SheetHitPointsPanel } from '@/components/character/SheetHitPointsPanel';
 import { SheetResourcesPanel, type HitDicePool } from '@/components/character/SheetResourcesPanel';
 import { SheetSpellsPanel, type SheetSpellEntry } from '@/components/character/SheetSpellsPanel';
 import { SheetFeatureList } from '@/components/character/SheetFeatureList';
 import { getChosenFeatureOptions } from '@/lib/featureOptions';
-import { SheetVitalsPanel } from '@/components/character/SheetVitalsPanel';
+import { SheetSpellcastingCard, SheetVitalsPanel } from '@/components/character/SheetVitalsPanel';
+import {
+  ArmorClassCard,
+  ProficiencyBonusCard,
+  SheetQuickInfoRail
+} from '@/components/character/SheetQuickInfoRail';
+import { useSheetLayout } from '@/components/character/useSheetLayout';
 import type { AbilityScores, Character, Feature } from '@/types/dnd';
 
 const humanizeFallbackId = (value: string) => value.split('-').filter(Boolean).join(' ');
 const isDefined = <T,>(value: T | null | undefined): value is T => Boolean(value);
 const calculateModifier = (score: number): number => Math.floor((score - 10) / 2);
-const formatModifier = (mod: number): string => (mod >= 0 ? `+${mod}` : `${mod}`);
 const normalizeEquipmentName = (value: string) => value.toLowerCase().replaceAll(/[^a-z0-9]+/g, ' ').trim();
 
 interface CharacterSheetViewProps {
@@ -79,6 +83,7 @@ interface CharacterSheetViewProps {
 
 export function CharacterSheetView({ character, actions, leading, note, onChange }: Readonly<CharacterSheetViewProps>) {
   const { backgrounds, classes: classCatalogue, equipment, feats, spells: spellCatalogue } = useContentLibrary();
+  const { railIsColumn, railIsSticky } = useSheetLayout();
 
   const species = getRuntimeSpeciesById(character.speciesId);
   const variant = character.variantId ? getRuntimeSpeciesVariant(character.speciesId, character.variantId) : undefined;
@@ -393,265 +398,257 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
     character.abilityScoreBonuses?.[ability] ?? derivedAbilityBonuses[ability] ?? 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
+      {/* The header is not sticky. In landscape there are ~390px of height, and a pinned header on
+          top of a pinned rail leaves no room for the thing being read. */}
       <div className="flex flex-wrap items-center gap-3 sm:gap-4">
         {leading}
         <div className="min-w-0 flex-1">
-          <h1 className="break-words text-2xl font-bold sm:text-3xl">{character.name}</h1>
-          <p className="text-muted-foreground">
+          <h1 className="break-words text-2xl font-bold sm:text-3xl short:text-xl">{character.name}</h1>
+          <p className="text-muted-foreground short:hidden">
             Level {totalLevel} {species?.name ?? 'Unknown Species'} {classSummary}
           </p>
           {note}
         </div>
-        {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
+        <div className="flex flex-wrap items-center gap-2">
+          {onChange ? (
+            <>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="min-h-11"
+                onClick={() => onChange(applyShortRest(character, classResources))}
+              >
+                Short Rest
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                className="min-h-11"
+                onClick={() => onChange(applyLongRest(character, classResources))}
+              >
+                Long Rest
+              </Button>
+            </>
+          ) : null}
+          {actions}
+        </div>
       </div>
 
       <AdvantageToggle />
 
-      <Tabs defaultValue="stats" className="w-full">
-        {/* Four equal columns on a phone truncate to "Proficienc…". Below sm the strip scrolls at
-            each label's natural width instead; the grid returns once there is room for it. */}
-        <TabsList className={`w-full justify-start [&>*]:flex-none sm:grid sm:[&>*]:flex-1 ${hasSpellcasting ? 'sm:grid-cols-5' : 'sm:grid-cols-4'}`}>
-          <TabsTrigger value="stats">Stats</TabsTrigger>
-          <TabsTrigger value="features">Features</TabsTrigger>
-          {hasSpellcasting ? <TabsTrigger value="spells">Spells</TabsTrigger> : null}
-          <TabsTrigger value="equipment">Equipment</TabsTrigger>
-          <TabsTrigger value="background">Background</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="stats" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Ability Scores</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-2 sm:gap-4 md:grid-cols-6">
-                {Object.entries(displayedAbilityScores).map(([ability, score]) => {
-                  const mod = calculateModifier(score);
-                  const bonus = abilityBonusFor(ability as keyof AbilityScores);
-                  const abilityLabel = ability.charAt(0).toUpperCase() + ability.slice(1);
-                  return (
-                    <button
-                      key={ability}
-                      type="button"
-                      className="rounded-lg border p-2 text-center transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:p-4"
-                      onClick={() =>
-                        void rollD20({
-                          modifier: mod,
-                          label: `${abilityLabel} check`,
-                          detail: 'd20 check',
-                        })
-                      }
-                    >
-                      <p className="mb-1 text-xs uppercase text-muted-foreground">{ability}</p>
-                      <p className="text-2xl font-bold sm:text-3xl">{score}</p>
-                      <Badge variant={mod >= 0 ? 'default' : 'secondary'} className="mt-1">
-                        {formatModifier(mod)}
-                      </Badge>
-                      {bonus !== 0 && (
-                        <p className="mt-2 text-xs text-muted-foreground">
-                          Base {character.abilityScores[ability as keyof AbilityScores]}, bonus {formatModifier(bonus)}
-                        </p>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-            <SheetHitPointsPanel character={characterWithResolvedHp} onChange={onChange} />
-
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-muted-foreground">Armor Class</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-3xl font-bold">{derivedArmor.value}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{derivedArmor.source}</p>
-                  {!derivedArmor.proficient && (
-                    <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
-                      Current armor is equipped without matching proficiency.
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-muted-foreground">Proficiency Bonus</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-3xl font-bold">+{proficiencyBonus}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Level {totalLevel}</p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          <SheetResourcesPanel
-            character={character}
-            hitDice={hitDicePools}
-            slotsByLevel={spellcastingRules.slotsByLevel}
-            pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
-            classResources={classResources}
-            constitutionModifier={calculateModifier(displayedAbilityScores.constitution)}
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] lg:gap-6">
+        <div
+          className={
+            railIsSticky
+              ? 'lg:sticky lg:top-16 lg:max-h-[calc(100dvh-5rem)] lg:overflow-y-auto lg:overscroll-contain lg:pr-1'
+              : undefined
+          }
+        >
+          <SheetQuickInfoRail
+            character={characterWithResolvedHp}
+            abilityScores={displayedAbilityScores}
+            baseAbilityScores={character.abilityScores}
+            abilityBonusFor={abilityBonusFor}
+            armor={derivedArmor}
+            proficiencyBonus={proficiencyBonus}
+            totalLevel={totalLevel}
+            vitals={vitals}
+            railIsColumn={railIsColumn}
             onChange={onChange}
           />
+        </div>
 
-          <SheetVitalsPanel vitals={vitals} />
+        <Tabs defaultValue="actions" className="min-w-0">
+          {/* Six labels never fit 390px, so the strip scrolls at each label's natural width rather
+              than clipping every one of them at both ends. */}
+          <TabsList className="w-full justify-start overscroll-x-contain [&>*]:flex-none coarse:h-auto coarse:[&>*]:min-h-11">
+            {railIsColumn ? null : <TabsTrigger value="stats">Stats</TabsTrigger>}
+            <TabsTrigger value="actions">Actions</TabsTrigger>
+            {hasSpellcasting ? <TabsTrigger value="spells">Spells</TabsTrigger> : null}
+            <TabsTrigger value="equipment">Equipment</TabsTrigger>
+            <TabsTrigger value="features">Features</TabsTrigger>
+            <TabsTrigger value="description">Description</TabsTrigger>
+          </TabsList>
 
-          <SheetAttacksPanel attacks={attacks} />
-
-          <SheetCombatPanel timedFeatures={timedFeatures} defences={defences} />
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Proficiencies</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <span className="font-medium">Saving Throws: </span>
-                <span className="text-muted-foreground">
-                  {derivedProficiencies.saves.map((entry) => entry.charAt(0).toUpperCase() + entry.slice(1)).join(', ') || 'None'}
-                </span>
+          {/* Saves, skills and the passives live in the rail wherever there is a column for them.
+              Below that they are here instead, so nothing on the sheet renders twice. */}
+          {railIsColumn ? null : (
+            <TabsContent value="stats" className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <ArmorClassCard armor={derivedArmor} />
+                <ProficiencyBonusCard proficiencyBonus={proficiencyBonus} totalLevel={totalLevel} />
               </div>
-              <Separator />
-              <div>
-                <span className="font-medium">Skills: </span>
-                <span className="text-muted-foreground">{derivedProficiencies.skills.join(', ') || 'None'}</span>
-              </div>
-              <Separator />
-              <div>
-                <span className="font-medium">Tools: </span>
-                <span className="text-muted-foreground">{derivedProficiencies.tools.join(', ') || 'None'}</span>
-              </div>
-              <Separator />
-              <div>
-                <span className="font-medium">Languages: </span>
-                <span className="text-muted-foreground">{derivedProficiencies.languages.join(', ') || 'None'}</span>
-              </div>
-              <Separator />
-              <div>
-                <span className="font-medium">Armor: </span>
-                <span className="text-muted-foreground">{derivedProficiencies.armor.join(', ') || 'None'}</span>
-              </div>
-              <Separator />
-              <div>
-                <span className="font-medium">Weapons: </span>
-                <span className="text-muted-foreground">{derivedProficiencies.weapons.join(', ') || 'None'}</span>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="features" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Species Features: {species?.name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <SheetFeatureList
-                features={[...(species?.features ?? []), ...(variant?.features ?? [])]}
-                selections={character.features}
-                idPrefix="species"
-                emptyMessage="No species features are recorded for this character."
-              />
-            </CardContent>
-          </Card>
-
-          {resolvedClasses.map(({ entry, cls, subclass }) => (
-            <Card key={cls.id}>
-              <CardHeader>
-                <CardTitle>{cls.name} Features</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <SheetFeatureList
-                  features={sortFeaturesByLevel(cls.features.filter((feature) => feature.level <= entry.level))}
-                  selections={character.features}
-                  idPrefix={cls.id}
-                />
-                {subclass && subclass.features.some((feature) => feature.level <= entry.level) && (
-                  <div className="space-y-3 rounded-lg border p-4">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-medium">{subclass.name}</h4>
-                      <Badge variant="outline">Subclass</Badge>
-                    </div>
-                    <SheetFeatureList
-                      features={sortFeaturesByLevel(subclass.features.filter((feature) => feature.level <= entry.level))}
-                      selections={character.features}
-                      idPrefix={subclass.id}
-                    />
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-
-          {featCards.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Feats</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <SheetFeatureList
-                  features={featCards}
-                  selections={character.features}
-                  idPrefix="feat"
-                />
-              </CardContent>
-            </Card>
+              <SheetVitalsPanel vitals={vitals} />
+            </TabsContent>
           )}
 
-        </TabsContent>
+          <TabsContent value="actions" className="space-y-4">
+            <SheetAttacksPanel attacks={attacks} />
 
-        {hasSpellcasting ? (
-          <TabsContent value="spells" className="space-y-4">
-            <SheetSpellsPanel
+            <SheetResourcesPanel
               character={character}
-              spells={selectedSpells}
-              catalogue={spellCatalogue}
-              castingStats={vitals.spellcasting}
+              hitDice={hitDicePools}
               slotsByLevel={spellcastingRules.slotsByLevel}
               pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
+              classResources={classResources}
+              constitutionModifier={calculateModifier(displayedAbilityScores.constitution)}
+              onChange={onChange}
+            />
+
+            <SheetTurnCard timedFeatures={timedFeatures} />
+          </TabsContent>
+
+          {hasSpellcasting ? (
+            <TabsContent value="spells" className="space-y-4">
+              <SheetSpellcastingCard vitals={vitals} />
+              <SheetSpellsPanel
+                character={character}
+                spells={selectedSpells}
+                catalogue={spellCatalogue}
+                castingStats={vitals.spellcasting}
+                slotsByLevel={spellcastingRules.slotsByLevel}
+                pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
+                onChange={onChange}
+              />
+            </TabsContent>
+          ) : null}
+
+          <TabsContent value="equipment" className="space-y-4">
+            <SheetEquipmentPanel
+              character={character}
+              selections={resolvedEquipment}
+              catalogue={equipment}
               onChange={onChange}
             />
           </TabsContent>
-        ) : null}
 
-        <TabsContent value="equipment" className="space-y-4">
-          <SheetEquipmentPanel
-            character={character}
-            selections={resolvedEquipment}
-            catalogue={equipment}
-            onChange={onChange}
-          />
-        </TabsContent>
+          <TabsContent value="features" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Species Features: {species?.name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <SheetFeatureList
+                  features={[...(species?.features ?? []), ...(variant?.features ?? [])]}
+                  selections={character.features}
+                  idPrefix="species"
+                  emptyMessage="No species features are recorded for this character."
+                />
+              </CardContent>
+            </Card>
 
-        <TabsContent value="background" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Background: {background?.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-muted-foreground">{background?.description}</p>
+            {resolvedClasses.map(({ entry, cls, subclass }) => (
+              <Card key={cls.id}>
+                <CardHeader>
+                  <CardTitle>{cls.name} Features</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <SheetFeatureList
+                    features={sortFeaturesByLevel(cls.features.filter((feature) => feature.level <= entry.level))}
+                    selections={character.features}
+                    idPrefix={cls.id}
+                  />
+                  {subclass && subclass.features.some((feature) => feature.level <= entry.level) && (
+                    <div className="space-y-3 rounded-lg border p-4">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-medium">{subclass.name}</h4>
+                        <Badge variant="outline">Subclass</Badge>
+                      </div>
+                      <SheetFeatureList
+                        features={sortFeaturesByLevel(subclass.features.filter((feature) => feature.level <= entry.level))}
+                        selections={character.features}
+                        idPrefix={subclass.id}
+                      />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
 
-              <Separator />
+            {featCards.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Feats</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <SheetFeatureList
+                    features={featCards}
+                    selections={character.features}
+                    idPrefix="feat"
+                  />
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
 
-              <div>
-                <h4 className="font-medium">Feature: {background?.feature.name}</h4>
-                <p className="text-sm text-muted-foreground">{background?.feature.description}</p>
-              </div>
+          {/* More than the background now: what this character is proficient in and what they
+              shrug off are read here too, which is where a reader looks for them. */}
+          <TabsContent value="description" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Background: {background?.name}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground">{background?.description}</p>
 
-              <Separator />
+                <Separator />
 
-              {backgroundCharacteristicsContent}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                <div>
+                  <h4 className="font-medium">Feature: {background?.feature.name}</h4>
+                  <p className="text-sm text-muted-foreground">{background?.feature.description}</p>
+                </div>
+
+                <Separator />
+
+                {backgroundCharacteristicsContent}
+              </CardContent>
+            </Card>
+
+            <SheetDefencesCard defences={defences} />
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Proficiencies</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <span className="font-medium">Saving Throws: </span>
+                  <span className="text-muted-foreground">
+                    {derivedProficiencies.saves.map((entry) => entry.charAt(0).toUpperCase() + entry.slice(1)).join(', ') || 'None'}
+                  </span>
+                </div>
+                <Separator />
+                <div>
+                  <span className="font-medium">Skills: </span>
+                  <span className="text-muted-foreground">{derivedProficiencies.skills.join(', ') || 'None'}</span>
+                </div>
+                <Separator />
+                <div>
+                  <span className="font-medium">Tools: </span>
+                  <span className="text-muted-foreground">{derivedProficiencies.tools.join(', ') || 'None'}</span>
+                </div>
+                <Separator />
+                <div>
+                  <span className="font-medium">Languages: </span>
+                  <span className="text-muted-foreground">{derivedProficiencies.languages.join(', ') || 'None'}</span>
+                </div>
+                <Separator />
+                <div>
+                  <span className="font-medium">Armor: </span>
+                  <span className="text-muted-foreground">{derivedProficiencies.armor.join(', ') || 'None'}</span>
+                </div>
+                <Separator />
+                <div>
+                  <span className="font-medium">Weapons: </span>
+                  <span className="text-muted-foreground">{derivedProficiencies.weapons.join(', ') || 'None'}</span>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }

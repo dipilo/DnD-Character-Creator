@@ -61,7 +61,7 @@ function DeathSaveRow({
               disabled={!onSet}
               onClick={() => onSet?.(next)}
               className={cn(
-                'h-5 w-5 rounded-full border transition',
+                'h-5 w-5 rounded-full border transition coarse:h-11 coarse:w-11',
                 filled ? tone : 'border-muted-foreground/40',
                 onSet ? 'cursor-pointer' : 'cursor-default'
               )}
@@ -123,7 +123,7 @@ export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPo
                 value={amount}
                 onChange={(event) => setAmount(event.target.value.replaceAll(/[^0-9]/g, ''))}
                 placeholder="0"
-                className="mt-1"
+                className="mt-1 coarse:min-h-11"
               />
             </div>
             <Button
@@ -236,6 +236,7 @@ export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPo
                   type="button"
                   size="sm"
                   variant={conditions.includes(condition) ? 'default' : 'outline'}
+                  className="coarse:min-h-11"
                   aria-pressed={conditions.includes(condition)}
                   onClick={() => onChange(toggleCondition(character, condition))}
                 >

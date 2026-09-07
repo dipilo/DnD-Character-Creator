@@ -81,23 +81,23 @@ export function CharacterSheetPage() {
       character={character}
       onChange={handleChange}
       leading={(
-        <Button variant="outline" size="sm" onClick={() => navigate('/characters')}>
+        <Button variant="outline" size="sm" className="coarse:min-h-11" onClick={() => navigate('/characters')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
       )}
       actions={(
         <>
-          <Button onClick={handleEdit}>
+          <Button className="coarse:min-h-11" onClick={handleEdit}>
             <Pencil className="mr-2 h-4 w-4" />
             Edit
           </Button>
           {signedIn ? <CharacterSharingDialog characterId={character.id} characterName={character.name} /> : null}
-          <Button variant="outline" onClick={handleExportPDF}>
+          <Button variant="outline" className="coarse:min-h-11" onClick={handleExportPDF}>
             <FileDown className="mr-2 h-4 w-4" />
             Export PDF
           </Button>
-          <Button variant="destructive" onClick={handleDelete}>
+          <Button variant="destructive" className="coarse:min-h-11" onClick={handleDelete}>
             <Trash2 className="mr-2 h-4 w-4" />
             Delete
           </Button>

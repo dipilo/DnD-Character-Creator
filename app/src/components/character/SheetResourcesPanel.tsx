@@ -1,4 +1,5 @@
-// Hit dice, class resources and the two rests. Spell slots live with the spells they cast.
+// Hit dice and class resources. Spell slots live with the spells they cast, and the two rests sit
+// in the sheet header, where they are reachable from every tab.
 //
 // Same posture as the hit-point panel: no store, no writes — `onChange` is the whole write
 // surface, and its absence is what makes the party view read-only.
@@ -9,8 +10,6 @@ import { modifierNotation, parseDiceNotation } from '@/lib/diceNotation';
 import { rollOnScreen } from '@/store/diceTrayStore';
 import {
   adjustHitDice,
-  applyLongRest,
-  applyShortRest,
   setClassResourceUsed,
   toggleResourceActive
 } from '@/lib/sheetPlayState';
@@ -167,16 +166,6 @@ export function SheetResourcesPanel({
                 ) : null}
               </div>
             ))}
-            {onChange ? (
-              <div className="flex flex-wrap gap-2 pt-2">
-                <Button type="button" size="sm" variant="outline" className="min-h-11" onClick={() => onChange(applyShortRest(character, classResources))}>
-                  Short Rest
-                </Button>
-                <Button type="button" size="sm" className="min-h-11" onClick={() => onChange(applyLongRest(character, classResources))}>
-                  Long Rest
-                </Button>
-              </div>
-            ) : null}
           </CardContent>
         </Card>
       ) : null}
