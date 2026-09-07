@@ -29,10 +29,21 @@ export interface DiceRollRequest {
    */
   explodeOnMax?: boolean;
   /**
+   * Throw every die the notation asks for and count only some of them. 5e's advantage is two d20s
+   * of which the higher counts, and plenty of systems roll-and-drop, so the tray takes the rule as
+   * "keep this many, from this end" rather than knowing what advantage is.
+   */
+  keep?: DiceKeepRule;
+  /**
    * A line the tray prints under the total, computed from the outcome. It is a callback so the
    * tray needs to know nothing about any game's rules — the caller reads its own difficulty table.
    */
   describeOutcome?: (outcome: DiceRollOutcome) => string | null;
+}
+
+export interface DiceKeepRule {
+  count: number;
+  mode: 'highest' | 'lowest';
 }
 
 export interface DiceRollOutcome {
@@ -45,6 +56,11 @@ export interface DiceRollOutcome {
   natural: number | null;
   /** How many times the die landed on its maximum and was thrown again. */
   luckyBreaks: number;
+  /**
+   * Which entries of `results` counted toward the total. Absent when every die did — a dropped
+   * die is still on the surface and still in the log, so the reader can see what was discarded.
+   */
+  keptIndexes?: number[];
 }
 
 export interface PendingRoll {
@@ -107,14 +123,45 @@ export function isMaximum(result: DiceRollResult | undefined): boolean {
   return Boolean(result?.sides && result.value === result.sides);
 }
 
+/**
+ * Which dice a keep rule counts. Only the first group is subject to it — the rule exists for the
+ * pair of d20s in an advantage roll, and a `2d20+1d4` would still add the d4.
+ */
+function resolveKeptIndexes(results: DiceRollResult[], keep: DiceKeepRule | undefined): number[] | undefined {
+  if (!keep || keep.count >= results.length) return undefined;
+
+  const sides = results[0]?.sides;
+  const candidates = results
+    .map((result, index) => ({ index, value: result.value ?? 0, sides: result.sides }))
+    .filter((entry) => entry.sides === sides);
+  if (candidates.length <= keep.count) return undefined;
+
+  const ordered = [...candidates].sort((left, right) =>
+    keep.mode === 'highest' ? right.value - left.value : left.value - right.value);
+  const kept = new Set(ordered.slice(0, keep.count).map((entry) => entry.index));
+
+  return results
+    .map((_, index) => index)
+    .filter((index) => kept.has(index) || candidates.every((entry) => entry.index !== index));
+}
+
 /** The total, and what a caller needs to read a check off it, from dice the surface settled. */
-export function summarizeRoll(results: DiceRollResult[], modifier: number, luckyBreaks = 0): DiceRollOutcome {
+export function summarizeRoll(
+  results: DiceRollResult[],
+  modifier: number,
+  luckyBreaks = 0,
+  keep?: DiceKeepRule,
+): DiceRollOutcome {
+  const keptIndexes = resolveKeptIndexes(results, keep);
+  const counted = keptIndexes ? keptIndexes.map((index) => results[index]) : results;
+
   return {
     results,
     modifier,
-    total: results.reduce((sum, result) => sum + (result.value ?? 0), 0) + modifier,
-    natural: results[0]?.value ?? null,
+    total: counted.reduce((sum, result) => sum + (result.value ?? 0), 0) + modifier,
+    natural: counted[0]?.value ?? null,
     luckyBreaks,
+    keptIndexes,
   };
 }
 
@@ -146,7 +193,7 @@ export function rollInstantly(request: DiceRollRequest): DiceRollOutcome | null 
     luckyBreaks += 1;
   }
 
-  return summarizeRoll(results, parsed.modifier, luckyBreaks);
+  return summarizeRoll(results, parsed.modifier, luckyBreaks, request.keep);
 }
 
 export const useDiceTrayStore = create<DiceTrayState>()(

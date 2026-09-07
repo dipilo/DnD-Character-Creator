@@ -446,6 +446,42 @@ const resolveReferencedEquipmentItem = ({
 
 const isDefined = <T,>(value: T | null | undefined): value is T => Boolean(value);
 
+/** The count a label states in front of an item — "Two daggers" is two of them. */
+const readLabelQuantity = (label: string) => {
+  const trimmed = label.trim();
+  const numeric = /^(\d+)\s+/.exec(trimmed);
+  if (numeric) {
+    return Number.parseInt(numeric[1], 10);
+  }
+
+  const word = /^([a-z]+)\s+/i.exec(trimmed);
+  return word ? quantityWords.get(word[1].toLowerCase()) ?? 1 : 1;
+};
+
+/**
+ * Whether a starting-equipment line says nothing but "how many of this item".
+ *
+ * "Two daggers" is two daggers, not an item called Two Daggers — the count belongs in the
+ * quantity column and the name is the item's. A line that names several things ("Leather armor,
+ * any simple weapon, and two daggers") is not this: it arrives as separate parts.
+ */
+const labelNamesOnlyTheItem = (label: string, itemName: string) => {
+  const stripped = stripQuantityPrefix(label);
+  const candidates = [stripped, singularizeEquipmentCandidate(stripped)].map((entry) => normalizeName(entry));
+  return candidates.includes(normalizeName(itemName));
+};
+
+/** The name and count to display for a resolved starting-equipment line. */
+const describeResolvedEquipment = (label: string | undefined, item: Equipment, storedQuantity: number) => {
+  if (!label || !labelNamesOnlyTheItem(label, item.name)) {
+    return { name: label ?? item.name, quantity: storedQuantity };
+  }
+
+  // A character saved before the step read the count out of the label still has 1 stored, and the
+  // label is the only place the second dagger was ever recorded.
+  return { name: item.name, quantity: Math.max(storedQuantity, readLabelQuantity(label)) };
+};
+
 export const isChoicePlaceholderLabel = (value?: string) => Boolean(value && choicePlaceholderPattern.test(value));
 
 // Tool proficiencies are printed as an unresolved choice far more often than as a named tool:
@@ -864,6 +900,38 @@ const getBackgroundAbilityScoreChoiceConfigs = (
   ] satisfies AbilityScoreChoiceConfig[];
 };
 
+export const getFeatAbilityScoreModeKey = (feat: Feat) => `feat:${feat.id}:asi-mode`;
+
+/**
+ * Which of a feat's alternative increases is in force. The 2024 Ability Score Improvement feat
+ * states two ("one score by 2, or two scores by 1"); the player's pick is a mode, exactly as the
+ * 2024 background's specialized/balanced split is.
+ */
+export const getSelectedFeatAbilityScoreAlternative = (
+  feat: Feat,
+  abilityScoreChoiceModes?: Record<string, string>
+) => {
+  const alternatives = feat.abilityScoreIncreaseAlternatives;
+  if (!alternatives?.length) {
+    return { index: 0, increases: feat.abilityScoreIncreases };
+  }
+
+  const stored = Number.parseInt(abilityScoreChoiceModes?.[getFeatAbilityScoreModeKey(feat)] ?? '', 10);
+  const index = Number.isInteger(stored) && stored >= 0 && stored < alternatives.length ? stored : 0;
+  return { index, increases: alternatives[index] };
+};
+
+const getFeatAbilityScoreChoiceConfigs = (feat: Feat, abilityScoreChoiceModes?: Record<string, string>) => {
+  const { index, increases } = getSelectedFeatAbilityScoreAlternative(feat, abilityScoreChoiceModes);
+  // The prefix carries the alternative so switching between them cannot leave the other one's
+  // selections applied.
+  const prefix = feat.abilityScoreIncreaseAlternatives?.length
+    ? `feat:${feat.id}:alternative:${index}`
+    : `feat:${feat.id}`;
+
+  return getChoiceConfigsFromIncreases({ increases, prefix, sourceLabel: feat.name });
+};
+
 export const getAbilityScoreChoiceConfigs = ({
   background,
   species,
@@ -900,11 +968,7 @@ export const getAbilityScoreChoiceConfigs = ({
   }
 
   feats?.forEach((feat) => {
-    configs.push(...getChoiceConfigsFromIncreases({
-      increases: feat.abilityScoreIncreases,
-      prefix: `feat:${feat.id}`,
-      sourceLabel: feat.name
-    }));
+    configs.push(...getFeatAbilityScoreChoiceConfigs(feat, abilityScoreChoiceModes));
   });
 
   return configs;
@@ -934,7 +998,10 @@ export const deriveAbilityScoreBonuses = ({
 
   applyFixedAbilityScoreIncreases(bonuses, species?.abilityScoreIncreases);
   applyFixedAbilityScoreIncreases(bonuses, variant?.abilityScoreIncreases);
-  feats?.forEach((feat) => applyFixedAbilityScoreIncreases(bonuses, feat.abilityScoreIncreases));
+  feats?.forEach((feat) => applyFixedAbilityScoreIncreases(
+    bonuses,
+    getSelectedFeatAbilityScoreAlternative(feat, abilityScoreChoiceModes).increases
+  ));
 
   getAbilityScoreChoiceConfigs({ background, species, variant, feats, abilityScoreChoiceModes }).forEach((config) => {
     const selectedAbilities = (abilityScoreChoiceSelections?.[config.id] ?? [])
@@ -1604,15 +1671,20 @@ export const resolveCharacterEquipment = ({
 
         if (resolvedItem) {
           let resolvedName = resolvedItem.name;
+          let resolvedQuantity = entry.quantity;
           if (option?.name) {
-            resolvedName = resolvedItemId
-              ? replaceEquipmentChoicePlaceholder(option.name, resolvedItem.name)
-              : option.name;
+            if (resolvedItemId) {
+              resolvedName = replaceEquipmentChoicePlaceholder(option.name, resolvedItem.name);
+            } else {
+              const described = describeResolvedEquipment(option.name, resolvedItem, entry.quantity);
+              resolvedName = described.name;
+              resolvedQuantity = described.quantity;
+            }
           }
 
           return {
             equipmentId: entry.equipmentId,
-            quantity: entry.quantity,
+            quantity: resolvedQuantity,
             equipped: entry.equipped,
             name: resolvedName,
             type: resolvedItem.type,
@@ -1655,16 +1727,21 @@ export const resolveCharacterEquipment = ({
 
       if (resolvedItem) {
         let resolvedName = resolvedItem.name;
+        let resolvedQuantity = entry.quantity;
         if (optionLabel) {
           // A line the player resolved shows what they picked, not the phrase they picked it from.
-          resolvedName = chosenItemId && getEquipmentById(chosenItemId)
-            ? replaceEquipmentChoicePlaceholder(optionLabel, resolvedItem.name)
-            : optionLabel;
+          if (chosenItemId && getEquipmentById(chosenItemId)) {
+            resolvedName = replaceEquipmentChoicePlaceholder(optionLabel, resolvedItem.name);
+          } else {
+            const described = describeResolvedEquipment(optionLabel, resolvedItem, entry.quantity);
+            resolvedName = described.name;
+            resolvedQuantity = described.quantity;
+          }
         }
 
         return {
           equipmentId: entry.equipmentId,
-          quantity: entry.quantity,
+          quantity: resolvedQuantity,
           equipped: entry.equipped,
           name: resolvedName,
           type: resolvedItem.type,
@@ -1805,6 +1882,27 @@ export const getActiveFeatures = ({
 
   const replacedFeatureIds = new Set(features.flatMap((feature) => feature.replacesFeatureIds ?? []));
   return features.filter((feature) => !replacedFeatureIds.has(feature.id) || Boolean(feature.replacesFeatureIds?.length));
+};
+
+/**
+ * Which magic feature the character actually has, which is what a feat prerequisite asks about.
+ * Pact Magic is the Warlock's separate pool, so a class contributing pact slots answers the second
+ * question and not the first.
+ */
+export const getMagicFeatureFlags = (selectedClasses: SelectedClassWithLevel[]) => {
+  let hasSpellcasting = false;
+  let hasPactMagic = false;
+
+  for (const entry of selectedClasses) {
+    const contribution = getCasterContribution(entry);
+    if (contribution.kind === 'pact') {
+      hasPactMagic = true;
+    } else if (contribution.kind !== 'none') {
+      hasSpellcasting = true;
+    }
+  }
+
+  return { hasSpellcasting, hasPactMagic };
 };
 
 export const getSpellcastingRulesSummary = ({

@@ -4,8 +4,7 @@ import {
   formatModifier,
   type SheetVitals,
 } from '@/lib/sheetDerivations';
-import { modifierNotation } from '@/lib/diceNotation';
-import { rollOnScreen } from '@/store/diceTrayStore';
+import { rollD20 } from '@/lib/d20Rolls';
 import { cn } from '@/lib/utils';
 
 /** One boxed number, the way a play sheet leads with them. Rollable when a d20 check exists for it. */
@@ -31,7 +30,7 @@ function Stat({
     <button
       type="button"
       className="min-h-11 rounded-lg border bg-card p-3 text-center transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-      onClick={() => void rollOnScreen({ notation: modifierNotation(20, roll.modifier), label: roll.label })}
+      onClick={() => void rollD20({ modifier: roll.modifier, label: roll.label })}
     >
       {body}
     </button>
@@ -47,7 +46,7 @@ function Stat({
  */
 export function SheetVitalsPanel({ vitals }: Readonly<{ vitals: SheetVitals }>) {
   const rollCheck = (label: string, modifier: number) =>
-    void rollOnScreen({ notation: modifierNotation(20, modifier), label, detail: 'd20 check' });
+    void rollD20({ modifier, label, detail: 'd20 check' });
 
   return (
     <div className="space-y-4">

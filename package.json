@@ -17,6 +17,8 @@
     "test:server:record": "node server/test/smoke.mjs --write",
     "test:characters": "node server/test/characterRoundTrip.mjs",
     "test:sharing": "node server/test/characterSharing.mjs",
+    "test:sessions": "node server/test/gameSessions.mjs",
+    "test:feat-benefits": "node scripts/test/featBenefits.mjs",
     "test:scheduler": "node server/test/schedulerFlow.mjs",
     "test:availability": "node server/test/availabilityParsing.mjs",
     "test:sheet-intake": "node server/test/sheetIntake.mjs",

@@ -15,7 +15,7 @@ import { ArrowLeft, Check, Shield, Sword, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { canMixClassEditions, findCharacterClassEntry, getRulesEditionLabel, getToolChoiceIdPrefix, sortFeaturesByLevel, updateCharacterClassEntry, type SelectedClassWithLevel } from '@/lib/builderRules';
 import { getDescriptionPreview } from '@/lib/contentPresentation';
-import { getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
+import { getPoolBlockedOptionIds, getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
 
 const getOrdinalLevelLabel = (levelIndex: number) => {
   if (levelIndex === 0) return '1st';
@@ -65,10 +65,12 @@ export function ClassDetails() {
     })
     .filter((entry): entry is SelectedClassWithLevel => Boolean(entry));
 
-  const allFeatureNamesById = new Map(
-    [...cls?.features ?? [], ...selectedSubclass?.features ?? [], ...cls?.subclasses.flatMap((subclass) => subclass.features) ?? []]
-      .map((feature) => [feature.id, feature.name])
-  );
+  const allFeatures = [
+    ...cls?.features ?? [],
+    ...selectedSubclass?.features ?? [],
+    ...cls?.subclasses.flatMap((subclass) => subclass.features) ?? []
+  ];
+  const allFeatureNamesById = new Map(allFeatures.map((feature) => [feature.id, feature.name]));
   const featureSelectionContext = {
     level: characterLevel,
     selectedFeatureChoices,
@@ -199,6 +201,12 @@ export function ClassDetails() {
     return getSelectedFeatureOptionIds(selectedFeatureChoices, featureId);
   };
 
+  // "Additional Eldritch Invocation" draws on the same list as "Eldritch Invocations", so an
+  // invocation spent on one is gone from the other.
+  const getBlockedOptionIds = (featureId: string) => {
+    return getPoolBlockedOptionIds(allFeatures, featureId, selectedFeatureChoices);
+  };
+
   const renderFeatureCard = (feature: (typeof visibleFeatures)[number]) => {
     const selected = selectedFeatureChoices.some((entry) => entry.featureId === feature.id);
     const replacementNames = (feature.replacesFeatureIds ?? [])
@@ -233,6 +241,7 @@ export function ClassDetails() {
             selectedOptionIds={getSelectedOptionIds(feature.id)}
             onValueChange={(slotIndex, value) => updateFeatureOptionSelection(feature.id, slotIndex, value, feature.chooseCount ?? 1)}
             selectionContext={featureSelectionContext}
+            blockedOptionIds={getBlockedOptionIds(feature.id)}
           />
         </AccordionContent>
       </AccordionItem>
@@ -509,6 +518,7 @@ export function ClassDetails() {
                                   selectedOptionIds={getSelectedOptionIds(feature.id)}
                                   onValueChange={(slotIndex, value) => updateFeatureOptionSelection(feature.id, slotIndex, value, feature.chooseCount ?? 1)}
                                   selectionContext={featureSelectionContext}
+                                  blockedOptionIds={getBlockedOptionIds(feature.id)}
                                   showDescriptions={false}
                                 />
                               </div>

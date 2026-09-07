@@ -10,6 +10,7 @@ const GRANTABLE_PERMISSIONS = [
   'can_create_players',
   'can_delete_players',
   'can_manage_groups',
+  'can_manage_sessions',
   'can_create_invites',
   'can_edit_self',
   // Legacy name for the same right as `players_self_delete`; both are still honoured on read.

@@ -29,6 +29,7 @@ const FeatsSelectionPage = lazy(() => import('@/pages/builder/FeatsSelectionPage
 const EquipmentSelectionPage = lazy(() => import('@/pages/builder/EquipmentSelectionPage').then((module) => ({ default: module.EquipmentSelectionPage })));
 const ReviewPage = lazy(() => import('@/pages/builder/ReviewPage').then((module) => ({ default: module.ReviewPage })));
 const DiceRollerPage = lazy(() => import('@/pages/DiceRollerPage').then((module) => ({ default: module.DiceRollerPage })));
+const SpellReferencePage = lazy(() => import('@/pages/SpellReferencePage').then((module) => ({ default: module.SpellReferencePage })));
 // Scheduler screens (MERGE_PLAN.md Phase 4). Lazy like the rest, which also keeps FullCalendar
 // out of the builder's bundle — nothing in the character builder needs a calendar.
 const CampaignsPage = lazy(() => import('@/pages/campaign/CampaignsPage').then((module) => ({ default: module.CampaignsPage })));
@@ -38,6 +39,7 @@ const RosterPage = lazy(() => import('@/pages/campaign/RosterPage').then((module
 const GroupsPage = lazy(() => import('@/pages/campaign/GroupsPage').then((module) => ({ default: module.GroupsPage })));
 const MembersPage = lazy(() => import('@/pages/campaign/MembersPage').then((module) => ({ default: module.MembersPage })));
 const PreGameFormPage = lazy(() => import('@/pages/campaign/PreGameFormPage').then((module) => ({ default: module.PreGameFormPage })));
+const SessionPage = lazy(() => import('@/pages/campaign/SessionPage').then((module) => ({ default: module.SessionPage })));
 const PoweredCharacterPage = lazy(() => import('@/pages/campaign/PoweredCharacterPage').then((module) => ({ default: module.PoweredCharacterPage })));
 const InviteLandingPage = lazy(() => import('@/pages/campaign/InviteLandingPage').then((module) => ({ default: module.InviteLandingPage })));
 // Kids on Bikes. A second game system, so its screens are lazy for the same reason the campaign
@@ -75,6 +77,7 @@ function App() {
               {/* A character granted to this account by name, which may sit at no campaign at all. */}
               <Route path="/characters/shared/:characterId" element={<SharedWithYouPage />} />
               <Route path="/dice" element={<DiceRollerPage />} />
+              <Route path="/spells/:spellId" element={<SpellReferencePage />} />
               <Route path="/builder" element={<CharacterBuilderPage />}>
                 <Route index element={<Navigate to="species" replace />} />
                 <Route path="species" element={<SpeciesSelection />} />
@@ -126,6 +129,7 @@ function App() {
                 <Route path="schedule" element={<SchedulePage />} />
                 <Route path="roster" element={<RosterPage />} />
                 <Route path="party" element={<PartyPage />} />
+                <Route path="session" element={<SessionPage />} />
                 <Route path="party/:characterId" element={<CampaignCharacterPage />} />
                 <Route path="party/:characterId/edit" element={<CampaignCharacterEditPage />} />
                 <Route path="groups" element={<GroupsPage />} />

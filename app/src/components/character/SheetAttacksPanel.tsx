@@ -1,8 +1,8 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ABILITY_ABBREVIATIONS, formatModifier, type DerivedAttack } from '@/lib/sheetDerivations';
-import { modifierNotation } from '@/lib/diceNotation';
 import { rollOnScreen } from '@/store/diceTrayStore';
+import { rollD20 } from '@/lib/d20Rolls';
 
 const rollButtonClass =
   'min-h-11 rounded px-2 transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none';
@@ -43,8 +43,8 @@ export function SheetAttacksPanel({ attacks }: Readonly<{ attacks: DerivedAttack
                       type="button"
                       className={rollButtonClass}
                       onClick={() =>
-                        void rollOnScreen({
-                          notation: modifierNotation(20, attack.attackBonus),
+                        void rollD20({
+                          modifier: attack.attackBonus,
                           label: `${attack.name} attack`,
                           detail: attack.kind,
                         })

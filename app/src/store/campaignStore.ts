@@ -15,6 +15,7 @@ export const CAMPAIGN_PERMISSION_FLAGS = [
   { key: 'can_create_players', label: 'Add players', hint: 'Create new seats in the roster' },
   { key: 'can_delete_players', label: 'Remove players', hint: 'Delete any seat, not just their own' },
   { key: 'can_manage_groups', label: 'Manage groups', hint: 'Create, edit and delete tables' },
+  { key: 'can_manage_sessions', label: 'Run sessions', hint: 'Start and end the session that collects the table’s rolls' },
   { key: 'can_create_invites', label: 'Create invites', hint: 'Mint and revoke invite links' },
   { key: 'can_edit_self', label: 'Edit own seat', hint: 'Change the name, timezone and notes on the seat they hold' },
   { key: 'players_self_delete', label: 'Release own seat', hint: 'Give up or delete the seat they hold' },

@@ -14,15 +14,21 @@ import { Search, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Feat } from '@/types/dnd';
 import {
+  applyAbilityScoreBonuses,
   getClassFeatSelectionSources,
   getAdditionalFeatSelectionLimit,
+  getMagicFeatureFlags,
   getSelectedClassEdition,
   getSpeciesFeatSelectionSources,
   isOriginFeat,
   resolveBackgroundGrantedFeat,
   type SelectedClassWithLevel
 } from '@/lib/builderRules';
+import { evaluateFeatPrerequisites, type FeatPrerequisiteContext } from '@/lib/featPrerequisites';
 import { dedupeByNamePreferringEdition } from '@/lib/contentSelection';
+import { FeatChoicesPanel } from '@/components/builder/FeatChoicesPanel';
+import { featHasPendingChoices } from '@/lib/featGrants';
+import { getSelectedFeatureOptionIds } from '@/lib/featureOptions';
 
 type FeatCategory = 'origin' | 'general' | 'fighting-style' | 'epic-boon';
 
@@ -144,9 +150,10 @@ const EMPTY_SOURCE_IDS: string[] = [];
 export function FeatsSelectionPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'all' | FeatCategory>('all');
+  const [hideUnqualified, setHideUnqualified] = useState(true);
   const { builderState, updateBuilderCharacter, updateBuilderState } = useCharacterStore();
   const selectedSourceIds = builderState.selectedSourceIds ?? EMPTY_SOURCE_IDS;
-  const { backgrounds, classes, feats, species } = useContentLibrary();
+  const { backgrounds, classes, feats, spells, species } = useContentLibrary();
 
   const selectedClasses = useMemo<SelectedClassWithLevel[]>(() => {
     return (builderState.character?.classes || [])
@@ -191,6 +198,49 @@ export function FeatsSelectionPage() {
 
   const selectedClassEdition = useMemo(() => getSelectedClassEdition(selectedClasses), [selectedClasses]);
 
+  const prerequisiteContext = useMemo<FeatPrerequisiteContext>(() => {
+    const magic = getMagicFeatureFlags(selectedClasses);
+    return {
+      abilityScores: applyAbilityScoreBonuses(
+        builderState.character?.abilityScores,
+        builderState.character?.abilityScoreBonuses
+      ),
+      totalLevel: selectedClasses.reduce((total, entry) => total + entry.level, 0),
+      classNames: selectedClasses.map((entry) => entry.cls.name),
+      species: selectedSpecies,
+      variant: selectedVariant,
+      ...magic
+    };
+  }, [
+    builderState.character?.abilityScoreBonuses,
+    builderState.character?.abilityScores,
+    selectedClasses,
+    selectedSpecies,
+    selectedVariant
+  ]);
+
+  const prerequisiteResults = useMemo(() => {
+    return new Map(feats.map((feat) => [feat.id, evaluateFeatPrerequisites(feat, prerequisiteContext)]));
+  }, [feats, prerequisiteContext]);
+
+  // The background's feat is one the character has too, so its own choices belong here as well.
+  const chosenFeats = useMemo(() => {
+    const ids = Array.from(new Set([
+      ...(grantedBackgroundFeat ? [grantedBackgroundFeat.id] : []),
+      ...manualSelectedFeatIds
+    ]));
+    return ids.map((featId) => feats.find((entry) => entry.id === featId)).filter((entry): entry is Feat => Boolean(entry));
+  }, [feats, grantedBackgroundFeat, manualSelectedFeatIds]);
+
+  const pendingChoiceFeatIds = useMemo(() => {
+    const selections = {
+      featSpellSelections: builderState.character?.featSpellSelections,
+      selectedOptionIdsFor: (choiceId: string) =>
+        getSelectedFeatureOptionIds(builderState.character?.features, choiceId)
+    };
+    return new Set(chosenFeats.filter((feat) => featHasPendingChoices(feat, selections)).map((feat) => feat.id));
+  }, [builderState.character?.featSpellSelections, builderState.character?.features, chosenFeats]);
+
   const filteredFeats = useMemo(() => {
     const matchingFeats = feats.filter((feat) => {
       const matchesSearch =
@@ -207,8 +257,27 @@ export function FeatsSelectionPage() {
 
     // Both editions of the same feat (e.g. Grappler) can pass the filters; show one card,
     // preferring the printing that matches the selected class's rules edition.
-    return dedupeByNamePreferringEdition(matchingFeats, selectedClassEdition);
-  }, [categoryFilter, featCategories, feats, grantedBackgroundFeat?.id, searchQuery, selectedClassEdition, selectedSourceIds]);
+    const deduped = dedupeByNamePreferringEdition(matchingFeats, selectedClassEdition);
+    const qualifying = deduped.filter((feat) => prerequisiteResults.get(feat.id)?.met !== false);
+
+    if (hideUnqualified) {
+      return qualifying;
+    }
+
+    // A feat the character cannot take still reads as an offer while it sits among the ones they
+    // can, so the ones they qualify for come first.
+    return [...qualifying, ...deduped.filter((feat) => prerequisiteResults.get(feat.id)?.met === false)];
+  }, [
+    categoryFilter,
+    featCategories,
+    feats,
+    grantedBackgroundFeat?.id,
+    hideUnqualified,
+    prerequisiteResults,
+    searchQuery,
+    selectedClassEdition,
+    selectedSourceIds
+  ]);
 
   const isSelected = (featId: string) => manualSelectedFeatIds.includes(featId);
 
@@ -220,6 +289,11 @@ export function FeatsSelectionPage() {
 
     if (originOnlySelections && !isOriginFeat(feat)) {
       return 'This feat pick is currently restricted to Origin feats.';
+    }
+
+    const prerequisites = prerequisiteResults.get(featId);
+    if (prerequisites && !prerequisites.met) {
+      return prerequisites.unmet.join('. ');
     }
 
     return null;
@@ -316,6 +390,37 @@ export function FeatsSelectionPage() {
         </CardContent>
       </Card>
 
+      {chosenFeats.length > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Your Feats</CardTitle>
+            <CardDescription>
+              Anything a feat still asks you to choose is here, next to the feat that asks for it.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {chosenFeats.map((feat) => (
+              <div key={feat.id} className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h4 className="font-medium">{feat.name}</h4>
+                  <Badge variant="outline">{feat.source}</Badge>
+                  {feat.id === grantedBackgroundFeat?.id ? <Badge variant="secondary">From your background</Badge> : null}
+                  {pendingChoiceFeatIds.has(feat.id) ? <Badge>Choices to make</Badge> : null}
+                </div>
+                <FeatChoicesPanel
+                  feat={feat}
+                  character={builderState.character ?? {}}
+                  spells={spells}
+                  classes={classes}
+                  preferredEdition={selectedClassEdition}
+                  onChange={updateBuilderCharacter}
+                />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      ) : null}
+
       <div className="relative">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
@@ -340,6 +445,14 @@ export function FeatsSelectionPage() {
             {label}
           </Button>
         ))}
+        <Button
+          variant={hideUnqualified ? 'default' : 'outline'}
+          size="sm"
+          aria-pressed={hideUnqualified}
+          onClick={() => setHideUnqualified((current) => !current)}
+        >
+          Only feats you qualify for
+        </Button>
       </div>
 
       <SourceFilterBar selectedSourceIds={selectedSourceIds} onChange={(next) => updateBuilderState({ selectedSourceIds: next })} />

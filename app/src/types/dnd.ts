@@ -208,6 +208,32 @@ export interface Spell {
   sourceId?: string;
 }
 
+/**
+ * A spell the feat leaves the player to pick, narrowed by whatever its own line states — a level,
+ * a class's spell list, a school. Read out of the source by `scripts/lib/featBenefits.mjs`.
+ */
+export interface FeatSpellChoice {
+  id: string;
+  count: number;
+  /** 0 is a cantrip. */
+  level: number;
+  classes?: string[];
+  schools?: string[];
+  /** "from the same list": the restriction is the previous choice's, not restated here. */
+  inheritsListFromPreviousChoice?: boolean;
+  /** The source's own phrase, which is what the selector is labelled with. */
+  label: string;
+}
+
+/** "one Eldritch Invocation option of your choice from the warlock class" — a borrowed pool. */
+export interface FeatOptionChoice {
+  id: string;
+  count: number;
+  featureName: string;
+  className: string;
+  label: string;
+}
+
 export interface Feat {
   id: string;
   name: string;
@@ -222,6 +248,16 @@ export interface Feat {
     text?: string;
   };
   abilityScoreIncreases?: AbilityScoreIncrease[];
+  /**
+   * Alternative increases the feat states as an either/or ("Increase one ability score by 2, or
+   * increase two ability scores by 1"). The player picks which applies; `abilityScoreChoiceModes`
+   * records it.
+   */
+  abilityScoreIncreaseAlternatives?: AbilityScoreIncrease[][];
+  /** Spells the feat names outright, by name so they resolve in whichever edition is in use. */
+  grantedSpells?: string[];
+  spellChoices?: FeatSpellChoice[];
+  optionChoices?: FeatOptionChoice[];
   features: Feature[];
   source: string;
   sourceId?: string;
@@ -355,6 +391,12 @@ export interface Character {
   // Tool proficiencies granted as a choice ("One type of gaming set"), keyed by the choice's
   // stable slot id so background and class grants stay independent.
   toolProficiencySelections?: Record<string, string[]>;
+  /**
+   * The spells picked for a feat's own spell lines ("one 1st-level spell of your choice"), keyed
+   * by `FeatSpellChoice.id`. Kept apart from `spells` because these are the feat's, not the
+   * class's: they do not count against a class's known or prepared limits.
+   */
+  featSpellSelections?: Record<string, string[]>;
   proficiencies: {
     skills: string[];
     tools: string[];
@@ -394,6 +436,12 @@ export interface Character {
    * sheet writes it and `buildReviewCharacter` has to carry it.
    */
   classResourcesUsed?: Record<string, number>;
+  /**
+   * Class resources the character is currently *in* rather than merely has left — a Barbarian's
+   * Rage. Keyed the same way as `classResourcesUsed`. Whether a pool can be entered at all is read
+   * from its feature's own text, so nothing here names a class feature.
+   */
+  activeEffects?: string[];
   personality?: {
     traits: string;
     ideals: string;

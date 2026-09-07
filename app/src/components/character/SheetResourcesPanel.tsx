@@ -1,6 +1,7 @@
-// Hit dice, spell slots and the two rests. Same posture as the hit-point panel: no store, no
-// writes — `onChange` is the whole write surface, and its absence is what makes the party view
-// read-only.
+// Hit dice, class resources and the two rests. Spell slots live with the spells they cast.
+//
+// Same posture as the hit-point panel: no store, no writes — `onChange` is the whole write
+// surface, and its absence is what makes the party view read-only.
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,13 +11,11 @@ import {
   adjustHitDice,
   applyLongRest,
   applyShortRest,
-  getSlotsUsed,
   setClassResourceUsed,
-  setPactSlotsUsed,
-  setSpellSlotsUsed
+  toggleResourceActive
 } from '@/lib/sheetPlayState';
 import type { ResolvedClassResource } from '@/lib/sheetPlayState';
-import { cn } from '@/lib/utils';
+import { SlotRow } from '@/components/character/SlotRow';
 import type { Character } from '@/types/dnd';
 
 export interface HitDicePool {
@@ -30,7 +29,10 @@ export interface HitDicePool {
 interface SheetResourcesPanelProps {
   character: Character;
   hitDice: HitDicePool[];
-  /** Slots per level, indexed by level - 1, exactly as `getSpellcastingRulesSummary` reports them. */
+  /**
+   * Slots per level, indexed by level - 1. Read only to decide whether this panel has anything to
+   * show; the slots themselves are spent on the Spells tab, beside the spells they cast.
+   */
   slotsByLevel: number[];
   pactSlotsByLevel: number[];
   /** Rages, Ki Points, Channel Divinity: whatever this character's class tables state. */
@@ -40,58 +42,51 @@ interface SheetResourcesPanelProps {
   onChange?: (patch: Partial<Character>) => void;
 }
 
-/** One row of pips per slot level. A filled pip is a slot still available; clicking spends it. */
-function SlotRow({
-  label,
-  total,
-  used,
-  onSetUsed
-}: Readonly<{ label: string; total: number; used: number; onSetUsed?: (next: number) => void }>) {
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-2">
-      <span className="text-sm">{label}</span>
-      <div className="flex flex-wrap items-center gap-1.5">
-        {Array.from({ length: total }, (_, index) => {
-          const spent = index < used;
-          // Clicking the last spent pip gives it back; clicking any available pip spends up to it.
-          const next = spent && index === used - 1 ? index : index + 1;
-          return (
-            <button
-              key={label + String(index)}
-              type="button"
-              aria-label={`${label} slot ${index + 1}`}
-              aria-pressed={spent}
-              disabled={!onSetUsed}
-              onClick={() => onSetUsed?.(next)}
-              className={cn(
-                'h-5 w-5 rounded-sm border transition',
-                spent ? 'border-muted-foreground/40 bg-transparent' : 'border-primary bg-primary',
-                onSetUsed ? 'cursor-pointer' : 'cursor-default'
-              )}
-            />
-          );
-        })}
-        <span className="ml-1 text-xs tabular-nums text-muted-foreground">{total - used}/{total}</span>
-      </div>
-    </div>
-  );
-}
-
 /**
  * One class pool. Pips like a spell slot's, because it is spent the same way — except where the
  * book says "Unlimited", which is the 2014 Barbarian at level 20 and is not a thing to count.
  */
 function ResourceRow({
   resource,
-  onSetUsed
-}: Readonly<{ resource: ResolvedClassResource; onSetUsed?: (next: number) => void }>) {
+  onSetUsed,
+  onToggleActive
+}: Readonly<{
+  resource: ResolvedClassResource;
+  onSetUsed?: (next: number) => void;
+  onToggleActive?: () => void;
+}>) {
   const subtitle = [resource.className, resource.featureName].filter(Boolean).join(' · ');
+  // The book's noun for the thing you are in ("Rage"), not the table's column heading ("Rages").
+  const effectName = resource.featureName ?? resource.name;
+  const exhausted = resource.maximum !== null && resource.used >= resource.maximum;
+
+  const activeControl = resource.activatable ? (
+    <div className="flex flex-wrap items-center gap-2">
+      {resource.active ? <Badge className="bg-amber-500 text-amber-950 hover:bg-amber-500">{effectName} active</Badge> : null}
+      {onToggleActive ? (
+        <Button
+          type="button"
+          size="sm"
+          variant={resource.active ? 'default' : 'outline'}
+          className="min-h-11"
+          aria-pressed={resource.active}
+          disabled={!resource.active && exhausted}
+          onClick={onToggleActive}
+        >
+          {resource.active ? `End ${effectName}` : `Enter ${effectName}`}
+        </Button>
+      ) : null}
+    </div>
+  ) : null;
 
   if (resource.maximum === null) {
     return (
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="text-sm">{resource.name}</span>
-        <Badge variant="secondary">Unlimited</Badge>
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="secondary">Unlimited</Badge>
+          {activeControl}
+        </div>
       </div>
     );
   }
@@ -100,6 +95,7 @@ function ResourceRow({
     <div className="space-y-1">
       <SlotRow label={resource.name} total={resource.maximum} used={resource.used} onSetUsed={onSetUsed} />
       {subtitle ? <p className="text-xs text-muted-foreground">{subtitle}</p> : null}
+      {activeControl}
     </div>
   );
 }
@@ -196,39 +192,13 @@ export function SheetResourcesPanel({
                 key={resource.key}
                 resource={resource}
                 onSetUsed={onChange ? (next) => onChange(setClassResourceUsed(character, resource, next)) : undefined}
+                onToggleActive={onChange ? () => onChange(toggleResourceActive(character, resource)) : undefined}
               />
             ))}
           </CardContent>
         </Card>
       ) : null}
 
-      {hasSlots ? (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Spell Slots</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {slotsByLevel.map((total, index) => (total > 0 ? (
-              <SlotRow
-                key={`slot-${index + 1}`}
-                label={`Level ${index + 1}`}
-                total={total}
-                used={getSlotsUsed(character.spellSlotsUsed, index + 1)}
-                onSetUsed={onChange ? (next) => onChange(setSpellSlotsUsed(character, index + 1, next, total)) : undefined}
-              />
-            ) : null))}
-            {pactSlotsByLevel.map((total, index) => (total > 0 ? (
-              <SlotRow
-                key={`pact-${index + 1}`}
-                label={`Pact Magic (level ${index + 1})`}
-                total={total}
-                used={getSlotsUsed(character.pactSlotsUsed, index + 1)}
-                onSetUsed={onChange ? (next) => onChange(setPactSlotsUsed(character, index + 1, next, total)) : undefined}
-              />
-            ) : null))}
-          </CardContent>
-        </Card>
-      ) : null}
     </div>
   );
 }

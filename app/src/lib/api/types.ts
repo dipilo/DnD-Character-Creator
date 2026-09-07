@@ -209,6 +209,7 @@ export interface CampaignPermissions {
   can_create_players?: boolean;
   can_delete_players?: boolean;
   can_manage_groups?: boolean;
+  can_manage_sessions?: boolean;
   can_create_invites?: boolean;
   can_edit_self?: boolean;
   /** Legacy name for the same right as `players_self_delete`; the server accepts either. */
@@ -545,4 +546,32 @@ export interface PoweredCharacter {
 export interface PoweredCharacterPlayPatch {
   spent?: number;
   aspects?: { id: string; active?: boolean; holder?: number | null }[];
+}
+
+/** A play session at one table. `is_open` is `ended_at` being null, resolved server-side. */
+export interface GameSession {
+  id: number;
+  campaign_id: number;
+  group_id: number | null;
+  name: string | null;
+  started_by: number;
+  started_at: string;
+  ended_at: string | null;
+  is_open: boolean;
+}
+
+/** One roll as it settled on somebody's screen, as the table sees it. */
+export interface SessionRoll {
+  id: number;
+  session_id: number;
+  user_id: number;
+  username: string | null;
+  character_name: string | null;
+  label: string;
+  detail: string | null;
+  notation: string;
+  total: number;
+  note: string | null;
+  results: Array<{ value: number; sides: number; dropped?: boolean }>;
+  rolled_at: string;
 }

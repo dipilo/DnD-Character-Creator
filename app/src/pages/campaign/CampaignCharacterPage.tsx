@@ -24,6 +24,7 @@ import { SaveConflictAlert } from '@/components/character/SaveConflictAlert';
 import { useCharacterStore } from '@/store/characterStore';
 import type { Character } from '@/types/dnd';
 import { useCampaignId } from '@/pages/campaign/useCampaignData';
+import { useRollAttribution } from '@/hooks/useRollAttribution';
 
 export function CampaignCharacterPage() {
   const campaignId = useCampaignId();
@@ -34,6 +35,10 @@ export function CampaignCharacterPage() {
     kind: 'id',
     id: characterId ?? '',
   });
+
+  // While this sheet is open, rolls made from it are attributed to the character in the table's
+  // session feed.
+  useRollAttribution(document && !isKobDocument(document) ? document.name : null);
 
   const backToParty = (
     <Button asChild variant="outline" size="sm">

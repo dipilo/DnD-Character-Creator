@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { generateSourceModuleText, parseMonsterLanguages, rewriteSourceCrossReferences } from './canonical-content.mjs';
+import { extractFeatBenefitStructures } from './lib/featBenefits.mjs';
 
 const scriptPath = fileURLToPath(import.meta.url);
 const workspaceRoot = path.resolve(path.dirname(scriptPath), '..');
@@ -859,10 +860,18 @@ export const createPack = async ({ edition, sourceId, label, category, includeCo
       })),
       feats: feats.map((feat) => {
         const { description, benefits } = parseFeatText(feat);
+        const featId = toSourcedEntryId(feat.index);
+        // The benefits are prose, so what they grant — an ability score, a spell, an option
+        // borrowed from another class — is read out of their own sentences.
+        const structures = extractFeatBenefitStructures(
+          featId,
+          [description, ...benefits.map((benefit) => benefit.description)]
+        );
         return {
-          id: toSourcedEntryId(feat.index),
+          id: featId,
           name: feat.name,
           description,
+          ...structures,
           prerequisites: (feat.prerequisites ?? []).length > 0
             ? {
                 ability: Object.fromEntries((feat.prerequisites ?? [])

@@ -11,7 +11,7 @@ import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { ArrowLeft, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { findCharacterClassEntry, sortFeaturesByLevel, updateCharacterClassEntry } from '@/lib/builderRules';
-import { getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
+import { getPoolBlockedOptionIds, getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
 
 const getSourceLabel = (sourceId?: string, sourceText?: string) => {
   if (sourceText?.trim()) {
@@ -90,6 +90,12 @@ export function SubclassDetails() {
     return getSelectedFeatureOptionIds(selectedFeatureChoices, featureId);
   };
 
+  // "Additional Maneuvers" draws on the Battle Master's own list; one already learned is gone
+  // from the other feature offering it.
+  const getBlockedOptionIds = (featureId: string) => {
+    return getPoolBlockedOptionIds(sortedFeatures, featureId, selectedFeatureChoices);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
@@ -165,6 +171,7 @@ export function SubclassDetails() {
                           selectedOptionIds={getSelectedOptionIds(feature.id)}
                           onValueChange={(slotIndex, value) => updateFeatureOptionSelection(feature.id, slotIndex, value, feature.chooseCount ?? 1)}
                           selectionContext={featureSelectionContext}
+                          blockedOptionIds={getBlockedOptionIds(feature.id)}
                           showDescriptions={false}
                         />
                       </AccordionContent>

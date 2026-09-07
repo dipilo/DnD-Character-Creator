@@ -7,6 +7,7 @@ import { CharacterSheetView } from '@/components/character/CharacterSheetView';
 import { CharacterSharingDialog } from '@/components/character/CharacterSharingDialog';
 import { useAuthStore } from '@/store/authStore';
 import { exportCharacterToFillablePdf } from '@/lib/characterPdf';
+import { useRollAttribution } from '@/hooks/useRollAttribution';
 import type { Character } from '@/types/dnd';
 
 /**
@@ -23,6 +24,10 @@ export function CharacterSheetPage() {
   const signedIn = useAuthStore((state) => Boolean(state.user));
 
   const character = id ? getCharacter(id) : undefined;
+
+  // While this sheet is open, rolls made from it are attributed to the character in the table's
+  // session feed.
+  useRollAttribution(character?.name);
 
   if (!character) {
     return (

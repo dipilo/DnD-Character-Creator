@@ -286,6 +286,43 @@ async function ensureSchema(db) {
     FOREIGN KEY(user_id) REFERENCES users(id)
   )`);
 
+  // A play session at one table, and the rolls made during it.
+  //
+  // `sessions` is already the auth cookie's table, so these are `game_sessions`. A session belongs
+  // to a campaign and optionally to one of its groups, because a campaign with several tables runs
+  // several games. Only one may be open per campaign at a time — `ended_at` being NULL is what
+  // "open" means, and the route enforces the one.
+  await db.run(`CREATE TABLE IF NOT EXISTS game_sessions (
+    id INTEGER PRIMARY KEY,
+    campaign_id INTEGER NOT NULL,
+    group_id INTEGER,
+    name TEXT,
+    started_by INTEGER NOT NULL,
+    started_at TEXT DEFAULT (datetime('now')),
+    ended_at TEXT,
+    FOREIGN KEY(campaign_id) REFERENCES campaigns(id),
+    FOREIGN KEY(started_by) REFERENCES users(id)
+  )`);
+
+  // One roll, as it settled on somebody's screen. The dice are the client's — the server records
+  // what happened and interprets none of it, the same posture as `characters.summary`.
+  await db.run(`CREATE TABLE IF NOT EXISTS session_rolls (
+    id INTEGER PRIMARY KEY,
+    session_id INTEGER NOT NULL,
+    campaign_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    character_name TEXT,
+    label TEXT NOT NULL,
+    detail TEXT,
+    notation TEXT NOT NULL,
+    total INTEGER NOT NULL,
+    results TEXT,
+    note TEXT,
+    rolled_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY(session_id) REFERENCES game_sessions(id),
+    FOREIGN KEY(user_id) REFERENCES users(id)
+  )`);
+
   await db.run(`CREATE TABLE IF NOT EXISTS availability (
     id INTEGER PRIMARY KEY,
     player_id INTEGER,
@@ -415,6 +452,9 @@ async function ensureSchema(db) {
   await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_character_grants_subject ON character_grants(subject_type, subject_id)', ['subject_id'], 'character_grants');
   await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_pre_game_forms_campaign ON pre_game_forms(campaign_id)', ['campaign_id'], 'pre_game_forms');
   await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_powered_characters_campaign ON powered_characters(campaign_id)', ['campaign_id'], 'powered_characters');
+  await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_game_sessions_campaign ON game_sessions(campaign_id)', ['campaign_id'], 'game_sessions');
+  // The feed is read newest-first per session and polled, so this index is the whole of it.
+  await safeCreateIndex('CREATE INDEX IF NOT EXISTS idx_session_rolls_session ON session_rolls(session_id, id)', ['session_id'], 'session_rolls');
 }
 
 module.exports = { ensureSchema };

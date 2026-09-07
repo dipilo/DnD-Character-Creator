@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2024 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-09-02T18:52:17.618Z",
+    "importedAt": "2026-09-06T21:19:48.407Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -18979,6 +18979,31 @@
         "id": "basic-rules-2024-magic-initiate",
         "name": "Magic Initiate",
         "description": "You gain the following benefits.",
+        "spellChoices": [
+          {
+            "id": "basic-rules-2024-magic-initiate-spell-choice-1",
+            "count": 2,
+            "level": 0,
+            "classes": [
+              "Cleric",
+              "Druid",
+              "Wizard"
+            ],
+            "label": "two cantrips of your choice from the Cleric, Druid, or Wizard spell list"
+          },
+          {
+            "id": "basic-rules-2024-magic-initiate-spell-choice-2",
+            "count": 1,
+            "level": 1,
+            "classes": [
+              "Cleric",
+              "Druid",
+              "Wizard"
+            ],
+            "inheritsListFromPreviousChoice": true,
+            "label": "Choose a level 1 spell from the same list you selected for this feat's cantrips"
+          }
+        ],
         "features": [
           {
             "id": "magic-initiate-feature-1",
@@ -19025,6 +19050,38 @@
         "id": "basic-rules-2024-ability-score-improvement",
         "name": "Ability Score Improvement",
         "description": "Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can’t increase an ability score above 20.",
+        "abilityScoreIncreaseAlternatives": [
+          [
+            {
+              "ability": "choose",
+              "amount": 2,
+              "chooseFrom": [
+                "strength",
+                "dexterity",
+                "constitution",
+                "intelligence",
+                "wisdom",
+                "charisma"
+              ],
+              "chooseCount": 1
+            }
+          ],
+          [
+            {
+              "ability": "choose",
+              "amount": 1,
+              "chooseFrom": [
+                "strength",
+                "dexterity",
+                "constitution",
+                "intelligence",
+                "wisdom",
+                "charisma"
+              ],
+              "chooseCount": 2
+            }
+          ]
+        ],
         "features": [],
         "source": "Basic Rules (2024)",
         "sourceId": "basic-rules-2024"
@@ -19033,6 +19090,17 @@
         "id": "basic-rules-2024-grappler",
         "name": "Grappler",
         "description": "You gain the following benefits.",
+        "abilityScoreIncreases": [
+          {
+            "ability": "choose",
+            "amount": 1,
+            "chooseFrom": [
+              "strength",
+              "dexterity"
+            ],
+            "chooseCount": 1
+          }
+        ],
         "features": [
           {
             "id": "grappler-feature-1",
@@ -19102,6 +19170,21 @@
         "id": "basic-rules-2024-boon-of-combat-prowess",
         "name": "Boon of Combat Prowess",
         "description": "You gain the following benefits.",
+        "abilityScoreIncreases": [
+          {
+            "ability": "choose",
+            "amount": 1,
+            "chooseFrom": [
+              "strength",
+              "dexterity",
+              "constitution",
+              "intelligence",
+              "wisdom",
+              "charisma"
+            ],
+            "chooseCount": 1
+          }
+        ],
         "features": [
           {
             "id": "boon-of-combat-prowess-feature-1",
@@ -19125,6 +19208,21 @@
         "id": "basic-rules-2024-boon-of-dimensional-travel",
         "name": "Boon of Dimensional Travel",
         "description": "You gain the following benefits.",
+        "abilityScoreIncreases": [
+          {
+            "ability": "choose",
+            "amount": 1,
+            "chooseFrom": [
+              "strength",
+              "dexterity",
+              "constitution",
+              "intelligence",
+              "wisdom",
+              "charisma"
+            ],
+            "chooseCount": 1
+          }
+        ],
         "features": [
           {
             "id": "boon-of-dimensional-travel-feature-1",
@@ -19148,6 +19246,21 @@
         "id": "basic-rules-2024-boon-of-fate",
         "name": "Boon of Fate",
         "description": "You gain the following benefits.",
+        "abilityScoreIncreases": [
+          {
+            "ability": "choose",
+            "amount": 1,
+            "chooseFrom": [
+              "strength",
+              "dexterity",
+              "constitution",
+              "intelligence",
+              "wisdom",
+              "charisma"
+            ],
+            "chooseCount": 1
+          }
+        ],
         "features": [
           {
             "id": "boon-of-fate-feature-1",
@@ -19171,6 +19284,21 @@
         "id": "basic-rules-2024-boon-of-irresistible-offense",
         "name": "Boon of Irresistible Offense",
         "description": "You gain the following benefits.",
+        "abilityScoreIncreases": [
+          {
+            "ability": "choose",
+            "amount": 1,
+            "chooseFrom": [
+              "strength",
+              "dexterity",
+              "constitution",
+              "intelligence",
+              "wisdom",
+              "charisma"
+            ],
+            "chooseCount": 1
+          }
+        ],
         "features": [
           {
             "id": "boon-of-irresistible-offense-feature-1",
@@ -19201,6 +19329,21 @@
         "id": "basic-rules-2024-boon-of-spell-recall",
         "name": "Boon of Spell Recall",
         "description": "You gain the following benefits.",
+        "abilityScoreIncreases": [
+          {
+            "ability": "choose",
+            "amount": 1,
+            "chooseFrom": [
+              "strength",
+              "dexterity",
+              "constitution",
+              "intelligence",
+              "wisdom",
+              "charisma"
+            ],
+            "chooseCount": 1
+          }
+        ],
         "features": [
           {
             "id": "boon-of-spell-recall-feature-1",
@@ -19224,6 +19367,21 @@
         "id": "basic-rules-2024-boon-of-the-night-spirit",
         "name": "Boon of the Night Spirit",
         "description": "You gain the following benefits.",
+        "abilityScoreIncreases": [
+          {
+            "ability": "choose",
+            "amount": 1,
+            "chooseFrom": [
+              "strength",
+              "dexterity",
+              "constitution",
+              "intelligence",
+              "wisdom",
+              "charisma"
+            ],
+            "chooseCount": 1
+          }
+        ],
         "features": [
           {
             "id": "boon-of-the-night-spirit-feature-1",
@@ -19254,6 +19412,21 @@
         "id": "basic-rules-2024-boon-of-truesight",
         "name": "Boon of Truesight",
         "description": "You gain the following benefits.",
+        "abilityScoreIncreases": [
+          {
+            "ability": "choose",
+            "amount": 1,
+            "chooseFrom": [
+              "strength",
+              "dexterity",
+              "constitution",
+              "intelligence",
+              "wisdom",
+              "charisma"
+            ],
+            "chooseCount": 1
+          }
+        ],
         "features": [
           {
             "id": "boon-of-truesight-feature-1",

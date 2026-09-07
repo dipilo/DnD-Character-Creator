@@ -152,6 +152,8 @@ export function applyLongRest(character: Character, resources: ResolvedClassReso
     pactSlotsUsed: [],
     deathSaves: { ...EMPTY_DEATH_SAVES },
     classResourcesUsed: restoreOnRest(character, resources, 'long'),
+    // Nothing you entered survives a night's sleep.
+    activeEffects: [],
     // Exhaustion drops by one on a long rest in both editions.
     exhaustion: Math.max(0, (character.exhaustion ?? 0) - 1)
   };
@@ -203,7 +205,18 @@ export interface ResolvedClassResource extends ClassResource {
   /** The level's entry in `perLevel`. Null is the book's "Unlimited". */
   maximum: number | null;
   used: number;
+  /**
+   * Whether this is something you *enter* and stay in rather than simply spend. Read from the
+   * feature's own words — both printings of Rage say "you can enter", and no other class pool in
+   * either book does.
+   */
+  activatable: boolean;
+  /** Whether the character is in it right now. */
+  active: boolean;
 }
+
+/** The phrase that separates a pool you enter from one you only spend. */
+const ENTERED_RESOURCE_PATTERN = /\byou can enter\b/i;
 
 export function classResourceKey(classId: string, resourceId: string): string {
   return `${classId}::${resourceId}`;
@@ -214,7 +227,7 @@ export function classResourceKey(classId: string, resourceId: string): string {
  * so this module stays free of the content library, exactly as the rest of it is.
  */
 export function resolveClassResources(
-  character: Pick<Character, 'classes' | 'classResourcesUsed'>,
+  character: Pick<Character, 'classes' | 'classResourcesUsed' | 'activeEffects'>,
   resolveClass: (classId: string) => Class | undefined,
 ): ResolvedClassResource[] {
   const spent = character.classResourcesUsed ?? {};
@@ -228,6 +241,7 @@ export function resolveClassResources(
       // tracker: the 2024 Cleric gains Channel Divinity at level 2.
       if (maximum === 0) continue;
       const key = classResourceKey(entry.classId, resource.id);
+      const feature = cls?.features.find((candidate) => candidate.name === resource.featureName);
       resolved.push({
         ...resource,
         key,
@@ -235,6 +249,8 @@ export function resolveClassResources(
         className: cls?.name ?? entry.classId,
         maximum,
         used: clamp(spent[key] ?? 0, 0, maximum ?? Number.MAX_SAFE_INTEGER),
+        activatable: ENTERED_RESOURCE_PATTERN.test(feature?.description ?? ''),
+        active: (character.activeEffects ?? []).includes(key),
       });
     }
   }
@@ -252,6 +268,33 @@ export function setClassResourceUsed(
   if (used === 0) delete current[resource.key];
   else current[resource.key] = used;
   return { classResourcesUsed: current };
+}
+
+/**
+ * Enter a resource, or come out of it.
+ *
+ * Entering spends a use, because that is what the pool counts; ending does not give it back, which
+ * is also what the books say. A pool with nothing left cannot be entered.
+ */
+export function toggleResourceActive(
+  character: Character,
+  resource: ResolvedClassResource,
+): Partial<Character> {
+  const active = character.activeEffects ?? [];
+
+  if (active.includes(resource.key)) {
+    return { activeEffects: active.filter((entry) => entry !== resource.key) };
+  }
+
+  const remaining = resource.maximum === null ? Number.MAX_SAFE_INTEGER : resource.maximum - resource.used;
+  if (remaining <= 0) {
+    return {};
+  }
+
+  return {
+    ...setClassResourceUsed(character, resource, resource.used + 1),
+    activeEffects: [...active, resource.key],
+  };
 }
 
 /**

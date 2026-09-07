@@ -1,3 +1,5 @@
+import { extractFeatBenefitStructures } from './lib/featBenefits.mjs';
+
 export const canonicalSchemaVersion = 'ddbcc-v1';
 
 export const contentBucketKeys = [
@@ -2655,28 +2657,6 @@ const parseFeatPrerequisites = (value) => {
   return prerequisites;
 };
 
-const parseAbilityScoreIncreaseFromBullets = (items) => {
-  const line = items.find((entry) => /increase your /i.test(entry));
-  if (!line) {
-    return undefined;
-  }
-
-  const amountMatch = line.match(/by\s+(\d+)/i);
-  const amount = amountMatch ? Number(amountMatch[1]) : 1;
-  const abilityMatches = line.match(/strength|dexterity|constitution|intelligence|wisdom|charisma/gi) ?? [];
-  const abilities = Array.from(new Set(abilityMatches.map((entry) => entry.toLowerCase())));
-
-  if (abilities.length === 1) {
-    return [{ ability: abilities[0], amount }];
-  }
-
-  if (abilities.length > 1) {
-    return [{ ability: 'choose', amount, chooseFrom: abilities, chooseCount: 1 }];
-  }
-
-  return undefined;
-};
-
 const parseSpellMetadata = (value) => {
   const cantripMatch = value.match(/^([a-z]+)\s+cantrip(?:\s*\(([^)]+)\))?/i);
   if (cantripMatch) {
@@ -2860,12 +2840,15 @@ const extractXanatharContent = (raw, label, sourceId) => {
       // Drop that chrome; if no real benefit list survives, fall back to the prose description.
       const cleanListItems = takeUntilChrome(listItems);
       const featureTexts = cleanListItems.length > 0 ? cleanListItems : descriptionParts;
+      const featId = slugify(block.title);
       return {
-        id: slugify(block.title),
+        id: featId,
         name: block.title,
         description: descriptionParts.join(' '),
         prerequisites: parseFeatPrerequisites(firstParagraph),
-        abilityScoreIncreases: parseAbilityScoreIncreaseFromBullets(cleanListItems),
+        // What the benefit lines grant, read out of their own sentences: the ability score, the
+        // spells, the option borrowed from another class.
+        ...extractFeatBenefitStructures(featId, [descriptionParts.join(' '), ...featureTexts]),
         features: featureTexts.map((item, index) => ({
           id: `${slugify(block.title)}-feature-${index + 1}`,
           name: `${block.title} Benefit ${index + 1}`,
@@ -3125,7 +3108,7 @@ const extractTashasFeats = (raw, label, sourceId) => {
         name: repairMojibake(featBlock.title),
         description: descriptionParts.join(' '),
         prerequisites: parseFeatPrerequisites(prerequisiteParagraph),
-        abilityScoreIncreases: parseAbilityScoreIncreaseFromBullets(listItems),
+        ...extractFeatBenefitStructures(id, [descriptionParts.join(' '), ...featureTexts]),
         features: featureTexts.map((item, index) => ({
           id: `${slugify(featBlock.title)}-feature-${index + 1}`,
           name: `${repairMojibake(featBlock.title)} Benefit ${index + 1}`,

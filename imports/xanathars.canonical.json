@@ -6,7 +6,7 @@
     "category": "supplement",
     "aliases": [],
     "origin": "parsed-html",
-    "importedAt": "2026-08-05T01:53:08.867Z",
+    "importedAt": "2026-09-06T21:19:49.568Z",
     "parser": "xgte-html",
     "visibility": "private"
   },
@@ -4020,6 +4020,11 @@
           ],
           "text": "Elf (drow)"
         },
+        "grantedSpells": [
+          "Detect Magic",
+          "Levitate",
+          "Dispel Magic"
+        ],
         "features": [
           {
             "id": "drow-high-magic-feature-1",
@@ -4052,6 +4057,9 @@
             ],
             "chooseCount": 1
           }
+        ],
+        "grantedSpells": [
+          "Misty Step"
         ],
         "features": [
           {
@@ -4089,6 +4097,21 @@
           ],
           "text": "Elf (wood)"
         },
+        "grantedSpells": [
+          "Longstrider",
+          "Pass Without Trace"
+        ],
+        "spellChoices": [
+          {
+            "id": "wood-elf-magic-spell-choice-1",
+            "count": 1,
+            "level": 0,
+            "classes": [
+              "Druid"
+            ],
+            "label": "one druid cantrip of your choice"
+          }
+        ],
         "features": [
           {
             "id": "wood-elf-magic-feature-1",

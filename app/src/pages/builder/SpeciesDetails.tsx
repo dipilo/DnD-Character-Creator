@@ -12,7 +12,7 @@ import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { ArrowLeft, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { defaultLanguageOptions, getRulesEditionLabel, isChoicePlaceholderLabel } from '@/lib/builderRules';
-import { getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
+import { getPoolBlockedOptionIds, getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
 
 const getAsiKey = (prefix: string, ability: string, amount: number, chooseFrom?: string[]) => {
   return `${prefix}-${ability}-${amount}-${chooseFrom?.join('-') || 'fixed'}`;
@@ -120,6 +120,10 @@ export function SpeciesDetails() {
     return getSelectedFeatureOptionIds(selectedFeatureChoices, featureId);
   };
 
+  const getBlockedOptionIds = (featureId: string) => {
+    return getPoolBlockedOptionIds(visibleFeatures, featureId, selectedFeatureChoices);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -199,6 +203,7 @@ export function SpeciesDetails() {
                             selectedOptionIds={getSelectedOptionIds(feature.id)}
                             onValueChange={(slotIndex, value) => updateFeatureOptionSelection(feature.id, slotIndex, value, feature.chooseCount ?? 1)}
                             selectionContext={featureSelectionContext}
+                            blockedOptionIds={getBlockedOptionIds(feature.id)}
                           />
                         ) : null}
                       </AccordionContent>

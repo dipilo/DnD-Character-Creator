@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { Link, NavLink, Outlet, useParams } from 'react-router-dom';
-import { ArrowLeft, CalendarRange, Mail, Swords, Users, UsersRound } from 'lucide-react';
+import { ArrowLeft, CalendarRange, Dices, Mail, Swords, Users, UsersRound } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -14,6 +14,7 @@ const SHARED_TABS: GameSystemCampaignTab[] = [
   { to: 'schedule', label: 'Schedule', icon: CalendarRange },
   { to: 'roster', label: 'Roster', icon: Users },
   { to: 'party', label: 'Party', icon: Swords },
+  { to: 'session', label: 'Session', icon: Dices },
   { to: 'groups', label: 'Groups', icon: UsersRound },
   { to: 'members', label: 'Members & invites', icon: Mail },
 ];

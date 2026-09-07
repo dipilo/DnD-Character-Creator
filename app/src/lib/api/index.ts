@@ -4,6 +4,7 @@ export * from './characters';
 export * from './campaigns';
 export * from './players';
 export * from './poweredCharacters';
+export * from './gameSessions';
 export * from './preGameForms';
 export * from './availability';
 export * from './groups';

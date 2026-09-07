@@ -14,14 +14,19 @@ interface FeatureOptionSelectorProps {
   readonly onValueChange: (slotIndex: number, value: string) => void;
   readonly showDescriptions?: boolean;
   readonly selectionContext?: FeatureOptionAvailabilityContext;
+  /** Options another feature drawing on the same pool has already spent. */
+  readonly blockedOptionIds?: ReadonlySet<string>;
 }
+
+const EMPTY_BLOCKED: ReadonlySet<string> = new Set<string>();
 
 export function FeatureOptionSelector({
   feature,
   selectedOptionIds,
   onValueChange,
   showDescriptions = true,
-  selectionContext
+  selectionContext,
+  blockedOptionIds = EMPTY_BLOCKED
 }: FeatureOptionSelectorProps) {
   const featureOptions = feature.options ?? [];
 
@@ -51,7 +56,8 @@ export function FeatureOptionSelector({
                   <SelectItem value="__none__">None</SelectItem>
                   {featureOptions.map((option) => {
                     const requirementText = getFeatureOptionRequirementText(option);
-                    const alreadySelectedElsewhere = option.id !== currentValue && blockedSelections.has(option.id);
+                    const alreadySelectedElsewhere = option.id !== currentValue
+                      && (blockedSelections.has(option.id) || blockedOptionIds.has(option.id));
                     const available = option.id === currentValue || isFeatureOptionAvailable(option, selectionContext);
                     const disabled = alreadySelectedElsewhere || !available;
                     let optionLabel = option.name;

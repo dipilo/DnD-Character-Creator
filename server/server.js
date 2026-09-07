@@ -27,6 +27,7 @@ const runtimeRoutes = require('./routes/runtime');
 const charactersRoutes = require('./routes/characters');
 const preGameFormRoutes = require('./routes/preGameForms');
 const poweredCharacterRoutes = require('./routes/poweredCharacters');
+const gameSessionRoutes = require('./routes/gameSessions');
 
 const app = express();
 // Behind a reverse proxy (Render, Vercel, etc.), trust the first proxy hop
@@ -128,6 +129,7 @@ app.use(availabilityRoutes);
 app.use(charactersRoutes);
 app.use(preGameFormRoutes);
 app.use(poweredCharacterRoutes);
+app.use(gameSessionRoutes);
 
 const port = config.port || 3001;
 

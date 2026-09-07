@@ -137,6 +137,8 @@ function DiceOutcomeCard({ onDismiss }: Readonly<{ onDismiss: () => void }>) {
   const { request } = outcome;
   const detail = [request.detail, request.notation].filter(Boolean).join(' · ');
   const note = request.describeOutcome?.(outcome) ?? null;
+  const kept = outcome.keptIndexes ? new Set(outcome.keptIndexes) : null;
+  const dropped = (index: number) => Boolean(kept && !kept.has(index));
 
   return (
     <div className="pointer-events-auto w-full max-w-md rounded-xl border bg-card/95 shadow-lg backdrop-blur">
@@ -149,7 +151,7 @@ function DiceOutcomeCard({ onDismiss }: Readonly<{ onDismiss: () => void }>) {
               <Badge
                 key={`${result.sides}-${result.value}-${index}`}
                 variant={isMaximum(result) ? 'default' : 'secondary'}
-                className="tabular-nums"
+                className={`tabular-nums ${dropped(index) ? 'opacity-40 line-through' : ''}`}
               >
                 d{result.sides ?? '?'}: {result.value ?? '?'}
               </Badge>
@@ -192,7 +194,7 @@ async function resolveRoll(pending: PendingRoll, scene: DiceSceneHandle | null) 
   const modifier = parseDiceNotation(request.notation)?.modifier ?? 0;
 
   if (!scene) {
-    return rollInstantly(request) ?? summarizeRoll([], modifier);
+    return rollInstantly(request) ?? summarizeRoll([], modifier, 0, request.keep);
   }
 
   try {
@@ -205,9 +207,9 @@ async function resolveRoll(pending: PendingRoll, scene: DiceSceneHandle | null) 
       luckyBreaks += 1;
     }
 
-    return summarizeRoll(results, modifier, luckyBreaks);
+    return summarizeRoll(results, modifier, luckyBreaks, request.keep);
   } catch (error) {
     console.warn('the dice surface could not throw', error instanceof Error ? error.message : error);
-    return rollInstantly(request) ?? summarizeRoll([], modifier);
+    return rollInstantly(request) ?? summarizeRoll([], modifier, 0, request.keep);
   }
 }

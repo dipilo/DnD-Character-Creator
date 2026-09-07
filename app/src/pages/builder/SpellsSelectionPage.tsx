@@ -19,6 +19,11 @@ import { Search, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { applyAbilityScoreBonuses, getSelectedClassEdition, getSpellcastingRulesSummary, resolveCharacterClasses, type SelectedClassWithLevel } from '@/lib/builderRules';
 import { dedupeByNamePreferringEdition } from '@/lib/contentSelection';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Link } from 'react-router-dom';
+import { SpellDetail } from '@/components/spells/SpellDetail';
+import { spellReferencePath } from '@/components/spells/spellFormatting';
+import { ChevronDown, ExternalLink } from 'lucide-react';
 
 type SpellSortMode = 'level-asc' | 'level-desc' | 'name' | 'source';
 
@@ -331,16 +336,7 @@ export function SpellsSelectionPage() {
             return (
               <Card
                 key={spell.id}
-                className={`cursor-pointer transition-all hover:border-primary ${selected ? 'border-primary ring-1 ring-primary' : ''} ${unavailableReason ? 'opacity-75' : ''}`}
-                role="button"
-                tabIndex={0}
-                onClick={() => toggleSpell(spell.id)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    toggleSpell(spell.id);
-                  }
-                }}
+                className={`transition-all ${selected ? 'border-primary ring-1 ring-primary' : ''} ${unavailableReason ? 'opacity-75' : ''}`}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-3">
@@ -363,12 +359,36 @@ export function SpellsSelectionPage() {
                     {spell.ritual && <Badge variant="outline">Ritual</Badge>}
                     {spell.concentration && <Badge variant="outline">Concentration</Badge>}
                   </div>
-                  <p className="line-clamp-3 text-sm text-muted-foreground">{spell.description}</p>
+                  {/* The description used to be clamped to three lines inside a card that was
+                      itself the add button, so the rest of a spell could not be read at all. */}
+                  <Collapsible>
+                    <CollapsibleTrigger asChild>
+                      <Button type="button" variant="ghost" size="sm" className="min-h-11 w-full justify-between px-2">
+                        Spell details
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-3">
+                      <SpellDetail spell={spell} />
+                      <Button asChild variant="outline" size="sm" className="mt-3 min-h-11">
+                        <Link to={spellReferencePath(spell.id)}>
+                          Open spell page
+                          <ExternalLink className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </CollapsibleContent>
+                  </Collapsible>
                   <div className="text-xs text-muted-foreground">
                     Classes: {spell.classes.join(', ') || 'None listed'}
                   </div>
                   {unavailableReason && <p className="text-xs text-amber-600 dark:text-amber-400">{unavailableReason}</p>}
-                  <Button variant={selected ? 'default' : 'outline'} size="sm" className="w-full">
+                  <Button
+                    type="button"
+                    variant={selected ? 'default' : 'outline'}
+                    size="sm"
+                    className="min-h-11 w-full"
+                    onClick={() => toggleSpell(spell.id)}
+                  >
                     {actionLabel}
                   </Button>
                 </CardContent>

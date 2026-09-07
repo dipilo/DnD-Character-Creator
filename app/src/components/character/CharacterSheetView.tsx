@@ -34,20 +34,26 @@ import {
   getSpellcastingRulesSummary,
   resolveBackgroundGrantedFeat,
   resolveCharacterClasses,
+  getRulesEdition,
   resolveCharacterEquipment,
   sortFeaturesByLevel
 } from '@/lib/builderRules';
 import { deriveAttacks, deriveSheetVitals } from '@/lib/sheetDerivations';
-import { modifierNotation } from '@/lib/diceNotation';
+import { deriveDefences, deriveTimedFeatures, deriveUnarmedStrike } from '@/lib/sheetCombat';
+import { resolveFeatOptionChoicePool, resolveFeatSpellEntries } from '@/lib/featGrants';
 import { resolveClassResources } from '@/lib/sheetPlayState';
-import { rollOnScreen } from '@/store/diceTrayStore';
+import { rollD20 } from '@/lib/d20Rolls';
 import { SheetAttacksPanel } from '@/components/character/SheetAttacksPanel';
+import { SheetCombatPanel } from '@/components/character/SheetCombatPanel';
+import { AdvantageToggle } from '@/components/character/AdvantageToggle';
 import { SheetEquipmentPanel } from '@/components/character/SheetEquipmentPanel';
 import { SheetHitPointsPanel } from '@/components/character/SheetHitPointsPanel';
 import { SheetResourcesPanel, type HitDicePool } from '@/components/character/SheetResourcesPanel';
-import { SheetSpellsPanel } from '@/components/character/SheetSpellsPanel';
+import { SheetSpellsPanel, type SheetSpellEntry } from '@/components/character/SheetSpellsPanel';
+import { SheetFeatureList } from '@/components/character/SheetFeatureList';
+import { getChosenFeatureOptions } from '@/lib/featureOptions';
 import { SheetVitalsPanel } from '@/components/character/SheetVitalsPanel';
-import type { AbilityScores, Character } from '@/types/dnd';
+import type { AbilityScores, Character, Feature } from '@/types/dnd';
 
 const humanizeFallbackId = (value: string) => value.split('-').filter(Boolean).join(' ');
 const isDefined = <T,>(value: T | null | undefined): value is T => Boolean(value);
@@ -72,7 +78,7 @@ interface CharacterSheetViewProps {
 }
 
 export function CharacterSheetView({ character, actions, leading, note, onChange }: Readonly<CharacterSheetViewProps>) {
-  const { backgrounds, equipment, feats, spells: spellCatalogue } = useContentLibrary();
+  const { backgrounds, classes: classCatalogue, equipment, feats, spells: spellCatalogue } = useContentLibrary();
 
   const species = getRuntimeSpeciesById(character.speciesId);
   const variant = character.variantId ? getRuntimeSpeciesVariant(character.speciesId, character.variantId) : undefined;
@@ -93,14 +99,14 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
     [character],
   );
 
-  const selectedSpells = useMemo(() => {
+  const classSpells = useMemo<SheetSpellEntry[]>(() => {
     return character.spells.map((entry) => {
       const spell = getRuntimeSpellById(entry.spellId);
       return {
         id: entry.spellId,
         name: spell?.name ?? humanizeFallbackId(entry.spellId),
-        level: spell?.level,
-        school: spell?.school,
+        level: spell?.level ?? 0,
+        spell,
         prepared: entry.prepared,
         alwaysPrepared: entry.alwaysPrepared
       };
@@ -177,14 +183,34 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
     return Array.from(byId.values());
   }, [featData, grantedBackgroundFeat]);
 
-  const selectedFeats = useMemo(() => {
-    const featIds = Array.from(new Set([
-      ...(grantedBackgroundFeat ? [grantedBackgroundFeat.id] : []),
-      ...character.feats
-    ]));
+  // Which printing this character plays, so a feat naming "misty step" resolves to the right one.
+  const preferredEdition = useMemo(() => {
+    const first = resolvedClasses[0]?.cls;
+    return getRulesEdition(first?.sourceId, first?.source);
+  }, [resolvedClasses]);
 
-    return featIds.map((featId) => getRuntimeFeatById(featId) ?? { id: featId, name: humanizeFallbackId(featId) });
-  }, [character.feats, grantedBackgroundFeat]);
+  // A feat's spells are the feat's, not a class's: they never counted against a known or prepared
+  // limit, and before this they simply never reached the sheet at all.
+  const featSpells = useMemo(() => {
+    return resolveFeatSpellEntries(allFeatData, character.featSpellSelections, spellCatalogue, preferredEdition);
+  }, [allFeatData, character.featSpellSelections, preferredEdition, spellCatalogue]);
+
+  const selectedSpells = useMemo<SheetSpellEntry[]>(() => {
+    const held = new Set(classSpells.map((entry) => entry.id));
+    return [
+      ...classSpells,
+      ...featSpells
+        .filter((entry) => !held.has(entry.id))
+        .map((entry) => ({
+          id: entry.id,
+          name: entry.name,
+          level: entry.level,
+          spell: entry.spell,
+          prepared: true,
+          grantedBy: entry.featName
+        }))
+    ];
+  }, [classSpells, featSpells]);
 
   const resolvedEquipment = useMemo(() => {
     return resolveCharacterEquipment({
@@ -271,13 +297,35 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
   }, [derivedProficiencies, displayedAbilityScores, resolvedClasses, species, totalLevel]);
 
   const attacks = useMemo(() => {
-    return deriveAttacks({
-      equipment: resolvedEquipment,
-      abilityScores: displayedAbilityScores,
-      proficiencyBonus: vitals.proficiencyBonus,
-      weaponProficiencies: derivedProficiencies.weapons
-    });
+    return [
+      ...deriveAttacks({
+        equipment: resolvedEquipment,
+        abilityScores: displayedAbilityScores,
+        proficiencyBonus: vitals.proficiencyBonus,
+        weaponProficiencies: derivedProficiencies.weapons
+      }),
+      // Nobody has to equip their fists, so the sheet has to know about them itself.
+      deriveUnarmedStrike(displayedAbilityScores, vitals.proficiencyBonus)
+    ];
   }, [derivedProficiencies.weapons, displayedAbilityScores, resolvedEquipment, vitals.proficiencyBonus]);
+
+  // An option the player chose is a feature in its own right — an Eldritch Invocation that says
+  // "as a Bonus Action" belongs in the turn list as much as the class feature that offered it.
+  const activeFeaturesWithChoices = useMemo<Feature[]>(() => {
+    const chosen = activeFeatures.flatMap((feature) =>
+      getChosenFeatureOptions(feature, character.features).map((option) => ({
+        id: option.id,
+        name: option.name,
+        description: option.description,
+        level: feature.level,
+        source: feature.source
+      })));
+    return [...activeFeatures, ...chosen];
+  }, [activeFeatures, character.features]);
+
+  // When a feature is used and what it protects against, read from the feature's own sentences.
+  const timedFeatures = useMemo(() => deriveTimedFeatures(activeFeaturesWithChoices), [activeFeaturesWithChoices]);
+  const defences = useMemo(() => deriveDefences(activeFeaturesWithChoices), [activeFeaturesWithChoices]);
 
   const spellcastingRules = useMemo(() => {
     return getSpellcastingRulesSummary({
@@ -311,6 +359,36 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
       return subclass ? `${label} (${subclass.name})` : label;
     })
     .join(' / ');
+  // A feat reads as one entry with its benefits under it, which is what the books print. Its own
+  // borrowed-option picks (Eldritch Adept's invocation) are features in their own right.
+  const featCards = useMemo<Feature[]>(() => {
+    return allFeatData.flatMap((feat) => [
+      {
+        id: feat.id,
+        name: feat.name,
+        level: 1,
+        source: feat.source,
+        description: [
+          feat.description,
+          ...feat.features.map((benefit) => (benefit.name ? `${benefit.name}. ${benefit.description}` : benefit.description))
+        ].filter(Boolean).join('\n\n')
+      },
+      ...(feat.optionChoices ?? []).map((choice) => ({
+        id: choice.id,
+        name: `${feat.name}: ${choice.featureName}`,
+        level: 1,
+        source: feat.source,
+        description: choice.label,
+        chooseCount: choice.count,
+        options: resolveFeatOptionChoicePool(choice, classCatalogue, preferredEdition)
+      }))
+    ]);
+  }, [allFeatData, classCatalogue, preferredEdition]);
+
+  const hasSpellcasting = selectedSpells.length > 0
+    || vitals.spellcasting.length > 0
+    || spellcastingRules.slotsByLevel.some((count) => count > 0)
+    || spellcastingRules.pactSlotsByLevel.some((count) => count > 0);
   const abilityBonusFor = (ability: keyof AbilityScores) =>
     character.abilityScoreBonuses?.[ability] ?? derivedAbilityBonuses[ability] ?? 0;
 
@@ -328,12 +406,15 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
         {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
       </div>
 
+      <AdvantageToggle />
+
       <Tabs defaultValue="stats" className="w-full">
         {/* Four equal columns on a phone truncate to "Proficienc…". Below sm the strip scrolls at
             each label's natural width instead; the grid returns once there is room for it. */}
-        <TabsList className="w-full justify-start [&>*]:flex-none sm:grid sm:grid-cols-4 sm:[&>*]:flex-1">
+        <TabsList className={`w-full justify-start [&>*]:flex-none sm:grid sm:[&>*]:flex-1 ${hasSpellcasting ? 'sm:grid-cols-5' : 'sm:grid-cols-4'}`}>
           <TabsTrigger value="stats">Stats</TabsTrigger>
           <TabsTrigger value="features">Features</TabsTrigger>
+          {hasSpellcasting ? <TabsTrigger value="spells">Spells</TabsTrigger> : null}
           <TabsTrigger value="equipment">Equipment</TabsTrigger>
           <TabsTrigger value="background">Background</TabsTrigger>
         </TabsList>
@@ -355,8 +436,8 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
                       type="button"
                       className="rounded-lg border p-2 text-center transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:p-4"
                       onClick={() =>
-                        void rollOnScreen({
-                          notation: modifierNotation(20, mod),
+                        void rollD20({
+                          modifier: mod,
                           label: `${abilityLabel} check`,
                           detail: 'd20 check',
                         })
@@ -424,6 +505,8 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
 
           <SheetAttacksPanel attacks={attacks} />
 
+          <SheetCombatPanel timedFeatures={timedFeatures} defences={defences} />
+
           <Card>
             <CardHeader>
               <CardTitle>Proficiencies</CardTitle>
@@ -469,19 +552,13 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
             <CardHeader>
               <CardTitle>Species Features: {species?.name}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {species?.features.map((feature) => (
-                <div key={feature.id} className="border-b pb-4 last:border-0 last:pb-0">
-                  <h4 className="font-medium">{feature.name}</h4>
-                  <p className="text-sm text-muted-foreground">{feature.description}</p>
-                </div>
-              ))}
-              {variant?.features.map((feature) => (
-                <div key={feature.id} className="border-b pb-4 last:border-0 last:pb-0">
-                  <h4 className="font-medium">{feature.name}</h4>
-                  <p className="text-sm text-muted-foreground">{feature.description}</p>
-                </div>
-              ))}
+            <CardContent>
+              <SheetFeatureList
+                features={[...(species?.features ?? []), ...(variant?.features ?? [])]}
+                selections={character.features}
+                idPrefix="species"
+                emptyMessage="No species features are recorded for this character."
+              />
             </CardContent>
           </Card>
 
@@ -491,56 +568,58 @@ export function CharacterSheetView({ character, actions, leading, note, onChange
                 <CardTitle>{cls.name} Features</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {sortFeaturesByLevel(cls.features.filter((feature) => feature.level <= entry.level)).map((feature) => (
-                  <div key={feature.id} className="border-b pb-4 last:border-0 last:pb-0">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-medium">{feature.name}</h4>
-                      <Badge variant="secondary">Level {feature.level}</Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{feature.description}</p>
-                  </div>
-                ))}
+                <SheetFeatureList
+                  features={sortFeaturesByLevel(cls.features.filter((feature) => feature.level <= entry.level))}
+                  selections={character.features}
+                  idPrefix={cls.id}
+                />
                 {subclass && subclass.features.some((feature) => feature.level <= entry.level) && (
-                  <div className="space-y-4 rounded-lg border p-4">
+                  <div className="space-y-3 rounded-lg border p-4">
                     <div className="flex items-center gap-2">
                       <h4 className="font-medium">{subclass.name}</h4>
                       <Badge variant="outline">Subclass</Badge>
                     </div>
-                    {sortFeaturesByLevel(subclass.features.filter((feature) => feature.level <= entry.level)).map((feature) => (
-                      <div key={feature.id} className="border-b pb-4 last:border-0 last:pb-0">
-                        <div className="flex items-center gap-2">
-                          <h5 className="font-medium">{feature.name}</h5>
-                          <Badge variant="secondary">Level {feature.level}</Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">{feature.description}</p>
-                      </div>
-                    ))}
+                    <SheetFeatureList
+                      features={sortFeaturesByLevel(subclass.features.filter((feature) => feature.level <= entry.level))}
+                      selections={character.features}
+                      idPrefix={subclass.id}
+                    />
                   </div>
                 )}
               </CardContent>
             </Card>
           ))}
 
-          {selectedFeats.length > 0 && (
+          {featCards.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle>Feats</CardTitle>
               </CardHeader>
-              <CardContent className="flex flex-wrap gap-2">
-                {selectedFeats.map((feat) => (
-                  <Badge key={feat.id} variant="secondary">{feat.name}</Badge>
-                ))}
+              <CardContent>
+                <SheetFeatureList
+                  features={featCards}
+                  selections={character.features}
+                  idPrefix="feat"
+                />
               </CardContent>
             </Card>
           )}
 
-          <SheetSpellsPanel
-            character={character}
-            spells={selectedSpells}
-            catalogue={spellCatalogue}
-            onChange={onChange}
-          />
         </TabsContent>
+
+        {hasSpellcasting ? (
+          <TabsContent value="spells" className="space-y-4">
+            <SheetSpellsPanel
+              character={character}
+              spells={selectedSpells}
+              catalogue={spellCatalogue}
+              castingStats={vitals.spellcasting}
+              slotsByLevel={spellcastingRules.slotsByLevel}
+              pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
+              onChange={onChange}
+            />
+          </TabsContent>
+        ) : null}
 
         <TabsContent value="equipment" className="space-y-4">
           <SheetEquipmentPanel

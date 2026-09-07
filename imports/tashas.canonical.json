@@ -6,7 +6,7 @@
     "category": "supplement",
     "aliases": [],
     "origin": "parsed-html",
-    "importedAt": "2026-08-17T02:46:08.263Z",
+    "importedAt": "2026-09-06T21:19:49.036Z",
     "parser": "tcoe-html",
     "visibility": "private"
   },
@@ -4865,6 +4865,27 @@
         "id": "tashas-artificer-initiate",
         "name": "Artificer Initiate",
         "description": "You’ve learned some of an artificer’s inventiveness:",
+        "spellChoices": [
+          {
+            "id": "tashas-artificer-initiate-spell-choice-1",
+            "count": 1,
+            "level": 0,
+            "classes": [
+              "Artificer"
+            ],
+            "label": "one cantrip of your choice from the artificer spell list"
+          },
+          {
+            "id": "tashas-artificer-initiate-spell-choice-2",
+            "count": 1,
+            "level": 1,
+            "classes": [
+              "Artificer"
+            ],
+            "inheritsListFromPreviousChoice": true,
+            "label": "one 1st-level spell of your choice from that list"
+          }
+        ],
         "features": [
           {
             "id": "artificer-initiate-feature-1",
@@ -4988,6 +5009,15 @@
           "pactMagic": true,
           "text": "Spellcasting or Pact Magic feature"
         },
+        "optionChoices": [
+          {
+            "id": "tashas-eldritch-adept-option-choice-1",
+            "count": 1,
+            "featureName": "Eldritch Invocation",
+            "className": "Warlock",
+            "label": "one Eldritch Invocation option of your choice from the warlock class"
+          }
+        ],
         "features": [
           {
             "id": "eldritch-adept-feature-1",
@@ -5023,6 +5053,21 @@
             "chooseCount": 1
           }
         ],
+        "grantedSpells": [
+          "Misty Step"
+        ],
+        "spellChoices": [
+          {
+            "id": "tashas-fey-touched-spell-choice-1",
+            "count": 1,
+            "level": 1,
+            "schools": [
+              "Divination",
+              "Enchantment"
+            ],
+            "label": "one 1st-level spell of your choice"
+          }
+        ],
         "features": [
           {
             "id": "fey-touched-feature-1",
@@ -5046,6 +5091,15 @@
         "id": "tashas-fighting-initiate",
         "name": "Fighting Initiate",
         "description": "Your martial training has helped you develop a particular style of fighting. As a result, you learn one Fighting Style option of your choice from the fighter class. If you already have a style, the one you choose must be different. Whenever you reach a level that grants the Ability Score Improvement feature, you can replace this feat’s fighting style with another one from the fighter class that you don’t have.",
+        "optionChoices": [
+          {
+            "id": "tashas-fighting-initiate-option-choice-1",
+            "count": 1,
+            "featureName": "Fighting Style",
+            "className": "Fighter",
+            "label": "one Fighting Style option of your choice from the fighter class"
+          }
+        ],
         "features": [
           {
             "id": "fighting-initiate-feature-1",
@@ -5116,6 +5170,15 @@
           "pactMagic": true,
           "text": "Spellcasting or Pact Magic feature"
         },
+        "optionChoices": [
+          {
+            "id": "tashas-metamagic-adept-option-choice-1",
+            "count": 2,
+            "featureName": "Metamagic",
+            "className": "Sorcerer",
+            "label": "two Metamagic options of your choice from the sorcerer class"
+          }
+        ],
         "features": [
           {
             "id": "metamagic-adept-feature-1",
@@ -5222,6 +5285,21 @@
             "chooseCount": 1
           }
         ],
+        "grantedSpells": [
+          "Invisibility"
+        ],
+        "spellChoices": [
+          {
+            "id": "tashas-shadow-touched-spell-choice-1",
+            "count": 1,
+            "level": 1,
+            "schools": [
+              "Illusion",
+              "Necromancy"
+            ],
+            "label": "one 1st-level spell of your choice"
+          }
+        ],
         "features": [
           {
             "id": "shadow-touched-feature-1",
@@ -5245,6 +5323,21 @@
         "id": "tashas-skill-expert",
         "name": "Skill Expert",
         "description": "You have honed your proficiency with particular skills, granting you the following benefits:",
+        "abilityScoreIncreases": [
+          {
+            "ability": "choose",
+            "amount": 1,
+            "chooseFrom": [
+              "strength",
+              "dexterity",
+              "constitution",
+              "intelligence",
+              "wisdom",
+              "charisma"
+            ],
+            "chooseCount": 1
+          }
+        ],
         "features": [
           {
             "id": "skill-expert-feature-1",
@@ -5327,6 +5420,9 @@
             ],
             "chooseCount": 1
           }
+        ],
+        "grantedSpells": [
+          "Mage Hand"
         ],
         "features": [
           {
