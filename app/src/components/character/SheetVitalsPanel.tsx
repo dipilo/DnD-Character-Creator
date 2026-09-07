@@ -5,6 +5,7 @@ import {
   type SheetVitals,
 } from '@/lib/sheetDerivations';
 import { rollD20 } from '@/lib/d20Rolls';
+import { SheetAbilityBlocks } from '@/components/character/SheetAbilityBlocks';
 import { cn } from '@/lib/utils';
 
 /** One boxed number, the way a play sheet leads with them. Rollable when a d20 check exists for it. */
@@ -51,7 +52,7 @@ export function Stat({
 }
 
 /**
- * Initiative, speed, the passive scores, saving throws and the skill table.
+ * Initiative, speed, the passive scores, then the six ability blocks that hold the saves and skills.
  *
  * Everything here is derived from the character document — no value is editable, because none of
  * them are things a player changes. Rolling one is not editing it: a check goes to the shared dice
@@ -65,8 +66,6 @@ export function SheetVitalsPanel({
   /** `rail` is one narrow column; the two are mutually exclusive by media query, so nothing renders twice. */
   variant?: 'rail' | 'panel';
 }>) {
-  const rollCheck = (label: string, modifier: number) =>
-    void rollD20({ modifier, label, detail: 'd20 check' });
   const inRail = variant === 'rail';
 
   return (
@@ -86,80 +85,7 @@ export function SheetVitalsPanel({
         <Stat label="Passive Ins." value={String(vitals.passiveInsight)} compact={inRail} />
       </div>
 
-      <div className={cn('grid gap-3', inRail ? '' : 'lg:grid-cols-3')}>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Saving Throws</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-1">
-            {vitals.saves.map((save) => (
-              <button
-                key={save.ability}
-                type="button"
-                className={cn(
-                  'flex min-h-9 w-full items-center justify-between rounded px-2 py-1 text-sm transition-colors hover:bg-accent coarse:min-h-11 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-                  save.proficient && 'bg-accent',
-                )}
-                onClick={() =>
-                  rollCheck(`${save.ability.charAt(0).toUpperCase()}${save.ability.slice(1)} save`, save.modifier)
-                }
-              >
-                <span className="flex items-center gap-2">
-                  <span
-                    className={cn(
-                      'h-2 w-2 shrink-0 rounded-full border',
-                      save.proficient ? 'border-primary bg-primary' : 'border-muted-foreground/50',
-                    )}
-                    aria-hidden="true"
-                  />
-                  <span className="capitalize">{save.ability}</span>
-                </span>
-                <span className="font-semibold tabular-nums">{formatModifier(save.modifier)}</span>
-              </button>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card className={inRail ? undefined : 'lg:col-span-2'}>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Skills</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* Two columns where there is room; one on a phone and in the rail, where a two-column
-                skill list wraps every name onto a second line. */}
-            <div className={cn('grid gap-x-6 gap-y-1', inRail ? '' : 'sm:grid-cols-2')}>
-              {vitals.skills.map((skill) => (
-                <button
-                  key={skill.name}
-                  type="button"
-                  className={cn(
-                    'flex min-h-9 w-full items-center justify-between gap-2 rounded px-2 py-1 text-sm transition-colors hover:bg-accent coarse:min-h-11 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-                    skill.proficient && 'bg-accent',
-                  )}
-                  onClick={() => rollCheck(skill.name, skill.modifier)}
-                >
-                  <span className="flex min-w-0 items-center gap-2">
-                    <span
-                      className={cn(
-                        'h-2 w-2 shrink-0 rounded-full border',
-                        skill.proficient ? 'border-primary bg-primary' : 'border-muted-foreground/50',
-                      )}
-                      aria-hidden="true"
-                    />
-                    <span className="truncate">{skill.name}</span>
-                    <span className="shrink-0 text-xs text-muted-foreground">
-                      {ABILITY_ABBREVIATIONS[skill.ability]}
-                    </span>
-                  </span>
-                  <span className="shrink-0 font-semibold tabular-nums">
-                    {formatModifier(skill.modifier)}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <SheetAbilityBlocks saves={vitals.saves} skills={vitals.skills} variant={variant} />
     </div>
   );
 }

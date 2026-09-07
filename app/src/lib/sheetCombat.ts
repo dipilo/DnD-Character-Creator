@@ -11,12 +11,6 @@ import { abilityModifier, formatModifier, type DerivedAttack } from '@/lib/sheet
 
 export type ActionTiming = 'action' | 'bonus-action' | 'reaction';
 
-export const ACTION_TIMING_LABELS: Record<ActionTiming, string> = {
-  action: 'Actions',
-  'bonus-action': 'Bonus Actions',
-  reaction: 'Reactions'
-};
-
 // Ordered: a feature that names a Reaction and an Action in one paragraph is offered under the
 // narrower one, because that is the sentence the player is looking for.
 const TIMING_PATTERNS: Array<{ timing: ActionTiming; pattern: RegExp }> = [
@@ -28,23 +22,6 @@ const TIMING_PATTERNS: Array<{ timing: ActionTiming; pattern: RegExp }> = [
 /** When a feature's own text says it is used, or null when it never says. */
 export function detectActionTiming(text: string): ActionTiming | null {
   return TIMING_PATTERNS.find((entry) => entry.pattern.test(text))?.timing ?? null;
-}
-
-export interface TimedFeature {
-  id: string;
-  name: string;
-  description: string;
-  timing: ActionTiming;
-}
-
-/** Every feature that states when it is used, grouped by the timing it states. */
-export function deriveTimedFeatures(features: readonly Feature[]): TimedFeature[] {
-  return features
-    .map((feature) => {
-      const timing = detectActionTiming(feature.description);
-      return timing ? { id: feature.id, name: feature.name, description: feature.description, timing } : null;
-    })
-    .filter((entry): entry is TimedFeature => Boolean(entry));
 }
 
 /* -------------------------------------------------------------------------- *

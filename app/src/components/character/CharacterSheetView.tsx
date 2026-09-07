@@ -40,17 +40,18 @@ import {
   sortFeaturesByLevel
 } from '@/lib/builderRules';
 import { deriveAttacks, deriveSheetVitals } from '@/lib/sheetDerivations';
-import { deriveDefences, deriveTimedFeatures, deriveUnarmedStrike } from '@/lib/sheetCombat';
+import { deriveDefences, deriveUnarmedStrike } from '@/lib/sheetCombat';
 import { resolveFeatOptionChoicePool, resolveFeatSpellEntries } from '@/lib/featGrants';
 import { applyLongRest, applyShortRest, resolveClassResources } from '@/lib/sheetPlayState';
-import { SheetAttacksPanel } from '@/components/character/SheetAttacksPanel';
-import { SheetDefencesCard, SheetTurnCard } from '@/components/character/SheetCombatPanel';
+import { primaryCastingStat } from '@/lib/spellCasting';
+import { SheetActionsPanel } from '@/components/character/SheetActionsPanel';
+import { SheetDefencesCard } from '@/components/character/SheetCombatPanel';
 import { AdvantageToggle } from '@/components/character/AdvantageToggle';
 import { SheetEquipmentPanel } from '@/components/character/SheetEquipmentPanel';
 import { SheetResourcesPanel, type HitDicePool } from '@/components/character/SheetResourcesPanel';
 import { SheetSpellsPanel, type SheetSpellEntry } from '@/components/character/SheetSpellsPanel';
 import { SheetFeatureList } from '@/components/character/SheetFeatureList';
-import { SheetLevelUpButton } from '@/components/character/SheetLevelUpButton';
+import { SheetLevelControl } from '@/components/character/SheetLevelControl';
 import { AdvancementTasks } from '@/components/character/AdvancementTasks';
 import { deriveAdvancementTasks } from '@/lib/characterAdvancement';
 import { getChosenFeatureOptions } from '@/lib/featureOptions';
@@ -61,7 +62,7 @@ import {
   SheetQuickInfoRail
 } from '@/components/character/SheetQuickInfoRail';
 import { useSheetLayout } from '@/components/character/useSheetLayout';
-import type { AbilityScores, Character, Feature } from '@/types/dnd';
+import type { AbilityScores, Character, Feature, Spell } from '@/types/dnd';
 
 const humanizeFallbackId = (value: string) => value.split('-').filter(Boolean).join(' ');
 const isDefined = <T,>(value: T | null | undefined): value is T => Boolean(value);
@@ -344,8 +345,7 @@ export function CharacterSheetView({
     return [...activeFeatures, ...chosen];
   }, [activeFeatures, character.features]);
 
-  // When a feature is used and what it protects against, read from the feature's own sentences.
-  const timedFeatures = useMemo(() => deriveTimedFeatures(activeFeaturesWithChoices), [activeFeaturesWithChoices]);
+  // What this character shrugs off, read from the feature's own sentences.
   const defences = useMemo(() => deriveDefences(activeFeaturesWithChoices), [activeFeaturesWithChoices]);
 
   const spellcastingRules = useMemo(() => {
@@ -421,6 +421,17 @@ export function CharacterSheetView({
     });
   }, [allFeatData, background, character, feats, resolvedClasses, species, spellcastingRules, variant]);
 
+  // The Actions table casts too, so it needs the resolved spell behind a row's id and the class a
+  // cast is made as — the same answer the Spells tab reaches, from the same function.
+  const spellsById = useMemo(() => {
+    const index = new Map<string, Spell>();
+    for (const entry of selectedSpells) {
+      if (entry.spell) index.set(entry.id, entry.spell);
+    }
+    return index;
+  }, [selectedSpells]);
+  const castingStat = useMemo(() => primaryCastingStat(vitals.spellcasting), [vitals.spellcasting]);
+
   const hasSpellcasting = selectedSpells.length > 0
     || vitals.spellcasting.length > 0
     || spellcastingRules.slotsByLevel.some((count) => count > 0)
@@ -446,7 +457,7 @@ export function CharacterSheetView({
         <div className="flex flex-wrap items-center gap-2">
           {onChange ? (
             <>
-              <SheetLevelUpButton
+              <SheetLevelControl
                 character={character}
                 resolvedClasses={resolvedClasses}
                 onChange={onChange}
@@ -524,27 +535,32 @@ export function CharacterSheetView({
             </TabsContent>
           )}
 
-          {/* Two columns from xl: the rail is a tall column and the content beside it was mostly
-              empty, so what a player uses in a fight fits on one screen instead of scrolling. */}
-          <TabsContent
-            value="actions"
-            className="space-y-4 xl:grid xl:grid-cols-2 xl:items-start xl:gap-4 xl:space-y-0"
-          >
-            <SheetAttacksPanel attacks={attacks} />
+          {/* One table, full width. The columns are what make it dense, and splitting the tab into
+              two columns leaves each of them too narrow for six of them. */}
+          <TabsContent value="actions" className="space-y-4">
+            <SheetActionsPanel
+              character={character}
+              attacks={attacks}
+              spells={selectedSpells}
+              features={activeFeaturesWithChoices}
+              classResources={classResources}
+              castingStat={castingStat}
+              characterLevel={totalLevel}
+              spellsById={spellsById}
+              slotsByLevel={spellcastingRules.slotsByLevel}
+              pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
+              onChange={onChange}
+            />
 
-            <div className="space-y-4">
-              <SheetResourcesPanel
-                character={character}
-                hitDice={hitDicePools}
-                slotsByLevel={spellcastingRules.slotsByLevel}
-                pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
-                classResources={classResources}
-                constitutionModifier={calculateModifier(displayedAbilityScores.constitution)}
-                onChange={onChange}
-              />
-
-              <SheetTurnCard timedFeatures={timedFeatures} />
-            </div>
+            <SheetResourcesPanel
+              character={character}
+              hitDice={hitDicePools}
+              slotsByLevel={spellcastingRules.slotsByLevel}
+              pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
+              classResources={classResources}
+              constitutionModifier={calculateModifier(displayedAbilityScores.constitution)}
+              onChange={onChange}
+            />
           </TabsContent>
 
           {hasSpellcasting ? (
@@ -557,6 +573,7 @@ export function CharacterSheetView({
                 castingStats={vitals.spellcasting}
                 slotsByLevel={spellcastingRules.slotsByLevel}
                 pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
+                characterLevel={totalLevel}
                 onChange={onChange}
               />
             </TabsContent>
@@ -582,6 +599,9 @@ export function CharacterSheetView({
                   selections={character.features}
                   idPrefix="species"
                   emptyMessage="No species features are recorded for this character."
+                  character={character}
+                  classResources={classResources}
+                  onChange={onChange}
                 />
               </CardContent>
             </Card>
@@ -596,6 +616,9 @@ export function CharacterSheetView({
                     features={sortFeaturesByLevel(cls.features.filter((feature) => feature.level <= entry.level))}
                     selections={character.features}
                     idPrefix={cls.id}
+                    character={character}
+                    classResources={classResources}
+                    onChange={onChange}
                   />
                   {subclass && subclass.features.some((feature) => feature.level <= entry.level) && (
                     <div className="space-y-3 rounded-lg border p-4">
@@ -607,6 +630,9 @@ export function CharacterSheetView({
                         features={sortFeaturesByLevel(subclass.features.filter((feature) => feature.level <= entry.level))}
                         selections={character.features}
                         idPrefix={subclass.id}
+                        character={character}
+                        classResources={classResources}
+                        onChange={onChange}
                       />
                     </div>
                   )}
@@ -624,6 +650,9 @@ export function CharacterSheetView({
                     features={featCards}
                     selections={character.features}
                     idPrefix="feat"
+                    character={character}
+                    classResources={classResources}
+                    onChange={onChange}
                   />
                 </CardContent>
               </Card>

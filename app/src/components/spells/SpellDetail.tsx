@@ -51,7 +51,7 @@ export function SpellDetail({ spell }: Readonly<{ spell: Spell }>) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-lg border p-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-lg border p-3 lg:grid-cols-4">
         <Stat label="Level" value={formatSpellLevel(spell.level)} />
         <Stat label="Casting Time" value={castingTimeLine(spell)} />
         <Stat label="Range/Area" value={spell.range || '—'} />

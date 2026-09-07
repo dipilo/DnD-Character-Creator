@@ -83,6 +83,46 @@ export function canLevelUp(character: Pick<Character, 'classes'>) {
   return totalCharacterLevel(character) < MAX_CHARACTER_LEVEL;
 }
 
+/**
+ * Drop one class by a level.
+ *
+ * Levelling is a thing players try out, so it has to be reversible on the sheet that offers it —
+ * and hit points move back by exactly what they gained, because `deriveCharacterHitPoints` carries
+ * the current total by the difference in the maximum.
+ *
+ * Nothing the level granted is deleted. A subclass chosen at 3rd level survives a drop to 2nd and
+ * takes effect again on the way back up, which is the rule a class entry already follows in the
+ * builder; the last level of a class is the floor, because removing the entry would take its
+ * choices with it and, for the first entry, move every other class's hit dice.
+ */
+export function applyLevelDown(
+  character: Character,
+  classId: string,
+  getClassById: (id: string) => Class | undefined
+): Partial<Character> {
+  const classes = updateCharacterClassEntry(character.classes, classId, getClassById, (entry) => ({
+    ...entry,
+    level: Math.max(1, entry.level - 1),
+    // A hit die that no longer exists cannot stay spent.
+    hitDiceUsed: Math.min(entry.hitDiceUsed ?? 0, Math.max(1, entry.level - 1))
+  }));
+
+  return {
+    classes,
+    hp: deriveCharacterHitPoints({
+      classes,
+      abilityScores: character.abilityScores,
+      previousHp: character.hp,
+      getClassById
+    })
+  };
+}
+
+/** Which classes still have a level to give back. The last level of a class is the floor. */
+export function canLevelDown(character: Pick<Character, 'classes'>) {
+  return character.classes.some((entry) => entry.level > 1);
+}
+
 /** Only the parts a pending choice is recorded in. The builder holds a partial character. */
 export type AdvancementCharacter = Partial<Pick<Character, 'features' | 'feats' | 'featSpellSelections'>>;
 

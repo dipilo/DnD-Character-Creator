@@ -75,6 +75,7 @@ function DeathSaveRow({
 
 export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPointsPanelProps>) {
   const [amount, setAmount] = useState('');
+  const [conditionsOpen, setConditionsOpen] = useState(false);
   const hp = character.hp;
   const deathSaves = getDeathSaves(character);
 
@@ -226,9 +227,27 @@ export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPo
           </div>
         ) : null}
 
-        <div>
-          <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">Conditions</p>
-          {onChange ? (
+        {/* Fourteen toggles is five rows of chips in a 19rem rail, permanently, for a character
+            who is usually under none of them. What is *on* is always shown; the rest is a press
+            away. */}
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Conditions</p>
+            {onChange ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="min-h-9 coarse:min-h-11"
+                aria-expanded={conditionsOpen}
+                onClick={() => setConditionsOpen((open) => !open)}
+              >
+                {conditionsOpen ? 'Done' : 'Set'}
+              </Button>
+            ) : null}
+          </div>
+
+          {conditionsOpen && onChange ? (
             <div className="flex flex-wrap gap-1.5">
               {CONDITION_NAMES.map((condition) => (
                 <Button
@@ -245,7 +264,15 @@ export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPo
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">{conditions.join(', ') || 'None'}</p>
+            <div className="flex flex-wrap gap-1.5">
+              {conditions.length === 0 ? (
+                <p className="text-sm text-muted-foreground">None</p>
+              ) : (
+                conditions.map((condition) => (
+                  <Badge key={condition} variant="secondary">{condition}</Badge>
+                ))
+              )}
+            </div>
           )}
         </div>
       </CardContent>

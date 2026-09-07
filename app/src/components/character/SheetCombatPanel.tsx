@@ -1,71 +1,14 @@
-// What this character can do on their turn, and what they shrug off.
+// What this character shrugs off.
 //
-// Both lists come from the character's own features: a feature states when it is used and what it
-// protects against, so a sheet that never grouped them was hiding what a player most needs in a
-// fight. Nothing here is a fixed list of actions — a feature whose text says nothing about timing
-// simply does not appear.
+// Read out of the features the character already has: a feature says what it protects against
+// ("you have Resistance to Bludgeoning, Piercing, and Slashing damage"), so nothing here names a
+// class, a species or a feat, and a feature whose text states nothing appears in no list.
 //
-// The two halves are exported separately because they are read at different times: the turn list
-// belongs on Actions, beside the attacks, and the defences belong with the rest of what this
-// character *is*.
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+// The turn list that used to sit beside this is now the Actions table, which groups weapons,
+// spells and features by the same timing this module used to read on its own.
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ContentReferenceText } from '@/components/ContentReferenceText';
-import {
-  ACTION_TIMING_LABELS,
-  DEFENCE_KIND_LABELS,
-  groupDefences,
-  type ActionTiming,
-  type DerivedDefence,
-  type TimedFeature
-} from '@/lib/sheetCombat';
-
-const TIMING_ORDER: ActionTiming[] = ['action', 'bonus-action', 'reaction'];
-
-export function SheetTurnCard({ timedFeatures }: Readonly<{ timedFeatures: readonly TimedFeature[] }>) {
-  if (timedFeatures.length === 0) {
-    return null;
-  }
-
-  const byTiming = new Map<ActionTiming, TimedFeature[]>();
-  for (const feature of timedFeatures) {
-    byTiming.set(feature.timing, [...(byTiming.get(feature.timing) ?? []), feature]);
-  }
-
-  return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base">Your Turn</CardTitle>
-        <CardDescription>Features grouped by when their own text says you use them.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {TIMING_ORDER.map((timing) => {
-          const entries = byTiming.get(timing) ?? [];
-          if (entries.length === 0) return null;
-
-          return (
-            <div key={timing}>
-              <h4 className="mb-1 text-sm font-medium text-muted-foreground">{ACTION_TIMING_LABELS[timing]}</h4>
-              <Accordion type="multiple" className="w-full">
-                {entries.map((entry) => (
-                  <AccordionItem key={entry.id} value={entry.id}>
-                    <AccordionTrigger className="py-2 text-left coarse:min-h-11">{entry.name}</AccordionTrigger>
-                    <AccordionContent>
-                      <p className="text-sm text-muted-foreground">
-                        <ContentReferenceText text={entry.description} />
-                      </p>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </div>
-          );
-        })}
-      </CardContent>
-    </Card>
-  );
-}
+import { DEFENCE_KIND_LABELS, groupDefences, type DerivedDefence } from '@/lib/sheetCombat';
 
 export function SheetDefencesCard({ defences }: Readonly<{ defences: readonly DerivedDefence[] }>) {
   if (defences.length === 0) {

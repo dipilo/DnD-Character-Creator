@@ -1,30 +1,32 @@
 // The spellcasting half of the sheet: what this character can cast, what it costs, and the slots
 // it costs it from.
 //
-// The list leads with a spell's name and level and puts everything else behind a disclosure, which
-// is what a player reads down at the table. Cast spends the lowest slot that can carry the spell,
-// which is what casting it normally means; the caret beside it is where upcasting lives, so a
-// bigger slot stays a real choice rather than the only way to cast.
+// The list is the same table the Actions tab prints — Name, Time, Range, Hit/DC, Damage, Notes —
+// grouped by spell level, with the statblock behind the name. It used to be an accordion row whose
+// name column and control group fought each other for width, which is what made a long spell name
+// read as overlapping text.
+//
+// Cast spends the lowest slot that can carry the spell, which is what casting it normally means;
+// the caret beside it is where upcasting lives, so a bigger slot stays a real choice.
 //
 // Same posture as every other sheet panel: it holds no state and writes nothing of its own, so a
 // campaign-mate reading a shared sheet gets the same component with no `onChange`.
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
-import { ChevronDown, Trash2 } from 'lucide-react';
+import { ExternalLink, Trash2 } from 'lucide-react';
 import { SheetCatalogPicker, type CatalogPickerItem } from '@/components/character/SheetCatalogPicker';
+import { SheetActionTable, type SheetActionTableRow } from '@/components/character/SheetActionTable';
+import { SpellCastControls } from '@/components/character/SpellCastControls';
 import { SlotRow } from '@/components/character/SlotRow';
-import { SpellList, type SpellListEntry } from '@/components/spells/SpellList';
-import { formatSpellLevel } from '@/components/spells/spellFormatting';
+import { SpellDetail } from '@/components/spells/SpellDetail';
+import { formatSpellLevel, spellReferencePath } from '@/components/spells/spellFormatting';
 import { getSlotsUsed, setPactSlotsUsed, setSpellSlotsUsed } from '@/lib/sheetPlayState';
-import { deriveSpellAttackOrSave, deriveSpellDice } from '@/lib/spellFacets';
-import { rollD20 } from '@/lib/d20Rolls';
+import { castableSlots, primaryCastingStat, rollSpellAttack, spendSlot, type CastableSlot } from '@/lib/spellCasting';
+import { deriveSpellAttackOrSave, deriveSpellDamageOrEffect, deriveSpellDice } from '@/lib/spellFacets';
+import { ABILITY_ABBREVIATIONS, formatModifier } from '@/lib/sheetDerivations';
 import { rollOnScreen } from '@/store/diceTrayStore';
+import { rollD20 } from '@/lib/d20Rolls';
 import type { DerivedSpellcastingStats } from '@/lib/sheetDerivations';
 import type { Character, Spell } from '@/types/dnd';
 
@@ -48,123 +50,26 @@ interface SheetSpellsPanelProps {
   castingStats: DerivedSpellcastingStats[];
   slotsByLevel: number[];
   pactSlotsByLevel: number[];
+  /** Total level, which is what a cantrip's own damage table keys off. */
+  characterLevel: number;
   onChange?: (patch: Partial<Character>) => void;
 }
 
-/** A slot level that can still be spent, and which pool it comes from. */
-interface CastableSlot {
-  level: number;
-  remaining: number;
-  pact: boolean;
-}
-
-function castableSlots(
-  character: Character,
-  slotsByLevel: number[],
-  pactSlotsByLevel: number[],
-  minimumLevel: number
-): CastableSlot[] {
-  const slots: CastableSlot[] = [];
-
-  slotsByLevel.forEach((total, index) => {
-    const level = index + 1;
-    if (total <= 0 || level < minimumLevel) return;
-    const remaining = total - getSlotsUsed(character.spellSlotsUsed, level);
-    if (remaining > 0) slots.push({ level, remaining, pact: false });
-  });
-
-  pactSlotsByLevel.forEach((total, index) => {
-    const level = index + 1;
-    if (total <= 0 || level < minimumLevel) return;
-    const remaining = total - getSlotsUsed(character.pactSlotsUsed, level);
-    if (remaining > 0) slots.push({ level, remaining, pact: true });
-  });
-
-  return slots;
-}
+const rollButtonClass =
+  'min-h-9 rounded px-1.5 font-semibold tabular-nums transition-colors hover:bg-accent coarse:min-h-11 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none';
 
 /**
- * The class a spell is cast as. `character.spells` records no class, so a multiclass caster has no
- * stored answer: the strongest attack bonus is used and the roll is labelled with the class it came
- * from, which keeps the choice visible rather than silent.
+ * The letters, not the shopping list. A material component prints its whole parenthetical — "M (a
+ * tiny ball of bat guano and sulfur)" — which is four wrapped lines in a Notes column; the material
+ * is in the statblock the row opens.
  */
-function primaryCastingStat(castingStats: readonly DerivedSpellcastingStats[]) {
-  return castingStats.reduce<DerivedSpellcastingStats | undefined>(
-    (best, stat) => (best && best.attackBonus >= stat.attackBonus ? best : stat),
-    undefined
-  );
-}
+const componentLetters = (spell: Spell) =>
+  spell.components.map((component) => component.split(' ')[0]).join('/');
 
-interface CastControlsProps {
-  readonly entry: SheetSpellEntry;
-  readonly slots: readonly CastableSlot[];
-  readonly canSpend: boolean;
-  readonly onCast: (slot?: CastableSlot) => void;
-}
-
-/**
- * Cast, and the slot it costs. A cantrip costs nothing so it casts on one click, and a levelled
- * spell spends its lowest usable slot on that same click; the caret beside it is where upcasting
- * lives, so a bigger slot stays a real choice without being the only way to cast.
- */
-function CastControls({ entry, slots, canSpend, onCast }: CastControlsProps) {
-  if (entry.level === 0) {
-    return (
-      <Button type="button" size="sm" variant="outline" className="min-h-11" onClick={() => onCast()}>
-        Cast
-      </Button>
-    );
-  }
-
-  if (!canSpend) return null;
-
-  if (slots.length === 0) {
-    return (
-      <Button type="button" size="sm" variant="outline" className="min-h-11" disabled>
-        No slots
-      </Button>
-    );
-  }
-
-  const [lowest, ...higher] = slots;
-  const lowestLabel = lowest.pact ? `pact ${lowest.level}` : `level ${lowest.level}`;
-
-  return (
-    <div className="flex items-center">
-      <Button
-        type="button"
-        size="sm"
-        variant="outline"
-        className={higher.length > 0 ? 'min-h-11 rounded-r-none border-r-0' : 'min-h-11'}
-        onClick={() => onCast(lowest)}
-      >
-        Cast ({lowestLabel})
-      </Button>
-      {higher.length > 0 ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              className="min-h-11 rounded-l-none px-2"
-              aria-label={`Cast ${entry.name} with a higher slot`}
-            >
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {higher.map((slot) => (
-              <DropdownMenuItem key={`${slot.pact ? 'pact' : 'slot'}-${slot.level}`} onSelect={() => onCast(slot)}>
-                {slot.pact ? `Pact slot (level ${slot.level})` : `Level ${slot.level} slot`} · {slot.remaining} left
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : null}
-    </div>
-  );
-}
+const spellNotes = (spell: Spell) =>
+  [componentLetters(spell), spell.concentration ? 'Concentration' : '', spell.ritual ? 'Ritual' : '']
+    .filter(Boolean)
+    .join(', ') || undefined;
 
 export function SheetSpellsPanel({
   character,
@@ -173,6 +78,7 @@ export function SheetSpellsPanel({
   castingStats,
   slotsByLevel,
   pactSlotsByLevel,
+  characterLevel,
   onChange
 }: Readonly<SheetSpellsPanelProps>) {
   const hasSlots = slotsByLevel.some((count) => count > 0) || pactSlotsByLevel.some((count) => count > 0);
@@ -207,98 +113,104 @@ export function SheetSpellsPanel({
     onChange?.({ spells: character.spells.filter((entry) => entry.spellId !== spellId) });
   };
 
-  const castWith = (slot: CastableSlot) => {
-    const used = getSlotsUsed(slot.pact ? character.pactSlotsUsed : character.spellSlotsUsed, slot.level) + 1;
-    const total = (slot.pact ? pactSlotsByLevel : slotsByLevel)[slot.level - 1] ?? 0;
-    onChange?.(slot.pact
-      ? setPactSlotsUsed(character, slot.level, used, total)
-      : setSpellSlotsUsed(character, slot.level, used, total));
-  };
-
   const castingStat = primaryCastingStat(castingStats);
 
-  /**
-   * Casting is the slot and the throw together: spending a slot without rolling the attack the
-   * spell states leaves the player hunting for the number elsewhere on the sheet.
-   */
   const castSpell = (entry: SheetSpellEntry, slot?: CastableSlot) => {
-    if (slot) castWith(slot);
-    const spell = entry.spell;
-    if (!spell) return;
-    const attack = deriveSpellAttackOrSave(spell).find((facet) => facet.kind === 'attack');
-    if (attack && castingStat) {
-      void rollD20({
-        modifier: castingStat.attackBonus,
-        label: `${spell.name} attack`,
-        detail: `${castingStat.className} · ${attack.label}`
-      });
-    }
+    if (slot) onChange?.(spendSlot(character, slot, slotsByLevel, pactSlotsByLevel));
+    if (entry.spell) rollSpellAttack(entry.spell, castingStat);
   };
 
-  const entries: SpellListEntry[] = spells.map((entry) => {
-    const tags: string[] = [];
-    if (entry.grantedBy) tags.push(entry.grantedBy);
-    else if (entry.alwaysPrepared) tags.push('Always prepared');
-    else if (entry.prepared && entry.level > 0) tags.push('Prepared');
+  const controlsFor = (entry: SheetSpellEntry) => (
+    <>
+      <SpellCastControls
+        spellName={entry.name}
+        spellLevel={entry.level}
+        slots={entry.level > 0 ? castableSlots(character, slotsByLevel, pactSlotsByLevel, entry.level) : []}
+        canSpend={Boolean(onChange)}
+        onCast={(slot) => castSpell(entry, slot)}
+      />
+      {onChange && entry.level > 0 && !entry.alwaysPrepared && !entry.grantedBy ? (
+        <Button
+          type="button"
+          size="sm"
+          variant={entry.prepared ? 'default' : 'outline'}
+          className="min-h-11"
+          aria-pressed={entry.prepared}
+          onClick={() => togglePrepared(entry.id)}
+        >
+          {entry.prepared ? 'Prepared' : 'Prepare'}
+        </Button>
+      ) : null}
+      {onChange && !entry.grantedBy ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-11 w-11"
+          aria-label={`Remove ${entry.name}`}
+          onClick={() => removeSpell(entry.id)}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      ) : null}
+    </>
+  );
 
-    const slots = entry.level > 0 ? castableSlots(character, slotsByLevel, pactSlotsByLevel, entry.level) : [];
-    const dice = entry.spell ? deriveSpellDice(entry.spell) : undefined;
+  const toRow = (entry: SheetSpellEntry): SheetActionTableRow => {
+    const spell = entry.spell;
+    if (!spell) {
+      return {
+        id: entry.id,
+        name: entry.name,
+        meta: 'Not in this character’s sources, so only the name is stored',
+        controls: controlsFor(entry)
+      };
+    }
+
+    const facets = deriveSpellAttackOrSave(spell);
+    const makesAttack = facets.some((facet) => facet.kind === 'attack');
+    const save = facets.find((facet) => facet.kind === 'save');
+    const dice = deriveSpellDice(spell, { characterLevel, slotLevel: spell.level });
+    const effects = deriveSpellDamageOrEffect(spell).map((effect) => effect.label).join(', ');
+    const damageLabel = [dice, effects].filter(Boolean).join(' ');
+
+    // Prepared is the button's own state, so it is not restated in the meta line; where the spell
+    // came from is not, and is.
+    let origin = '';
+    if (entry.grantedBy) origin = entry.grantedBy;
+    else if (entry.alwaysPrepared) origin = 'Always prepared';
 
     return {
       id: entry.id,
-      name: entry.name,
-      level: entry.level,
-      spell: entry.spell,
-      tags,
-      actions: (
-        <>
-          <CastControls
-            entry={entry}
-            slots={slots}
-            canSpend={Boolean(onChange)}
-            onCast={(slot) => castSpell(entry, slot)}
-          />
-          {/* Rolling changes nothing about the character, so a campaign-mate reading a shared sheet
-              gets this button too. */}
-          {dice ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              className="min-h-11 tabular-nums"
-              onClick={() => void rollOnScreen({ notation: dice, label: `${entry.name} damage`, detail: dice })}
-            >
-              {dice}
-            </Button>
-          ) : null}
-          {onChange && entry.level > 0 && !entry.alwaysPrepared && !entry.grantedBy ? (
-            <Button
-              type="button"
-              size="sm"
-              variant={entry.prepared ? 'default' : 'outline'}
-              className="min-h-11"
-              aria-pressed={entry.prepared}
-              onClick={() => togglePrepared(entry.id)}
-            >
-              {entry.prepared ? 'Prepared' : 'Prepare'}
-            </Button>
-          ) : null}
-          {onChange && !entry.grantedBy ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-11 w-11"
-              aria-label={`Remove ${entry.name}`}
-              onClick={() => removeSpell(entry.id)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          ) : null}
-        </>
+      name: spell.name,
+      meta: [spell.school, origin].filter(Boolean).join(' · '),
+      time: spell.castingTime || undefined,
+      range: spell.range || undefined,
+      hit: hitCell(
+        spell.name,
+        makesAttack ? castingStat?.attackBonus : undefined,
+        save?.ability && castingStat
+          ? `DC ${castingStat.saveDc} ${ABILITY_ABBREVIATIONS[save.ability]}`
+          : undefined
+      ),
+      damage: damageCell(spell.name, dice, damageLabel),
+      notes: spellNotes(spell),
+      controls: controlsFor(entry),
+      detail: (
+        <div>
+          <SpellDetail spell={spell} />
+          <Button asChild variant="outline" size="sm" className="mt-3 min-h-11">
+            <Link to={spellReferencePath(spell.id)}>
+              Open spell page
+              <ExternalLink className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
       )
     };
-  });
+  };
+
+  const levels = [...new Set(spells.map((entry) => entry.level))].sort((left, right) => left - right);
 
   return (
     <div className="space-y-4">
@@ -350,10 +262,55 @@ export function SheetSpellsPanel({
             ) : null}
           </div>
         </CardHeader>
-        <CardContent>
-          <SpellList entries={entries} emptyMessage="No spells recorded." />
+        <CardContent className="space-y-3">
+          {levels.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No spells recorded.</p>
+          ) : (
+            levels.map((level) => (
+              <div key={level} className="space-y-1.5">
+                <h4 className="text-sm font-medium text-muted-foreground">
+                  {level === 0 ? 'Cantrips' : formatSpellLevel(level)}
+                </h4>
+                <SheetActionTable
+                  rows={spells.filter((entry) => entry.level === level).map((entry) => toRow(entry))}
+                  emptyMessage="No spells recorded."
+                />
+              </div>
+            ))
+          )}
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+/** A to-hit is a button; a save is the DC this character imposes, which nothing rolls for them. */
+function hitCell(spellName: string, attackBonus: number | undefined, saveLabel: string | undefined) {
+  if (attackBonus !== undefined) {
+    return (
+      <button
+        type="button"
+        className={rollButtonClass}
+        onClick={() => void rollD20({ modifier: attackBonus, label: `${spellName} attack` })}
+      >
+        {formatModifier(attackBonus)}
+      </button>
+    );
+  }
+  return saveLabel ? <span className="tabular-nums">{saveLabel}</span> : undefined;
+}
+
+/** Rolling changes nothing about the character, so a shared sheet keeps this button. */
+function damageCell(spellName: string, dice: string | undefined, label: string) {
+  if (!label) return undefined;
+  if (!dice) return <span>{label}</span>;
+  return (
+    <button
+      type="button"
+      className={rollButtonClass}
+      onClick={() => void rollOnScreen({ notation: dice, label: `${spellName} damage`, detail: label })}
+    >
+      {label}
+    </button>
   );
 }
