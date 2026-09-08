@@ -52,6 +52,8 @@ export interface CombatAction {
   name: string;
   /** 'action' | 'bonus-action' | 'reaction', as the book labels it. */
   timing: string;
+  /** The book's own one-line summary from its Actions table; 2014 prints none. */
+  summary?: string;
   description: string;
   source: string;
   sourceId?: string;

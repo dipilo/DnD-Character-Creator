@@ -4,21 +4,25 @@
 // D&D one: a campaign-mate opening a seated character has to see the real sheet, not a summary,
 // and that means the owner's page and the party view render through the same component.
 //
+// It is the same frame the D&D sheet is: a persistent header and rail — the tokens, the stat dice
+// and the Knacks, everything read while doing something else — with one tabbed subsection beside
+// it holding the genuine alternates.
+//
 // It reads no store and performs no writes. `onChange` is the whole write surface, and its absence
 // is what makes the party view read-only.
 import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { Minus, Plus } from 'lucide-react';
 import { getGameSystem } from '@/data/gameSystems';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { BackpackButton } from '@/components/kob/BackpackButton';
 import { BackpackCanvasDialog } from '@/components/kob/BackpackCanvasDialog';
 import { ConsentSheetPanel } from '@/components/kob/ConsentSheetPanel';
-import { StatSpread } from '@/components/kob/StatSpread';
+import { KobSheetRail } from '@/components/kob/KobSheetRail';
+import { useFitsViewport, useSheetLayout } from '@/components/character/useSheetLayout';
 import {
   bondedActionName,
   freeStrengthForAge,
@@ -27,13 +31,13 @@ import {
   getBikeColor,
   getBikeUpgrade,
   getBondedAction,
-  getPlayRuleSection,
   getStrength,
   getTrope,
   kob,
   needsSkilledAt,
   tropeQuestions,
 } from '@/data/gameSystems/kidsOnBikes/rules';
+import { hasAnyConsentContent } from '@/lib/kob/consent';
 import { readCanvas } from '@/lib/kob/backpackCanvas';
 import type { KobCharacter } from '@/types/kob';
 
@@ -82,7 +86,7 @@ function BackpackCard({
  */
 function BondedActionsCard({ character }: Readonly<{ character: KobCharacter }>) {
   return (
-    <Card className="lg:col-span-2">
+    <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-base">Bonded Actions</CardTitle>
       </CardHeader>
@@ -117,6 +121,48 @@ function BondedActionsCard({ character }: Readonly<{ character: KobCharacter }>)
             </div>
           );
         })}
+      </CardContent>
+    </Card>
+  );
+}
+
+function RelationshipsCard({ character }: Readonly<{ character: KobCharacter }>) {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base">Relationships</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {character.relationships.map((relationship, index) => (
+          <div key={relationship.id} className="space-y-1">
+            {index > 0 ? <Separator className="mb-3" /> : null}
+            <p className="font-medium">
+              {/* A relationship pointed at a party-mate opens their sheet; the route is the
+                  registry's, because this system does not spell another's out. */}
+              {relationship.withCharacterId ? (
+                <Link
+                  className="underline underline-offset-4 hover:text-brand"
+                  to={getGameSystem(character.systemId).sheetPath(relationship.withCharacterId)}
+                >
+                  {relationship.who || 'Someone'}
+                </Link>
+              ) : (
+                relationship.who || 'Someone'
+              )}
+              {relationship.connection ? (
+                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                  {relationship.connection}
+                </span>
+              ) : null}
+            </p>
+            {relationship.question ? (
+              <p className="text-sm italic text-muted-foreground">{relationship.question}</p>
+            ) : null}
+            {relationship.answer ? (
+              <p className="whitespace-pre-wrap text-sm">{relationship.answer}</p>
+            ) : null}
+          </div>
+        ))}
       </CardContent>
     </Card>
   );
@@ -209,30 +255,29 @@ interface KobSheetViewProps {
 }
 
 export function KobSheetView({ character, actions, leading, note, onChange }: Readonly<KobSheetViewProps>) {
+  const { railIsSticky } = useSheetLayout();
+  const { ref: railRef, fits: railFits } = useFitsViewport(80);
   const trope = getTrope(character.tropeId);
   const ageRules = getAgeRules(character.age);
   const flaw = character.customFlaw || kob.flaws.find((entry) => entry.id === character.flawId)?.name || '';
   const questions = tropeQuestions(character.tropeId);
   const knacks = character.knacks.filter((knack) => knack.trim());
-  // The Lucky Break is the reason a stat is a button; the rule is quoted from the vault, never
-  // paraphrased here.
-  const statCheckRule = getPlayRuleSection('stat-checks')?.paragraphs[1] ?? null;
-  // Both of these are the book's own sentences, imported from the vault rather than paraphrased.
-  const adversityRule = [
-    getPlayRuleSection('adversity-tokens')?.paragraphs[0],
-    getPlayRuleSection('failing-a-roll')?.paragraphs[0],
-  ].filter(Boolean).join(' ');
-  const setTokens = (value: number) => onChange?.({ adversityTokens: Math.max(0, value) });
+  const answeredQuestions = questions.length > 0 && character.tropeAnswers.some((answer) => answer?.trim());
+  const hasConnections =
+    character.relationships.length > 0 || character.bondedActions.length > 0 || answeredQuestions;
+  const showConsent = Boolean(onChange) || hasAnyConsentContent(character.consent);
+  const showNotes = Boolean(onChange) || Boolean(character.notes.trim());
 
   return (
-    <div className="space-y-5">
+    // `sheet-dense` tightens every Card inside the sheet (index.css), the same as the D&D one.
+    <div className="sheet-dense space-y-4 sm:space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           {leading}
           <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl short:text-lg">
             {fullName(character) || 'Unnamed'}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground short:hidden">
             {[ageRules?.name, trope?.name, character.pronouns].filter(Boolean).join(' · ')}
           </p>
           {note}
@@ -240,174 +285,98 @@ export function KobSheetView({ character, actions, leading, note, onChange }: Re
         {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
       </div>
 
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <CardTitle className="text-base">Adversity Tokens</CardTitle>
-            <div className="flex items-center gap-2">
-              {onChange ? (
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="min-h-11"
-                  aria-label="Spend an Adversity Token"
-                  onClick={() => setTokens(character.adversityTokens - 1)}
-                  disabled={character.adversityTokens === 0}
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] lg:gap-6">
+        {/* Pinned only while the whole rail fits under the header. A taller one scrolls with the
+            page, because giving it a scrollbar of its own makes reaching its bottom two gestures
+            on two surfaces. */}
+        <div ref={railRef} className={railIsSticky && railFits ? 'lg:sticky lg:top-16' : undefined}>
+          <KobSheetRail character={character} knacks={knacks} onChange={onChange} />
+        </div>
+
+        <Tabs defaultValue="character" className="min-w-0">
+          <TabsList className="w-full justify-start overscroll-x-contain [&>*]:flex-none coarse:h-auto coarse:[&>*]:min-h-11">
+            <TabsTrigger value="character">Character</TabsTrigger>
+            {hasConnections ? <TabsTrigger value="connections">Connections</TabsTrigger> : null}
+            {showNotes ? <TabsTrigger value="notes">Notes</TabsTrigger> : null}
+            {showConsent ? <TabsTrigger value="consent">Consent</TabsTrigger> : null}
+          </TabsList>
+
+          <TabsContent value="character" className="grid gap-4 xl:grid-cols-2 xl:items-start">
+            <StrengthsCard character={character} />
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Flaw, Fear &amp; Motivation</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Field label="Flaw" value={flaw} />
+                <Field label="Fear" value={character.fear} />
+                <Field label="Motivation" value={character.motivation} />
+                <Field label="Obligations" value={character.obligations} />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Backpack &amp; Description</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <BackpackCard character={character} onChange={onChange} />
+                <Field label="Description" value={character.description} />
+              </CardContent>
+            </Card>
+
+            <BikeCard character={character} />
+          </TabsContent>
+
+          {hasConnections ? (
+            <TabsContent value="connections" className="space-y-4">
+              {character.relationships.length > 0 ? <RelationshipsCard character={character} /> : null}
+              {character.bondedActions.length > 0 ? <BondedActionsCard character={character} /> : null}
+              {answeredQuestions ? (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">{trope?.name} questions</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {questions.map((question, index) => (
+                      <Field key={question} label={question} value={character.tropeAnswers[index] ?? ''} />
+                    ))}
+                  </CardContent>
+                </Card>
               ) : null}
-              <span className="w-10 text-center text-2xl font-bold tabular-nums text-brand">
-                {character.adversityTokens}
-              </span>
-              {onChange ? (
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="min-h-11"
-                  aria-label="Gain an Adversity Token"
-                  onClick={() => setTokens(character.adversityTokens + 1)}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              ) : null}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">{adversityRule}</p>
-        </CardContent>
-      </Card>
+            </TabsContent>
+          ) : null}
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Stats</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <StatSpread statDice={character.statDice} age={character.age} rollable />
-          {statCheckRule ? <p className="text-xs text-muted-foreground">{statCheckRule}</p> : null}
-        </CardContent>
-      </Card>
+          {showNotes ? (
+            <TabsContent value="notes">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">Notes</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {onChange ? (
+                    <Textarea
+                      value={character.notes}
+                      onChange={(event) => onChange({ notes: event.target.value })}
+                      placeholder="Session notes, clues, who owes whom a favour…"
+                      className="min-h-32"
+                    />
+                  ) : (
+                    <p className="whitespace-pre-wrap text-sm">{character.notes}</p>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <StrengthsCard character={character} />
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Flaw, Fear & Motivation</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Field label="Flaw" value={flaw} />
-            <Field label="Fear" value={character.fear} />
-            <Field label="Motivation" value={character.motivation} />
-            <Field label="Obligations" value={character.obligations} />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Knacks & Backpack</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {knacks.length > 0 ? (
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Knacks
-                </p>
-                <ul className="mt-1 list-inside list-disc text-sm">
-                  {knacks.map((knack) => (
-                    <li key={knack}>{knack}</li>
-                  ))}
-                </ul>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Once per session each: take a 10 instead of rolling.
-                </p>
-              </div>
-            ) : null}
-            <BackpackCard character={character} onChange={onChange} />
-            <Field label="Description" value={character.description} />
-          </CardContent>
-        </Card>
-
-        <BikeCard character={character} />
-
-        {character.relationships.length > 0 ? (
-          <Card className="lg:col-span-2">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Relationships</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {character.relationships.map((relationship, index) => (
-                <div key={relationship.id} className="space-y-1">
-                  {index > 0 ? <Separator className="mb-3" /> : null}
-                  <p className="font-medium">
-                    {/* A relationship pointed at a party-mate opens their sheet; the route is the
-                        registry's, because this system does not spell another's out. */}
-                    {relationship.withCharacterId ? (
-                      <Link
-                        className="underline underline-offset-4 hover:text-brand"
-                        to={getGameSystem(character.systemId).sheetPath(relationship.withCharacterId)}
-                      >
-                        {relationship.who || 'Someone'}
-                      </Link>
-                    ) : (
-                      relationship.who || 'Someone'
-                    )}
-                    {relationship.connection ? (
-                      <span className="ml-2 text-sm font-normal text-muted-foreground">
-                        {relationship.connection}
-                      </span>
-                    ) : null}
-                  </p>
-                  {relationship.question ? (
-                    <p className="text-sm italic text-muted-foreground">{relationship.question}</p>
-                  ) : null}
-                  {relationship.answer ? (
-                    <p className="whitespace-pre-wrap text-sm">{relationship.answer}</p>
-                  ) : null}
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        ) : null}
-
-        {character.bondedActions.length > 0 ? <BondedActionsCard character={character} /> : null}
-
-        {questions.length > 0 && character.tropeAnswers.some((answer) => answer?.trim()) ? (
-          <Card className="lg:col-span-2">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">{trope?.name} questions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {questions.map((question, index) => (
-                <Field key={question} label={question} value={character.tropeAnswers[index] ?? ''} />
-              ))}
-            </CardContent>
-          </Card>
-        ) : null}
+          {showConsent ? (
+            <TabsContent value="consent">
+              <ConsentSheetPanel character={character} onChange={onChange} />
+            </TabsContent>
+          ) : null}
+        </Tabs>
       </div>
-
-      <ConsentSheetPanel character={character} onChange={onChange} />
-
-      {onChange || character.notes.trim() ? (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {onChange ? (
-              <Textarea
-                value={character.notes}
-                onChange={(event) => onChange({ notes: event.target.value })}
-                placeholder="Session notes, clues, who owes whom a favour…"
-                className="min-h-32"
-              />
-            ) : (
-              <p className="whitespace-pre-wrap text-sm">{character.notes}</p>
-            )}
-          </CardContent>
-        </Card>
-      ) : null}
     </div>
   );
 }

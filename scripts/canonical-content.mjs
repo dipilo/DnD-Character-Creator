@@ -306,6 +306,7 @@ const sanitizeContent = (content, source) => {
       id: String(entry.id ?? ''),
       name: String(entry.name),
       timing: String(entry.timing),
+      ...(entry.summary ? { summary: String(entry.summary) } : {}),
       description: String(entry.description ?? ''),
       source: String(entry.source ?? source.label ?? ''),
       sourceId: source.sourceId
@@ -2573,29 +2574,78 @@ const extractCompendiumSpells = (raw, label, sourceId, classNamesBySpellKey = un
 // them under a chapter section of its own, "Actions in Combat", whose every child is an action.
 const glossaryActionHeadingPattern = /^(.+?)\s*\[(Action|Bonus Action|Reaction)\]$/i;
 
+// The glossary tags only Actions, so an entry that is a Reaction carries no tag at all. Its own
+// text still says when it is taken, and an entry that tells you to do something opens by
+// addressing you, which is what separates Opportunity Attacks from the entry defining "Reaction".
+const untaggedActionTimings = [
+  ['reaction', /\btake a Reaction\b/i],
+  ['bonus-action', /\bas a Bonus Action\b/i]
+];
+const instructionBodyPattern = /^(?:You|When you|If you)\b/;
+
+// An action's entry can name another entry listing the options a use of it offers, under the
+// book's own bold labels. The option that makes an attack roll is already the sheet's attack row
+// (`deriveUnarmedStrike`); Grapple and Shove appear nowhere else.
+const optionAnnouncementPattern = /choose one of the following options/i;
+const optionParagraphPattern = /<p[^>]*>\s*<strong>\s*<em>([^<]+?)<\/em>\s*<\/strong>([\s\S]*?)<\/p>/gi;
+const attackRollOptionPattern = /\battack roll\b/i;
+
 const combatActionTimings = {
   action: 'action',
   'bonus action': 'bonus-action',
   reaction: 'reaction'
 };
 
-const toCombatAction = (block, timing, label, sourceId, name) => {
-  const description = stripTrailingChrome(extractStructuredTexts(sliceSectionBody(block.content)).join(' '));
+const toCombatAction = (block, timing, label, sourceId, name, summaries) => {
+  const description = stripTrailingChrome(extractStructuredTexts(sliceSectionBody(block.content)).join('\n\n'));
   if (!description) {
     return null;
   }
 
+  const summary = summaries?.get(normalizeLabel(name));
   return {
     id: toSourceSpecificId(sourceId, name),
     name: repairMojibake(name),
     timing,
+    ...(summary ? { summary: repairMojibake(summary) } : {}),
     description: repairMojibake(description),
     source: label,
     sourceId
   };
 };
 
-const extractGlossaryCombatActions = (raw, label, sourceId) => {
+// The book prints its own one-line summary of every action in an "Action | Summary" table; the
+// glossary entry beside it carries only the rule, so the summary is read from the table.
+const extractActionSummaries = (raw) => {
+  const summaries = new Map();
+
+  for (const table of collectTableBlocks(raw)) {
+    const headerRow = /<tr[^>]*>([\s\S]*?)<\/tr>/i.exec(table)?.[1] ?? '';
+    const headerCells = [...headerRow.matchAll(/<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/gi)]
+      .map((cell) => normalizeLabel(stripTags(cell[1])));
+    if (headerCells.length !== 2 || headerCells[0] !== 'action' || headerCells[1] !== 'summary') {
+      continue;
+    }
+
+    for (const rowMatch of table.matchAll(tableRowRegex)) {
+      const cells = [...rowMatch[1].matchAll(tableCellRegex)].map((cell) => stripTags(cell[1]));
+      if (cells.length === 2 && cells[0] && cells[1]) {
+        summaries.set(normalizeLabel(cells[0]), cells[1]);
+      }
+    }
+  }
+
+  return summaries;
+};
+
+const findRulesGlossary = (raw) => {
+  return [1, 2]
+    .flatMap((level) => collectHeadingBlocks(raw, level))
+    .filter((block) => normalizeLabel(block.title) === 'rulesglossary')
+    .sort((a, b) => b.content.length - a.content.length)[0] ?? null;
+};
+
+const extractGlossaryCombatActions = (raw, label, sourceId, summaries) => {
   const actions = [];
 
   for (const block of collectHeadingBlocks(raw, 3)) {
@@ -2605,7 +2655,7 @@ const extractGlossaryCombatActions = (raw, label, sourceId) => {
     }
 
     const timing = combatActionTimings[match[2].toLowerCase()];
-    const action = timing ? toCombatAction(block, timing, label, sourceId, match[1].trim()) : null;
+    const action = timing ? toCombatAction(block, timing, label, sourceId, match[1].trim(), summaries) : null;
     if (action) {
       actions.push(action);
     }
@@ -2614,21 +2664,91 @@ const extractGlossaryCombatActions = (raw, label, sourceId) => {
   return actions;
 };
 
-const extractActionsInCombatSection = (raw, label, sourceId) => {
+const extractUntaggedGlossaryActions = (glossary, label, sourceId, summaries) => {
+  const actions = [];
+
+  for (const block of collectHeadingBlocks(glossary.content, 3)) {
+    if (glossaryActionHeadingPattern.test(block.title.trim())) {
+      continue;
+    }
+
+    const body = extractStructuredTexts(sliceSectionBody(block.content)).join(' ');
+    if (!instructionBodyPattern.test(body)) {
+      continue;
+    }
+
+    const timing = untaggedActionTimings.find(([, pattern]) => pattern.test(body))?.[0];
+    const action = timing ? toCombatAction(block, timing, label, sourceId, block.title.trim(), summaries) : null;
+    if (action) {
+      actions.push(action);
+    }
+  }
+
+  return actions;
+};
+
+const extractLinkedActionOptions = (glossary, label, sourceId) => {
+  const blocks = collectHeadingBlocks(glossary.content, 3);
+  const blocksById = new Map(blocks.map((block) => [block.id, block]));
+  const actions = [];
+
+  for (const block of blocks) {
+    if (!glossaryActionHeadingPattern.test(block.title.trim())) {
+      continue;
+    }
+
+    for (const link of sliceSectionBody(block.content).matchAll(/href="#([^"]+)"/g)) {
+      const target = blocksById.get(link[1]);
+      const targetBody = target ? sliceSectionBody(target.content) : '';
+      if (!targetBody || !optionAnnouncementPattern.test(stripTags(targetBody))) {
+        continue;
+      }
+
+      for (const option of targetBody.matchAll(optionParagraphPattern)) {
+        const name = stripTags(option[1]).replace(/\.$/, '').trim();
+        const description = stripTrailingChrome(stripTags(option[2]));
+        if (!name || !description || attackRollOptionPattern.test(description)) {
+          continue;
+        }
+
+        actions.push({
+          id: toSourceSpecificId(sourceId, name),
+          name: repairMojibake(name),
+          timing: 'action',
+          description: repairMojibake(description),
+          source: label,
+          sourceId
+        });
+      }
+    }
+  }
+
+  return actions;
+};
+
+const extractActionsInCombatSection = (raw, label, sourceId, summaries) => {
   const section = collectHeadingBlocks(raw, 2).find((block) => normalizeLabel(block.title) === 'actionsincombat');
   if (!section) {
     return [];
   }
 
   return collectHeadingBlocks(section.content, 3)
-    .map((block) => toCombatAction(block, 'action', label, sourceId, block.title.trim()))
+    .map((block) => toCombatAction(block, 'action', label, sourceId, block.title.trim(), summaries))
     .filter(Boolean);
 };
 
 // A name the book states twice — 2014 reprints "Attack" in more than one chapter — is one action.
 const extractCombatActions = (raw, label, sourceId) => {
+  const summaries = extractActionSummaries(raw);
+  const glossary = findRulesGlossary(raw);
   const byName = new Map();
-  for (const action of [...extractGlossaryCombatActions(raw, label, sourceId), ...extractActionsInCombatSection(raw, label, sourceId)]) {
+  const extracted = [
+    ...extractGlossaryCombatActions(raw, label, sourceId, summaries),
+    ...extractActionsInCombatSection(raw, label, sourceId, summaries),
+    ...(glossary ? extractUntaggedGlossaryActions(glossary, label, sourceId, summaries) : []),
+    ...(glossary ? extractLinkedActionOptions(glossary, label, sourceId) : [])
+  ];
+  for (const action of extracted) {
     if (!byName.has(action.id)) {
       byName.set(action.id, action);
     }

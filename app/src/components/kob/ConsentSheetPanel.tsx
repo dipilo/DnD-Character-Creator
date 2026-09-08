@@ -17,6 +17,7 @@ import {
 } from '@/data/gameSystems/kidsOnBikes/consentSheet';
 import type { KobAge } from '@/data/gameSystems/kidsOnBikes/types';
 import { cn } from '@/lib/utils';
+import { hasAnyConsentContent } from '@/lib/kob/consent';
 import type { KobCharacter, KobConsentSheet } from '@/types/kob';
 
 interface ConsentSheetPanelProps {
@@ -237,14 +238,3 @@ function isIntimacyBlockedForAge(age: KobAge | null): boolean {
   return age === 'child';
 }
 
-function hasAnyConsentContent(consent: KobConsentSheet): boolean {
-  return (
-    consent.crush ||
-    consent.date ||
-    consent.partner ||
-    consent.onScreenIntimacy ||
-    consent.offScreenIntimacy ||
-    Boolean(consent.relationshipNotes.trim()) ||
-    Boolean(consent.characterNotes.trim())
-  );
-}

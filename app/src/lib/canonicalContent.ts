@@ -340,6 +340,7 @@ const combatActionSchema: z.ZodType<CombatAction> = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   timing: z.string().min(1),
+  summary: z.string().min(1).optional(),
   description: z.string(),
   source: z.string(),
   sourceId: z.string().min(1).optional()

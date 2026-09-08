@@ -60,6 +60,9 @@ export function SheetCombatActions({ actions }: Readonly<{ actions: readonly She
             <SheetDescription>{subtitle}</SheetDescription>
           </SheetHeader>
           <div className="space-y-2 px-4 pb-6 text-sm leading-relaxed">
+            {active?.summary ? (
+              <p className="border-b pb-2 italic text-muted-foreground">{active.summary}</p>
+            ) : null}
             {paragraphsOf(active?.description ?? '').map((paragraph) => (
               <p key={paragraph.slice(0, 60)}>
                 <ContentReferenceText text={paragraph} />

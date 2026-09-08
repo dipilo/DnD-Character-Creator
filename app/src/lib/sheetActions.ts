@@ -95,6 +95,8 @@ export interface SheetActionEntry {
   /** The Damage column, already scaled to this character's level. One line per choice. */
   damages: SheetActionDamage[];
   notes?: string;
+  /** The book's own one-line summary of a combat action, printed above its rule. */
+  summary?: string;
   description?: string;
   /** The pool this row spends, when its source states one. */
   resourceKey?: string;
@@ -300,6 +302,7 @@ function combatActionRows(actions: readonly CombatAction[]): SheetActionEntry[] 
       : 'other',
     isAttack: false,
     damages: [],
+    summary: action.summary,
     description: action.description
   }));
 }
