@@ -51,7 +51,9 @@ export function SpellDetail({ spell }: Readonly<{ spell: Spell }>) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-lg border p-3 lg:grid-cols-4">
+      {/* Tracks follow the container, not the viewport: `lg:grid-cols-4` fired on a desktop while
+          this sat in a 320px builder card, so four 80px columns ran their labels together. */}
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-x-4 gap-y-3 rounded-lg border p-3">
         <Stat label="Level" value={formatSpellLevel(spell.level)} />
         <Stat label="Casting Time" value={castingTimeLine(spell)} />
         <Stat label="Range/Area" value={spell.range || '—'} />

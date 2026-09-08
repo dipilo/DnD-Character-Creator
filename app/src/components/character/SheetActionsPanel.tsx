@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { SheetActionTable, type SheetActionTableRow } from '@/components/character/SheetActionTable';
+import { SheetCombatActions } from '@/components/character/SheetCombatActions';
 import { SheetResourceControl } from '@/components/character/SheetResourceControl';
 import {
   SHEET_ACTION_FILTERS,
@@ -156,8 +157,9 @@ export function SheetActionsPanel({
           <p className="text-sm text-muted-foreground">Nothing here under this filter.</p>
         ) : (
           sections.map((section) => {
-            // The actions everybody has sit under their own heading, the way the books print them,
-            // rather than mixed in with this character's weapons and features.
+            // The actions everybody has are a list of names under their own heading, the way the
+            // books print them: nothing about them is rolled, so a table row of empty columns was
+            // the wrong shape for them.
             const own = section.entries.filter((entry) => entry.kind !== 'combat-action');
             const standard = section.entries.filter((entry) => entry.kind === 'combat-action');
             return (
@@ -174,16 +176,9 @@ export function SheetActionsPanel({
                   />
                 ) : null}
                 {standard.length > 0 ? (
-                  <>
-                    <h5 className="pt-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                      Actions in Combat
-                    </h5>
-                    <SheetActionTable
-                      rows={standard.map((entry) => toRow(entry))}
-                      emptyMessage="Nothing here under this filter."
-                      showTime={false}
-                    />
-                  </>
+                  <div className="pt-1">
+                    <SheetCombatActions actions={standard} />
+                  </div>
                 ) : null}
               </div>
             );
