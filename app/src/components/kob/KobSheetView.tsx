@@ -301,7 +301,12 @@ export function KobSheetView({ character, actions, leading, note, onChange }: Re
             {showConsent ? <TabsTrigger value="consent">Consent</TabsTrigger> : null}
           </TabsList>
 
-          <TabsContent value="character" className="grid gap-4 xl:grid-cols-2 xl:items-start">
+          {/* Columns, not a grid: a grid row is as tall as its tallest card and a short Strengths
+              card left a hole the height of the Flaw card beside it. */}
+          <TabsContent
+            value="character"
+            className="[&>*]:mb-4 [&>*]:break-inside-avoid xl:columns-2 xl:gap-4"
+          >
             <StrengthsCard character={character} />
 
             <Card>

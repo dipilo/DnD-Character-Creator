@@ -2,11 +2,13 @@
 // `KobSheetView`, shared with the campaign party view — this page is the lookup, the owner's
 // actions, and the one place the sheet's edits are written.
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Pencil } from 'lucide-react';
+import { ArrowLeft, FileDown, Pencil } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { CharacterSharingDialog } from '@/components/character/CharacterSharingDialog';
 import { fullName } from '@/data/gameSystems/kidsOnBikes/rules';
 import { KobSheetView } from '@/components/kob/KobSheetView';
+import { exportKobCharacterToPdf } from '@/lib/kob/characterSheetPdf';
 import { useAuthStore } from '@/store/authStore';
 import { useKobCharacterStore } from '@/store/kobCharacterStore';
 import type { KobCharacter } from '@/types/kob';
@@ -32,6 +34,16 @@ export function KobSheetPage() {
 
   const handleChange = (patch: Partial<KobCharacter>) => updateCharacter(character.id, patch);
 
+  const handleExportPdf = async () => {
+    try {
+      await exportKobCharacterToPdf(character);
+      toast.success('PDF exported');
+    } catch (error) {
+      console.error(error);
+      toast.error('PDF export failed');
+    }
+  };
+
   return (
     <KobSheetView
       character={character}
@@ -53,6 +65,10 @@ export function KobSheetPage() {
             </Link>
           </Button>
           {signedIn ? <CharacterSharingDialog characterId={character.id} characterName={fullName(character) || 'this character'} /> : null}
+          <Button size="sm" variant="outline" className="min-h-11" onClick={() => void handleExportPdf()}>
+            <FileDown className="h-4 w-4" />
+            Export PDF
+          </Button>
         </>
       )}
     />

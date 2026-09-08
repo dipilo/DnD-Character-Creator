@@ -19,6 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { exportCharacterToFillablePdf } from '@/lib/characterPdf';
+import { exportKobCharacterToPdf } from '@/lib/kob/characterSheetPdf';
 import { useRemoteCharacter } from '@/hooks/useRemoteCharacter';
 import { SaveConflictAlert } from '@/components/character/SaveConflictAlert';
 import { useCharacterStore } from '@/store/characterStore';
@@ -93,9 +94,9 @@ export function CampaignCharacterPage() {
   const handleEditInBuilder = () => openBuilderAt('/builder/review');
 
   const handleExportPDF = async () => {
-    if (isKobDocument(document)) return;
     try {
-      await exportCharacterToFillablePdf(document);
+      if (isKobDocument(document)) await exportKobCharacterToPdf(document);
+      else await exportCharacterToFillablePdf(document);
       toast.success('PDF exported');
     } catch (e) {
       console.error(e);
@@ -130,12 +131,10 @@ export function CampaignCharacterPage() {
                 Edit
               </Button>
             ) : null}
-            {isKobDocument(document) ? null : (
-              <Button variant="outline" onClick={() => void handleExportPDF()}>
-                <FileDown className="mr-2 h-4 w-4" />
-                Export PDF
-              </Button>
-            )}
+            <Button variant="outline" onClick={() => void handleExportPDF()}>
+              <FileDown className="mr-2 h-4 w-4" />
+              Export PDF
+            </Button>
           </>
         )}
       />

@@ -54,10 +54,12 @@ function TabsContent({
   className,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Content>) {
+  // A `display` utility on a panel beats the UA's `[hidden] { display: none }`, so an inactive
+  // panel kept its height and pushed the active one down the page.
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
-      className={cn("flex-1 outline-none", className)}
+      className={cn("flex-1 outline-none [&[hidden]]:hidden", className)}
       {...props}
     />
   )
