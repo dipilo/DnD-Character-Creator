@@ -4,6 +4,7 @@ import {
   formatModifier,
   type SheetVitals,
 } from '@/lib/sheetDerivations';
+import { senseLabel } from '@/lib/sheetCombat';
 import { rollD20 } from '@/lib/d20Rolls';
 import { SheetAbilityBlocks } from '@/components/character/SheetAbilityBlocks';
 import { cn } from '@/lib/utils';
@@ -83,6 +84,17 @@ export function SheetVitalsPanel({
         <Stat label="Passive Perc." value={String(vitals.passivePerception)} compact={inRail} />
         <Stat label="Passive Inv." value={String(vitals.passiveInvestigation)} compact={inRail} />
         <Stat label="Passive Ins." value={String(vitals.passiveInsight)} compact={inRail} />
+        {/* A special sense is a stat a player reads, not a trait they look up — the range is the
+            whole of it, and the feature that granted it is the hint. */}
+        {vitals.senses.map((sense) => (
+          <Stat
+            key={sense.sense}
+            label={senseLabel(sense)}
+            value={`${sense.range} ft`}
+            hint={inRail ? undefined : sense.source}
+            compact={inRail}
+          />
+        ))}
       </div>
 
       <SheetAbilityBlocks saves={vitals.saves} skills={vitals.skills} variant={variant} />

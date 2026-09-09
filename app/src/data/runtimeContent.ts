@@ -115,6 +115,15 @@ const choosePreferredText = (primary?: string, fallback?: string) => {
 };
 const choosePreferredArray = <T,>(primary?: T[], fallback?: T[]) => (primary && primary.length > 0 ? primary : (fallback ?? []));
 /**
+ * The same, for a progression table neither printing may state. An absent table has to stay absent:
+ * `spellsKnown: []` is truthy, so every prepared caster read its own limit off an empty column and
+ * the builder offered a Cleric 0 spells.
+ */
+const choosePreferredTable = <T,>(primary?: T[], fallback?: T[]): T[] | undefined => {
+  if (primary && primary.length > 0) return primary;
+  return fallback && fallback.length > 0 ? fallback : undefined;
+};
+/**
  * The same rule as `choosePreferredCount`, one level up: a `spellcasting` object that parsed no
  * slot table is not a reason to drop one that did. Taking the whole object from whichever candidate
  * won left the 2014 Bard, Sorcerer, Wizard and Ranger with no spell slots at all — the parsed pack
@@ -126,9 +135,9 @@ const choosePreferredSpellcasting = (primary?: SpellcastingProgression, fallback
   return {
     ...fallback,
     ...primary,
-    cantripsKnown: choosePreferredArray(primary.cantripsKnown, fallback.cantripsKnown),
-    spellsKnown: choosePreferredArray(primary.spellsKnown, fallback.spellsKnown),
-    spellSlots: choosePreferredArray(primary.spellSlots, fallback.spellSlots),
+    cantripsKnown: choosePreferredTable(primary.cantripsKnown, fallback.cantripsKnown),
+    spellsKnown: choosePreferredTable(primary.spellsKnown, fallback.spellsKnown),
+    spellSlots: choosePreferredTable(primary.spellSlots, fallback.spellSlots),
   } satisfies SpellcastingProgression;
 };
 const choosePreferredNumber = (primary?: number, fallback?: number) => primary ?? fallback;

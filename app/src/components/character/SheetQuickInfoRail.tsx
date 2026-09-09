@@ -135,7 +135,11 @@ export function SheetQuickInfoRail({
         })}
       </div>
 
-      <SheetHitPointsPanel character={character} onChange={onChange} />
+      <SheetHitPointsPanel
+        character={character}
+        constitutionSave={vitals.saves.find((save) => save.ability === 'constitution')?.modifier ?? 0}
+        onChange={onChange}
+      />
 
       {railIsColumn ? (
         <>

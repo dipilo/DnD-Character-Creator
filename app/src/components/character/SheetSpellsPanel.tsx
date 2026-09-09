@@ -22,7 +22,7 @@ import { SlotRow } from '@/components/character/SlotRow';
 import { SpellDetail } from '@/components/spells/SpellDetail';
 import { formatSpellLevel, spellReferencePath } from '@/components/spells/spellFormatting';
 import { getSlotsUsed, setPactSlotsUsed, setSpellSlotsUsed } from '@/lib/sheetPlayState';
-import { castableSlots, primaryCastingStat, rollSpellAttack, spendSlot, type CastableSlot } from '@/lib/spellCasting';
+import { castPatch, castableSlots, primaryCastingStat, rollSpellAttack, type CastableSlot } from '@/lib/spellCasting';
 import { deriveSpellAttackOrSave, deriveSpellDamageOrEffect, deriveSpellDice } from '@/lib/spellFacets';
 import { ABILITY_ABBREVIATIONS, formatModifier } from '@/lib/sheetDerivations';
 import { rollOnScreen } from '@/store/diceTrayStore';
@@ -52,6 +52,12 @@ interface SheetSpellsPanelProps {
   pactSlotsByLevel: number[];
   /** Total level, which is what a cantrip's own damage table keys off. */
   characterLevel: number;
+  /**
+   * How many levelled spells may be prepared at once, where any of this character's classes
+   * prepares them. Undefined for a character who prepares nothing — a Sorcerer knows their spells,
+   * so a limit there would be a rule they do not play under.
+   */
+  preparedLimit?: number;
   onChange?: (patch: Partial<Character>) => void;
 }
 
@@ -79,6 +85,7 @@ export function SheetSpellsPanel({
   slotsByLevel,
   pactSlotsByLevel,
   characterLevel,
+  preparedLimit,
   onChange
 }: Readonly<SheetSpellsPanelProps>) {
   const hasSlots = slotsByLevel.some((count) => count > 0) || pactSlotsByLevel.some((count) => count > 0);
@@ -101,6 +108,13 @@ export function SheetSpellsPanel({
     onChange?.({ spells: [...character.spells, { spellId, prepared: false }] });
   };
 
+  // What is prepared right now, against what the classes that prepare allow. A spell that is
+  // always prepared or came from a feat was never counted against the limit, so it is not here.
+  const preparedCount = spells.filter(
+    (entry) => entry.level > 0 && entry.prepared && !entry.alwaysPrepared && !entry.grantedBy
+  ).length;
+  const atPreparedLimit = preparedLimit !== undefined && preparedCount >= preparedLimit;
+
   const togglePrepared = (spellId: string) => {
     onChange?.({
       spells: character.spells.map((entry) =>
@@ -116,7 +130,7 @@ export function SheetSpellsPanel({
   const castingStat = primaryCastingStat(castingStats);
 
   const castSpell = (entry: SheetSpellEntry, slot?: CastableSlot) => {
-    if (slot) onChange?.(spendSlot(character, slot, slotsByLevel, pactSlotsByLevel));
+    onChange?.(castPatch(character, entry.spell, slot, slotsByLevel, pactSlotsByLevel, entry.level));
     if (entry.spell) rollSpellAttack(entry.spell, castingStat);
   };
 
@@ -136,6 +150,7 @@ export function SheetSpellsPanel({
           variant={entry.prepared ? 'default' : 'outline'}
           className="min-h-11"
           aria-pressed={entry.prepared}
+          disabled={!entry.prepared && atPreparedLimit}
           onClick={() => togglePrepared(entry.id)}
         >
           {entry.prepared ? 'Prepared' : 'Prepare'}
@@ -246,7 +261,14 @@ export function SheetSpellsPanel({
         <CardHeader>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <CardTitle>Spells</CardTitle>
+              <CardTitle>
+                Spells
+                {preparedLimit === undefined ? null : (
+                  <span className="ml-2 text-sm font-normal tabular-nums text-muted-foreground">
+                    {preparedCount}/{preparedLimit} prepared
+                  </span>
+                )}
+              </CardTitle>
               {onChange ? (
                 <CardDescription>Open a spell to read it, or cast it from a slot.</CardDescription>
               ) : null}

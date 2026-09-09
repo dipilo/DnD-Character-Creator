@@ -103,6 +103,9 @@ export interface SheetActionEntry {
   /** Set for a spell row, so the panel can wire Cast to the spell it came from. */
   spellId?: string;
   spellLevel?: number;
+  /** Whether casting it takes up concentration, which is the spell's own field. */
+  spellName?: string;
+  concentration?: boolean;
 }
 
 /* -------------------------------------------------------------------------- *
@@ -224,7 +227,9 @@ function spellRows(
       notes: spellNotes(spell),
       description: spell.description,
       spellId: entry.id,
-      spellLevel: entry.level
+      spellLevel: entry.level,
+      spellName: spell.name,
+      concentration: spell.concentration
     });
   }
 

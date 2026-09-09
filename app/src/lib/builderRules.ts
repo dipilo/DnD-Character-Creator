@@ -64,6 +64,8 @@ export interface SpellcastingClassSummary {
   cantripLimit: number;
   spellSelectionLimit?: number;
   usesPreparedSpells: boolean;
+  /** How many spells this class may have prepared at once, where it prepares them at all. */
+  preparedSpellLimit?: number;
   maxKnownSpellLevel: number;
   spellListClassName: string;
   slotsByLevel: number[];
@@ -77,6 +79,12 @@ export interface SpellcastingRulesSummary {
   selectedCantrips: number;
   remainingCantrips: number;
   leveledSpellLimit?: number;
+  /**
+   * How many levelled spells may be prepared at once, summed across the classes that prepare
+   * them. Undefined for a character with no preparing class — a Sorcerer knows their spells and
+   * prepares nothing, so a limit there would be a rule they do not play under.
+   */
+  preparedSpellLimit?: number;
   selectedLeveledSpells: number;
   remainingLeveledSpells?: number;
   maxSelectableSpellLevel: number;
@@ -1927,6 +1935,14 @@ export const getSpellcastingRulesSummary = ({
       const cantripLimit = getProgressionValue(spellcasting.cantripsKnown, entry.level);
       const knownSpellLimit = getProgressionValue(spellcasting.spellsKnown, entry.level);
       const preparedSpellLimit = getPreparedSpellLimit(spellcasting, entry.level, abilityScores);
+      // How many this class may hold prepared. The two printings state it differently — 2014 gives
+      // the level-plus-modifier formula, 2024 prints a Prepared Spells column the importer stores
+      // as `spellsKnown` — so a class that prepares takes whichever of the two its source states.
+      // A column that parsed as zero is unstated rather than a limit of none, exactly as
+      // `choosePreferredCount` reads a class's skill count.
+      const preparedLimit = spellcasting.spellPreparation
+        ? (knownSpellLimit > 0 ? knownSpellLimit : preparedSpellLimit)
+        : undefined;
       const classSlotsByLevel = contribution.kind === 'pact' ? [] : contribution.slotsByLevel;
       const pactSlotsByLevel = contribution.kind === 'pact' ? contribution.slotsByLevel : [];
 
@@ -1939,6 +1955,7 @@ export const getSpellcastingRulesSummary = ({
         cantripLimit,
         spellSelectionLimit: spellcasting.spellsKnown ? knownSpellLimit : preparedSpellLimit,
         usesPreparedSpells: Boolean(spellcasting.spellPreparation && !spellcasting.spellsKnown),
+        preparedSpellLimit: preparedLimit,
         maxKnownSpellLevel: getHighestUnlockedSpellLevel(contribution.slotsByLevel),
         spellListClassName: getSpellListClassName(entry.cls),
         slotsByLevel: classSlotsByLevel,
@@ -1997,6 +2014,10 @@ export const getSpellcastingRulesSummary = ({
   const leveledSelectionLimit = spellcastingClasses.length > 0 && spellcastingClasses.every((entry) => entry.spellSelectionLimit !== undefined)
     ? spellcastingClasses.reduce((total, entry) => total + (entry.spellSelectionLimit ?? 0), 0)
     : undefined;
+  const preparingClasses = spellcastingClasses.filter((entry) => entry.preparedSpellLimit !== undefined);
+  const preparedSpellLimit = preparingClasses.length > 0
+    ? preparingClasses.reduce((total, entry) => total + (entry.preparedSpellLimit ?? 0), 0)
+    : undefined;
   const maxSelectableSpellLevel = spellcastingClasses.reduce((highestLevel, entry) => Math.max(highestLevel, entry.maxKnownSpellLevel), 0);
   const maxSlotLevel = Math.max(getHighestUnlockedSpellLevel(slotsByLevel), getHighestUnlockedSpellLevel(pactSlotsByLevel));
 
@@ -2007,6 +2028,7 @@ export const getSpellcastingRulesSummary = ({
     selectedCantrips,
     remainingCantrips: Math.max(0, cantripLimit - selectedCantrips),
     leveledSpellLimit: leveledSelectionLimit,
+    preparedSpellLimit,
     selectedLeveledSpells,
     remainingLeveledSpells: leveledSelectionLimit === undefined ? undefined : Math.max(0, leveledSelectionLimit - selectedLeveledSpells),
     maxSelectableSpellLevel,

@@ -169,3 +169,65 @@ export function groupDefences(defences: readonly DerivedDefence[]) {
 }
 
 export { formatModifier };
+
+/* -------------------------------------------------------------------------- *
+ * Senses
+ * -------------------------------------------------------------------------- */
+
+const SENSE_NAMES = ['darkvision', 'blindsight', 'tremorsense', 'truesight'] as const;
+
+export type SenseName = (typeof SENSE_NAMES)[number];
+
+export interface DerivedSense {
+  sense: SenseName;
+  /** Feet, from the sentence that names the sense. */
+  range: number;
+  /** The feature that granted it. */
+  source: string;
+}
+
+const FEET_PATTERN = /(\d+)[\s-]*f(?:ee|oo)t\b/i;
+
+/** The first distance stated in the sentence, which is the range the sense reaches. */
+const feetIn = (text: string): number | null => {
+  const match = FEET_PATTERN.exec(text);
+  return match ? Number.parseInt(match[1], 10) : null;
+};
+
+/**
+ * The special senses a character's own features state.
+ *
+ * Both printings say it in their own way — 2024 writes "You have Darkvision with a range of 60
+ * feet", 2014 titles the trait Darkvision and then says "You can see in dim light within 60 feet"
+ * — so the sense is looked for in the feature's name as well as its sentences, and the range is
+ * the first distance the naming sentence states. A feature that names a sense without a distance
+ * grants nothing here rather than a guessed range.
+ */
+export function deriveSenses(features: readonly Feature[]): DerivedSense[] {
+  const best = new Map<SenseName, DerivedSense>();
+
+  for (const feature of features) {
+    const sentences = toSentences(feature.description);
+    for (const sense of SENSE_NAMES) {
+      const pattern = new RegExp(`\\b${sense}\\b`, 'i');
+      const namedByTitle = pattern.test(feature.name);
+      const stated = sentences.find((sentence) => pattern.test(sentence));
+      if (!namedByTitle && !stated) continue;
+
+      // A titled trait states its range in its body; a sentence states it in itself.
+      const range = feetIn(stated ?? '') ?? (namedByTitle ? feetIn(feature.description) : null);
+      if (range === null) continue;
+
+      const current = best.get(sense);
+      if (!current || range > current.range) {
+        best.set(sense, { sense, range, source: feature.name });
+      }
+    }
+  }
+
+  return SENSE_NAMES.map((sense) => best.get(sense)).filter((entry): entry is DerivedSense => Boolean(entry));
+}
+
+const titleCaseSense = (sense: SenseName) => sense.charAt(0).toUpperCase() + sense.slice(1);
+
+export const senseLabel = (entry: DerivedSense) => titleCaseSense(entry.sense);

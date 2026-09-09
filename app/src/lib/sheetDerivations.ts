@@ -1,4 +1,5 @@
 import { getCharacterProficiencyBonus, skillNames } from '@/lib/builderRules';
+import type { DerivedSense } from '@/lib/sheetCombat';
 import type { AbilityScores, Character } from '@/types/dnd';
 import type { DerivedCharacterProficiencies } from '@/lib/builderRules';
 
@@ -189,6 +190,8 @@ export interface SheetVitals {
   passivePerception: number;
   passiveInvestigation: number;
   passiveInsight: number;
+  /** Darkvision and its siblings, read from the character's own features. */
+  senses: DerivedSense[];
   skills: DerivedSkill[];
   saves: DerivedSave[];
   hitDice: DerivedHitDie[];
@@ -201,6 +204,7 @@ export function deriveSheetVitals({
   resolvedClasses,
   speed,
   totalLevel,
+  senses = [],
 }: {
   abilityScores: AbilityScores;
   proficiencies: DerivedCharacterProficiencies;
@@ -208,6 +212,11 @@ export function deriveSheetVitals({
   /** The species' walking speed; 30 is the fallback when no species is chosen yet. */
   speed: number;
   totalLevel: number;
+  /**
+   * Read from the features by `deriveSenses`, and passed in rather than derived here: this module
+   * is what `sheetCombat` reads its modifiers from, so importing it back would be a cycle.
+   */
+  senses?: DerivedSense[];
 }): SheetVitals {
   const proficiencyBonus = getCharacterProficiencyBonus(totalLevel);
   const skills = deriveSkills(abilityScores, proficiencies, proficiencyBonus);
@@ -218,6 +227,7 @@ export function deriveSheetVitals({
     passivePerception: passiveScore(skills, 'Perception'),
     passiveInvestigation: passiveScore(skills, 'Investigation'),
     passiveInsight: passiveScore(skills, 'Insight'),
+    senses,
     skills,
     saves: deriveSaves(abilityScores, proficiencies, proficiencyBonus),
     hitDice: deriveHitDice(resolvedClasses),

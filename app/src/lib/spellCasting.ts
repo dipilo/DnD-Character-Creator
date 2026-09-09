@@ -4,7 +4,7 @@
  * Lifted out of `SheetSpellsPanel` when the Actions table started casting too: two screens deciding
  * separately what "the lowest slot that can carry this spell" means is two answers to one question.
  */
-import { getSlotsUsed, setPactSlotsUsed, setSpellSlotsUsed } from '@/lib/sheetPlayState';
+import { getSlotsUsed, setPactSlotsUsed, setSpellSlotsUsed, startConcentration } from '@/lib/sheetPlayState';
 import { deriveSpellAttackOrSave } from '@/lib/spellFacets';
 import { rollD20 } from '@/lib/d20Rolls';
 import type { DerivedSpellcastingStats } from '@/lib/sheetDerivations';
@@ -81,4 +81,24 @@ export function rollSpellAttack(spell: Spell, castingStat: DerivedSpellcastingSt
     label: `${spell.name} attack`,
     detail: `${castingStat.className} · ${attack.label}`
   });
+}
+
+/**
+ * Everything a cast writes: the slot it spends, and the concentration it takes up.
+ *
+ * A character concentrates on one spell, so casting a second replaces the first — which is a rule
+ * about casting rather than about either spell, and belongs here with the rest of them. A cantrip
+ * spends no slot and can still hold concentration, which is why the slot is optional.
+ */
+export function castPatch(
+  character: Character,
+  spell: Pick<Spell, 'id' | 'name' | 'concentration'> | undefined,
+  slot: CastableSlot | undefined,
+  slotsByLevel: readonly number[],
+  pactSlotsByLevel: readonly number[],
+  spellLevel: number
+): Partial<Character> {
+  const spent = slot ? spendSlot(character, slot, slotsByLevel, pactSlotsByLevel) : {};
+  if (!spell?.concentration) return spent;
+  return { ...spent, ...startConcentration(spell.id, spell.name, slot?.level ?? spellLevel) };
 }

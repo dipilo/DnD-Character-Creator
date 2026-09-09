@@ -280,13 +280,16 @@ export interface Feat {
   sourceId?: string;
 }
 
+/** The five coins both printings mint, smallest first. */
+export type CoinUnit = 'cp' | 'sp' | 'ep' | 'gp' | 'pp';
+
 export interface Equipment {
   id: string;
   name: string;
   type: 'weapon' | 'armor' | 'shield' | 'tool' | 'gear' | 'consumable';
   source: string;
   sourceId?: string;
-  cost: { amount: number; unit: 'cp' | 'sp' | 'ep' | 'gp' | 'pp' };
+  cost: { amount: number; unit: CoinUnit };
   weight: number;
   description?: string;
   // Weapon properties
@@ -459,6 +462,13 @@ export interface Character {
    * from its feature's own text, so nothing here names a class feature.
    */
   activeEffects?: string[];
+  /**
+   * The spell this character is concentrating on. One at a time, which is the rule the field
+   * exists to keep: starting a second ends the first.
+   */
+  concentration?: { spellId: string; spellName: string; slotLevel: number };
+  /** The purse, by coin. Absent means none of that coin, so a new character carries nothing. */
+  currency?: Partial<Record<CoinUnit, number>>;
   personality?: {
     traits: string;
     ideals: string;

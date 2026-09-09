@@ -5,7 +5,7 @@
  * renders and never decides. Every function here takes the document and returns the patch to apply,
  * so the owner's page can persist it and the read-only party view can simply not pass a handler.
  */
-import type { Character, CharacterClass, Class, ClassResource } from '@/types/dnd';
+import type { Character, CharacterClass, Class, ClassResource, CoinUnit } from '@/types/dnd';
 
 export interface DeathSaves {
   successes: number;
@@ -43,6 +43,8 @@ export function applyDamage(character: Character, amount: number): Partial<Chara
   // player would only notice after rolling one.
   if (current === 0 && character.hp.current > 0) {
     patch.deathSaves = { ...EMPTY_DEATH_SAVES };
+    // Both printings end concentration at 0 hit points, with no save offered.
+    if (character.concentration) patch.concentration = undefined;
   }
 
   return patch;
@@ -154,6 +156,7 @@ export function applyLongRest(character: Character, resources: ResolvedClassReso
     classResourcesUsed: restoreOnRest(character, resources, 'long'),
     // Nothing you entered survives a night's sleep.
     activeEffects: [],
+    concentration: undefined,
     // Exhaustion drops by one on a long rest in both editions.
     exhaustion: Math.max(0, (character.exhaustion ?? 0) - 1)
   };
@@ -188,6 +191,62 @@ export function toggleCondition(character: Character, condition: string): Partia
 
 export function setExhaustion(level: number): Partial<Character> {
   return { exhaustion: clamp(Math.trunc(level), 0, MAX_EXHAUSTION) };
+}
+
+/* -------------------------------------------------------------------------- *
+ * Concentration
+ * -------------------------------------------------------------------------- */
+
+/**
+ * Start concentrating. A character concentrates on one spell, so this replaces whatever they were
+ * holding rather than adding to it — which is the whole reason the field is on the document and
+ * not worked out from the spell list.
+ */
+export function startConcentration(
+  spellId: string,
+  spellName: string,
+  slotLevel: number,
+): Partial<Character> {
+  return { concentration: { spellId, spellName, slotLevel } };
+}
+
+export function endConcentration(): Partial<Character> {
+  return { concentration: undefined };
+}
+
+/**
+ * The save damage imposes: DC 10, or half the damage taken when that is higher. Stated identically
+ * in both printings, so it is one number rather than a per-edition lookup.
+ */
+export function concentrationSaveDc(damage: number): number {
+  return Math.max(10, Math.floor(Math.max(0, damage) / 2));
+}
+
+/* -------------------------------------------------------------------------- *
+ * The purse
+ * -------------------------------------------------------------------------- */
+
+/** Smallest first, which is the order both printings print the coins in. */
+export const COIN_UNITS: readonly CoinUnit[] = ['cp', 'sp', 'ep', 'gp', 'pp'];
+
+export const COIN_LABELS: Record<CoinUnit, string> = {
+  cp: 'Copper',
+  sp: 'Silver',
+  ep: 'Electrum',
+  gp: 'Gold',
+  pp: 'Platinum',
+};
+
+export const getCoins = (character: Pick<Character, 'currency'>, unit: CoinUnit): number =>
+  Math.max(0, Math.trunc(character.currency?.[unit] ?? 0));
+
+/** A coin nobody carries is dropped rather than stored as a zero, so an untouched purse is absent. */
+export function setCoins(character: Character, unit: CoinUnit, amount: number): Partial<Character> {
+  const next = { ...(character.currency ?? {}) };
+  const value = Math.max(0, Math.trunc(amount));
+  if (value === 0) delete next[unit];
+  else next[unit] = value;
+  return { currency: Object.keys(next).length > 0 ? next : undefined };
 }
 
 /**

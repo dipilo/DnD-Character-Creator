@@ -34,6 +34,8 @@ const TRACKER_FIELDS = new Set([
   'spellSlotsUsed',
   'pactSlotsUsed',
   'classResourcesUsed',
+  // Concentration is dropped and taken up as fast as a slot is spent, and by the same click.
+  'concentration',
   // Kids on Bikes keeps one tracker, and it is spent in play exactly like the rest of these.
   'adversityTokens',
 ]);

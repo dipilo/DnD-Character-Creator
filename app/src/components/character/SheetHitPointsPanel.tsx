@@ -16,6 +16,8 @@ import {
   applyDamage,
   applyDeathSaveRoll,
   applyHealing,
+  concentrationSaveDc,
+  endConcentration,
   getDeathSaves,
   isDying,
   setDeathSave,
@@ -23,6 +25,7 @@ import {
   setTemporaryHitPoints,
   toggleCondition
 } from '@/lib/sheetPlayState';
+import { rollD20 } from '@/lib/d20Rolls';
 import { rollOnScreen } from '@/store/diceTrayStore';
 import { cn } from '@/lib/utils';
 import type { Character } from '@/types/dnd';
@@ -35,6 +38,8 @@ interface SheetHitPointsPanelProps {
    * first hit taken.
    */
   character: Character;
+  /** The Constitution save, which is the only roll concentration ever asks for. */
+  constitutionSave: number;
   onChange?: (patch: Partial<Character>) => void;
 }
 
@@ -73,9 +78,12 @@ function DeathSaveRow({
   );
 }
 
-export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPointsPanelProps>) {
+export function SheetHitPointsPanel({ character, constitutionSave, onChange }: Readonly<SheetHitPointsPanelProps>) {
   const [amount, setAmount] = useState('');
   const [conditionsOpen, setConditionsOpen] = useState(false);
+  // The last blow taken while concentrating, which is what sets the save's DC. Not on the
+  // document: it is a question waiting to be answered, not something about the character.
+  const [pendingSave, setPendingSave] = useState<number | null>(null);
   const hp = character.hp;
   const deathSaves = getDeathSaves(character);
 
@@ -95,6 +103,27 @@ export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPo
   const apply = (patch: Partial<Character>) => {
     onChange?.(patch);
     setAmount('');
+  };
+
+  const concentration = character.concentration;
+
+  /** Damage asks for the save; dropping to 0 already ended it, so there is nothing left to ask. */
+  const takeDamage = (damage: number) => {
+    const patch = applyDamage(character, damage);
+    apply(patch);
+    // The patch carries the key only when the blow dropped them to 0, which ends it outright.
+    const stillConcentrating = Boolean(concentration) && !Object.hasOwn(patch, 'concentration');
+    setPendingSave(stillConcentrating ? damage : null);
+  };
+
+  const rollConcentrationSave = async (dc: number) => {
+    const outcome = await rollD20({
+      modifier: constitutionSave,
+      label: `Concentration save (${concentration?.spellName ?? 'spell'})`,
+      detail: `DC ${dc}`
+    });
+    setPendingSave(null);
+    if (outcome.total < dc) onChange?.(endConcentration());
   };
 
   return (
@@ -131,7 +160,7 @@ export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPo
               variant="destructive"
               className="min-h-11 flex-1 px-1"
               disabled={usableAmount === 0}
-              onClick={() => apply(applyDamage(character, usableAmount))}
+              onClick={() => takeDamage(usableAmount)}
             >
               Damage
             </Button>
@@ -154,6 +183,38 @@ export function SheetHitPointsPanel({ character, onChange }: Readonly<SheetHitPo
             >
               Temp
             </Button>
+          </div>
+        ) : null}
+
+        {concentration ? (
+          <div className="space-y-2 rounded-lg border p-3">
+            <p className="text-sm">
+              Concentrating on <span className="font-medium">{concentration.spellName}</span>
+            </p>
+            {onChange ? (
+              <div className="flex flex-wrap items-center gap-1">
+                {pendingSave === null ? null : (
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="min-h-11 flex-1 px-1"
+                    onClick={() => void rollConcentrationSave(concentrationSaveDc(pendingSave))}
+                  >
+                    <Dices className="h-4 w-4" />
+                    Save DC {concentrationSaveDc(pendingSave)}
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="min-h-11 flex-1 px-1"
+                  onClick={() => onChange(endConcentration())}
+                >
+                  End
+                </Button>
+              </div>
+            ) : null}
           </div>
         ) : null}
 

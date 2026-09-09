@@ -386,6 +386,8 @@ export function ReviewPage() {
       pactSlotsUsed: character.pactSlotsUsed,
       classResourcesUsed: character.classResourcesUsed,
       activeEffects: character.activeEffects,
+      concentration: character.concentration,
+      currency: character.currency,
       personality: character.personality,
       appearance: character.appearance,
       faction: character.faction,

@@ -54,6 +54,8 @@ const character = {
   spellSlotsUsed: [1, 0, 2],
   pactSlotsUsed: [0, 1],
   classResourcesUsed: { 'warlock::rages': 2 },
+  concentration: { spellId: 'hex', spellName: 'Hex', slotLevel: 1 },
+  currency: { gp: 42, sp: 7 },
   personality: { traits: 'Quiet', ideals: 'Knowledge', bonds: 'My tome', flaws: 'Curiosity', appearance: 'Tall', backstory: 'Long' },
   appearance: { age: '124', height: "5'9\"", weight: '130 lb', eyes: 'grey', skin: 'pale', hair: 'black' },
   faction: { name: 'The Whispered', symbolImageDataUrl: 'data:image/png;base64,iVBORw0KGgo=' },
@@ -138,6 +140,8 @@ const builderChoiceFields = [
   'spellSlotsUsed',
   'pactSlotsUsed',
   'classResourcesUsed',
+  'concentration',
+  'currency',
 ];
 
 // One cookie jar per simulated device: the same account signed in twice, which is what "open it on

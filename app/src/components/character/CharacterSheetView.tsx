@@ -41,7 +41,8 @@ import {
   sortFeaturesByLevel
 } from '@/lib/builderRules';
 import { deriveAttacks, deriveSheetVitals } from '@/lib/sheetDerivations';
-import { deriveDefences, deriveUnarmedStrike } from '@/lib/sheetCombat';
+import { deriveDefences, deriveSenses, deriveUnarmedStrike } from '@/lib/sheetCombat';
+import { deriveEncumbrance } from '@/lib/sheetInventory';
 import { resolveFeatOptionChoicePool, resolveFeatSpellEntries } from '@/lib/featGrants';
 import { applyLongRest, applyShortRest, resolveClassResources } from '@/lib/sheetPlayState';
 import { primaryCastingStat } from '@/lib/spellCasting';
@@ -49,6 +50,8 @@ import { SheetActionsPanel } from '@/components/character/SheetActionsPanel';
 import { SheetDefencesCard } from '@/components/character/SheetCombatPanel';
 import { AdvantageToggle } from '@/components/character/AdvantageToggle';
 import { SheetEquipmentPanel } from '@/components/character/SheetEquipmentPanel';
+import { SheetIdentityPanel } from '@/components/character/SheetIdentityPanel';
+import { SheetPursePanel } from '@/components/character/SheetPursePanel';
 import { SheetResourcesPanel, type HitDicePool } from '@/components/character/SheetResourcesPanel';
 import { SheetSpellsPanel, type SheetSpellEntry } from '@/components/character/SheetSpellsPanel';
 import { SheetFeatureList } from '@/components/character/SheetFeatureList';
@@ -267,6 +270,23 @@ export function CharacterSheetView({
     });
   }, [character.features, allFeatData, resolvedClasses, species, variant]);
 
+  // An option the player chose is a feature in its own right — an Eldritch Invocation that says
+  // "as a Bonus Action" belongs in the turn list as much as the class feature that offered it.
+  const activeFeaturesWithChoices = useMemo<Feature[]>(() => {
+    const chosen = activeFeatures.flatMap((feature) =>
+      getChosenFeatureOptions(feature, character.features).map((option) => ({
+        id: option.id,
+        name: option.name,
+        description: option.description,
+        level: feature.level,
+        source: feature.source
+      })));
+    return [...activeFeatures, ...chosen];
+  }, [activeFeatures, character.features]);
+
+  // Darkvision and its siblings, read the same way the defences are: out of the feature's own text.
+  const senses = useMemo(() => deriveSenses(activeFeaturesWithChoices), [activeFeaturesWithChoices]);
+
   const derivedAbilityBonuses = useMemo(() => {
     return deriveAbilityScoreBonuses({
       background,
@@ -317,9 +337,10 @@ export function CharacterSheetView({
       resolvedClasses,
       // Species speed is the walking speed; 30 is the default when nothing is chosen yet.
       speed: species?.speed ?? 30,
-      totalLevel
+      totalLevel,
+      senses
     });
-  }, [derivedProficiencies, displayedAbilityScores, resolvedClasses, species, totalLevel]);
+  }, [derivedProficiencies, displayedAbilityScores, resolvedClasses, senses, species, totalLevel]);
 
   const attacks = useMemo(() => {
     return [
@@ -333,20 +354,6 @@ export function CharacterSheetView({
       deriveUnarmedStrike(displayedAbilityScores, vitals.proficiencyBonus)
     ];
   }, [derivedProficiencies.weapons, displayedAbilityScores, resolvedEquipment, vitals.proficiencyBonus]);
-
-  // An option the player chose is a feature in its own right — an Eldritch Invocation that says
-  // "as a Bonus Action" belongs in the turn list as much as the class feature that offered it.
-  const activeFeaturesWithChoices = useMemo<Feature[]>(() => {
-    const chosen = activeFeatures.flatMap((feature) =>
-      getChosenFeatureOptions(feature, character.features).map((option) => ({
-        id: option.id,
-        name: option.name,
-        description: option.description,
-        level: feature.level,
-        source: feature.source
-      })));
-    return [...activeFeatures, ...chosen];
-  }, [activeFeatures, character.features]);
 
   // What this character shrugs off, read from the feature's own sentences.
   const defences = useMemo(() => deriveDefences(activeFeaturesWithChoices), [activeFeaturesWithChoices]);
@@ -425,6 +432,14 @@ export function CharacterSheetView({
   }, [allFeatData, background, character, feats, resolvedClasses, species, spellcastingRules, variant]);
 
   const castingStat = useMemo(() => primaryCastingStat(vitals.spellcasting), [vitals.spellcasting]);
+
+  const encumbrance = useMemo(() => {
+    return deriveEncumbrance({
+      character,
+      selections: resolvedEquipment,
+      strength: displayedAbilityScores.strength
+    });
+  }, [character, displayedAbilityScores.strength, resolvedEquipment]);
 
   // Both printings state Dodge and Disengage, and their wordings differ — so the character gets the
   // list from the printing it plays, resolved the same way a feat's spells are.
@@ -573,12 +588,14 @@ export function CharacterSheetView({
                 slotsByLevel={spellcastingRules.slotsByLevel}
                 pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
                 characterLevel={totalLevel}
+                preparedLimit={spellcastingRules.preparedSpellLimit}
                 onChange={onChange}
               />
             </TabsContent>
           ) : null}
 
           <TabsContent value="equipment" className="space-y-4">
+            <SheetPursePanel character={character} encumbrance={encumbrance} onChange={onChange} />
             <SheetEquipmentPanel
               character={character}
               selections={resolvedEquipment}
@@ -661,6 +678,8 @@ export function CharacterSheetView({
           {/* More than the background now: what this character is proficient in and what they
               shrug off are read here too, which is where a reader looks for them. */}
           <TabsContent value="description" className="space-y-4">
+            <SheetIdentityPanel character={character} onChange={onChange} />
+
             <Card>
               <CardHeader>
                 <CardTitle>Background: {background?.name}</CardTitle>

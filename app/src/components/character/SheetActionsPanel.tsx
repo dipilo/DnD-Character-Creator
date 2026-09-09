@@ -27,7 +27,7 @@ import {
   type SheetActionsInput
 } from '@/lib/sheetActions';
 import { deriveAttacksPerAction } from '@/lib/sheetCombat';
-import { castableSlots, spendSlot } from '@/lib/spellCasting';
+import { castPatch, castableSlots } from '@/lib/spellCasting';
 import { setClassResourceUsed, toggleResourceActive } from '@/lib/sheetPlayState';
 import { rollD20 } from '@/lib/d20Rolls';
 import { rollOnScreen } from '@/store/diceTrayStore';
@@ -90,7 +90,11 @@ export function SheetActionsPanel({
     if (entry.kind !== 'spell' || !onChange) return;
     if (entry.spellLevel === undefined || entry.spellLevel === 0) return;
     const [lowest] = castableSlots(character, slotsByLevel, pactSlotsByLevel, entry.spellLevel);
-    if (lowest) onChange(spendSlot(character, lowest, slotsByLevel, pactSlotsByLevel));
+    if (!lowest) return;
+    const spell = entry.spellId
+      ? { id: entry.spellId, name: entry.spellName ?? entry.name, concentration: Boolean(entry.concentration) }
+      : undefined;
+    onChange(castPatch(character, spell, lowest, slotsByLevel, pactSlotsByLevel, entry.spellLevel));
   };
 
   const controlsFor = (entry: SheetActionEntry) => {
