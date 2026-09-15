@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCharacterStore } from '@/store/characterStore';
-import { resolveClassById, useContentLibrary } from '@/data';
+import { getRuntimeClassById, resolveClassById, useContentLibrary } from '@/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { SourceFilterBar } from '@/components/SourceFilterBar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { sourceMatchesSelection } from '@/data/librarySources';
-import { applyAbilityScoreBonuses, canMixClassEditions, evaluateMulticlassPrerequisites, getRulesEdition, getRulesEditionLabel, getSelectedClassEdition, type SelectedClassWithLevel } from '@/lib/builderRules';
+import { applyAbilityScoreBonuses, canMixClassEditions, evaluateMulticlassPrerequisites, getRulesEdition, getRulesEditionLabel, getSelectedClassEdition, removeCharacterClasses, type SelectedClassWithLevel } from '@/lib/builderRules';
 import { dedupeCanonicalContent, getCanonicalContentKey, getClassSelectionScore } from '@/lib/contentSelection';
 
 const EMPTY_SOURCE_IDS: string[] = [];
@@ -106,16 +106,17 @@ export function ClassSelection() {
       return;
     }
 
-    let nextClasses = existing;
     if (selected && allowDeselect) {
-      nextClasses = existing.filter((entry) => !matchingClassIds.has(entry.classId));
+      updateBuilderCharacter(removeCharacterClasses(
+        builderState.character ?? {},
+        (entry) => matchingClassIds.has(entry.classId),
+        getRuntimeClassById
+      ));
     } else if (!selected) {
-      nextClasses = [...existing.filter((entry) => !matchingClassIds.has(entry.classId)), { classId, level: 1, hitDiceUsed: 0 }];
+      updateBuilderCharacter({
+        classes: [...existing.filter((entry) => !matchingClassIds.has(entry.classId)), { classId, level: 1, hitDiceUsed: 0 }]
+      });
     }
-
-    updateBuilderCharacter({
-      classes: nextClasses
-    });
     toast.success(selected && allowDeselect ? 'Class deselected' : 'Class selected');
   };
 

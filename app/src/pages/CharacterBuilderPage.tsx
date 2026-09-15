@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { ChevronLeft, ChevronRight, Swords, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { getRuntimeClassById, getRuntimeSubclass } from '@/data';
-import { updateCharacterClassEntry } from '@/lib/builderRules';
+import { matchesCharacterClassEntry, removeCharacterClasses } from '@/lib/builderRules';
 import { useAdvancementTasks } from '@/hooks/useAdvancementTasks';
 import { AdvancementTasks } from '@/components/character/AdvancementTasks';
 
@@ -145,9 +145,11 @@ export function CharacterBuilderPage() {
   };
 
   const handleRemoveClass = (classId: string, className?: string) => {
-    updateBuilderCharacter({
-      classes: updateCharacterClassEntry(builderState.character?.classes, classId, getRuntimeClassById, () => undefined)
-    });
+    updateBuilderCharacter(removeCharacterClasses(
+      builderState.character ?? {},
+      (entry) => matchesCharacterClassEntry(entry, classId, getRuntimeClassById),
+      getRuntimeClassById
+    ));
     setClassLevelDrafts((current) => {
       if (!(classId in current)) return current;
       const next = { ...current };

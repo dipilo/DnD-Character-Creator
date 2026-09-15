@@ -1711,6 +1711,101 @@ export const extractSelectedProficiencies = ({
   };
 };
 
+/**
+ * Removes every class `shouldRemove` accepts. When the first class goes, the next one becomes the
+ * starting class and its multiclass pick becomes the starting pick layer, capped at what a starting
+ * class may choose — left where it was, nothing would read it and the sheet would ask again.
+ */
+export const removeCharacterClasses = (
+  character: Partial<Character>,
+  shouldRemove: (entry: CharacterClass) => boolean,
+  getClassById: (classId: string) => Class | undefined
+): Pick<Character, 'classes'> & Partial<Pick<Character, 'proficiencies' | 'multiclassSkillSelections'>> => {
+  const classes = character.classes ?? [];
+  const remaining = classes.filter((entry) => !shouldRemove(entry));
+  const newFirst = remaining[0];
+  if (classes.length === 0 || !shouldRemove(classes[0]) || !newFirst) {
+    return { classes: remaining };
+  }
+
+  const cls = getClassById(newFirst.classId);
+  const promoted = getMulticlassSkillSelections(character, cls?.id ?? newFirst.classId, newFirst.classId);
+  const limit = cls?.skillCount ?? promoted.length;
+  const parked = Object.fromEntries(
+    Object.entries(character.multiclassSkillSelections ?? {}).filter(([key]) => key !== cls?.id && key !== newFirst.classId)
+  );
+  return {
+    classes: remaining,
+    proficiencies: { ...emptyCharacterProficiencies(), ...character.proficiencies, skills: promoted.slice(0, limit) },
+    multiclassSkillSelections: parked
+  };
+};
+
+/**
+ * Every skill the character already holds from somewhere other than `cls`'s own picks, keyed to the
+ * source that grants it. A class pick that duplicates one buys nothing — both books say to choose a
+ * different skill instead — and the merged list a saved character stores cannot tell the two apart,
+ * so the picker has to refuse it up front rather than lose it on the next read.
+ */
+export const deriveSkillsHeldElsewhere = ({
+  character,
+  cls,
+  resolvedClasses,
+  background,
+  species,
+  variant
+}: {
+  character: Partial<Character>;
+  cls: Class;
+  resolvedClasses: ResolvedCharacterClass[];
+  background?: Background;
+  species?: Species;
+  variant?: SpeciesVariant;
+}): Map<string, string> => {
+  const held = new Map<string, string>();
+  const claim = (skills: Iterable<string>, source: string) => {
+    for (const skill of skills) {
+      if (!held.has(skill)) {
+        held.set(skill, source);
+      }
+    }
+  };
+  const features = character.features ?? [];
+
+  if (background) {
+    claim(deriveCharacterProficiencies({ character: {}, resolvedClasses: [], background }).skills, background.name);
+  }
+  if (species) {
+    claim(deriveCharacterProficiencies({ character: { features }, resolvedClasses: [], species, variant }).skills, species.name);
+  }
+
+  const ownIndex = resolvedClasses.findIndex((entry) => entry.cls.id === cls.id);
+  const ownIsStarting = getClassProficiencyGrants(cls, ownIndex === -1 ? resolvedClasses.length : ownIndex).isStartingClass;
+  resolvedClasses.forEach(({ entry, cls: other }, index) => {
+    if (other.id === cls.id) {
+      return;
+    }
+    const picks = getClassProficiencyGrants(other, index).isStartingClass
+      ? character.proficiencies?.skills ?? []
+      : getMulticlassSkillSelections(character, other.id, entry.classId);
+    claim(picks, other.name);
+  });
+
+  const ownEntry = ownIndex === -1 ? undefined : resolvedClasses[ownIndex].entry;
+  const otherSelections = Object.fromEntries(
+    Object.entries(character.multiclassSkillSelections ?? {}).filter(([key]) => key !== cls.id && key !== ownEntry?.classId)
+  );
+  const withoutOwnPicks: Partial<Character> = {
+    ...character,
+    proficiencies: ownIsStarting
+      ? { ...emptyCharacterProficiencies(), ...character.proficiencies, skills: [] }
+      : character.proficiencies,
+    multiclassSkillSelections: otherSelections
+  };
+  claim(deriveCharacterProficiencies({ character: withoutOwnPicks, resolvedClasses, background, species, variant }).skills, 'a feature you chose');
+  return held;
+};
+
 export interface AbilityScoreEntryState {
   abilityScoreMethod: AbilityScoreMethod;
   rolledScores: number[];

@@ -1,6 +1,6 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useCharacterStore } from '@/store/characterStore';
-import { getContentSourceLabel, getRuntimeClassById, getRuntimeSubclass } from '@/data';
+import { getContentSourceLabel, getRuntimeBackgroundById, getRuntimeClassById, getRuntimeSpeciesById, getRuntimeSpeciesVariant, getRuntimeSubclass } from '@/data';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +15,7 @@ import { ToolProficiencyChoices } from '@/components/builder/ToolProficiencyChoi
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { ArrowLeft, Check, Shield, Sword, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { applyAbilityScoreBonuses, canMixClassEditions, evaluateMulticlassPrerequisites, findCharacterClassEntry, getClassProficiencyGrants, getMulticlassSkillSelections, getRulesEditionLabel, sortFeaturesByLevel, updateCharacterClassEntry, type SelectedClassWithLevel } from '@/lib/builderRules';
+import { applyAbilityScoreBonuses, canMixClassEditions, deriveSkillsHeldElsewhere, evaluateMulticlassPrerequisites, findCharacterClassEntry, getClassProficiencyGrants, getMulticlassSkillSelections, getRulesEditionLabel, resolveCharacterClasses, sortFeaturesByLevel, updateCharacterClassEntry, type SelectedClassWithLevel } from '@/lib/builderRules';
 import { getDescriptionPreview } from '@/lib/contentPresentation';
 import { getPoolBlockedOptionIds, getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
 
@@ -60,6 +60,23 @@ export function ClassDetails() {
     ? getMulticlassSkillSelections(builderState.character, cls?.id ?? '', classEntry?.classId ?? '')
     : startingSkills;
   const selectedFeatureChoices = builderState.character?.features || [];
+  // A skill the character already holds from anywhere else is not offered again; the chip says who
+  // grants it, because the merged list a saved character stores would lose the duplicate pick.
+  const character = builderState.character;
+  const skillsHeldElsewhere = !cls || !character
+    ? new Map<string, string>()
+    : deriveSkillsHeldElsewhere({
+      character,
+      cls,
+      resolvedClasses: resolveCharacterClasses({
+        classes: character.classes ?? [],
+        getClassById: getRuntimeClassById,
+        getSubclassById: getRuntimeSubclass
+      }),
+      background: character.backgroundId ? getRuntimeBackgroundById(character.backgroundId) : undefined,
+      species: character.speciesId ? getRuntimeSpeciesById(character.speciesId) : undefined,
+      variant: character.speciesId && character.variantId ? getRuntimeSpeciesVariant(character.speciesId, character.variantId) : undefined
+    });
   const availableTabs = cls?.spellcasting
     ? ['features', 'subclasses', 'proficiencies', 'spellcasting']
     : ['features', 'subclasses', 'proficiencies'];
@@ -156,10 +173,22 @@ export function ClassDetails() {
     });
   };
 
+  const refuseHeldSkill = (skill: string) => {
+    const heldBy = skillsHeldElsewhere.get(skill);
+    if (!heldBy) {
+      return false;
+    }
+    toast.error(`${skill} is already granted by ${heldBy}. Choose a different skill.`);
+    return true;
+  };
+
   const handleToggleMulticlassSkill = (skill: string) => {
     const current = selectedSkills;
     const limit = proficiencyGrants?.skillCount ?? 0;
     const removing = current.includes(skill);
+    if (!removing && refuseHeldSkill(skill)) {
+      return;
+    }
     if (!removing && current.length >= limit) {
       toast.error(`You can only choose ${limit} ${limit === 1 ? 'skill' : 'skills'}`);
       return;
@@ -201,6 +230,10 @@ export function ClassDetails() {
         }
       });
       toast.success(`${skill} removed`);
+      return;
+    }
+
+    if (refuseHeldSkill(skill)) {
       return;
     }
 
@@ -696,21 +729,22 @@ export function ClassDetails() {
 
                   <div>
                     <h4 className="mb-2 font-medium">Skills</h4>
-                    <p className="text-sm text-muted-foreground">Choose {grants.skillCount} from:</p>
+                    <p className="text-sm text-muted-foreground">Choose {grants.skillCount} from ({selectedSkills.length} of {grants.skillCount} chosen):</p>
                     <div className="flex flex-wrap gap-2">
                       {grants.skillChoices.map((skill) => {
                         const selected = selectedSkills.includes(skill);
-                        // A skill the starting class already picked is held; picking it again buys nothing.
-                        const heldElsewhere = !selected && isMulticlassPosition && startingSkills.includes(skill);
+                        const heldBy = selected ? undefined : skillsHeldElsewhere.get(skill);
                         return (
                           <button
                             key={skill}
                             type="button"
-                            disabled={heldElsewhere}
+                            disabled={Boolean(heldBy)}
+                            title={heldBy ? `Already granted by ${heldBy}` : undefined}
                             className={`rounded-md border px-3 py-1 transition-colors disabled:opacity-50 ${selected ? 'border-primary bg-primary text-primary-foreground' : ''}`}
                             onClick={() => handleToggleSkill(skill)}
                           >
                             {skill}
+                            {heldBy ? <span className="ml-1 text-xs text-muted-foreground">({heldBy})</span> : null}
                           </button>
                         );
                       })}
