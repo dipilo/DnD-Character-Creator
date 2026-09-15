@@ -6,7 +6,7 @@
     "category": "supplement",
     "aliases": [],
     "origin": "parsed-html",
-    "importedAt": "2026-09-06T21:19:49.036Z",
+    "importedAt": "2026-09-15T15:55:47.078Z",
     "parser": "tcoe-html",
     "visibility": "private"
   },
@@ -46,6 +46,20 @@
           "Sleight of Hand"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "light armor",
+            "medium armor",
+            "shields"
+          ],
+          "weaponProficiencies": [],
+          "toolProficiencies": [
+            "thieves’ tools",
+            "tinker’s tools"
+          ],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "magical-tinkering",
@@ -5494,7 +5508,8 @@
       }
     ],
     "monsters": [],
-    "ua": []
+    "ua": [],
+    "combatActions": []
   },
   "sections": [
     {

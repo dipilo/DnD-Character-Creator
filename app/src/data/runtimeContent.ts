@@ -1,4 +1,4 @@
-import type { Background, Class, ClassResource, CombatAction, Equipment, Feature, FeatureOption, Feat, Monster, Species, SpeciesVariant, Spell, SpellcastingProgression, Subclass } from '@/types/dnd';
+import type { Background, Class, ClassResource, CombatAction, Equipment, Feature, FeatureOption, Feat, Monster, MulticlassProficiencies, Species, SpeciesVariant, Spell, SpellcastingProgression, Subclass } from '@/types/dnd';
 import { backgrounds as staticBackgrounds } from './backgrounds';
 import { classes as staticClasses } from './classes';
 import { species as staticSpecies } from './species';
@@ -878,7 +878,7 @@ const enrichSpecies = (primary: Species, fallback?: Species, supplement?: Partia
       }
     : supplement;
 
-  return sanitizeSpecies(applySpeciesFeatureChoiceSupplements({
+  return applySpeciesSkillChoices(sanitizeSpecies(applySpeciesFeatureChoiceSupplements({
     ...primary,
     description: choosePreferredText(sanitizeImportedText(primary.description), sanitizeImportedText(combinedFallback?.description)) ?? primary.description,
     size: primary.size ?? combinedFallback?.size ?? 'Medium',
@@ -890,7 +890,7 @@ const enrichSpecies = (primary: Species, fallback?: Species, supplement?: Partia
     languages: choosePreferredArray(primary.languages, combinedFallback?.languages),
     variants: mergeSpeciesVariants(primary.variants, combinedFallback?.variants),
     spells: choosePreferredArray(primary.spells, combinedFallback?.spells)
-  }));
+  })));
 };
 
 const applySubclassDescriptionSupplements = (subclass: Subclass): Subclass => {
@@ -964,13 +964,16 @@ const skillChoiceCountWords: Record<string, number> = {
 
 const resolveOpenSkillChoices = (features: Feature[], classSkillChoices: string[]) => {
   return features.map((feature) => {
-    if (feature.options?.length) {
-      return feature;
-    }
-
     const match = openSkillChoicePattern.exec(feature.description ?? '');
     if (!match) {
       return feature;
+    }
+
+    // A feature that already lists its options still takes its count from its own sentence: the
+    // static Skill Versatility says "two skills" and carried no count.
+    const chooseCount = feature.chooseCount ?? skillChoiceCountWords[match[1].toLowerCase()] ?? 1;
+    if (feature.options?.length) {
+      return feature.chooseCount === undefined ? { ...feature, chooseCount } : feature;
     }
 
     const restrictToClassList = classSkillListPattern.test(feature.description ?? '') && classSkillChoices.length > 0;
@@ -984,11 +987,21 @@ const resolveOpenSkillChoices = (features: Feature[], classSkillChoices: string[
     return {
       ...feature,
       requiresChoice: true,
-      chooseCount: feature.chooseCount ?? skillChoiceCountWords[match[1].toLowerCase()] ?? 1,
+      chooseCount,
       options
     };
   });
 };
+
+// A species' open skill choice has no class list to resolve against, so it offers every skill.
+const applySpeciesSkillChoices = (species: Species): Species => ({
+  ...species,
+  features: resolveOpenSkillChoices(species.features, []),
+  variants: species.variants?.map((variant) => ({
+    ...variant,
+    features: resolveOpenSkillChoices(variant.features, [])
+  }))
+});
 
 const applyClassSkillChoices = (cls: Class): Class => ({
   ...cls,
@@ -1064,6 +1077,25 @@ const choosePreferredResources = (primary?: ClassResource[], fallback?: ClassRes
   return chosen.length > 0 ? chosen : undefined;
 };
 
+// A printing that states multiclassing at all states every part of it, so a stated set wins
+// whole over one that says nothing; two stated sets merge field by field like the starting lists.
+const choosePreferredMulticlassProficiencies = (
+  primary?: MulticlassProficiencies,
+  fallback?: MulticlassProficiencies
+): MulticlassProficiencies | undefined => {
+  if (!primary || !fallback) {
+    return primary ?? fallback;
+  }
+
+  return {
+    armorProficiencies: choosePreferredArray(primary.armorProficiencies, fallback.armorProficiencies),
+    weaponProficiencies: choosePreferredArray(primary.weaponProficiencies, fallback.weaponProficiencies),
+    toolProficiencies: choosePreferredArray(primary.toolProficiencies, fallback.toolProficiencies),
+    skillChoices: choosePreferredArray(primary.skillChoices, fallback.skillChoices),
+    skillCount: choosePreferredCount(primary.skillCount, fallback.skillCount)
+  };
+};
+
 const enrichClass = (primary: Class, fallback?: Class): Class => {
   const equipmentSupplement = classEquipmentSupplements[getClassFallbackLookupKey(primary)];
   const enriched = {
@@ -1074,6 +1106,7 @@ const enrichClass = (primary: Class, fallback?: Class): Class => {
     toolProficiencies: choosePreferredArray(primary.toolProficiencies, fallback?.toolProficiencies),
     skillChoices: choosePreferredArray(primary.skillChoices, fallback?.skillChoices),
     skillCount: primary.skillCount || fallback?.skillCount || 0,
+    multiclassProficiencies: choosePreferredMulticlassProficiencies(primary.multiclassProficiencies, fallback?.multiclassProficiencies),
     features: mergeFeatureCollections(primary.features, fallback?.features),
     resources: choosePreferredResources(primary.resources, fallback?.resources),
     spellcasting: choosePreferredSpellcasting(primary.spellcasting, fallback?.spellcasting),
@@ -1120,6 +1153,7 @@ const mergeClassCandidates = (candidates: Class[]) => {
       toolProficiencies: choosePreferredArray(current.toolProficiencies, candidate.toolProficiencies),
       skillChoices: choosePreferredArray(current.skillChoices, candidate.skillChoices),
       skillCount: choosePreferredCount(current.skillCount, candidate.skillCount),
+      multiclassProficiencies: choosePreferredMulticlassProficiencies(current.multiclassProficiencies, candidate.multiclassProficiencies),
       features: mergeFeatureCollections(current.features, candidate.features),
       subclasses: mergeCollectionsById(current.subclasses, candidate.subclasses),
       subclassLevel: choosePreferredCount(current.subclassLevel, candidate.subclassLevel),

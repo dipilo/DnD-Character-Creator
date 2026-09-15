@@ -505,7 +505,7 @@ const toolChoiceFamilyKeywords: Array<{ pattern: RegExp; category: RegExp }> = [
 const toolChoiceIntentPattern = /\bof your choice\b|\bone type of\b|^choose\b|\bany\b/i;
 const countWordValues = new Map([['one', 1], ['two', 2], ['three', 3], ['four', 4], ['five', 5], ['six', 6]]);
 
-const parseChoiceCount = (label: string) => {
+export const parseChoiceCount = (label: string) => {
   const digitMatch = /\b(\d+)\b/.exec(label);
   if (digitMatch) {
     return Number(digitMatch[1]);
@@ -552,7 +552,63 @@ const getEquipmentEditionRank = (entry: Equipment, preferredEdition: RulesEditio
   return 0;
 };
 
-export const getToolChoiceIdPrefix = (ownerKind: 'background' | 'class', ownerId: string) => `${ownerKind}:${ownerId}:tool`;
+export const getToolChoiceIdPrefix = (ownerKind: 'background' | 'class' | 'multiclass', ownerId: string) => `${ownerKind}:${ownerId}:tool`;
+
+/** What a class grants in the position it holds: everything as the first class, only what the book's multiclassing rule states after that. */
+export interface ClassProficiencyGrants {
+  isStartingClass: boolean;
+  /** False when the class is not first and its source states no multiclassing rule, so the starting set is shown instead. */
+  statesMulticlassing: boolean;
+  armorProficiencies: string[];
+  weaponProficiencies: string[];
+  toolProficiencies: string[];
+  toolChoiceIdPrefix: string;
+  savingThrows: (keyof AbilityScores)[];
+  skillChoices: string[];
+  skillCount: number;
+}
+
+export const getClassProficiencyGrants = (cls: Class, classIndex: number): ClassProficiencyGrants => {
+  const multiclass = classIndex > 0 ? cls.multiclassProficiencies : undefined;
+  if (!multiclass) {
+    return {
+      isStartingClass: classIndex === 0,
+      statesMulticlassing: classIndex === 0,
+      armorProficiencies: cls.armorProficiencies,
+      weaponProficiencies: cls.weaponProficiencies,
+      toolProficiencies: cls.toolProficiencies ?? [],
+      toolChoiceIdPrefix: getToolChoiceIdPrefix('class', cls.id),
+      savingThrows: cls.savingThrows,
+      skillChoices: cls.skillChoices,
+      skillCount: cls.skillCount
+    };
+  }
+
+  return {
+    isStartingClass: false,
+    statesMulticlassing: true,
+    armorProficiencies: multiclass.armorProficiencies,
+    weaponProficiencies: multiclass.weaponProficiencies,
+    toolProficiencies: multiclass.toolProficiencies ?? [],
+    toolChoiceIdPrefix: getToolChoiceIdPrefix('multiclass', cls.id),
+    savingThrows: [],
+    skillChoices: multiclass.skillChoices,
+    skillCount: multiclass.skillCount
+  };
+};
+
+/**
+ * The key is a class id and goes stale like `CharacterClass.classId` does, so a read tries the
+ * stored pointer as well as the id the library resolves it to.
+ */
+export const getMulticlassSkillSelections = (
+  character: Pick<Character, 'multiclassSkillSelections'> | undefined,
+  ...classIds: string[]
+) => {
+  const selections = character?.multiclassSkillSelections;
+  const key = classIds.find((classId) => selections?.[classId]?.length);
+  return key ? selections?.[key] ?? [] : [];
+};
 
 export const isToolProficiencyChoiceLabel = (label: string) => {
   return toolChoiceIntentPattern.test(label) && toolChoiceFamilyKeywords.some((family) => family.pattern.test(label));
@@ -1360,6 +1416,17 @@ export const normalizeCharacterClassIds = (
   });
 };
 
+/** The same repair for a map keyed by class id (`multiclassSkillSelections`). */
+export const normalizeClassKeyedSelections = <T,>(
+  selections: Record<string, T> | undefined,
+  getClassById: (classId: string) => Class | undefined
+): Record<string, T> | undefined => {
+  if (!selections) return undefined;
+  return Object.fromEntries(
+    Object.entries(selections).map(([classId, value]) => [getClassById(classId)?.id ?? classId, value])
+  );
+};
+
 export const sortFeaturesByLevel = (features: Feature[]) => {
   return [...features].sort((left, right) => {
     if (left.level !== right.level) {
@@ -1483,11 +1550,16 @@ export const deriveCharacterProficiencies = ({
     }
   });
 
-  resolvedClasses.forEach(({ cls }) => {
-    cls.savingThrows.forEach((save) => saves.add(save));
-    cls.armorProficiencies.forEach((entry) => armor.add(entry));
-    cls.weaponProficiencies.forEach((entry) => weapons.add(entry));
-    cls.toolProficiencies?.forEach(addToolProficiency(getToolChoiceIdPrefix('class', cls.id)));
+  // A class taken after the first grants what its multiclassing rule states and no saving throws.
+  resolvedClasses.forEach(({ entry, cls }, index) => {
+    const grants = getClassProficiencyGrants(cls, index);
+    grants.savingThrows.forEach((save) => saves.add(save));
+    grants.armorProficiencies.forEach((entry) => armor.add(entry));
+    grants.weaponProficiencies.forEach((entry) => weapons.add(entry));
+    grants.toolProficiencies.forEach(addToolProficiency(grants.toolChoiceIdPrefix));
+    if (!grants.isStartingClass) {
+      getMulticlassSkillSelections(character, cls.id, entry.classId).forEach((skill) => skills.add(skill));
+    }
   });
 
   const featurePool = [

@@ -180,6 +180,13 @@ export const classSchema: z.ZodType<Class> = z.object({
   toolProficiencies: z.array(z.string().min(1)).optional(),
   skillChoices: z.array(z.string().min(1)),
   skillCount: z.number().int().nonnegative(),
+  multiclassProficiencies: z.object({
+    armorProficiencies: z.array(z.string().min(1)),
+    weaponProficiencies: z.array(z.string().min(1)),
+    toolProficiencies: z.array(z.string().min(1)).optional(),
+    skillChoices: z.array(z.string().min(1)),
+    skillCount: z.number().int().nonnegative()
+  }).optional(),
   features: z.array(featureSchema),
   subclasses: z.array(subclassSchema),
   subclassLevel: z.number().int().nonnegative(),

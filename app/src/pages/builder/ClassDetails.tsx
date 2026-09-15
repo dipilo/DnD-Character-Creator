@@ -13,7 +13,7 @@ import { ToolProficiencyChoices } from '@/components/builder/ToolProficiencyChoi
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { ArrowLeft, Check, Shield, Sword, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { canMixClassEditions, findCharacterClassEntry, getRulesEditionLabel, getToolChoiceIdPrefix, sortFeaturesByLevel, updateCharacterClassEntry, type SelectedClassWithLevel } from '@/lib/builderRules';
+import { canMixClassEditions, findCharacterClassEntry, getClassProficiencyGrants, getMulticlassSkillSelections, getRulesEditionLabel, sortFeaturesByLevel, updateCharacterClassEntry, type SelectedClassWithLevel } from '@/lib/builderRules';
 import { getDescriptionPreview } from '@/lib/contentPresentation';
 import { getPoolBlockedOptionIds, getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
 
@@ -47,7 +47,16 @@ export function ClassDetails() {
   const isSelected = !!classEntry;
   const selectedSubclass = classEntry?.subclassId ? getRuntimeSubclass(cls?.id ?? '', classEntry.subclassId) : undefined;
   const characterLevel = classEntry?.level || 1;
-  const selectedSkills = builderState.character?.proficiencies?.skills || [];
+  const characterClasses = builderState.character?.classes ?? [];
+  // A class taken after the first grants what its multiclassing rule states; a class not yet
+  // taken is previewed in the position it would land in.
+  const classIndex = classEntry ? characterClasses.indexOf(classEntry) : characterClasses.length;
+  const proficiencyGrants = cls ? getClassProficiencyGrants(cls, classIndex) : undefined;
+  const isMulticlassPosition = proficiencyGrants ? !proficiencyGrants.isStartingClass : false;
+  const startingSkills = builderState.character?.proficiencies?.skills || [];
+  const selectedSkills = isMulticlassPosition
+    ? getMulticlassSkillSelections(builderState.character, cls?.id ?? '', classEntry?.classId ?? '')
+    : startingSkills;
   const selectedFeatureChoices = builderState.character?.features || [];
   const availableTabs = cls?.spellcasting
     ? ['features', 'subclasses', 'proficiencies', 'spellcasting']
@@ -128,7 +137,34 @@ export function ClassDetails() {
     });
   };
 
+  const handleToggleMulticlassSkill = (skill: string) => {
+    const current = selectedSkills;
+    const limit = proficiencyGrants?.skillCount ?? 0;
+    const removing = current.includes(skill);
+    if (!removing && current.length >= limit) {
+      toast.error(`You can only choose ${limit} ${limit === 1 ? 'skill' : 'skills'}`);
+      return;
+    }
+
+    // Written under the current id; a stale key the entry still points at goes with it.
+    const others = Object.fromEntries(
+      Object.entries(builderState.character?.multiclassSkillSelections ?? {}).filter(([key]) => key !== classEntry?.classId)
+    );
+    updateBuilderCharacter({
+      multiclassSkillSelections: {
+        ...others,
+        [cls.id]: removing ? current.filter((entry) => entry !== skill) : [...current, skill]
+      }
+    });
+    toast.success(removing ? `${skill} removed` : `${skill} selected`);
+  };
+
   const handleToggleSkill = (skill: string) => {
+    if (isMulticlassPosition) {
+      handleToggleMulticlassSkill(skill);
+      return;
+    }
+
     const current = selectedSkills || [];
     const currentProficiencies = builderState.character?.proficiencies ?? {
       skills: [],
@@ -254,6 +290,10 @@ export function ClassDetails() {
   const futureSubclassFeatures = sortFeaturesByLevel(selectedSubclass?.features.filter((feature) => (feature.name.trim() || feature.description.trim()) && feature.level > characterLevel) || []);
   const inspectedSubclass = cls.subclasses.find((subclass) => subclass.id === activeSubclassId) ?? cls.subclasses[0];
   const inspectedSubclassFeatures = sortFeaturesByLevel(inspectedSubclass?.features.filter((feature) => (feature.name.trim() || feature.description.trim())) || []);
+  const grants = proficiencyGrants ?? getClassProficiencyGrants(cls, classIndex);
+  const multiclassNote = grants.statesMulticlassing
+    ? `Taken after your first class, ${cls.name} grants only these proficiencies.`
+    : `${cls.name} states no multiclassing proficiencies, so its starting proficiencies apply.`;
 
   const updateSearchParam = (name: string, value: string) => {
     const nextParams = new URLSearchParams(searchParams);
@@ -542,13 +582,16 @@ export function ClassDetails() {
               <CardTitle>Proficiencies</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {isMulticlassPosition ? (
+                <p className="text-sm text-muted-foreground">{multiclassNote}</p>
+              ) : null}
               <div>
                 <h4 className="mb-2 flex items-center gap-2 font-medium">
                   <Shield className="h-4 w-4" /> Armor
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {cls.armorProficiencies.length > 0 ? (
-                    cls.armorProficiencies.map((prof) => (
+                  {grants.armorProficiencies.length > 0 ? (
+                    grants.armorProficiencies.map((prof) => (
                       <Badge key={prof} variant="secondary">{prof}</Badge>
                     ))
                   ) : (
@@ -564,9 +607,13 @@ export function ClassDetails() {
                   <Sword className="h-4 w-4" /> Weapons
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {cls.weaponProficiencies.map((prof) => (
-                    <Badge key={prof} variant="secondary"><ContentReferenceText text={prof} /></Badge>
-                  ))}
+                  {grants.weaponProficiencies.length > 0 ? (
+                    grants.weaponProficiencies.map((prof) => (
+                      <Badge key={prof} variant="secondary"><ContentReferenceText text={prof} /></Badge>
+                    ))
+                  ) : (
+                    <span className="text-sm text-muted-foreground">None</span>
+                  )}
                 </div>
               </div>
 
@@ -576,10 +623,10 @@ export function ClassDetails() {
                 <h4 className="mb-2 flex items-center gap-2 font-medium">
                   <Wand2 className="h-4 w-4" /> Tools
                 </h4>
-                {cls.toolProficiencies?.length ? (
+                {grants.toolProficiencies.length > 0 ? (
                   <ToolProficiencyChoices
-                    labels={cls.toolProficiencies}
-                    idPrefix={getToolChoiceIdPrefix('class', cls.id)}
+                    labels={grants.toolProficiencies}
+                    idPrefix={grants.toolChoiceIdPrefix}
                     disabled={!isSelected}
                     disabledHint="Select this class first to lock in its tool choices."
                   />
@@ -588,40 +635,51 @@ export function ClassDetails() {
                 )}
               </div>
 
-              <Separator />
+              {grants.savingThrows.length > 0 ? (
+                <>
+                  <Separator />
 
-              <div>
-                <h4 className="mb-2 font-medium">Saving Throws</h4>
-                <div className="flex flex-wrap gap-2">
-                  {cls.savingThrows.map((save) => (
-                    <Badge key={save} variant="secondary">
-                      {save.charAt(0).toUpperCase() + save.slice(1)}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
+                  <div>
+                    <h4 className="mb-2 font-medium">Saving Throws</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {grants.savingThrows.map((save) => (
+                        <Badge key={save} variant="secondary">
+                          {save.charAt(0).toUpperCase() + save.slice(1)}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              ) : null}
 
-              <Separator />
+              {grants.skillCount > 0 ? (
+                <>
+                  <Separator />
 
-              <div>
-                <h4 className="mb-2 font-medium">Skills</h4>
-                <p className="text-sm text-muted-foreground">Choose {cls.skillCount} from:</p>
-                <div className="flex flex-wrap gap-2">
-                  {cls.skillChoices.map((skill) => {
-                    const selected = selectedSkills.includes(skill);
-                    return (
-                      <button
-                        key={skill}
-                        type="button"
-                        className={`rounded-md border px-3 py-1 transition-colors ${selected ? 'border-primary bg-primary text-primary-foreground' : ''}`}
-                        onClick={() => handleToggleSkill(skill)}
-                      >
-                        {skill}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+                  <div>
+                    <h4 className="mb-2 font-medium">Skills</h4>
+                    <p className="text-sm text-muted-foreground">Choose {grants.skillCount} from:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {grants.skillChoices.map((skill) => {
+                        const selected = selectedSkills.includes(skill);
+                        // A skill the starting class already picked is held; picking it again buys nothing.
+                        const heldElsewhere = !selected && isMulticlassPosition && startingSkills.includes(skill);
+                        return (
+                          <button
+                            key={skill}
+                            type="button"
+                            disabled={heldElsewhere}
+                            className={`rounded-md border px-3 py-1 transition-colors disabled:opacity-50 ${selected ? 'border-primary bg-primary text-primary-foreground' : ''}`}
+                            onClick={() => handleToggleSkill(skill)}
+                          >
+                            {skill}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              ) : null}
             </CardContent>
           </Card>
         </TabsContent>

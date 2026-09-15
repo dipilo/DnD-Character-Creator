@@ -145,6 +145,12 @@ export interface Class {
   toolProficiencies?: string[];
   skillChoices: string[];
   skillCount: number;
+  /**
+   * What the class grants when it is not the character's first, read from the book's own
+   * statement (the 2014 Multiclassing Proficiencies table; 2024's "As a Multiclass <Class>").
+   * Absent when the source states nothing, in which case the starting proficiencies apply.
+   */
+  multiclassProficiencies?: MulticlassProficiencies;
   features: ClassFeature[];
   subclasses: Subclass[];
   subclassLevel: number;
@@ -155,6 +161,15 @@ export interface Class {
   startingGold?: number;
   source: string;
   sourceId?: string;
+}
+
+export interface MulticlassProficiencies {
+  armorProficiencies: string[];
+  weaponProficiencies: string[];
+  toolProficiencies?: string[];
+  /** Empty when the line grants no skill; the whole skill list when it says "of your choice". */
+  skillChoices: string[];
+  skillCount: number;
 }
 
 /**
@@ -411,6 +426,11 @@ export interface Character {
   // Tool proficiencies granted as a choice ("One type of gaming set"), keyed by the choice's
   // stable slot id so background and class grants stay independent.
   toolProficiencySelections?: Record<string, string[]>;
+  /**
+   * The skill picked for a class taken after the first ("one skill from the class's skill list"),
+   * keyed by class id. `proficiencies.skills` stays the starting class's picks.
+   */
+  multiclassSkillSelections?: Record<string, string[]>;
   /**
    * The spells picked for a feat's own spell lines ("one 1st-level spell of your choice"), keyed
    * by `FeatSpellChoice.id`. Kept apart from `spells` because these are the feat's, not the

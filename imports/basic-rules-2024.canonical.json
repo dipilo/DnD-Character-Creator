@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2024 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-09-08T05:38:35.378Z",
+    "importedAt": "2026-09-15T15:55:46.364Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -418,6 +418,16 @@
           "Survival"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Shields"
+          ],
+          "weaponProficiencies": [
+            "Martial weapons"
+          ],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "level-1-rage",
@@ -666,6 +676,36 @@
           "Survival"
         ],
         "skillCount": 3,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light armor"
+          ],
+          "weaponProficiencies": [],
+          "toolProficiencies": [
+            "one Musical Instrument of your choice"
+          ],
+          "skillChoices": [
+            "Acrobatics",
+            "Animal Handling",
+            "Arcana",
+            "Athletics",
+            "Deception",
+            "History",
+            "Insight",
+            "Intimidation",
+            "Investigation",
+            "Medicine",
+            "Nature",
+            "Perception",
+            "Performance",
+            "Persuasion",
+            "Religion",
+            "Sleight of Hand",
+            "Stealth",
+            "Survival"
+          ],
+          "skillCount": 1
+        },
         "features": [
           {
             "id": "level-1-bardic-inspiration",
@@ -1092,6 +1132,14 @@
           "Religion"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light and Medium armor and Shields"
+          ],
+          "weaponProficiencies": [],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "level-1-spellcasting",
@@ -1552,6 +1600,14 @@
           "Survival"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light armor and Shields"
+          ],
+          "weaponProficiencies": [],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "level-1-spellcasting",
@@ -2032,6 +2088,16 @@
           "Survival"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light and Medium armor and Shields"
+          ],
+          "weaponProficiencies": [
+            "Martial weapons"
+          ],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "level-1-fighting-style",
@@ -2288,6 +2354,12 @@
           "Stealth"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [],
+          "weaponProficiencies": [],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "level-1-martial-arts",
@@ -2550,6 +2622,16 @@
           "Religion"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light and Medium armor and Shields"
+          ],
+          "weaponProficiencies": [
+            "Martial weapons"
+          ],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "level-1-lay-on-hands",
@@ -2954,6 +3036,25 @@
           "Survival"
         ],
         "skillCount": 3,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light and Medium armor and Shields"
+          ],
+          "weaponProficiencies": [
+            "Martial weapons"
+          ],
+          "skillChoices": [
+            "Animal Handling",
+            "Athletics",
+            "Insight",
+            "Investigation",
+            "Nature",
+            "Perception",
+            "Stealth",
+            "Survival"
+          ],
+          "skillCount": 1
+        },
         "features": [
           {
             "id": "level-1-spellcasting",
@@ -3367,6 +3468,28 @@
           "Stealth"
         ],
         "skillCount": 4,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light armor"
+          ],
+          "weaponProficiencies": [],
+          "toolProficiencies": [
+            "Thieves’ Tools"
+          ],
+          "skillChoices": [
+            "Acrobatics",
+            "Athletics",
+            "Deception",
+            "Insight",
+            "Intimidation",
+            "Investigation",
+            "Perception",
+            "Persuasion",
+            "Sleight of Hand",
+            "Stealth"
+          ],
+          "skillCount": 1
+        },
         "features": [
           {
             "id": "level-1-expertise",
@@ -3581,6 +3704,12 @@
           "Religion"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [],
+          "weaponProficiencies": [],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "level-1-spellcasting",
@@ -4194,6 +4323,14 @@
           "Religion"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light armor"
+          ],
+          "weaponProficiencies": [],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "level-1-eldritch-invocations",
@@ -6909,6 +7046,12 @@
           "Religion"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [],
+          "weaponProficiencies": [],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "level-1-spellcasting",

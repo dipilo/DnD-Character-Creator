@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2014 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-09-08T05:38:39.762Z",
+    "importedAt": "2026-09-15T15:55:45.294Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -723,6 +723,17 @@
           "Survival"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Shields"
+          ],
+          "weaponProficiencies": [
+            "simple weapons",
+            "martial weapons"
+          ],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "rage",
@@ -940,6 +951,36 @@
           "Survival"
         ],
         "skillCount": 3,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light armor"
+          ],
+          "weaponProficiencies": [],
+          "toolProficiencies": [
+            "one musical instrument of your choice"
+          ],
+          "skillChoices": [
+            "Acrobatics",
+            "Animal Handling",
+            "Arcana",
+            "Athletics",
+            "Deception",
+            "History",
+            "Insight",
+            "Intimidation",
+            "Investigation",
+            "Medicine",
+            "Nature",
+            "Perception",
+            "Performance",
+            "Persuasion",
+            "Religion",
+            "Sleight of Hand",
+            "Stealth",
+            "Survival"
+          ],
+          "skillCount": 1
+        },
         "features": [
           {
             "id": "spellcasting",
@@ -1152,6 +1193,16 @@
           "Religion"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light armor",
+            "medium armor",
+            "shields"
+          ],
+          "weaponProficiencies": [],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "spellcasting",
@@ -1343,6 +1394,16 @@
           "Survival"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light armor",
+            "medium armor",
+            "shields (druids will not wear armor or use shields made of metal)"
+          ],
+          "weaponProficiencies": [],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "druidic",
@@ -1508,6 +1569,19 @@
           "Survival"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light armor",
+            "medium armor",
+            "shields"
+          ],
+          "weaponProficiencies": [
+            "simple weapons",
+            "martial weapons"
+          ],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "fighting-style",
@@ -1672,6 +1746,15 @@
           "Stealth"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [],
+          "weaponProficiencies": [
+            "Simple weapons",
+            "shortswords"
+          ],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "unarmored-defense",
@@ -1901,6 +1984,19 @@
           "Religion"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light armor",
+            "medium armor",
+            "shields"
+          ],
+          "weaponProficiencies": [
+            "simple weapons",
+            "martial weapons"
+          ],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "divine-sense",
@@ -2090,6 +2186,28 @@
           "Survival"
         ],
         "skillCount": 3,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light armor",
+            "medium armor",
+            "shields"
+          ],
+          "weaponProficiencies": [
+            "simple weapons",
+            "martial weapons"
+          ],
+          "skillChoices": [
+            "Animal Handling",
+            "Athletics",
+            "Insight",
+            "Investigation",
+            "Nature",
+            "Perception",
+            "Stealth",
+            "Survival"
+          ],
+          "skillCount": 1
+        },
         "features": [
           {
             "id": "favored-enemy",
@@ -2299,6 +2417,29 @@
           "Stealth"
         ],
         "skillCount": 4,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light armor"
+          ],
+          "weaponProficiencies": [],
+          "toolProficiencies": [
+            "thieves' tools"
+          ],
+          "skillChoices": [
+            "Acrobatics",
+            "Athletics",
+            "Deception",
+            "Insight",
+            "Intimidation",
+            "Investigation",
+            "Perception",
+            "Performance",
+            "Persuasion",
+            "Sleight of Hand",
+            "Stealth"
+          ],
+          "skillCount": 1
+        },
         "features": [
           {
             "id": "expertise",
@@ -2490,6 +2631,12 @@
           "Religion"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [],
+          "weaponProficiencies": [],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "spellcasting",
@@ -2869,6 +3016,16 @@
           "Religion"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [
+            "Light armor"
+          ],
+          "weaponProficiencies": [
+            "simple weapons"
+          ],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "otherworldly-patron",
@@ -6002,6 +6159,12 @@
           "Religion"
         ],
         "skillCount": 2,
+        "multiclassProficiencies": {
+          "armorProficiencies": [],
+          "weaponProficiencies": [],
+          "skillChoices": [],
+          "skillCount": 0
+        },
         "features": [
           {
             "id": "spellcasting",

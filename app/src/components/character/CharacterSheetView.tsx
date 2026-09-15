@@ -31,6 +31,7 @@ import {
   deriveArmorClass,
   deriveCharacterHitPoints,
   deriveCharacterProficiencies,
+  extractSelectedProficiencies,
   getActiveFeatures,
   getCharacterProficiencyBonus,
   getSpellcastingRulesSummary,
@@ -419,8 +420,12 @@ export function CharacterSheetView({
   // Everything this character has earned from its levels and not yet chosen. Derived from the same
   // classes, species and feats the rest of the sheet reads, so nothing here names a class feature.
   const advancementTasks = useMemo(() => {
+    // A saved character stores the merged proficiency list; the skill picks are what is left once
+    // the grants are subtracted, which is also what the builder shows on reopening.
+    const selectedSkills = extractSelectedProficiencies({ character, resolvedClasses, background, species, variant }).skills;
     return deriveAdvancementTasks({
       character,
+      selectedSkills,
       resolvedClasses,
       species,
       variant,

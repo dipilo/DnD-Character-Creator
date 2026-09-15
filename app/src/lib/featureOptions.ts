@@ -129,3 +129,7 @@ export const isFeatureOptionAvailable = (
 
   return true;
 };
+
+/** A feature that lists options and states no count is one pick, which is what the selector offers. */
+export const featureChoiceCount = (feature: Pick<Feature, 'chooseCount' | 'options'>) =>
+  feature.chooseCount ?? (feature.options?.length ? 1 : 0);

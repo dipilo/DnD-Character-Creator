@@ -1619,6 +1619,83 @@ const findResourceFeature = (header, features) => {
   }) ?? null;
 };
 
+// What a class hands a character who takes it after their first. 2014 states it once, in the
+// Multiclassing chapter's table; 2024 states it per class under "As a Multiclass <Class>"; Tasha's
+// Artificer states it in prose. All three land in the same shape as the starting proficiencies.
+const multiclassSkillListPattern = /skill list/i;
+const multiclassArmorPattern = /\barmou?r\b|\bshields?\b/i;
+const multiclassToolPattern = /\btools?\b|\bkit\b|\binstruments?\b|\bsupplies\b|\bgaming set\b/i;
+
+const matchesOwnList = (item, list) => {
+  const wanted = item.toLowerCase();
+  return (list ?? []).some((entry) => entry.toLowerCase() === wanted);
+};
+
+const classifyMulticlassGrants = (items, starting) => {
+  const grants = { armorProficiencies: [], weaponProficiencies: [], toolProficiencies: [], skillChoices: [], skillCount: 0 };
+
+  for (const item of items) {
+    if (/\bskills?\b/i.test(item)) {
+      grants.skillCount += parseCountWord(item, 1) || 1;
+      grants.skillChoices = multiclassSkillListPattern.test(item) ? [...(starting.skillChoices ?? [])] : [...skillNames];
+    } else if (multiclassArmorPattern.test(item) || matchesOwnList(item, starting.armorProficiencies)) {
+      grants.armorProficiencies.push(item);
+    } else if (multiclassToolPattern.test(item) || matchesOwnList(item, starting.toolProficiencies)) {
+      grants.toolProficiencies.push(item);
+    } else if (/\bweapons?\b/i.test(item) || matchesOwnList(item, starting.weaponProficiencies)) {
+      grants.weaponProficiencies.push(item);
+    } else {
+      console.warn(`[multiclass] unclassified proficiency "${item}" dropped`);
+    }
+  }
+
+  return {
+    ...grants,
+    toolProficiencies: grants.toolProficiencies.length > 0 ? grants.toolProficiencies : undefined
+  };
+};
+
+// The 2014 table: Class | Proficiencies Gained, where "-" is the book saying none.
+const extractMulticlassProficiencyTable = (raw) => {
+  const table = collectTableBlocks(raw).find((block) => /id="multiclassingproficiencies"/i.test(block));
+  const rows = table ? extractStructuredTableRows(table).slice(1) : [];
+  return new Map(rows
+    .map(([className, value]) => [getClassIdFromName(className ?? ''), value ?? ''])
+    .filter(([classId]) => Boolean(classId))
+    .map(([classId, value]) => [classId, /^[-—–]$/.test(value.trim()) ? [] : parseSimpleList(value)]));
+};
+
+// 2024: "Gain the following traits from the Core Rogue Traits table: Hit Point Die, proficiency in
+// one skill of your choice from the Rogue's skill list, proficiency with Thieves' Tools, and
+// training with Light armor." Monk, Sorcerer and Wizard get only "Gain the Hit Point Die".
+const multiclassTraitsSentencePattern = /^Gain the following traits from the Core .{1,40}?Traits table:\s*(.+?)\.?$/i;
+const multiclassHitDieOnlyPattern = /^Gain the Hit Point Die(?: trait)? from the Core .{1,40}?Traits table\.?$/i;
+
+const extractMulticlassTraitItems = (blockContent) => {
+  for (const item of extractListItems(blockContent)) {
+    const sentence = multiclassTraitsSentencePattern.exec(item);
+    if (sentence) {
+      return sentence[1]
+        .split(/,\s*(?:and\s+)?|\s+and\s+(?=(?:training|proficiency)\b)/i)
+        .map((entry) => entry.replace(/^(?:proficiency (?:with|in)|training with)\s+/i, '').trim())
+        .filter((entry) => entry && !/^Hit Point Die$/i.test(entry));
+    }
+
+    if (multiclassHitDieOnlyPattern.test(item)) return [];
+  }
+
+  return undefined;
+};
+
+// Tasha's: "here are the proficiencies you gain when you take your first level as an artificer:
+// light armor, medium armor, shields, thieves' tools, tinker's tools."
+const multiclassProsePattern = /proficiencies you gain when you take your first level as an? [a-z]+:\s*([^<]+?)\.?\s*<\/p>/i;
+
+const extractMulticlassProficiencies = ({ items, starting }) => {
+  if (!items) return undefined;
+  return classifyMulticlassGrants(items, starting);
+};
+
 const extractClassResources = (raw, features) => {
   const resources = [];
 
@@ -2309,6 +2386,7 @@ const extractBasicRulesClasses = (raw, label, sourceId) => {
     ? collectBasicRules2014ClassBlocks(raw)
     : collectHeadingBlocks(raw, 2).filter((block) => Boolean(getClassIdFromName(block.title)));
   const classSummaries = sourceId === 'basic-rules-2014' ? extractBasicRules2014ClassSummaries(raw) : new Map();
+  const multiclassTable = extractMulticlassProficiencyTable(raw);
 
   return classBlocks
     .map((block) => {
@@ -2355,6 +2433,10 @@ const extractBasicRulesClasses = (raw, label, sourceId) => {
       }
 
       const classFeatures = extractClassFeaturesFromBlock(classFeatureContent, label, featureLevels);
+      const multiclassProficiencies = extractMulticlassProficiencies({
+        items: multiclassTable.get(classId) ?? extractMulticlassTraitItems(block.content),
+        starting: { skillChoices, armorProficiencies, weaponProficiencies, toolProficiencies }
+      });
       return {
         id: toSourceSpecificId(sourceId, classId),
         name: repairMojibake(block.title),
@@ -2367,6 +2449,7 @@ const extractBasicRulesClasses = (raw, label, sourceId) => {
         toolProficiencies: toolProficiencies.length > 0 ? toolProficiencies : undefined,
         skillChoices,
         skillCount,
+        multiclassProficiencies,
         features: classFeatures,
         subclasses: [],
         subclassLevel,
@@ -3274,6 +3357,14 @@ const extractTashasArtificerClass = (raw, label, sourceId) => {
   }
 
   const artificerFeatures = extractClassFeaturesFromBlock(content, label, featureLevels);
+  const armorProficiencies = parseSimpleList(getPairValue([paragraphPairs, tablePairs], 'Armor', 'Armor Training'));
+  const weaponProficiencies = parseSimpleList(getPairValue([paragraphPairs, tablePairs], 'Weapons', 'Weapon Proficiencies'));
+  const toolProficiencies = parseSimpleList(getPairValue([paragraphPairs, tablePairs], 'Tools', 'Tool Proficiencies'));
+  const multiclassProse = multiclassProsePattern.exec(content);
+  const multiclassProficiencies = extractMulticlassProficiencies({
+    items: multiclassProse ? parseSimpleList(stripTags(multiclassProse[1])) : undefined,
+    starting: { skillChoices, armorProficiencies, weaponProficiencies, toolProficiencies }
+  });
   return {
     id: toSourceSpecificId(sourceId, 'artificer'),
     name: repairMojibake(artificerBlock.title),
@@ -3281,11 +3372,12 @@ const extractTashasArtificerClass = (raw, label, sourceId) => {
     hitDie,
     primaryAbility: spellcastingAbility ?? 'intelligence',
     savingThrows,
-    armorProficiencies: parseSimpleList(getPairValue([paragraphPairs, tablePairs], 'Armor', 'Armor Training')),
-    weaponProficiencies: parseSimpleList(getPairValue([paragraphPairs, tablePairs], 'Weapons', 'Weapon Proficiencies')),
-    toolProficiencies: parseSimpleList(getPairValue([paragraphPairs, tablePairs], 'Tools', 'Tool Proficiencies')),
+    armorProficiencies,
+    weaponProficiencies,
+    toolProficiencies,
     skillChoices,
     skillCount,
+    multiclassProficiencies,
     features: artificerFeatures,
     subclasses: [],
     subclassLevel,

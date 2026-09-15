@@ -14,7 +14,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/ui/badge';
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { SheetResourceControl } from '@/components/character/SheetResourceControl';
-import { getChosenFeatureOptions } from '@/lib/featureOptions';
+import { featureChoiceCount, getChosenFeatureOptions } from '@/lib/featureOptions';
 import { setClassResourceUsed, toggleResourceActive, type ResolvedClassResource } from '@/lib/sheetPlayState';
 import { rollOnScreen } from '@/store/diceTrayStore';
 import type { Character, CharacterFeatureSelection, Feature } from '@/types/dnd';
@@ -54,7 +54,7 @@ export function SheetFeatureList({
     <Accordion type="multiple" className="w-full">
       {features.map((feature) => {
         const chosen = getChosenFeatureOptions(feature, selections);
-        const outstanding = Math.max(0, (feature.chooseCount ?? 0) - chosen.length);
+        const outstanding = Math.max(0, featureChoiceCount(feature) - chosen.length);
         const resource = classResources?.find((entry) => entry.featureName === feature.name);
         const dice = FEATURE_DICE_PATTERN.exec(feature.description)?.[1];
 

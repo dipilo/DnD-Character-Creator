@@ -14,14 +14,20 @@
 import {
   deriveCharacterHitPoints,
   getAdditionalFeatSelectionLimit,
+  getClassProficiencyGrants,
+  getMulticlassSkillSelections,
   getSpeciesFeatSelectionSources,
+  getToolChoiceIdPrefix,
+  isChoicePlaceholderLabel,
+  isToolProficiencyChoiceLabel,
+  parseChoiceCount,
   resolveBackgroundGrantedFeat,
   updateCharacterClassEntry,
   type ResolvedCharacterClass,
   type SpellcastingRulesSummary
 } from '@/lib/builderRules';
 import { featHasPendingChoices } from '@/lib/featGrants';
-import { getChosenFeatureOptions, getSelectedFeatureOptionIds } from '@/lib/featureOptions';
+import { featureChoiceCount, getChosenFeatureOptions, getSelectedFeatureOptionIds } from '@/lib/featureOptions';
 import type {
   Background,
   Character,
@@ -124,10 +130,26 @@ export function canLevelDown(character: Pick<Character, 'classes'>) {
 }
 
 /** Only the parts a pending choice is recorded in. The builder holds a partial character. */
-export type AdvancementCharacter = Partial<Pick<Character, 'features' | 'feats' | 'featSpellSelections'>>;
+export type AdvancementCharacter = Partial<
+  Pick<
+    Character,
+    | 'features'
+    | 'feats'
+    | 'featSpellSelections'
+    | 'toolProficiencySelections'
+    | 'multiclassSkillSelections'
+    | 'backgroundLanguageSelections'
+    | 'speciesLanguageSelections'
+  >
+>;
 
 export interface AdvancementContext {
   character: AdvancementCharacter;
+  /**
+   * The skills the player picked for their class: the builder's pick layer, never the merged list a
+   * saved character stores. The sheet recovers it with `extractSelectedProficiencies`.
+   */
+  selectedSkills: readonly string[];
   resolvedClasses: readonly ResolvedCharacterClass[];
   species?: Species;
   variant?: SpeciesVariant;
@@ -141,10 +163,54 @@ export interface AdvancementContext {
 
 const classFeaturesPath = (classId: string) => `/builder/class/${encodeURIComponent(classId)}?tab=features`;
 const classSubclassesPath = (classId: string) => `/builder/class/${encodeURIComponent(classId)}?tab=subclasses`;
+const classProficienciesPath = (classId: string) => `/builder/class/${encodeURIComponent(classId)}?tab=proficiencies`;
 const speciesPath = (speciesId: string) => `/builder/species/${encodeURIComponent(speciesId)}`;
+const backgroundPath = (backgroundId: string) => `/builder/background/${encodeURIComponent(backgroundId)}`;
+
+/**
+ * A tool line that names a family ("One type of gaming set") is a pick, keyed by the owner's prefix
+ * and the line's index — the same id `ToolProficiencyChoices` writes and
+ * `deriveCharacterProficiencies` reads.
+ */
+function collectToolTasks(
+  labels: readonly string[] | undefined,
+  idPrefix: string,
+  character: AdvancementCharacter,
+  href: string,
+  ownerName: string
+): AdvancementTask[] {
+  const tasks: AdvancementTask[] = [];
+  (labels ?? []).forEach((label, index) => {
+    if (!isToolProficiencyChoiceLabel(label)) return;
+    const choiceId = `${idPrefix}-${index}`;
+    const chosen = character.toolProficiencySelections?.[choiceId]?.length ?? 0;
+    const outstanding = Math.max(0, parseChoiceCount(label) - chosen);
+    if (outstanding <= 0) return;
+    tasks.push({
+      id: `tool:${choiceId}`,
+      label: outstanding === 1 ? 'Choose a tool proficiency' : `Choose ${outstanding} tool proficiencies`,
+      detail: `${ownerName} · ${label}`,
+      href,
+      count: outstanding
+    });
+  });
+  return tasks;
+}
+
+function languageTask(id: string, limit: number, chosen: number, href: string, ownerName: string): AdvancementTask[] {
+  const outstanding = Math.max(0, limit - chosen);
+  if (outstanding <= 0) return [];
+  return [{
+    id,
+    label: outstanding === 1 ? 'Learn a language' : `Learn ${outstanding} languages`,
+    detail: `${ownerName} · ${Math.min(chosen, limit)} of ${limit} chosen`,
+    href,
+    count: outstanding
+  }];
+}
 
 const outstandingOptionCount = (feature: Feature, character: AdvancementCharacter) =>
-  Math.max(0, (feature.chooseCount ?? 0) - getChosenFeatureOptions(feature, character.features).length);
+  Math.max(0, featureChoiceCount(feature) - getChosenFeatureOptions(feature, character.features).length);
 
 /** A feature that offers options and has not been given them all. */
 function collectFeatureTasks(
@@ -169,11 +235,29 @@ function collectFeatureTasks(
   return tasks;
 }
 
+function skillTask(cls: Class, limit: number, chosen: number): AdvancementTask[] {
+  const outstanding = Math.max(0, limit - chosen);
+  if (outstanding <= 0) return [];
+  return [{
+    id: `skills:${cls.id}`,
+    label: outstanding === 1 ? `Choose a skill for ${cls.name}` : `Choose ${outstanding} skills for ${cls.name}`,
+    detail: `${Math.min(chosen, limit)} of ${limit} chosen`,
+    href: classProficienciesPath(cls.id),
+    count: outstanding
+  }];
+}
+
 function collectClassTasks(context: AdvancementContext): AdvancementTask[] {
-  const { character, resolvedClasses } = context;
+  const { character, resolvedClasses, selectedSkills } = context;
   const tasks: AdvancementTask[] = [];
 
-  for (const { entry, cls, subclass } of resolvedClasses) {
+  resolvedClasses.forEach(({ entry, cls, subclass }, index) => {
+    // `proficiencies.skills` is the starting class's pick layer; a later class records its own
+    // multiclass pick under its id, exactly as `ClassDetails` writes them.
+    const grants = getClassProficiencyGrants(cls, index);
+    const chosenSkills = grants.isStartingClass ? selectedSkills : getMulticlassSkillSelections(character, cls.id, entry.classId);
+    tasks.push(...skillTask(cls, grants.skillCount, chosenSkills.length));
+
     if (!entry.subclassId && entry.level >= cls.subclassLevel) {
       tasks.push({
         id: `subclass:${cls.id}`,
@@ -205,7 +289,17 @@ function collectClassTasks(context: AdvancementContext): AdvancementTask[] {
         )
       );
     }
-  }
+
+    tasks.push(
+      ...collectToolTasks(
+        grants.toolProficiencies,
+        grants.toolChoiceIdPrefix,
+        character,
+        classProficienciesPath(cls.id),
+        cls.name
+      )
+    );
+  });
 
   return tasks;
 }
@@ -293,13 +387,46 @@ function collectSpeciesTasks(context: AdvancementContext): AdvancementTask[] {
   const { character, species, variant } = context;
   if (!species) return [];
 
-  return collectFeatureTasks(
-    [...species.features, ...(variant?.features ?? [])],
-    character,
-    speciesPath(species.id),
-    `species:${species.id}`,
-    variant?.name ?? species.name
-  );
+  const ownerName = variant?.name ?? species.name;
+  return [
+    ...collectFeatureTasks(
+      [...species.features, ...(variant?.features ?? [])],
+      character,
+      speciesPath(species.id),
+      `species:${species.id}`,
+      ownerName
+    ),
+    // "One language of your choice" in the species' language list is a slot, not a language.
+    ...languageTask(
+      `languages:species:${species.id}`,
+      species.languages.filter((entry) => isChoicePlaceholderLabel(entry)).length,
+      character.speciesLanguageSelections?.length ?? 0,
+      speciesPath(species.id),
+      ownerName
+    )
+  ];
+}
+
+function collectBackgroundTasks(context: AdvancementContext): AdvancementTask[] {
+  const { character, background } = context;
+  if (!background) return [];
+
+  return [
+    ...languageTask(
+      `languages:background:${background.id}`,
+      background.languageCount ?? 0,
+      character.backgroundLanguageSelections?.length ?? 0,
+      backgroundPath(background.id),
+      background.name
+    ),
+    ...collectToolTasks(
+      background.toolProficiencies,
+      getToolChoiceIdPrefix('background', background.id),
+      character,
+      backgroundPath(background.id),
+      background.name
+    )
+  ];
 }
 
 /**
@@ -310,6 +437,7 @@ export function deriveAdvancementTasks(context: AdvancementContext): Advancement
   return [
     ...collectClassTasks(context),
     ...collectSpeciesTasks(context),
+    ...collectBackgroundTasks(context),
     ...collectFeatTasks(context),
     ...collectSpellTasks(context)
   ];

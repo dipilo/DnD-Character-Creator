@@ -64,6 +64,8 @@ export function useAdvancementTasks(character: Partial<Character> | undefined): 
     const species = speciesId ? getRuntimeSpeciesById(speciesId) : undefined;
     return deriveAdvancementTasks({
       character,
+      // The builder's `proficiencies` is the pick layer already.
+      selectedSkills: character.proficiencies?.skills ?? [],
       resolvedClasses,
       species,
       variant: speciesId && variantId ? getRuntimeSpeciesVariant(speciesId, variantId) : undefined,

@@ -6,6 +6,7 @@ import {
   deriveCharacterHitPoints,
   extractSelectedProficiencies,
   normalizeCharacterClassIds,
+  normalizeClassKeyedSelections,
   resolveAbilityScoreEntryState,
   resolveBackgroundGrantedFeat,
   resolveCharacterClasses
@@ -133,6 +134,7 @@ function buildEditorState(character: Character): BuilderState {
     character: {
       ...character,
       classes,
+      multiclassSkillSelections: normalizeClassKeyedSelections(character.multiclassSkillSelections, dndContent().getRuntimeClassById),
       // The sheet stores merged proficiencies; the builder needs the player's own picks.
       proficiencies: extractSelectedProficiencies({
         character,

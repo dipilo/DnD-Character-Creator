@@ -359,6 +359,7 @@ export function ReviewPage() {
       backgroundLanguageSelections: character.backgroundLanguageSelections,
       speciesLanguageSelections: character.speciesLanguageSelections,
       toolProficiencySelections: character.toolProficiencySelections,
+      multiclassSkillSelections: character.multiclassSkillSelections,
       featSpellSelections: character.featSpellSelections,
       abilityScoreMethod: builderState.abilityScoreMethod,
       rolledScores: builderState.rolledScores,
