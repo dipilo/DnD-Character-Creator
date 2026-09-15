@@ -360,6 +360,7 @@ export function ReviewPage() {
       speciesLanguageSelections: character.speciesLanguageSelections,
       toolProficiencySelections: character.toolProficiencySelections,
       multiclassSkillSelections: character.multiclassSkillSelections,
+      multiclassPrerequisitesWaived: character.multiclassPrerequisitesWaived,
       featSpellSelections: character.featSpellSelections,
       abilityScoreMethod: builderState.abilityScoreMethod,
       rolledScores: builderState.rolledScores,

@@ -7,13 +7,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FeatureOptionSelector } from '@/components/builder/FeatureOptionSelector';
 import { ToolProficiencyChoices } from '@/components/builder/ToolProficiencyChoices';
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { ArrowLeft, Check, Shield, Sword, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { canMixClassEditions, findCharacterClassEntry, getClassProficiencyGrants, getMulticlassSkillSelections, getRulesEditionLabel, sortFeaturesByLevel, updateCharacterClassEntry, type SelectedClassWithLevel } from '@/lib/builderRules';
+import { applyAbilityScoreBonuses, canMixClassEditions, evaluateMulticlassPrerequisites, findCharacterClassEntry, getClassProficiencyGrants, getMulticlassSkillSelections, getRulesEditionLabel, sortFeaturesByLevel, updateCharacterClassEntry, type SelectedClassWithLevel } from '@/lib/builderRules';
 import { getDescriptionPreview } from '@/lib/contentPresentation';
 import { getPoolBlockedOptionIds, getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
 
@@ -73,6 +75,18 @@ export function ClassDetails() {
       return selectedClass ? { cls: selectedClass, level: entry.level } : undefined;
     })
     .filter((entry): entry is SelectedClassWithLevel => Boolean(entry));
+  // Both books require the minimums of the new class and of every class already taken.
+  const unmetPrerequisites = cls
+    ? evaluateMulticlassPrerequisites({
+      selectedClasses,
+      candidateClass: cls,
+      abilityScores: applyAbilityScoreBonuses(builderState.character?.abilityScores, builderState.character?.abilityScoreBonuses)
+    })
+    : [];
+  const prerequisitesWaived = builderState.character?.multiclassPrerequisitesWaived === true;
+  const prerequisitesBlockSelection = unmetPrerequisites.length > 0 && !prerequisitesWaived;
+  // The switch stays while the waiver is on, so it can be turned back off after the class is taken.
+  const showPrerequisiteNote = unmetPrerequisites.length > 0 || (prerequisitesWaived && selectedClasses.length > 0);
 
   const allFeatures = [
     ...cls?.features ?? [],
@@ -124,6 +138,11 @@ export function ClassDetails() {
 
     if (!canMixClassEditions(selectedClasses, cls)) {
       toast.error('You cannot multiclass across 2014 and 2024 class rulesets.');
+      return;
+    }
+
+    if (prerequisitesBlockSelection) {
+      toast.error(`${cls.name} requires ${unmetPrerequisites.map((entry) => entry.label).join(', ')}.`);
       return;
     }
 
@@ -316,11 +335,30 @@ export function ClassDetails() {
           </div>
           {selectedSubclass && <p className="text-xs text-muted-foreground">Subclass: {selectedSubclass.name}</p>}
         </div>
-        <Button onClick={handleSelectClass} variant={isSelected ? 'default' : 'outline'}>
+        <Button onClick={handleSelectClass} variant={isSelected ? 'default' : 'outline'} disabled={prerequisitesBlockSelection}>
           {isSelected && <Check className="mr-2 h-4 w-4" />}
           {isSelected ? 'Selected' : 'Select'}
         </Button>
       </div>
+
+      {showPrerequisiteNote && (
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-muted/30 p-4">
+          <div className="space-y-1 text-sm">
+            <p className="font-medium">{prerequisitesWaived ? 'Multiclassing prerequisites waived' : 'Multiclassing prerequisites not met'}</p>
+            {unmetPrerequisites.map((entry) => (
+              <p key={entry.cls.id} className="text-muted-foreground">{entry.cls.name} requires {entry.requirement}.</p>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch
+              id="multiclass-prerequisites-waived"
+              checked={prerequisitesWaived}
+              onCheckedChange={(checked) => updateBuilderCharacter({ multiclassPrerequisitesWaived: checked || undefined })}
+            />
+            <Label htmlFor="multiclass-prerequisites-waived" className="font-normal">Waived at my table</Label>
+          </div>
+        </div>
+      )}
 
       <Tabs value={activeTab} onValueChange={(value) => updateSearchParam('tab', value)} className="w-full">
         {/* Scrolls at natural label width on a phone, equal columns from sm up — see the note on

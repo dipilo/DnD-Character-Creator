@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { SourceFilterBar } from '@/components/SourceFilterBar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { sourceMatchesSelection } from '@/data/librarySources';
-import { canMixClassEditions, getRulesEdition, getRulesEditionLabel, getSelectedClassEdition, type SelectedClassWithLevel } from '@/lib/builderRules';
+import { applyAbilityScoreBonuses, canMixClassEditions, evaluateMulticlassPrerequisites, getRulesEdition, getRulesEditionLabel, getSelectedClassEdition, type SelectedClassWithLevel } from '@/lib/builderRules';
 import { dedupeCanonicalContent, getCanonicalContentKey, getClassSelectionScore } from '@/lib/contentSelection';
 
 const EMPTY_SOURCE_IDS: string[] = [];
@@ -33,6 +33,25 @@ export function ClassSelection() {
   }, [builderState.character?.classes, classes]);
 
   const lockedEdition = getSelectedClassEdition(selectedClasses);
+  const prerequisitesWaived = builderState.character?.multiclassPrerequisitesWaived === true;
+  const abilityScores = useMemo(
+    () => applyAbilityScoreBonuses(builderState.character?.abilityScores, builderState.character?.abilityScoreBonuses),
+    [builderState.character?.abilityScores, builderState.character?.abilityScoreBonuses]
+  );
+  // Which classes this character cannot take yet, and what each one asks for.
+  const unmetPrerequisitesByClassId = useMemo(() => {
+    const unmet = new Map<string, string>();
+    if (prerequisitesWaived) {
+      return unmet;
+    }
+    classes.forEach((cls) => {
+      const entries = evaluateMulticlassPrerequisites({ selectedClasses, candidateClass: cls, abilityScores });
+      if (entries.length > 0) {
+        unmet.set(cls.id, entries.map((entry) => entry.label).join(', '));
+      }
+    });
+    return unmet;
+  }, [classes, selectedClasses, abilityScores, prerequisitesWaived]);
 
   const filteredClasses = useMemo(() => {
     return dedupeCanonicalContent(
@@ -78,6 +97,12 @@ export function ClassSelection() {
 
     if (!selected && !canMixClassEditions(selectedClasses, candidateClass)) {
       toast.error('You cannot multiclass across 2014 and 2024 class rulesets.');
+      return;
+    }
+
+    const unmetPrerequisites = unmetPrerequisitesByClassId.get(classId);
+    if (!selected && unmetPrerequisites) {
+      toast.error(`${candidateClass.name} needs ${unmetPrerequisites}.`);
       return;
     }
 
@@ -166,6 +191,9 @@ export function ClassSelection() {
                             <CardDescription className="text-xs">{cls.source}</CardDescription>
                             <div className="mt-2 flex flex-wrap gap-2">
                               <Badge variant="outline">{getRulesEditionLabel(cls.sourceId, cls.source)}</Badge>
+                              {unmetPrerequisitesByClassId.has(cls.id) && (
+                                <Badge variant="secondary">Requires {unmetPrerequisitesByClassId.get(cls.id)}</Badge>
+                              )}
                             </div>
                           </div>
                         </div>

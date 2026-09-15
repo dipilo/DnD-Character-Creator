@@ -1696,6 +1696,59 @@ const extractMulticlassProficiencies = ({ items, starting }) => {
   return classifyMulticlassGrants(items, starting);
 };
 
+// Who may take the class after their first. 2014 states it once, in the Multiclassing chapter's
+// Ability Score Minimum table ("Strength 13 or Dexterity 13"); 2024 states one rule — at least 13 in
+// the primary ability of the new class and the current ones — which each class's own Primary
+// Ability line resolves ("Strength or Dexterity"); Tasha's Artificer states it in a sentence. The
+// shape is a list of alternatives, each one every ability it names at its minimum.
+const abilityRequirementTokenPattern = /\b(strength|dexterity|constitution|intelligence|wisdom|charisma)\b(?: score of)?(?: (\d+))?/gi;
+
+const parseAbilityRequirementAlternatives = (text, defaultMinimum) => {
+  return text
+    .split(/\bor\b/i)
+    .map((alternative) => {
+      const requirement = {};
+      for (const match of alternative.matchAll(abilityRequirementTokenPattern)) {
+        const minimum = match[2] ? Number(match[2]) : defaultMinimum;
+        if (minimum) requirement[match[1].toLowerCase()] = minimum;
+      }
+      return requirement;
+    })
+    .filter((requirement) => Object.keys(requirement).length > 0);
+};
+
+// The 2014 table: Class | Ability Score Minimum.
+const extractMulticlassPrerequisiteTable = (raw) => {
+  const table = collectTableBlocks(raw).find((block) => /id="multiclassingminimum"/i.test(block));
+  const rows = table ? extractStructuredTableRows(table).slice(1) : [];
+  return new Map(rows
+    .map(([className, value]) => [getClassIdFromName(className ?? ''), parseAbilityRequirementAlternatives(value ?? '')])
+    .filter(([classId, alternatives]) => Boolean(classId) && alternatives.length > 0));
+};
+
+// 2024: "you must have a score of at least 13 in the primary ability of the new class and your
+// current classes." The number is the book's; the ability is read off each class.
+const multiclassPrimaryAbilityMinimumPattern = /score of at least (\d+) in the primary ability of the new class/i;
+
+const extractMulticlassPrimaryAbilityMinimum = (raw) => {
+  // Not stripTags: its cross-reference rewriter is written for a section and eats a whole document.
+  const match = multiclassPrimaryAbilityMinimumPattern.exec(replaceTags(raw));
+  return match ? Number(match[1]) : undefined;
+};
+
+// Tasha's: "you must have at least an Intelligence score of 13 to take a level in this class".
+const multiclassMinimumSentencePattern = /at least an? ([a-z]+ score of \d+) to take a level in this class/i;
+
+const extractMulticlassPrerequisites = ({ table, classId, primaryAbilityText, primaryAbilityMinimum }) => {
+  const stated = table?.get(classId);
+  if (stated) return stated;
+  if (primaryAbilityMinimum && primaryAbilityText) {
+    const alternatives = parseAbilityRequirementAlternatives(primaryAbilityText, primaryAbilityMinimum);
+    return alternatives.length > 0 ? alternatives : undefined;
+  }
+  return undefined;
+};
+
 const extractClassResources = (raw, features) => {
   const resources = [];
 
@@ -2387,6 +2440,8 @@ const extractBasicRulesClasses = (raw, label, sourceId) => {
     : collectHeadingBlocks(raw, 2).filter((block) => Boolean(getClassIdFromName(block.title)));
   const classSummaries = sourceId === 'basic-rules-2014' ? extractBasicRules2014ClassSummaries(raw) : new Map();
   const multiclassTable = extractMulticlassProficiencyTable(raw);
+  const multiclassPrerequisiteTable = extractMulticlassPrerequisiteTable(raw);
+  const multiclassPrimaryAbilityMinimum = extractMulticlassPrimaryAbilityMinimum(raw);
 
   return classBlocks
     .map((block) => {
@@ -2437,6 +2492,12 @@ const extractBasicRulesClasses = (raw, label, sourceId) => {
         items: multiclassTable.get(classId) ?? extractMulticlassTraitItems(block.content),
         starting: { skillChoices, armorProficiencies, weaponProficiencies, toolProficiencies }
       });
+      const multiclassPrerequisites = extractMulticlassPrerequisites({
+        table: multiclassPrerequisiteTable,
+        classId,
+        primaryAbilityText,
+        primaryAbilityMinimum: multiclassPrimaryAbilityMinimum
+      });
       return {
         id: toSourceSpecificId(sourceId, classId),
         name: repairMojibake(block.title),
@@ -2450,6 +2511,7 @@ const extractBasicRulesClasses = (raw, label, sourceId) => {
         skillChoices,
         skillCount,
         multiclassProficiencies,
+        multiclassPrerequisites,
         features: classFeatures,
         subclasses: [],
         subclassLevel,
@@ -3365,6 +3427,8 @@ const extractTashasArtificerClass = (raw, label, sourceId) => {
     items: multiclassProse ? parseSimpleList(stripTags(multiclassProse[1])) : undefined,
     starting: { skillChoices, armorProficiencies, weaponProficiencies, toolProficiencies }
   });
+  const multiclassMinimum = multiclassMinimumSentencePattern.exec(stripTags(content));
+  const multiclassPrerequisites = multiclassMinimum ? parseAbilityRequirementAlternatives(multiclassMinimum[1]) : undefined;
   return {
     id: toSourceSpecificId(sourceId, 'artificer'),
     name: repairMojibake(artificerBlock.title),
@@ -3378,6 +3442,7 @@ const extractTashasArtificerClass = (raw, label, sourceId) => {
     skillChoices,
     skillCount,
     multiclassProficiencies,
+    multiclassPrerequisites,
     features: artificerFeatures,
     subclasses: [],
     subclassLevel,

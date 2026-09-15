@@ -187,6 +187,7 @@ export const classSchema: z.ZodType<Class> = z.object({
     skillChoices: z.array(z.string().min(1)),
     skillCount: z.number().int().nonnegative()
   }).optional(),
+  multiclassPrerequisites: z.array(z.record(abilityScoreKeySchema, z.number().int().positive())).optional(),
   features: z.array(featureSchema),
   subclasses: z.array(subclassSchema),
   subclassLevel: z.number().int().nonnegative(),

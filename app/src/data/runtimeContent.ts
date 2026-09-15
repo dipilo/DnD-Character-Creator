@@ -1,4 +1,4 @@
-import type { Background, Class, ClassResource, CombatAction, Equipment, Feature, FeatureOption, Feat, Monster, MulticlassProficiencies, Species, SpeciesVariant, Spell, SpellcastingProgression, Subclass } from '@/types/dnd';
+import type { AbilityScoreRequirement, Background, Class, ClassResource, CombatAction, Equipment, Feature, FeatureOption, Feat, Monster, MulticlassProficiencies, Species, SpeciesVariant, Spell, SpellcastingProgression, Subclass } from '@/types/dnd';
 import { backgrounds as staticBackgrounds } from './backgrounds';
 import { classes as staticClasses } from './classes';
 import { species as staticSpecies } from './species';
@@ -1096,6 +1096,12 @@ const choosePreferredMulticlassProficiencies = (
   };
 };
 
+// A stated prerequisite is whole (its alternatives belong together), so one printing's list wins.
+const choosePreferredMulticlassPrerequisites = (
+  primary?: AbilityScoreRequirement[],
+  fallback?: AbilityScoreRequirement[]
+): AbilityScoreRequirement[] | undefined => (primary?.length ? primary : fallback?.length ? fallback : undefined);
+
 const enrichClass = (primary: Class, fallback?: Class): Class => {
   const equipmentSupplement = classEquipmentSupplements[getClassFallbackLookupKey(primary)];
   const enriched = {
@@ -1107,6 +1113,7 @@ const enrichClass = (primary: Class, fallback?: Class): Class => {
     skillChoices: choosePreferredArray(primary.skillChoices, fallback?.skillChoices),
     skillCount: primary.skillCount || fallback?.skillCount || 0,
     multiclassProficiencies: choosePreferredMulticlassProficiencies(primary.multiclassProficiencies, fallback?.multiclassProficiencies),
+    multiclassPrerequisites: choosePreferredMulticlassPrerequisites(primary.multiclassPrerequisites, fallback?.multiclassPrerequisites),
     features: mergeFeatureCollections(primary.features, fallback?.features),
     resources: choosePreferredResources(primary.resources, fallback?.resources),
     spellcasting: choosePreferredSpellcasting(primary.spellcasting, fallback?.spellcasting),
@@ -1154,6 +1161,7 @@ const mergeClassCandidates = (candidates: Class[]) => {
       skillChoices: choosePreferredArray(current.skillChoices, candidate.skillChoices),
       skillCount: choosePreferredCount(current.skillCount, candidate.skillCount),
       multiclassProficiencies: choosePreferredMulticlassProficiencies(current.multiclassProficiencies, candidate.multiclassProficiencies),
+      multiclassPrerequisites: choosePreferredMulticlassPrerequisites(current.multiclassPrerequisites, candidate.multiclassPrerequisites),
       features: mergeFeatureCollections(current.features, candidate.features),
       subclasses: mergeCollectionsById(current.subclasses, candidate.subclasses),
       subclassLevel: choosePreferredCount(current.subclassLevel, candidate.subclassLevel),

@@ -6,7 +6,7 @@
     "category": "supplement",
     "aliases": [],
     "origin": "parsed-html",
-    "importedAt": "2026-09-15T15:55:47.078Z",
+    "importedAt": "2026-09-15T16:58:44.715Z",
     "parser": "tcoe-html",
     "visibility": "private"
   },
@@ -60,6 +60,11 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "intelligence": 13
+          }
+        ],
         "features": [
           {
             "id": "magical-tinkering",

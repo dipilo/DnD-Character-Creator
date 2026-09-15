@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2014 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-09-15T15:55:45.294Z",
+    "importedAt": "2026-09-15T16:58:40.156Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -734,6 +734,11 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "strength": 13
+          }
+        ],
         "features": [
           {
             "id": "rage",
@@ -981,6 +986,11 @@
           ],
           "skillCount": 1
         },
+        "multiclassPrerequisites": [
+          {
+            "charisma": 13
+          }
+        ],
         "features": [
           {
             "id": "spellcasting",
@@ -1203,6 +1213,11 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "wisdom": 13
+          }
+        ],
         "features": [
           {
             "id": "spellcasting",
@@ -1404,6 +1419,11 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "wisdom": 13
+          }
+        ],
         "features": [
           {
             "id": "druidic",
@@ -1582,6 +1602,14 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "strength": 13
+          },
+          {
+            "dexterity": 13
+          }
+        ],
         "features": [
           {
             "id": "fighting-style",
@@ -1755,6 +1783,12 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "dexterity": 13,
+            "wisdom": 13
+          }
+        ],
         "features": [
           {
             "id": "unarmored-defense",
@@ -1997,6 +2031,12 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "strength": 13,
+            "charisma": 13
+          }
+        ],
         "features": [
           {
             "id": "divine-sense",
@@ -2208,6 +2248,12 @@
           ],
           "skillCount": 1
         },
+        "multiclassPrerequisites": [
+          {
+            "dexterity": 13,
+            "wisdom": 13
+          }
+        ],
         "features": [
           {
             "id": "favored-enemy",
@@ -2440,6 +2486,11 @@
           ],
           "skillCount": 1
         },
+        "multiclassPrerequisites": [
+          {
+            "dexterity": 13
+          }
+        ],
         "features": [
           {
             "id": "expertise",
@@ -2637,6 +2688,11 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "charisma": 13
+          }
+        ],
         "features": [
           {
             "id": "spellcasting",
@@ -3026,6 +3082,11 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "charisma": 13
+          }
+        ],
         "features": [
           {
             "id": "otherworldly-patron",
@@ -6165,6 +6226,11 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "intelligence": 13
+          }
+        ],
         "features": [
           {
             "id": "spellcasting",

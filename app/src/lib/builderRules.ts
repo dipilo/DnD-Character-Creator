@@ -1,6 +1,7 @@
 import type {
   AbilityScoreIncrease,
   AbilityScoreMethod,
+  AbilityScoreRequirement,
   AbilityScores,
   Background,
   Character,
@@ -1244,6 +1245,54 @@ export const getSelectedClassEdition = (selectedClasses: SelectedClassWithLevel[
   }
 
   return 'unknown' as const;
+};
+
+const capitalizeAbility = (ability: keyof AbilityScores) => ability.charAt(0).toUpperCase() + ability.slice(1);
+
+/** "Strength 13 or Dexterity 13"; "Dexterity 13 and Wisdom 13". */
+export const describeMulticlassPrerequisite = (alternatives: AbilityScoreRequirement[]) =>
+  alternatives
+    .map((requirement) => abilityDisplayOrder
+      .filter((ability) => requirement[ability] !== undefined)
+      .map((ability) => `${capitalizeAbility(ability)} ${requirement[ability]}`)
+      .join(' and '))
+    .join(' or ');
+
+const meetsAbilityRequirement = (requirement: AbilityScoreRequirement, abilityScores: AbilityScores) =>
+  abilityDisplayOrder.every((ability) => requirement[ability] === undefined || abilityScores[ability] >= (requirement[ability] ?? 0));
+
+export interface UnmetMulticlassPrerequisite {
+  cls: Class;
+  requirement: string;
+  /** "Wisdom 13" on the class being taken, "Fighter Strength 13 or Dexterity 13" on one already held. */
+  label: string;
+}
+
+/**
+ * Both books say a character taking a new class must meet the minimums of the new class and of
+ * every class they already have, so a class taken first is never checked and every class is
+ * checked once a second one is picked. A class whose source states no minimum passes.
+ */
+export const evaluateMulticlassPrerequisites = ({
+  selectedClasses,
+  candidateClass,
+  abilityScores
+}: {
+  selectedClasses: SelectedClassWithLevel[];
+  candidateClass: Class;
+  abilityScores: AbilityScores;
+}): UnmetMulticlassPrerequisite[] => {
+  const alreadyTaken = selectedClasses.some((entry) => entry.cls.id === candidateClass.id);
+  if (alreadyTaken || selectedClasses.length === 0) {
+    return [];
+  }
+
+  return [...selectedClasses.map((entry) => entry.cls), candidateClass]
+    .filter((cls) => cls.multiclassPrerequisites?.length && !cls.multiclassPrerequisites.some((requirement) => meetsAbilityRequirement(requirement, abilityScores)))
+    .map((cls) => {
+      const requirement = describeMulticlassPrerequisite(cls.multiclassPrerequisites ?? []);
+      return { cls, requirement, label: cls.id === candidateClass.id ? requirement : `${cls.name} ${requirement}` };
+    });
 };
 
 export const canMixClassEditions = (selectedClasses: SelectedClassWithLevel[], candidateClass: Class) => {

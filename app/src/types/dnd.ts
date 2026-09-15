@@ -151,6 +151,13 @@ export interface Class {
    * Absent when the source states nothing, in which case the starting proficiencies apply.
    */
   multiclassProficiencies?: MulticlassProficiencies;
+  /**
+   * Who may take the class after their first: alternatives, each every ability it names at its
+   * minimum (Fighter: Strength 13 or Dexterity 13; Monk: Dexterity 13 and Wisdom 13). Read from
+   * the 2014 table, 2024's primary-ability rule, or Tasha's sentence; absent when a source states
+   * none.
+   */
+  multiclassPrerequisites?: AbilityScoreRequirement[];
   features: ClassFeature[];
   subclasses: Subclass[];
   subclassLevel: number;
@@ -162,6 +169,8 @@ export interface Class {
   source: string;
   sourceId?: string;
 }
+
+export type AbilityScoreRequirement = Partial<Record<keyof AbilityScores, number>>;
 
 export interface MulticlassProficiencies {
   armorProficiencies: string[];
@@ -431,6 +440,8 @@ export interface Character {
    * keyed by class id. `proficiencies.skills` stays the starting class's picks.
    */
   multiclassSkillSelections?: Record<string, string[]>;
+  /** The table has waived the multiclassing ability score minimums for this character. */
+  multiclassPrerequisitesWaived?: boolean;
   /**
    * The spells picked for a feat's own spell lines ("one 1st-level spell of your choice"), keyed
    * by `FeatSpellChoice.id`. Kept apart from `spells` because these are the feat's, not the

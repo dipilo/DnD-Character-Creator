@@ -1,0 +1,29 @@
+# Render Blueprint for the backend. Installs from package-lock.json: the dashboard's default
+# `yarn` build re-resolves every version on each deploy and 404s when the registry lags.
+services:
+  - type: web
+    name: dnd
+    runtime: node
+    plan: free
+    buildCommand: npm ci --omit=dev --workspace server
+    startCommand: npm start --workspace server
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 22.16.0
+      - key: LIBSQL_URL
+        sync: false
+      - key: LIBSQL_AUTH_TOKEN
+        sync: false
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: DISCORD_CLIENT_ID
+        sync: false
+      - key: DISCORD_CLIENT_SECRET
+        sync: false
+      - key: DISCORD_REDIRECT_URI
+        sync: false
+      - key: DIAG_TOKEN
+        sync: false

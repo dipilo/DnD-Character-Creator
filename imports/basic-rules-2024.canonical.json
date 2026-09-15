@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2024 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-09-15T15:55:46.364Z",
+    "importedAt": "2026-09-15T17:01:03.594Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -428,6 +428,11 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "strength": 13
+          }
+        ],
         "features": [
           {
             "id": "level-1-rage",
@@ -706,6 +711,11 @@
           ],
           "skillCount": 1
         },
+        "multiclassPrerequisites": [
+          {
+            "charisma": 13
+          }
+        ],
         "features": [
           {
             "id": "level-1-bardic-inspiration",
@@ -1140,6 +1150,11 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "wisdom": 13
+          }
+        ],
         "features": [
           {
             "id": "level-1-spellcasting",
@@ -1608,6 +1623,11 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "wisdom": 13
+          }
+        ],
         "features": [
           {
             "id": "level-1-spellcasting",
@@ -2098,6 +2118,14 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "strength": 13
+          },
+          {
+            "dexterity": 13
+          }
+        ],
         "features": [
           {
             "id": "level-1-fighting-style",
@@ -2360,6 +2388,12 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "dexterity": 13,
+            "wisdom": 13
+          }
+        ],
         "features": [
           {
             "id": "level-1-martial-arts",
@@ -2632,6 +2666,12 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "strength": 13,
+            "charisma": 13
+          }
+        ],
         "features": [
           {
             "id": "level-1-lay-on-hands",
@@ -3055,6 +3095,12 @@
           ],
           "skillCount": 1
         },
+        "multiclassPrerequisites": [
+          {
+            "dexterity": 13,
+            "wisdom": 13
+          }
+        ],
         "features": [
           {
             "id": "level-1-spellcasting",
@@ -3490,6 +3536,11 @@
           ],
           "skillCount": 1
         },
+        "multiclassPrerequisites": [
+          {
+            "dexterity": 13
+          }
+        ],
         "features": [
           {
             "id": "level-1-expertise",
@@ -3710,6 +3761,11 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "charisma": 13
+          }
+        ],
         "features": [
           {
             "id": "level-1-spellcasting",
@@ -4331,6 +4387,11 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "charisma": 13
+          }
+        ],
         "features": [
           {
             "id": "level-1-eldritch-invocations",
@@ -7052,6 +7113,11 @@
           "skillChoices": [],
           "skillCount": 0
         },
+        "multiclassPrerequisites": [
+          {
+            "intelligence": 13
+          }
+        ],
         "features": [
           {
             "id": "level-1-spellcasting",
