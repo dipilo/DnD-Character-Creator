@@ -27,3 +27,5 @@ services:
         sync: false
       - key: DIAG_TOKEN
         sync: false
+      - key: BOT_API_KEY
+        sync: false

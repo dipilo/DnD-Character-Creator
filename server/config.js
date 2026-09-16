@@ -24,6 +24,9 @@ config = {
   // rest of the import working, because pasting an existing sheet was always the fallback.
   sheetTemplateUrl: process.env.SHEET_TEMPLATE_URL || config.sheetTemplateUrl || null,
   formTemplateUrl: process.env.FORM_TEMPLATE_URL || config.formTemplateUrl || null,
+  // The shared secret the Discord bot presents on /api/bot/* (server/middleware/botAuth.js).
+  // Unset disables that surface outright rather than leaving it open.
+  botApiKey: process.env.BOT_API_KEY || config.botApiKey || null,
   // Optional frontend origin allowlist
   frontendOrigin: process.env.FRONTEND_ORIGIN || config.frontendOrigin,
   allowedReturnOrigins: (process.env.ALLOWED_RETURN_ORIGINS
