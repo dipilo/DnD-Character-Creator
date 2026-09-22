@@ -6,7 +6,7 @@
     "category": "supplement",
     "aliases": [],
     "origin": "parsed-html",
-    "importedAt": "2026-09-15T16:58:44.715Z",
+    "importedAt": "2026-09-22T06:06:04.675Z",
     "parser": "tcoe-html",
     "visibility": "private"
   },
@@ -174,6 +174,41 @@
         ],
         "subclasses": [],
         "subclassLevel": 3,
+        "resources": [
+          {
+            "id": "flash-of-genius",
+            "name": "Flash of Genius",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Flash of Genius",
+            "usesFromAbility": {
+              "ability": "intelligence",
+              "bonus": 0,
+              "minimum": 1
+            }
+          }
+        ],
         "spellcasting": {
           "ability": "intelligence",
           "cantripsKnown": [
@@ -527,7 +562,37 @@
         "subclassLevel": 1,
         "equipmentOptions": [],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "harness-divine-power",
+            "name": "Harness Divine Power",
+            "perLevel": [
+              0,
+              1,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              3,
+              3,
+              3
+            ],
+            "resetsOn": "long",
+            "featureName": "Harness Divine Power"
+          }
+        ]
       },
       {
         "id": "tashas-druid-optional-features",
@@ -711,7 +776,37 @@
         "subclassLevel": 1,
         "equipmentOptions": [],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "harness-divine-power",
+            "name": "Harness Divine Power",
+            "perLevel": [
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3
+            ],
+            "resetsOn": "long",
+            "featureName": "Harness Divine Power"
+          }
+        ]
       },
       {
         "id": "tashas-ranger-optional-features",
@@ -795,7 +890,67 @@
         "subclassLevel": 1,
         "equipmentOptions": [],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "favored-foe",
+            "name": "Favored Foe",
+            "perLevel": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Favored Foe",
+            "usesFromProficiencyBonus": true
+          },
+          {
+            "id": "nature-s-veil",
+            "name": "Nature’s Veil",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Nature’s Veil",
+            "usesFromProficiencyBonus": true
+          }
+        ]
       },
       {
         "id": "tashas-rogue-optional-features",
@@ -1793,7 +1948,42 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "restorative-reagents",
+            "name": "Restorative Reagents",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Restorative Reagents",
+            "usesFromAbility": {
+              "ability": "intelligence",
+              "bonus": 0,
+              "minimum": 1
+            }
+          }
+        ]
       },
       {
         "id": "tashas-artificer-armorer",
@@ -1852,7 +2042,67 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "armor-model",
+            "name": "Armor Model",
+            "perLevel": [
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Armor Model",
+            "usesFromProficiencyBonus": true
+          },
+          {
+            "id": "perfected-armor",
+            "name": "Perfected Armor",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Perfected Armor",
+            "usesFromProficiencyBonus": true
+          }
+        ]
       },
       {
         "id": "tashas-artificer-artillerist",
@@ -1963,7 +2213,42 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "arcane-jolt",
+            "name": "Arcane Jolt",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Arcane Jolt",
+            "usesFromAbility": {
+              "ability": "intelligence",
+              "bonus": 0,
+              "minimum": 1
+            }
+          }
+        ]
       },
       {
         "id": "tashas-barbarian-path-of-the-beast",
@@ -2001,7 +2286,67 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "infectious-fury",
+            "name": "Infectious Fury",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Infectious Fury",
+            "usesFromProficiencyBonus": true
+          },
+          {
+            "id": "call-the-hunt",
+            "name": "Call the Hunt",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Call the Hunt",
+            "usesFromProficiencyBonus": true
+          }
+        ]
       },
       {
         "id": "tashas-barbarian-path-of-wild-magic",
@@ -2046,7 +2391,67 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "magic-awareness",
+            "name": "Magic Awareness",
+            "perLevel": [
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Magic Awareness",
+            "usesFromProficiencyBonus": true
+          },
+          {
+            "id": "bolstering-magic",
+            "name": "Bolstering Magic",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Bolstering Magic",
+            "usesFromProficiencyBonus": true
+          }
+        ]
       },
       {
         "id": "tashas-bard-college-of-creation",
@@ -2129,7 +2534,70 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "universal-speech",
+            "name": "Universal Speech",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Universal Speech"
+          },
+          {
+            "id": "infectious-inspiration",
+            "name": "Infectious Inspiration",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Infectious Inspiration",
+            "usesFromAbility": {
+              "ability": "charisma",
+              "bonus": 0,
+              "minimum": 1
+            }
+          }
+        ]
       },
       {
         "id": "tashas-cleric-order-domain",
@@ -2188,7 +2656,42 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "embodiment-of-the-law",
+            "name": "Embodiment of the Law",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Embodiment of the Law",
+            "usesFromAbility": {
+              "ability": "wisdom",
+              "bonus": 0,
+              "minimum": 1
+            }
+          }
+        ]
       },
       {
         "id": "tashas-cleric-peace-domain",
@@ -2247,7 +2750,38 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "emboldening-bond",
+            "name": "Emboldening Bond",
+            "perLevel": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Emboldening Bond",
+            "usesFromProficiencyBonus": true
+          }
+        ]
       },
       {
         "id": "tashas-cleric-twilight-domain",
@@ -2313,7 +2847,38 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "steps-of-night",
+            "name": "Steps of Night",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Steps of Night",
+            "usesFromProficiencyBonus": true
+          }
+        ]
       },
       {
         "id": "tashas-druid-circle-of-spores",
@@ -2365,7 +2930,42 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "fungal-infestation",
+            "name": "Fungal Infestation",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Fungal Infestation",
+            "usesFromAbility": {
+              "ability": "wisdom",
+              "bonus": 0,
+              "minimum": 1
+            }
+          }
+        ]
       },
       {
         "id": "tashas-druid-circle-of-stars",
@@ -2410,7 +3010,67 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "star-map",
+            "name": "Star Map",
+            "perLevel": [
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Star Map",
+            "usesFromProficiencyBonus": true
+          },
+          {
+            "id": "cosmic-omen",
+            "name": "Cosmic Omen",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Cosmic Omen",
+            "usesFromProficiencyBonus": true
+          }
+        ]
       },
       {
         "id": "tashas-druid-circle-of-wildfire",
@@ -2455,7 +3115,66 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "cauterizing-flames",
+            "name": "Cauterizing Flames",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Cauterizing Flames",
+            "usesFromProficiencyBonus": true
+          },
+          {
+            "id": "blazing-revival",
+            "name": "Blazing Revival",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Blazing Revival"
+          }
+        ]
       },
       {
         "id": "tashas-fighter-psi-warrior",
@@ -2559,7 +3278,67 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "giant-s-might",
+            "name": "Giant’s Might",
+            "perLevel": [
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Giant’s Might",
+            "usesFromProficiencyBonus": true
+          },
+          {
+            "id": "runic-shield",
+            "name": "Runic Shield",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Runic Shield",
+            "usesFromProficiencyBonus": true
+          }
+        ]
       },
       {
         "id": "tashas-monk-way-of-mercy",
@@ -2611,7 +3390,37 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "hand-of-ultimate-mercy",
+            "name": "Hand of Ultimate Mercy",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Hand of Ultimate Mercy"
+          }
+        ]
       },
       {
         "id": "tashas-monk-way-of-the-astral-self",
@@ -2694,7 +3503,70 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "glorious-defense",
+            "name": "Glorious Defense",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Glorious Defense",
+            "usesFromAbility": {
+              "ability": "charisma",
+              "bonus": 0,
+              "minimum": 1
+            }
+          },
+          {
+            "id": "living-legend",
+            "name": "Living Legend",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Living Legend"
+          }
+        ]
       },
       {
         "id": "tashas-paladin-oath-of-the-watchers",
@@ -2739,7 +3611,37 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "mortal-bulwark",
+            "name": "Mortal Bulwark",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Mortal Bulwark"
+          }
+        ]
       },
       {
         "id": "tashas-ranger-fey-wanderer",
@@ -2810,7 +3712,42 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "misty-wanderer",
+            "name": "Misty Wanderer",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Misty Wanderer",
+            "usesFromAbility": {
+              "ability": "wisdom",
+              "bonus": 0,
+              "minimum": 1
+            }
+          }
+        ]
       },
       {
         "id": "tashas-ranger-swarmkeeper",
@@ -2855,7 +3792,67 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "writhing-tide",
+            "name": "Writhing Tide",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Writhing Tide",
+            "usesFromProficiencyBonus": true
+          },
+          {
+            "id": "swarming-dispersal",
+            "name": "Swarming Dispersal",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Swarming Dispersal",
+            "usesFromProficiencyBonus": true
+          }
+        ]
       },
       {
         "id": "tashas-rogue-phantom",
@@ -2900,7 +3897,38 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "wails-from-the-grave",
+            "name": "Wails from the Grave",
+            "perLevel": [
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Wails from the Grave",
+            "usesFromProficiencyBonus": true
+          }
+        ]
       },
       {
         "id": "tashas-rogue-soulknife",
@@ -2945,7 +3973,65 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "psychic-veil",
+            "name": "Psychic Veil",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Psychic Veil"
+          },
+          {
+            "id": "rend-mind",
+            "name": "Rend Mind",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Rend Mind"
+          }
+        ]
       },
       {
         "id": "tashas-sorcerer-aberrant-mind",
@@ -2997,7 +4083,37 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "warping-implosion",
+            "name": "Warping Implosion",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Warping Implosion"
+          }
+        ]
       },
       {
         "id": "tashas-sorcerer-clockwork-soul",
@@ -3042,7 +4158,94 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "restore-balance",
+            "name": "Restore Balance",
+            "perLevel": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Restore Balance",
+            "usesFromProficiencyBonus": true
+          },
+          {
+            "id": "trance-of-order",
+            "name": "Trance of Order",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Trance of Order"
+          },
+          {
+            "id": "clockwork-cavalcade",
+            "name": "Clockwork Cavalcade",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Clockwork Cavalcade"
+          }
+        ]
       },
       {
         "id": "tashas-warlock-the-fathomless",
@@ -3101,7 +4304,66 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "tentacle-of-the-deeps",
+            "name": "Tentacle of the Deeps",
+            "perLevel": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Tentacle of the Deeps",
+            "usesFromProficiencyBonus": true
+          },
+          {
+            "id": "fathomless-plunge",
+            "name": "Fathomless Plunge",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Fathomless Plunge"
+          }
+        ]
       },
       {
         "id": "tashas-warlock-the-genie",
@@ -3146,7 +4408,38 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "elemental-gift",
+            "name": "Elemental Gift",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Elemental Gift",
+            "usesFromProficiencyBonus": true
+          }
+        ]
       },
       {
         "id": "tashas-wizard-bladesinging",
@@ -3191,7 +4484,38 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "bladesong",
+            "name": "Bladesong",
+            "perLevel": [
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Bladesong",
+            "usesFromProficiencyBonus": true
+          }
+        ]
       },
       {
         "id": "tashas-wizard-order-of-scribes",
@@ -3236,7 +4560,94 @@
           }
         ],
         "source": "Tasha's Cauldron of Everything",
-        "sourceId": "tashas"
+        "sourceId": "tashas",
+        "resources": [
+          {
+            "id": "awakened-spellbook",
+            "name": "Awakened Spellbook",
+            "perLevel": [
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Awakened Spellbook"
+          },
+          {
+            "id": "manifest-mind",
+            "name": "Manifest Mind",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Manifest Mind",
+            "usesFromProficiencyBonus": true
+          },
+          {
+            "id": "one-with-the-word",
+            "name": "One with the Word",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "One with the Word"
+          }
+        ]
       },
       {
         "id": "tashas-battle-master-choice-pool-supplement",

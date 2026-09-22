@@ -781,6 +781,16 @@ const isSubclassTrackCompatible = (subclass: Subclass, targetTrack: SubclassComp
   return subclassTrack === 'shared' || subclassTrack === targetTrack;
 };
 
+/**
+ * Resources are all-or-nothing per printing: a candidate either parsed the class table's pool
+ * columns or parsed none, and mixing two printings' columns would offer a 2014 Barbarian the 2024
+ * table's rage count. `choosePreferredArray` is the same rule the proficiency lists use.
+ */
+const choosePreferredResources = (primary?: ClassResource[], fallback?: ClassResource[]) => {
+  const chosen = choosePreferredArray(primary ?? [], fallback ?? []);
+  return chosen.length > 0 ? chosen : undefined;
+};
+
 const mergeSubclassCandidatesById = (subclasses: Subclass[]) => {
   const grouped = subclasses.reduce<Map<string, Subclass[]>>((entries, subclass) => {
     const collection = entries.get(subclass.id);
@@ -812,7 +822,8 @@ const mergeSubclassCandidatesById = (subclasses: Subclass[]) => {
         source: choosePreferredText(sanitizeImportedText(current.source), sanitizeImportedText(candidate.source)) ?? current.source,
         sourceId: current.sourceId ?? candidate.sourceId,
         description: choosePreferredText(sanitizeImportedText(current.description), sanitizeImportedText(candidate.description)) ?? current.description,
-        features: mergeFeatureCollections(current.features, candidate.features)
+        features: mergeFeatureCollections(current.features, candidate.features),
+        resources: choosePreferredResources(current.resources, candidate.resources)
       };
     }, primary);
   }).map(sanitizeSubclass);
@@ -1065,16 +1076,6 @@ const applySpeciesFeatureChoiceSupplements = (species: Species): Species => {
       )
     }))
   };
-};
-
-/**
- * Resources are all-or-nothing per printing: a candidate either parsed the class table's pool
- * columns or parsed none, and mixing two printings' columns would offer a 2014 Barbarian the 2024
- * table's rage count. `choosePreferredArray` is the same rule the proficiency lists use.
- */
-const choosePreferredResources = (primary?: ClassResource[], fallback?: ClassResource[]) => {
-  const chosen = choosePreferredArray(primary ?? [], fallback ?? []);
-  return chosen.length > 0 ? chosen : undefined;
 };
 
 // A printing that states multiclassing at all states every part of it, so a stated set wins

@@ -9,7 +9,7 @@
 // this table, and an action it does not name is 400 rather than a document write.
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
-const { loadIndex, resolveClass, resolveSubclass, findEquipment } = require('./botSheet');
+const { abilityScores, loadIndex, loadMaths, resolveClass, resolveSubclass, findEquipment } = require('./botSheet');
 
 const APP_LIB = path.join(__dirname, '..', '..', 'app', 'src', 'lib');
 const COIN_UNITS = ['cp', 'sp', 'ep', 'gp', 'pp'];
@@ -24,7 +24,8 @@ function loadPlayMaths() {
     mathsPromise = Promise.all([
       import(pathToFileURL(path.join(APP_LIB, 'sheetPlayState.ts')).href),
       import(pathToFileURL(path.join(APP_LIB, 'spellSlots.ts')).href),
-    ]).then(([playState, spellSlots]) => ({ ...playState, ...spellSlots }));
+      loadMaths(),
+    ]).then(([playState, spellSlots, sheetMath]) => ({ ...playState, ...spellSlots, ...sheetMath }));
   }
   return mathsPromise;
 }
@@ -64,8 +65,14 @@ function slotTotals(maths, doc) {
   return maths.deriveSlotTotals(classEntries(doc).map(({ cls, subclass, level }) => ({ cls, subclass, level })));
 }
 
+// A pool sized by an ability or the proficiency bonus reads the same scores the sheet route does.
 function classResources(maths, doc) {
-  return maths.resolveClassResources(doc, (id) => resolveClass(id));
+  const scores = abilityScores(doc);
+  const totalLevel = classEntries(doc).reduce((sum, { level }) => sum + level, 0) || 1;
+  return maths.resolveClassResources(doc, (id) => resolveClass(id), {
+    abilityModifier: (ability) => maths.abilityModifier(scores[ability]),
+    proficiencyBonus: maths.getCharacterProficiencyBonus(totalLevel),
+  }, (id) => resolveSubclass(id));
 }
 
 const slotRows = (totals, used) => totals
@@ -102,6 +109,7 @@ async function playState(rawDoc) {
       name: resource.name,
       className: resource.className,
       maximum: resource.maximum,
+      maximumSource: resource.maximumSource ?? null,
       used: resource.used,
       active: resource.active,
       activatable: resource.activatable,

@@ -200,4 +200,4 @@ async function deriveSheet(doc) {
   };
 }
 
-module.exports = { deriveSheet, loadMaths, loadIndex, resolveClass, resolveSubclass, findEquipment };
+module.exports = { abilityScores, deriveSheet, loadMaths, loadIndex, resolveClass, resolveSubclass, findEquipment };

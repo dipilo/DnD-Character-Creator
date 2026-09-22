@@ -1,3 +1,4 @@
+import { applyProseResources, parseResourceReset } from './lib/classResources.mjs';
 import { extractFeatBenefitStructures } from './lib/featBenefits.mjs';
 
 export const canonicalSchemaVersion = 'ddbcc-v1';
@@ -216,7 +217,7 @@ const sectionPointerRewrites = [
   [/\s*\([^()]{0,40}(?:later|earlier) in this section[^()]{0,20}\)/gi, '']
 ];
 
-const sectionPointerHintPattern = /section|description/i;
+const sectionPointerHintPattern = /\bsection\b|\bdescription\b/i;
 const rewriteSectionPointers = (value) => {
   return sectionPointerHintPattern.test(value)
     ? sectionPointerRewrites.reduce((current, [pattern, replacement]) => current.replaceAll(pattern, replacement), value)
@@ -1544,55 +1545,6 @@ const readResourceCell = (value) => {
   if (!text || /^[—–-]+$/.test(text)) return 0;
   if (/^unlimited$/i.test(text)) return null;
   return /^\d+$/.test(text) ? Number(text) : undefined;
-};
-
-// A column is only a pool if its feature says the uses are spent and come back on a rest, and the
-// two printings word that four different ways:
-//
-//   2024  "You regain one expended use when you finish a Short Rest, and you regain all expended
-//          uses when you finish a Long Rest."
-//   2014  "Once you have raged the number of times shown ..., you must finish a long rest before
-//          you can rage again."
-//   2014  "When you spend a ki point, it is unavailable until you finish a short or long rest."
-//   both  "You regain all spent sorcery points when you finish a long rest."
-//
-// Matching one of these is what makes a column a resource at all. Weapon Mastery and Eldritch
-// Invocations are numbers in the same tables that count what you picked, and their prose says so —
-// "you can practice weapon drills and change one of those weapon choices" mentions a Long Rest and
-// no expenditure, so none of these patterns reach it.
-const RESOURCE_RESET_PATTERNS = [
-  /regain(?:s)? all (?:of (?:its|your) )?(?:expended|spent)[^.]{0,80}?finish (?:a |an )?(short or (?:a )?long|short|long) rest/i,
-  /(?:is|are) unavailable until you finish (?:a |an )?(short or (?:a )?long|short|long) rest/i,
-  /must finish (?:a |an )?(short or (?:a )?long|short|long) rest before you can/i,
-  /regain(?:s)? (?:all|any) (?:of (?:its|your) )?(?:expended|spent)[^.]{0,80}?(short or (?:a )?long|short|long) rest/i,
-];
-
-/** "You regain one expended use when you finish a Short Rest" — a partial, not the full reset. */
-const SHORT_REST_PARTIAL = /regain(?:s)? (one|two|three|\d+) (?:of (?:its|your) )?expended[^.]{0,60}?finish (?:a |an )?short rest/i;
-
-const REST_WORDS = { one: 1, two: 2, three: 3 };
-
-/**
- * When a resource comes back, read from the prose of the feature the column is named after.
- *
- * `resetsOn` is where *all* of them come back, so the 2024 books' "one back on a Short Rest, all
- * back on a Long Rest" does not read as a short-rest resource; the partial is carried separately.
- * Null means this column is not a pool at all and gets no tracker.
- */
-const parseResourceReset = (text) => {
-  let resetsOn = null;
-  for (const pattern of RESOURCE_RESET_PATTERNS) {
-    const match = pattern.exec(text);
-    if (!match) continue;
-    resetsOn = /^short/i.test(match[1]) ? 'short' : 'long';
-    break;
-  }
-  if (!resetsOn) return { resetsOn: null, shortRestRegain: null };
-
-  const partial = resetsOn === 'long' ? SHORT_REST_PARTIAL.exec(text) : null;
-  const word = partial?.[1]?.toLowerCase();
-  const shortRestRegain = word ? (REST_WORDS[word] ?? Number(word) ?? null) : null;
-  return { resetsOn, shortRestRegain };
 };
 
 /**
@@ -3696,15 +3648,15 @@ const determineParsedDocumentContent = ({ raw, label, sourceId, looksLikeHtml, s
   }
 
   if (shouldExtractXanathar) {
-    return extractXanatharContent(raw, label, sourceId);
+    return applyProseResources(extractXanatharContent(raw, label, sourceId));
   }
 
   if (shouldExtractBasicRules) {
-    return extractBasicRulesContent(raw, label, sourceId);
+    return applyProseResources(extractBasicRulesContent(raw, label, sourceId));
   }
 
   if (shouldExtractTashas) {
-    return extractTashasContent(raw, label, sourceId);
+    return applyProseResources(extractTashasContent(raw, label, sourceId));
   }
 
   const content = createEmptyImportedContentBucket();

@@ -20,6 +20,8 @@
     "test:bot": "node server/test/botApi.mjs",
     "test:sessions": "node server/test/gameSessions.mjs",
     "test:feat-benefits": "node scripts/test/featBenefits.mjs",
+    "test:class-resources": "node scripts/test/classResources.mjs",
+    "test:class-resources:maximums": "node --import ./app/test/aliasLoader.mjs app/test/classResourceMaximums.mjs",
     "test:scheduler": "node server/test/schedulerFlow.mjs",
     "test:availability": "node server/test/availabilityParsing.mjs",
     "test:sheet-intake": "node server/test/sheetIntake.mjs",

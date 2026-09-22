@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2014 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-09-15T16:58:40.156Z",
+    "importedAt": "2026-09-22T06:06:01.851Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -1072,6 +1072,42 @@
         ],
         "subclasses": [],
         "subclassLevel": 3,
+        "resources": [
+          {
+            "id": "bardic-inspiration",
+            "name": "Bardic Inspiration",
+            "perLevel": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Bardic Inspiration",
+            "usesFromAbility": {
+              "ability": "charisma",
+              "bonus": 0,
+              "minimum": 1
+            },
+            "shortRestFromLevel": 5
+          }
+        ],
         "spellcasting": {
           "ability": "charisma",
           "cantripsKnown": [
@@ -1264,6 +1300,36 @@
         ],
         "subclasses": [],
         "subclassLevel": 1,
+        "resources": [
+          {
+            "id": "channel-divinity",
+            "name": "Channel Divinity",
+            "perLevel": [
+              0,
+              1,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              3,
+              3,
+              3
+            ],
+            "resetsOn": "short",
+            "featureName": "Channel Divinity"
+          }
+        ],
         "spellcasting": {
           "ability": "wisdom",
           "cantripsKnown": [
@@ -1484,6 +1550,36 @@
         ],
         "subclasses": [],
         "subclassLevel": 2,
+        "resources": [
+          {
+            "id": "wild-shape",
+            "name": "Wild Shape",
+            "perLevel": [
+              0,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "resetsOn": "short",
+            "featureName": "Wild Shape"
+          }
+        ],
         "spellcasting": {
           "ability": "wisdom",
           "cantripsKnown": [
@@ -1663,6 +1759,92 @@
         ],
         "subclasses": [],
         "subclassLevel": 3,
+        "resources": [
+          {
+            "id": "second-wind",
+            "name": "Second Wind",
+            "perLevel": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Second Wind"
+          },
+          {
+            "id": "action-surge",
+            "name": "Action Surge",
+            "perLevel": [
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2
+            ],
+            "resetsOn": "short",
+            "featureName": "Action Surge"
+          },
+          {
+            "id": "indomitable",
+            "name": "Indomitable",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              3,
+              3,
+              3,
+              3
+            ],
+            "resetsOn": "long",
+            "featureName": "Indomitable"
+          }
+        ],
         "equipmentOptions": [
           [
             {
@@ -2132,6 +2314,102 @@
         ],
         "subclasses": [],
         "subclassLevel": 3,
+        "resources": [
+          {
+            "id": "divine-sense",
+            "name": "Divine Sense",
+            "perLevel": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Divine Sense",
+            "usesFromAbility": {
+              "ability": "charisma",
+              "bonus": 1,
+              "minimum": 0
+            }
+          },
+          {
+            "id": "channel-divinity",
+            "name": "Channel Divinity",
+            "perLevel": [
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Sacred Oath"
+          },
+          {
+            "id": "cleansing-touch",
+            "name": "Cleansing Touch",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Cleansing Touch",
+            "usesFromAbility": {
+              "ability": "charisma",
+              "bonus": 0,
+              "minimum": 1
+            }
+          }
+        ],
         "equipmentOptions": [
           [
             {
@@ -2586,6 +2864,36 @@
         ],
         "subclasses": [],
         "subclassLevel": 3,
+        "resources": [
+          {
+            "id": "stroke-of-luck",
+            "name": "Stroke of Luck",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Stroke of Luck"
+          }
+        ],
         "equipmentOptions": [
           [
             {
@@ -6533,7 +6841,37 @@
           }
         ],
         "source": "Basic Rules (2014)",
-        "sourceId": "basic-rules-2014"
+        "sourceId": "basic-rules-2014",
+        "resources": [
+          {
+            "id": "natural-recovery",
+            "name": "Natural Recovery",
+            "perLevel": [
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Natural Recovery"
+          }
+        ]
       },
       {
         "id": "basic-rules-2014-fighter-champion",
@@ -6616,7 +6954,37 @@
           }
         ],
         "source": "Basic Rules (2014)",
-        "sourceId": "basic-rules-2014"
+        "sourceId": "basic-rules-2014",
+        "resources": [
+          {
+            "id": "wholeness-of-body",
+            "name": "Wholeness of Body",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Wholeness of Body"
+          }
+        ]
       },
       {
         "id": "basic-rules-2014-paladin-oath-of-devotion",
@@ -6668,7 +7036,37 @@
           }
         ],
         "source": "Basic Rules (2014)",
-        "sourceId": "basic-rules-2014"
+        "sourceId": "basic-rules-2014",
+        "resources": [
+          {
+            "id": "holy-nimbus",
+            "name": "Holy Nimbus",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Holy Nimbus"
+          }
+        ]
       },
       {
         "id": "basic-rules-2014-ranger-hunter",
@@ -6848,7 +7246,65 @@
           }
         ],
         "source": "Basic Rules (2014)",
-        "sourceId": "basic-rules-2014"
+        "sourceId": "basic-rules-2014",
+        "resources": [
+          {
+            "id": "dark-one-s-own-luck",
+            "name": "Dark One’s Own Luck",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Dark One’s Own Luck"
+          },
+          {
+            "id": "hurl-through-hell",
+            "name": "Hurl Through Hell",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Hurl Through Hell"
+          }
+        ]
       },
       {
         "id": "basic-rules-2014-wizard-school-of-evocation",

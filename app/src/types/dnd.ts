@@ -80,6 +80,7 @@ export interface Subclass {
   description: string;
   features: Feature[];
   spellcasting?: SpellcastingProgression;
+  resources?: ClassResource[];
   source?: string;
   sourceId?: string;
 }
@@ -182,22 +183,31 @@ export interface MulticlassProficiencies {
 }
 
 /**
- * A pool a class table gives a number for at each level, read out of the table by the importer
- * (`extractClassResources`). Nothing about these is written in the app: a class whose table states
- * no such column simply has none, which is why the 2014 Cleric has no Channel Divinity tracker and
- * the 2024 one does.
+ * A pool a class or subclass states, read by the importer from a table column
+ * (`extractClassResources`) or from the feature's own sentences (`scripts/lib/classResources.mjs`).
+ * Nothing about these is written in the app: a feature whose text states no count, or no rest that
+ * returns the uses, simply has no tracker.
  */
 export interface ClassResource {
   id: string;
-  /** The table's own column heading, which is what the tracker is labelled. */
+  /** The column heading or the feature's name, which is what the tracker is labelled. */
   name: string;
-  /** One entry per class level, index 0 being level 1. `null` is the book's "Unlimited". */
+  /**
+   * One entry per class level, index 0 being level 1. `null` is the book's "Unlimited". For a pool
+   * sized by an ability or the proficiency bonus the entry only says whether it exists yet.
+   */
   perLevel: (number | null)[];
   /** The rest that returns every use. Null when the source states no recovery. */
   resetsOn: 'short' | 'long' | null;
   /** How many come back on a short rest when everything comes back on a long one. */
   shortRestRegain?: number;
-  /** The feature the column belongs to, for the tracker's subtitle. */
+  /** The level from which every use also comes back on a short rest (Font of Inspiration). */
+  shortRestFromLevel?: number;
+  /** "A number of times equal to 1 + your Charisma modifier (a minimum of once)". */
+  usesFromAbility?: { ability: keyof AbilityScores; bonus: number; minimum: number };
+  /** "A number of times equal to your proficiency bonus". */
+  usesFromProficiencyBonus?: boolean;
+  /** The feature the pool belongs to, for the tracker's subtitle. */
   featureName?: string;
 }
 

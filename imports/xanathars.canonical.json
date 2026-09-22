@@ -6,7 +6,7 @@
     "category": "supplement",
     "aliases": [],
     "origin": "parsed-html",
-    "importedAt": "2026-09-06T21:19:49.568Z",
+    "importedAt": "2026-09-22T06:06:05.821Z",
     "parser": "xgte-html",
     "visibility": "private"
   },
@@ -50,7 +50,37 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "consult-the-spirits",
+            "name": "Consult the Spirits",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Consult the Spirits"
+          }
+        ]
       },
       {
         "id": "path-of-the-storm-herald",
@@ -133,7 +163,37 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "zealous-presence",
+            "name": "Zealous Presence",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Zealous Presence"
+          }
+        ]
       },
       {
         "id": "college-of-glamour",
@@ -171,7 +231,65 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "enthralling-performance",
+            "name": "Enthralling Performance",
+            "perLevel": [
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Enthralling Performance"
+          },
+          {
+            "id": "mantle-of-majesty",
+            "name": "Mantle of Majesty",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Mantle of Majesty"
+          }
+        ]
       },
       {
         "id": "college-of-swords",
@@ -254,7 +372,65 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "words-of-terror",
+            "name": "Words of Terror",
+            "perLevel": [
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Words of Terror"
+          },
+          {
+            "id": "shadow-lore",
+            "name": "Shadow Lore",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Shadow Lore"
+          }
+        ]
       },
       {
         "id": "forge-domain",
@@ -320,7 +496,37 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "blessing-of-the-forge",
+            "name": "Blessing of the Forge",
+            "perLevel": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Blessing of the Forge"
+          }
+        ]
       },
       {
         "id": "grave-domain",
@@ -386,7 +592,75 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "eyes-of-the-grave",
+            "name": "Eyes of the Grave",
+            "perLevel": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Eyes of the Grave",
+            "usesFromAbility": {
+              "ability": "wisdom",
+              "bonus": 0,
+              "minimum": 1
+            }
+          },
+          {
+            "id": "sentinel-at-death-s-door",
+            "name": "Sentinel at Death’s Door",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Sentinel at Death’s Door",
+            "usesFromAbility": {
+              "ability": "wisdom",
+              "bonus": 0,
+              "minimum": 1
+            }
+          }
+        ]
       },
       {
         "id": "circle-of-dreams",
@@ -424,7 +698,70 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "hidden-paths",
+            "name": "Hidden Paths",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Hidden Paths",
+            "usesFromAbility": {
+              "ability": "wisdom",
+              "bonus": 0,
+              "minimum": 1
+            }
+          },
+          {
+            "id": "walker-in-dreams",
+            "name": "Walker in Dreams",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Walker in Dreams"
+          }
+        ]
       },
       {
         "id": "circle-of-the-shepherd",
@@ -469,7 +806,65 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "spirit-totem",
+            "name": "Spirit Totem",
+            "perLevel": [
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Spirit Totem"
+          },
+          {
+            "id": "faithful-summons",
+            "name": "Faithful Summons",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Faithful Summons"
+          }
+        ]
       },
       {
         "id": "arcane-archer",
@@ -521,7 +916,37 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "arcane-shot",
+            "name": "Arcane Shot",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              2,
+              2
+            ],
+            "resetsOn": "short",
+            "featureName": "Arcane Shot"
+          }
+        ]
       },
       {
         "id": "cavalier",
@@ -609,7 +1034,75 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "unwavering-mark",
+            "name": "Unwavering Mark",
+            "perLevel": [
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Unwavering Mark",
+            "usesFromAbility": {
+              "ability": "strength",
+              "bonus": 0,
+              "minimum": 1
+            }
+          },
+          {
+            "id": "warding-maneuver",
+            "name": "Warding Maneuver",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Warding Maneuver",
+            "usesFromAbility": {
+              "ability": "constitution",
+              "bonus": 0,
+              "minimum": 1
+            }
+          }
+        ]
       },
       {
         "id": "samurai",
@@ -685,7 +1178,65 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "fighting-spirit",
+            "name": "Fighting Spirit",
+            "perLevel": [
+              0,
+              0,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3,
+              3
+            ],
+            "resetsOn": "long",
+            "featureName": "Fighting Spirit"
+          },
+          {
+            "id": "strength-before-death",
+            "name": "Strength before Death",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Strength before Death"
+          }
+        ]
       },
       {
         "id": "way-of-the-drunken-master",
@@ -865,7 +1416,37 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "invincible-conqueror",
+            "name": "Invincible Conqueror",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Invincible Conqueror"
+          }
+        ]
       },
       {
         "id": "oath-of-redemption",
@@ -1042,7 +1623,65 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "detect-portal",
+            "name": "Detect Portal",
+            "perLevel": [
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Detect Portal"
+          },
+          {
+            "id": "ethereal-step",
+            "name": "Ethereal Step",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Ethereal Step"
+          }
+        ]
       },
       {
         "id": "monster-slayer",
@@ -1101,7 +1740,70 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "hunter-s-sense",
+            "name": "Hunter’s Sense",
+            "perLevel": [
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Hunter’s Sense",
+            "usesFromAbility": {
+              "ability": "wisdom",
+              "bonus": 0,
+              "minimum": 1
+            }
+          },
+          {
+            "id": "magic-user-s-nemesis",
+            "name": "Magic-User’s Nemesis",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Magic-User’s Nemesis"
+          }
+        ]
       },
       {
         "id": "inquisitive",
@@ -1153,7 +1855,42 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "unerring-eye",
+            "name": "Unerring Eye",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Unerring Eye",
+            "usesFromAbility": {
+              "ability": "wisdom",
+              "bonus": 0,
+              "minimum": 1
+            }
+          }
+        ]
       },
       {
         "id": "mastermind",
@@ -1288,7 +2025,37 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "master-duelist",
+            "name": "Master Duelist",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Master Duelist"
+          }
+        ]
       },
       {
         "id": "divine-soul",
@@ -1333,7 +2100,65 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "favored-by-the-gods",
+            "name": "Favored by the Gods",
+            "perLevel": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Favored by the Gods"
+          },
+          {
+            "id": "unearthly-recovery",
+            "name": "Unearthly Recovery",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Unearthly Recovery"
+          }
+        ]
       },
       {
         "id": "shadow-magic",
@@ -1385,7 +2210,37 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "strength-of-the-grave",
+            "name": "Strength of the Grave",
+            "perLevel": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Strength of the Grave"
+          }
+        ]
       },
       {
         "id": "storm-sorcery",
@@ -1489,7 +2344,37 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "searing-vengeance",
+            "name": "Searing Vengeance",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Searing Vengeance"
+          }
+        ]
       },
       {
         "id": "the-hexblade",
@@ -1541,7 +2426,65 @@
           }
         ],
         "source": "Xanathar's Guide to Everything",
-        "sourceId": "xanathars"
+        "sourceId": "xanathars",
+        "resources": [
+          {
+            "id": "hexblade-s-curse",
+            "name": "Hexblade’s Curse",
+            "perLevel": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "short",
+            "featureName": "Hexblade’s Curse"
+          },
+          {
+            "id": "accursed-specter",
+            "name": "Accursed Specter",
+            "perLevel": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "resetsOn": "long",
+            "featureName": "Accursed Specter"
+          }
+        ]
       },
       {
         "id": "war-magic",
@@ -4410,7 +5353,8 @@
       }
     ],
     "monsters": [],
-    "ua": []
+    "ua": [],
+    "combatActions": []
   },
   "sections": [
     {

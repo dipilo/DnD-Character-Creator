@@ -54,7 +54,10 @@ function ResourceRow({
   onSetUsed?: (next: number) => void;
   onToggleActive?: () => void;
 }>) {
-  const subtitle = [resource.className, resource.featureName].filter(Boolean).join(' · ');
+  // A pool sized by an ability or the proficiency bonus is a bare number without the last segment,
+  // and a player who raises their Charisma has no way to tell why the tracker grew.
+  const maximumSource = resource.maximumSource ? `Max ${resource.maximumSource}` : undefined;
+  const subtitle = [resource.className, resource.featureName, maximumSource].filter(Boolean).join(' · ');
   // The book's noun for the thing you are in ("Rage"), not the table's column heading ("Rages").
   const effectName = resource.featureName ?? resource.name;
   const exhausted = resource.maximum !== null && resource.used >= resource.maximum;

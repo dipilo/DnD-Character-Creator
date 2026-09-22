@@ -42,6 +42,7 @@ import {
   sortFeaturesByLevel
 } from '@/lib/builderRules';
 import { deriveAttacks, deriveSheetVitals } from '@/lib/sheetDerivations';
+import { abilityModifier } from '@/lib/sheetMath';
 import { deriveDefences, deriveSenses, deriveUnarmedStrike } from '@/lib/sheetCombat';
 import { deriveEncumbrance } from '@/lib/sheetInventory';
 import { resolveFeatOptionChoicePool, resolveFeatSpellEntries } from '@/lib/featGrants';
@@ -120,13 +121,6 @@ export function CharacterSheetView({
       getSubclassById: getRuntimeSubclass
     });
   }, [character.classes]);
-
-  // Rages, Ki Points, Channel Divinity: whatever this character's class tables state, at the level
-  // they hold in each class. The class knows its own pools, so nothing here names one.
-  const classResources = useMemo(
-    () => resolveClassResources(character, getRuntimeClassById),
-    [character],
-  );
 
   const classSpells = useMemo<SheetSpellEntry[]>(() => {
     return character.spells.map((entry) => {
@@ -330,6 +324,16 @@ export function CharacterSheetView({
 
   const totalLevel = character.classes.reduce((sum, entry) => sum + entry.level, 0) || 1;
   const proficiencyBonus = getCharacterProficiencyBonus(totalLevel);
+
+  // Rages, Ki Points, Channel Divinity, Second Wind: whatever this character's classes state, at
+  // the level they hold in each. A pool sized by an ability reads the scores the sheet displays.
+  const classResources = useMemo(
+    () => resolveClassResources(character, getRuntimeClassById, {
+      abilityModifier: (ability) => abilityModifier(displayedAbilityScores[ability]),
+      proficiencyBonus
+    }),
+    [character, displayedAbilityScores, proficiencyBonus],
+  );
 
   const vitals = useMemo(() => {
     return deriveSheetVitals({

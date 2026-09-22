@@ -5,7 +5,7 @@
  * renders and never decides. Every function here takes the document and returns the patch to apply,
  * so the owner's page can persist it and the read-only party view can simply not pass a handler.
  */
-import type { Character, CharacterClass, Class, ClassResource, CoinUnit } from '@/types/dnd';
+import type { AbilityScores, Character, CharacterClass, Class, ClassResource, CoinUnit, Subclass } from '@/types/dnd';
 
 export interface DeathSaves {
   successes: number;
@@ -250,19 +250,24 @@ export function setCoins(character: Character, unit: CoinUnit, amount: number): 
 }
 
 /**
- * One class resource as this character holds it: the pool the class table states, the maximum at
- * the level they have in that class, and how much of it is spent.
+ * One class resource as this character holds it: the pool the class or subclass states, the
+ * maximum at the level they have in that class, and how much of it is spent.
  *
- * The table is the class's (`ClassResource`), so nothing here knows what a Rage or a Ki Point is —
- * a class whose table states no pool column simply produces no tracker.
+ * The pool is the source's (`ClassResource`), so nothing here knows what a Rage or a Ki Point is —
+ * a feature whose text states no pool simply produces no tracker.
  */
 export interface ResolvedClassResource extends ClassResource {
   /** `<classId>::<resourceId>`, the key on the document. */
   key: string;
   classId: string;
   className: string;
-  /** The level's entry in `perLevel`. Null is the book's "Unlimited". */
+  /** The level's entry in `perLevel`, or the ability's or proficiency's answer. Null is the book's "Unlimited". */
   maximum: number | null;
+  /**
+   * What sized the maximum, when the class table did not: a pool that grows with an ability or the
+   * proficiency bonus shows a bare number otherwise, and nothing on the sheet says why it is 3.
+   */
+  maximumSource?: string;
   used: number;
   /**
    * Whether this is something you *enter* and stay in rather than simply spend. Read from the
@@ -282,32 +287,87 @@ export function classResourceKey(classId: string, resourceId: string): string {
 }
 
 /**
- * Every pool this character has, in class order. `resolveClass` is passed in rather than imported
- * so this module stays free of the content library, exactly as the rest of it is.
+ * The numbers a pool sized by the character rather than the class needs. Passed in rather than
+ * derived here so this module stays free of `sheetMath`, which the bot loads separately.
+ */
+export interface ResourceScaling {
+  abilityModifier: (ability: keyof AbilityScores) => number;
+  proficiencyBonus: number;
+}
+
+/** The maximum, and the phrase the book sized it with where that is not the table's own column. */
+interface ResourceMaximum {
+  value: number | null;
+  source?: string;
+}
+
+function resourceMaximum(resource: ClassResource, level: number, scaling: ResourceScaling): ResourceMaximum {
+  // `?? 0` here read the book's "Unlimited" as a pool of nothing, so the 2014 Barbarian's level-20
+  // Rages were dropped as an unreached level and the panel's Unlimited branch was unreachable.
+  const entry = resource.perLevel[level - 1];
+  const stated = entry === undefined ? 0 : entry;
+  if (stated === 0 || stated === null) return { value: stated };
+  if (resource.usesFromAbility) {
+    const { ability, bonus, minimum } = resource.usesFromAbility;
+    // The six ability keys are their own labels once capitalised; a table here could only drift.
+    const named = `${ability.charAt(0).toUpperCase()}${ability.slice(1)} modifier`;
+    const base = bonus > 0 ? `${bonus} + ${named}` : named;
+    return {
+      value: Math.max(minimum, scaling.abilityModifier(ability) + bonus),
+      source: minimum > 0 ? `${base}, minimum ${minimum}` : base,
+    };
+  }
+  if (resource.usesFromProficiencyBonus) return { value: scaling.proficiencyBonus, source: 'Proficiency bonus' };
+  return { value: stated };
+}
+
+/** Font of Inspiration moves Bardic Inspiration to a short rest at 5th level; the pool says so. */
+function resourceResetAt(resource: ClassResource, level: number): ClassResource['resetsOn'] {
+  if (resource.shortRestFromLevel !== undefined && level >= resource.shortRestFromLevel) return 'short';
+  return resource.resetsOn;
+}
+
+/**
+ * Every pool this character has, in class order — the class's own and its chosen subclass's.
+ * `resolveClass` is passed in rather than imported so this module stays free of the content
+ * library, exactly as the rest of it is; `resolveSubclass` defaults to the class's own list, which
+ * is where the merged runtime library keeps them.
  */
 export function resolveClassResources(
   character: Pick<Character, 'classes' | 'classResourcesUsed' | 'activeEffects'>,
   resolveClass: (classId: string) => Class | undefined,
+  scaling: ResourceScaling,
+  resolveSubclass: (subclassId: string, cls: Class) => Subclass | undefined = (id, cls) =>
+    cls.subclasses.find((candidate) => candidate.id === id),
 ): ResolvedClassResource[] {
   const spent = character.classResourcesUsed ?? {};
   const resolved: ResolvedClassResource[] = [];
 
   for (const entry of character.classes) {
     const cls = resolveClass(entry.classId);
-    for (const resource of cls?.resources ?? []) {
-      const maximum = resource.perLevel[entry.level - 1] ?? 0;
+    if (!cls) continue;
+    const subclass = entry.subclassId ? resolveSubclass(entry.subclassId, cls) : undefined;
+    const pools = [
+      ...(cls.resources ?? []).map((resource) => ({ resource, features: cls.features })),
+      ...(subclass ? (subclass.resources ?? []).map((resource) => ({ resource, features: subclass.features })) : []),
+    ];
+
+    for (const { resource, features } of pools) {
+      const maximum = resourceMaximum(resource, entry.level, scaling);
       // A pool the character has not reached the level for is not an empty tracker, it is no
       // tracker: the 2024 Cleric gains Channel Divinity at level 2.
-      if (maximum === 0) continue;
+      if (maximum.value === 0) continue;
       const key = classResourceKey(entry.classId, resource.id);
-      const feature = cls?.features.find((candidate) => candidate.name === resource.featureName);
+      const feature = features.find((candidate) => candidate.name === resource.featureName);
       resolved.push({
         ...resource,
+        resetsOn: resourceResetAt(resource, entry.level),
         key,
         classId: entry.classId,
-        className: cls?.name ?? entry.classId,
-        maximum,
-        used: clamp(spent[key] ?? 0, 0, maximum ?? Number.MAX_SAFE_INTEGER),
+        className: cls.name,
+        maximum: maximum.value,
+        maximumSource: maximum.source,
+        used: clamp(spent[key] ?? 0, 0, maximum.value ?? Number.MAX_SAFE_INTEGER),
         activatable: ENTERED_RESOURCE_PATTERN.test(feature?.description ?? ''),
         active: (character.activeEffects ?? []).includes(key),
       });
