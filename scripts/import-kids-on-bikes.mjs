@@ -115,6 +115,10 @@ function stripFrontmatter(text) {
   return text.startsWith('---') ? text.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '') : text;
 }
 
+// `![[Check Chart.canvas|caption]]` embeds a canvas, picture or PDF clip the app cannot show, so the
+// caption would ship as a sentence about a chart that is not there.
+const EMBED = /!\[\[[^\]]*\]\]/g;
+
 /**
  * These notes are written for Obsidian's renderer, so presentation markup is interleaved with the
  * text: `<center>` wrappers, `<font color>` spans for the flaw column, `<br>` line breaks, and
@@ -124,6 +128,7 @@ function cleanCell(raw) {
   return raw
     .replaceAll(/<br\s*\/?>/gi, ' \u2028')
     .replaceAll(/<\/?(?:center|font|span|strong|em|u|b|i)(?:\s[^>]*)?>/gi, '')
+    .replaceAll(EMBED, '')
     .replaceAll(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '$2')
     .replaceAll(/\[\[#?([^\]]+)\]\]/g, '$1')
     .replaceAll(/\*\*/g, '')
@@ -284,6 +289,7 @@ function parsePlayRules(text) {
       continue;
     }
 
+    if (raw.includes('![[')) warn(`Playing The Game: "${current.name}" embeds a file the app cannot show and it was left out.`);
     const body = dropSectionPointers(stripBlockId(cleanCell(stripListMarker(raw))));
     if (body) (callout ?? current).paragraphs.push(body);
   }

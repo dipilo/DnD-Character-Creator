@@ -104,6 +104,15 @@ export function getPlayRuleSection(id: string): KobPlayRuleSection | null {
 }
 
 /**
+ * A rule the note set in a callout beside its section rather than in the section's own text: the
+ * Knack reminder is the `[!warning]` under Planned Actions And Snap Decisions.
+ */
+export function getPlayRuleCallout(sectionId: string, kind: string): string {
+  const callout = getPlayRuleSection(sectionId)?.callouts.find((entry) => entry.kind === kind);
+  return callout?.paragraphs.join(' ') ?? '';
+}
+
+/**
  * The difficulty band a rolled total lands in, read off the imported table rather than a scale
  * written into the sheet. Null when the total is below the lowest band the table states.
  */

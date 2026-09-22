@@ -12,7 +12,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { StatSpread } from '@/components/kob/StatSpread';
-import { getPlayRuleSection } from '@/data/gameSystems/kidsOnBikes/rules';
+import { getPlayRuleCallout, getPlayRuleSection } from '@/data/gameSystems/kidsOnBikes/rules';
 import type { KobCharacter } from '@/types/kob';
 
 /** The book's own paragraph, kept out of the way until it is asked for. */
@@ -98,6 +98,7 @@ export function KobSheetRail({ character, knacks, onChange }: Readonly<KobSheetR
   // The Lucky Break is the reason a stat is a button; the rule is quoted from the vault, never
   // paraphrased here.
   const statCheckRule = getPlayRuleSection('stat-checks')?.paragraphs[1] ?? '';
+  const knackRule = getPlayRuleCallout('planned-actions-and-snap-decisions', 'warning');
   // The difficulty the GM names for this check. It is the table's number, not the character's,
   // so it is never written to the document.
   const [targetText, setTargetText] = useState('');
@@ -149,9 +150,7 @@ export function KobSheetRail({ character, knacks, onChange }: Readonly<KobSheetR
                 <li key={knack}>{knack}</li>
               ))}
             </ul>
-            <p className="text-xs text-muted-foreground">
-              Once per session each: take a 10 instead of rolling.
-            </p>
+            <RuleNote label="How a Knack is used" text={knackRule} />
           </CardContent>
         </Card>
       ) : null}

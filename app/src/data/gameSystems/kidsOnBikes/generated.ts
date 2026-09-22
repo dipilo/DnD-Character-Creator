@@ -16,7 +16,8 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
     "importedAt": "2026-09-22",
     "warnings": [
       "Appendix B: \"ncarceration\" starts lowercase. The book's own PDF is missing that glyph and it is left as printed.",
-      "Trope tables name colors the appendices do not define: While, Yellow"
+      "Trope tables name colors the appendices do not define: While, Yellow",
+      "Playing The Game: \"Planned Actions And Snap Decisions\" embeds a file the app cannot show and it was left out."
     ]
   },
   "stats": [
@@ -2280,8 +2281,7 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
         "paragraphs": [
           "There are two distinct kinds of stat checks: Planned Actions and Snap Decisions. Planned actions are stat checks when you have time to think about the best course of action and, perhaps, work with your friends. Planned Actions are when the conditions are relatively optimal to achieve something.",
           "Snap Decisions, are choices that have to be made quickly under bad conditions. If your character is under any kind of great pressure, that would likely be a Snap Decision, too.",
-          "It's the GM's call whether something is a Planned Action or a Snap Decision. Players should feel free to try to convince the GM of how they can get a moment of calm to make a Planned Action in a setting that might seem to call for a Snap Decision.",
-          "!In order to make a check, go through the following flow chart:"
+          "It's the GM's call whether something is a Planned Action or a Snap Decision. Players should feel free to try to convince the GM of how they can get a moment of calm to make a Planned Action in a setting that might seem to call for a Snap Decision."
         ],
         "callouts": [
           {
