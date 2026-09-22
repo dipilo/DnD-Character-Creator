@@ -2,7 +2,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { generateSourceModuleText, parseMonsterLanguages, rewriteSourceCrossReferences } from './canonical-content.mjs';
+import { parseMonsterLanguages, rewriteSourceCrossReferences, writeSourceModule } from './canonical-content.mjs';
 import { extractFeatBenefitStructures } from './lib/featBenefits.mjs';
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -997,7 +997,7 @@ const rewritePackCrossReferences = (value, key) => {
 
 const writePack = async (pack, targetPath) => {
   const exportName = `${path.basename(targetPath, path.extname(targetPath)).replaceAll(/\W/g, '_')}_source`;
-  await fs.writeFile(targetPath, generateSourceModuleText(rewritePackCrossReferences(pack, ''), exportName), 'utf8');
+  await writeSourceModule(fs, targetPath, rewritePackCrossReferences(pack, ''), exportName);
 };
 
 const createEmptyBucketContent = () => ({

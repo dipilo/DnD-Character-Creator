@@ -27,6 +27,7 @@ import { fileURLToPath } from 'node:url';
 import { readRulebookAppendices } from './lib/kobAppendices.mjs';
 import { readPoweredCharacters } from './lib/kobChapters.mjs';
 import { readAllPages } from './lib/pdfText.mjs';
+import { settleImportedAt } from './canonical-content.mjs';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '..');
@@ -77,13 +78,36 @@ function parseArgs(argv) {
   return args;
 }
 
-function readNote(vault, ...segments) {
-  const file = path.join(vault, ...segments);
-  if (!fs.existsSync(file)) {
-    warn(`Missing note: ${segments.join('/')} — nothing was imported from it.`);
+const SKIPPED_VAULT_DIRS = new Set(['.obsidian', '.trash', 'Source Materials']);
+
+// Obsidian resolves a note by its name from anywhere in the vault, so the importer does too: the
+// notes moved from the root into Chapters/ once and two chapters silently emptied.
+function listNotes(dir, found = new Map()) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isDirectory()) {
+      if (!SKIPPED_VAULT_DIRS.has(entry.name)) listNotes(path.join(dir, entry.name), found);
+    } else if (entry.name.endsWith('.md')) {
+      const paths = found.get(entry.name) ?? [];
+      paths.push(path.join(dir, entry.name));
+      found.set(entry.name, paths);
+    }
+  }
+  return found;
+}
+
+let vaultNotes = null;
+
+function readNote(vault, name) {
+  vaultNotes ??= listNotes(vault);
+  const paths = vaultNotes.get(name) ?? [];
+  if (paths.length === 0) {
+    warn(`Missing note: ${name} — nothing was imported from it.`);
     return null;
   }
-  return fs.readFileSync(file, 'utf8');
+  if (paths.length > 1) {
+    warn(`Note ${name} exists ${paths.length} times in the vault; read ${path.relative(vault, paths[0])}.`);
+  }
+  return fs.readFileSync(paths[0], 'utf8');
 }
 
 /** Obsidian's YAML frontmatter is editor configuration, never content. */
@@ -101,7 +125,7 @@ function cleanCell(raw) {
     .replaceAll(/<br\s*\/?>/gi, ' \u2028')
     .replaceAll(/<\/?(?:center|font|span|strong|em|u|b|i)(?:\s[^>]*)?>/gi, '')
     .replaceAll(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '$2')
-    .replaceAll(/\[\[([^\]]+)\]\]/g, '$1')
+    .replaceAll(/\[\[#?([^\]]+)\]\]/g, '$1')
     .replaceAll(/\*\*/g, '')
     .replaceAll('\u00ad', '')
     .replaceAll(/\s*\u2028\s*/g, '\n')
@@ -212,39 +236,56 @@ function readStrengthEligibility(description) {
 
 /**
  * The play rules: what a Stat Check is, the Lucky Break, what failing a roll gives you, and the
- * difficulty table. The app rolls dice, so the numbers a result is read against have to come from
- * the note rather than from a table typed into a component.
+ * two tables. The app rolls dice, so the numbers a result is read against have to come from the
+ * note rather than from a table typed into a component.
  *
- * The note writes its prose as blockquotes and its difficulties as one table, both under `#`
- * headings.
+ * The note writes its rules as blockquotes and, in the later sections, as plain paragraphs and
+ * numbered steps; its worked examples are callouts and are kept apart from the rule text. Which
+ * table a row belongs to is read off the table's own header.
  */
 function parsePlayRules(text) {
   const lines = stripFrontmatter(text).split(/\r?\n/);
   const sections = [];
   const difficulties = [];
+  const outcomes = [];
 
   let current = null;
+  let callout = null;
+  let table = null;
   for (const line of lines) {
     const heading = /^#\s+(?<name>.+?)\s*$/.exec(line);
     if (heading) {
       const name = cleanCell(heading.groups.name);
-      current = { id: slugify(name), name, paragraphs: [] };
+      current = { id: slugify(name), name, paragraphs: [], callouts: [] };
       sections.push(current);
+      callout = null;
+      table = null;
       continue;
     }
+
+    if (/^\s*\|/.test(line)) {
+      table = readPlayRuleTableRow(tableCells(line), table, { difficulties, outcomes }, current);
+      continue;
+    }
+    table = null;
 
     const quoted = /^>\s?(?<body>.*)$/.exec(line);
-    if (quoted && current) {
-      const body = dropSectionPointers(stripBlockId(cleanCell(quoted.groups.body)));
-      if (body) current.paragraphs.push(body);
+    const raw = (quoted ? quoted.groups.body : line).trim();
+    if (!raw) {
+      if (!quoted) callout = null;
+      continue;
+    }
+    if (!current) continue;
+
+    const marker = /^\[!(?<kind>[a-z]+)\](?<fold>[+-])?\s*(?<title>.*)$/i.exec(raw);
+    if (marker) {
+      callout = { kind: marker.groups.kind.toLowerCase(), defaultOpen: marker.groups.fold !== '-', paragraphs: [] };
+      current.callouts.push(callout);
       continue;
     }
 
-    const cells = tableCells(line);
-    if (cells.length >= 2) {
-      const band = readDifficultyBand(cells[0], cells[1]);
-      if (band) difficulties.push(band);
-    }
+    const body = dropSectionPointers(stripBlockId(cleanCell(stripListMarker(raw))));
+    if (body) (callout ?? current).paragraphs.push(body);
   }
 
   const empty = sections.filter((section) => section.paragraphs.length === 0).map((section) => section.name);
@@ -252,8 +293,39 @@ function parsePlayRules(text) {
     warn(`Playing The Game: ${empty.join(', ')} ${empty.length === 1 ? 'has' : 'have'} a heading but no text in the vault.`);
   }
   if (difficulties.length === 0) warn('Playing The Game: no difficulty bands parsed.');
+  if (outcomes.length === 0) warn('Playing The Game: no outcome bands parsed.');
 
-  return { sections, difficulties };
+  return {
+    sections: sections.map((section) => ({ ...section, callouts: section.callouts.filter((c) => c.paragraphs.length > 0) })),
+    difficulties,
+    outcomes
+  };
+}
+
+/** A list item's own marker ("1. ", "- ") is layout, not text. */
+function stripListMarker(raw) {
+  return raw.replace(/^(?:\d+\.|[-*+])\s+/, '');
+}
+
+/**
+ * One table row, given which table the previous row said it was in. A header names the table:
+ * "Difficulty" is the difficulty table, "(Roll + Modifiers) - Target" the outcome table. Returns
+ * the table the next row is in.
+ */
+function readPlayRuleTableRow(cells, table, into, section) {
+  if (cells.length < 2 || /^-+$/.test(cells[0])) return table;
+  if (/^difficul/i.test(cells[0])) return 'difficulties';
+  if (/target/i.test(cells[0])) return 'outcomes';
+  if (table === 'difficulties') {
+    const band = readDifficultyBand(cells[0], cells[1]);
+    if (band) into.difficulties.push(band);
+  } else if (table === 'outcomes') {
+    const band = readOutcomeBand(cells[0], cells[1]);
+    if (band) into.outcomes.push(band);
+  } else {
+    warn(`Playing The Game: a table under "${section?.name ?? 'no heading'}" has a header this import does not recognise.`);
+  }
+  return table;
 }
 
 /**
@@ -305,6 +377,36 @@ function readDifficultyBand(rangeCell, explanationCell) {
   }
 
   warn(`Playing The Game: difficulty band "${range}" states no bounds this import can read.`);
+  return null;
+}
+
+/**
+ * "+10 or higher", "+5 to +9", "0", "-4 to -1", "-15 or lower" — the margin between the roll and
+ * the target, read the same way as a difficulty band but signed at both ends.
+ */
+function readOutcomeBand(rangeCell, explanationCell) {
+  const range = cleanCell(rangeCell);
+  const explanation = cleanCell(explanationCell);
+  if (!range || !explanation) return null;
+
+  const orHigher = /^([+-]?\d+)\s+or\s+(?:greater|more|higher)$/i.exec(range);
+  if (orHigher) return { range, minimum: Number.parseInt(orHigher[1], 10), maximum: null, explanation };
+
+  const orLower = /^([+-]?\d+)\s+or\s+(?:lower|less|fewer)$/i.exec(range);
+  if (orLower) return { range, minimum: null, maximum: Number.parseInt(orLower[1], 10), explanation };
+
+  const span = /^([+-]?\d+)\s+(?:to|-|–)\s+([+-]?\d+)$/i.exec(range);
+  if (span) {
+    return { range, minimum: Number.parseInt(span[1], 10), maximum: Number.parseInt(span[2], 10), explanation };
+  }
+
+  const exact = /^([+-]?\d+)$/.exec(range);
+  if (exact) {
+    const value = Number.parseInt(exact[1], 10);
+    return { range, minimum: value, maximum: value, explanation };
+  }
+
+  warn(`Playing The Game: outcome band "${range}" states no bounds this import can read.`);
   return null;
 }
 
@@ -779,14 +881,14 @@ async function main() {
 
   const rulebook = await readRulebook(args.rulebook ?? path.join(vault, ...RULEBOOK_IN_VAULT));
 
-  const tropesNote = readNote(vault, 'Appendices', 'Tropes.md');
-  const strengthsNote = readNote(vault, 'Appendices', 'Strengths.md');
-  const flawsNote = readNote(vault, 'Appendices', 'Flaws.md');
-  const bikesNote = readNote(vault, 'Appendices', 'Bikes.md');
-  const bondedNote = readNote(vault, 'Appendices', 'Bonded Actions.md');
-  const positiveNote = readNote(vault, 'Appendices', 'Relationship Questions for a Character You Know (Positive).md');
-  const negativeNote = readNote(vault, 'Appendices', 'Relationship Questions for a Character You Know (Negative).md');
-  const strangerNote = readNote(vault, 'Appendices', 'Relationship Questions for a Character You Don\u2019t Know.md');
+  const tropesNote = readNote(vault, 'Tropes.md');
+  const strengthsNote = readNote(vault, 'Strengths.md');
+  const flawsNote = readNote(vault, 'Flaws.md');
+  const bikesNote = readNote(vault, 'Bikes.md');
+  const bondedNote = readNote(vault, 'Bonded Actions.md');
+  const positiveNote = readNote(vault, 'Relationship Questions for a Character You Know (Positive).md');
+  const negativeNote = readNote(vault, 'Relationship Questions for a Character You Know (Negative).md');
+  const strangerNote = readNote(vault, 'Relationship Questions for a Character You Don\u2019t Know.md');
   const creationNote = readNote(vault, 'Character Creation.md');
   const playNote = readNote(vault, 'Playing The Game.md');
 
@@ -829,21 +931,28 @@ async function main() {
     bikes,
     bondedActions,
     relationshipQuestions,
-    playRules: playNote ? parsePlayRules(playNote) : { sections: [], difficulties: [] },
+    playRules: playNote ? parsePlayRules(playNote) : { sections: [], difficulties: [], outcomes: [] },
     preGameForm: rulebook.preGameForm,
     poweredCharacterAspects: rulebook.poweredCharacterAspects,
     poweredCharacter: rulebook.poweredCharacter,
   };
 
   fs.mkdirSync(path.dirname(OUTPUT), { recursive: true });
-  fs.writeFileSync(OUTPUT, renderModule(data), 'utf8');
+  const previous = fs.existsSync(OUTPUT) ? fs.readFileSync(OUTPUT, 'utf8') : undefined;
+  fs.writeFileSync(
+    OUTPUT,
+    settleImportedAt(previous, data.meta.importedAt, (importedAt) =>
+      renderModule({ ...data, meta: { ...data.meta, importedAt } })
+    ),
+    'utf8'
+  );
 
   console.log(`Wrote ${path.relative(repoRoot, OUTPUT)}`);
   console.log(
     `  ${tropes.length} tropes, ${strengths.length} strengths, ${flaws.length} flaws, ` +
       `${bikes.colors.length} bike colours, ${bikes.upgrades.length} upgrades, ` +
       `${bondedActions.actions.length} bonded actions, ` +
-      `${data.playRules.sections.length} play-rule sections, ${data.playRules.difficulties.length} difficulty bands, ` +
+      `${data.playRules.sections.length} play-rule sections, ${data.playRules.difficulties.length} difficulty bands, ${data.playRules.outcomes.length} outcome bands, ` +
       `${relationshipQuestions.positive.length}/${relationshipQuestions.negative.length}/${relationshipQuestions.stranger.length} relationship questions, ` +
       `${rulebook.preGameForm.lists.length} pre-game lists, ${rulebook.preGameForm.contentWarnings.length} content warnings, ` +
       `${rulebook.poweredCharacterAspects.sections.reduce((total, section) => total + section.groups.length, 0)} aspect tables, ` +

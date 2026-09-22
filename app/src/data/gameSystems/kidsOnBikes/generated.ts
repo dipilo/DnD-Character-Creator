@@ -13,11 +13,10 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
     "systemId": "kids-on-bikes",
     "label": "Kids on Bikes (2nd Edition)",
     "source": "Obsidian vault notes; rulebook chapter 5 and appendices A, B and K",
-    "importedAt": "2026-09-03",
+    "importedAt": "2026-09-22",
     "warnings": [
       "Appendix B: \"ncarceration\" starts lowercase. The book's own PDF is missing that glyph and it is left as printed.",
-      "Trope tables name colors the appendices do not define: While, Yellow",
-      "Playing The Game: Tiered Checks has a heading but no text in the vault."
+      "Trope tables name colors the appendices do not define: While, Yellow"
     ]
   },
   "stats": [
@@ -2195,14 +2194,16 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
           "When you do something that runs the risk of failure, the GM will have you make a Stat Check. You'll let the GM know what you want to do and agree on a stat that you'll use. Then, they'll set a numerical difficulty for the action and let you know what it is.",
           "If you roll the maximum value of the die, you get a Lucky Break—meaning that you reroll the die and add the maximum value that you rolled the first time to the new roll. You can get multiple Lucky Breaks on a single check.",
           "After rolling, you and any players whose characters are with you may spend Adversity Tokens to increase your result."
-        ]
+        ],
+        "callouts": []
       },
       {
         "id": "failing-a-roll",
         "name": "Failing A Roll",
         "paragraphs": [
           "Failing a roll gives you an Adversity Token, which you can use to succeed when you really need it or to activate your character's Strengths."
-        ]
+        ],
+        "callouts": []
       },
       {
         "id": "adversity-tokens",
@@ -2210,13 +2211,25 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
         "paragraphs": [
           "Adversity Tokens (or AT) can be used to improve subsequent rolls, activate Strengths, or, with the GM's permission, ignore your Fears.",
           "After rolling to try to make a check, you can spend your AT to improve the roll. This improvement can make a failure into a success, make your failure less harmful, or make your success more extreme. In addition, characters in the same scene as a character making a check may spend AT to improve that character's roll. Unless you have a Strength that indicates otherwise, each AT you spend adds one to your roll or the roll of the character you're helping.",
-          "If you're spending AT to improve you're own roll, explain narratively how previous difficulties have prepared you to better face this challenge. If you're spending AT to help a character your character is with, explain the advice you give them and, collaboratively, explain how that advice saves the day.",
-          "[!warning]+ Reminder",
-          "At the start of the game, each of you has 3 AT.",
-          "[!example]-",
-          "For example, as Isabella slips outside, she looks over her shoulder to see if Oswald made it out. As she does, she runs directly into her English teacher, Ms. McKay. “Careful, kiddo,” she says, then pauses. “Are you okay? You’re not leaving during lunch, are you? That would be a school rule violation!” Isabella decides to attempt a Charm check to see if she can convince Ms. McKay to let her go. Gauthier explains that Ms. McKay is one of the more laid-back teachers at the school, but success is far from assured. He sets the difficulty at 8. Isabella rolls a 6, and decides that it’s important enough to her to succeed that she spends 2 AT to bump herself up to a success.",
-          "“Oh, I just needed to get something from my bike,” she replies. Gauthier encourages her to pedal harder, reminding her that with AT, you should explain how something you learned before helps you now. “Okay, Ms. McKay, I won’t lie to you: I’m ditching school. I got stuff I need to do, and in class the other day, you were telling us that we needed to live more wildly, right? Well, uh, off I go! Living wildly!”",
-          "Ms. McKay smiles. “Then I didn’t see anything, you absolute maniac of a child. I never saw you. Get out of here. Live freely!” She heads back into the school, walking through the door Isabella just came out of."
+          "If you're spending AT to improve you're own roll, explain narratively how previous difficulties have prepared you to better face this challenge. If you're spending AT to help a character your character is with, explain the advice you give them and, collaboratively, explain how that advice saves the day."
+        ],
+        "callouts": [
+          {
+            "kind": "warning",
+            "defaultOpen": true,
+            "paragraphs": [
+              "At the start of the game, each of you has 3 AT."
+            ]
+          },
+          {
+            "kind": "example",
+            "defaultOpen": false,
+            "paragraphs": [
+              "For example, as Isabella slips outside, she looks over her shoulder to see if Oswald made it out. As she does, she runs directly into her English teacher, Ms. McKay. “Careful, kiddo,” she says, then pauses. “Are you okay? You’re not leaving during lunch, are you? That would be a school rule violation!” Isabella decides to attempt a Charm check to see if she can convince Ms. McKay to let her go. Gauthier explains that Ms. McKay is one of the more laid-back teachers at the school, but success is far from assured. He sets the difficulty at 8. Isabella rolls a 6, and decides that it’s important enough to her to succeed that she spends 2 AT to bump herself up to a success.",
+              "“Oh, I just needed to get something from my bike,” she replies. Gauthier encourages her to pedal harder, reminding her that with AT, you should explain how something you learned before helps you now. “Okay, Ms. McKay, I won’t lie to you: I’m ditching school. I got stuff I need to do, and in class the other day, you were telling us that we needed to live more wildly, right? Well, uh, off I go! Living wildly!”",
+              "Ms. McKay smiles. “Then I didn’t see anything, you absolute maniac of a child. I never saw you. Get out of here. Live freely!” She heads back into the school, walking through the door Isabella just came out of."
+            ]
+          }
         ]
       },
       {
@@ -2224,24 +2237,178 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
         "name": "Lucky Breaks",
         "paragraphs": [
           "When you roll the highest value on a die, you roll that die again and add the results together to get the total for your check. If you roll the maximum value of the die multiple times, you get to keep rolling.",
-          "[!warning]- Reminder",
-          "Spending AT to improve the sum of a roll does not cause a Lucky Break; they only occur if you naturally roll the highest value.",
-          "When you get a Lucky Break, the way you succeed must reflect that you have accomplished something beyond what you could do on your own. The outcome should be influenced, in part, by external forces.",
-          "[!example]-",
-          "For example, Mr. Roachman starts grilling Oswald about why he’s leaving, so he sees two reasonable options here: just start running with a Flight check or try to talk his way out of it with a Charm check. Running to the bike racks, unlocking his bike in time, and getting away without being caught will be very tough: a Flight check with a difficulty of 15. With a d12 in Flight, Oswald would need a Lucky Break. However, convincing him that he needs to go get something that he left in his bike is easier, but still not a piece of cake given how crusty Roachman is. The GM tells him it will be a Charm check with a difficulty of 10. He’ll need a Lucky Break here, too, but he’s more likely to get it, so he decides to try to charm his way out of it. He rolls an 8 and gets the Lucky Break! Then, he rolls a 3 for a total of 11: a success!",
-          "Oswald explains that he tells Mr. Roachman, as casually as he can, that he just has to grab something out of his bike, trying to pass it off like nothing and make it seem like not a big deal at all. Roachman starts to tell him that non-seniors aren’t allowed to leave school grounds, when Ms. McKay passes by and casually says, “Oh give it a rest, Harold. You’re a hardass. We all get it.” Mr. Roachman turns bright red and storms down the hall after her, incensed that she’d undermine him in front of a student. Oswald breathes a sigh of relief that he was lucky enough to have Ms. McKay happen to be there, and heads out the door to meet Isabella."
+          "When you get a Lucky Break, the way you succeed must reflect that you have accomplished something beyond what you could do on your own. The outcome should be influenced, in part, by external forces."
+        ],
+        "callouts": [
+          {
+            "kind": "warning",
+            "defaultOpen": false,
+            "paragraphs": [
+              "Spending AT to improve the sum of a roll does not cause a Lucky Break; they only occur if you naturally roll the highest value."
+            ]
+          },
+          {
+            "kind": "example",
+            "defaultOpen": false,
+            "paragraphs": [
+              "For example, Mr. Roachman starts grilling Oswald about why he’s leaving, so he sees two reasonable options here: just start running with a Flight check or try to talk his way out of it with a Charm check. Running to the bike racks, unlocking his bike in time, and getting away without being caught will be very tough: a Flight check with a difficulty of 15. With a d12 in Flight, Oswald would need a Lucky Break. However, convincing him that he needs to go get something that he left in his bike is easier, but still not a piece of cake given how crusty Roachman is. The GM tells him it will be a Charm check with a difficulty of 10. He’ll need a Lucky Break here, too, but he’s more likely to get it, so he decides to try to charm his way out of it. He rolls an 8 and gets the Lucky Break! Then, he rolls a 3 for a total of 11: a success!",
+              "Oswald explains that he tells Mr. Roachman, as casually as he can, that he just has to grab something out of his bike, trying to pass it off like nothing and make it seem like not a big deal at all. Roachman starts to tell him that non-seniors aren’t allowed to leave school grounds, when Ms. McKay passes by and casually says, “Oh give it a rest, Harold. You’re a hardass. We all get it.” Mr. Roachman turns bright red and storms down the hall after her, incensed that she’d undermine him in front of a student. Oswald breathes a sigh of relief that he was lucky enough to have Ms. McKay happen to be there, and heads out the door to meet Isabella."
+            ]
+          }
         ]
       },
       {
         "id": "tiered-checks",
         "name": "Tiered Checks",
-        "paragraphs": []
+        "paragraphs": [
+          "Your game could include tiered checks, ones where there's no chance of failure and the value of your roll will determine what you get out of the check. If there are degrees of success, that could call for a tiered check, too.",
+          "When performing a tiered check, failure is off the table, so there will be no possibility for consequences. However, there is no possibility to earn an Adversity Token on a Tiered Check."
+        ],
+        "callouts": [
+          {
+            "kind": "example",
+            "defaultOpen": false,
+            "paragraphs": [
+              "For example, as Isabella and Oswald get to their bikes, Oswald remembers how the two of them used to race to unlock their bikes when they were younger and still hung out. He says the same thing they said to each other hundreds of times: “I’m going to ride off first.” Isabella, despite herself, smiles and lunges for her combination lock. Gauthier announces that, if they’re going to race, this will be a tiered check. The better their role, the faster they’ll get on the bike, but there’s no possibility of failing to get their locks open. He also announces that he thinks they should use Flight, and both agree. Isabella rolls a 13, and Oswald rolls a 7, so she wins the race. “Let’s go, Pokey,” she calls, already ten feet away when Oswald’s lock clicks open."
+            ]
+          }
+        ]
       },
       {
         "id": "planned-actions-and-snap-decisions",
         "name": "Planned Actions And Snap Decisions",
         "paragraphs": [
+          "There are two distinct kinds of stat checks: Planned Actions and Snap Decisions. Planned actions are stat checks when you have time to think about the best course of action and, perhaps, work with your friends. Planned Actions are when the conditions are relatively optimal to achieve something.",
+          "Snap Decisions, are choices that have to be made quickly under bad conditions. If your character is under any kind of great pressure, that would likely be a Snap Decision, too.",
+          "It's the GM's call whether something is a Planned Action or a Snap Decision. Players should feel free to try to convince the GM of how they can get a moment of calm to make a Planned Action in a setting that might seem to call for a Snap Decision.",
           "!In order to make a check, go through the following flow chart:"
+        ],
+        "callouts": [
+          {
+            "kind": "warning",
+            "defaultOpen": true,
+            "paragraphs": [
+              "Each of you has at least 1 Knack, that allows you to take a 10 on a check relevant to your Knack rather than rolling. This can be used during a Planned Action or a Snap Decision. You and the GM should interpret a Knack broadly, not narrowly."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "consequences-for-failure",
+        "name": "Consequences For Failure",
+        "paragraphs": [
+          "The good that results from a success and the bad that occurs from a failure depend on how far the rolled number is from the target number. Tremendous successes bring unexpected benefits; staggering failures bring unanticipated consequences.",
+          "When deciding on the consequences of a stat check, GMs should consult the following guide:"
+        ],
+        "callouts": [
+          {
+            "kind": "example",
+            "defaultOpen": false,
+            "paragraphs": [
+              "For example, Isabella and Oswald are biking to where Kalsang works when Peter, who was expelled from Perkins High last year for picking too many fights, sees them and decides to start some trouble. Gauthier lets them know that getting away by pedaling would either be a Flight check or a Brawn check—but that if they want to do something else to stop Peter from pursuing them, they can—and sets the difficulty of Flight or Brawn checks at 6.",
+              "Oswald decides to make a Flight check, and since he has a purple bike, he can treat Snap Decisions as Planned Actions. Half of his Flight is 6, so Oswald just makes the check with a Planned Action on his Flight. He narrates how he escapes narrowly, just barely swerving his bike around a pothole that would have knocked him off.",
+              "Isabella does the same, but she has to roll. She has tassels on her bike, so she gets +1 to checks while being chased. Flight is her d20 stat, but she only rolls a 2 (for a total of 3 with her bike’s bonus). Her red bike allows her to get +2 for every AT spent while biking, but she decides to fail the roll instead. She gains another AT, but she’ll have to face the consequences of Peter catching up to her."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "facing-your-fears",
+        "name": "Facing Your Fears",
+        "paragraphs": [
+          "When facing your Fear:",
+          "You must make Snap Decisions.",
+          "You cannot spend Adversity Tokens to help your friends (though they can spend Adversity Tokens to help you).",
+          "Depending on the severity of the Fear, you may have to make checks at up to a -3 penalty.",
+          "\"Facing your Fear\" means that you are in a situation where the thing you fear is present.",
+          "The first implication of *facing your Fear* is that you must make all of your checks as Snap Decisions, even if you have a relevant Knack.",
+          "The second implication is that you cannot use Adversity Tokens to help out your friends. As with all of your checks, you may still spend Adversity Tokens to improve your own rolls. Your friends, too, can still spend Adversity Tokens to help you—provided that you don't both suffer from the same Fear.",
+          "Depending on the severity of the exposure to your Fear, you may suffer a penalty of up to -3 on all checks made while exposed to your Fear. The severity of the penalty will be up to the GM, but here are a few suggestions:",
+          "Don't apply penalties for non-persistent instances of the thing you're afraid of.",
+          "A -1 penalty is good for when the fear is persistent but, at least rationally, irrelevant.",
+          "A -2 penalty is good for when the fear is persistent and possibly relevant.",
+          "A -3 penalty is good for when the fear is persistent and overwhelming.",
+          "With the GM's permission (or if you have the Heroic Strength), players may spend Adversity Tokens to ignore their fear, which they must do prior to rolling any checks. The cost of doing so should be 1 Adversity Token per -1 penalty to rolls. Once you spend these tokens, ignore all three mechanical implications of the fear for the duration of the scene."
+        ],
+        "callouts": [
+          {
+            "kind": "example",
+            "defaultOpen": false,
+            "paragraphs": [
+              "For example, across town, Kalsang is working at her shop when she hears the door open. Before she can roll herself from under the car to see who’s there, the car starts to lower, and she shouts, “Someone’s under here!” She sees a pair of muddy boots standing by the lever to lower it and hears a low, gravely voice say, “I know.” She realizes that there’s a very real chance that she could be crushed under this car, which causes her to become afraid of suffocating. This is a persistent and overwhelming fear, so all of her checks will be at -3. The GM tells her that it will be a Flight check of 11 to get out.",
+              "Her Flight is her lowest stat, and all of her checks are at a -3. She and the GM agree that rolling herself from under the car would fall under her being Skilled at Car Repair, so she’ll get a +3 to that, counterbalancing her Fear penalty. She rolls a 3, failing her check by 8. She is trapped under the car, and one of her arms gets wedged underneath the car, preventing her from moving it."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "doing-harm",
+        "name": "Doing Harm",
+        "paragraphs": [
+          "When you decide you want to *harm* another character, you're altering the narrative of the game regardless of whether you're successful or not. Such efforts to cause harm, whether by a PC or an NPC, should resolve in a single check. Rather than trading blow after blow by making contested stat check after contested stat check, you will establish the risks, make on contested check, then narrate the results.",
+          "When thinking about attempting to cause harm in the game, there are three things to confirm before even entertaining it for a character:",
+          "During Session Zero, players also indicated their willingness or unwillingness to have harm occur in game, even if they're not involved. If any player isn't willing to have characters trying to cause harm at the table, then the narrative needs to take a different direction. A good idea might be to have that player's character step in and try to mediate between the two players to move the story in a different direction.",
+          "Also during Session Zero, players would have indicated whether they're willing to have their character attempt to cause harm in the game—and the kinds of harm they're willing to participate in. If a player isn't willing to have their character involved, then the narrative needs to take a different direction.",
+          "In *Kids on Bikes*, the assumption is that any violence, even if it's not intended to cause harm, can only take place between characters in the same age bracket or with two years' or fewer between their ages. If everyone at your table would all like to go against this assumption, make sure that it's something everyone at the table has agreed to.",
+          "Whether the violence meant to cause harm is between two player's characters or a PC and an NPC, the GM will make sure that the stakes for the combat are clear by going through the following process:",
+          "*First, the player controlling the instigating character explains the kind of harm they plan to do, including which stat they plan to use.*",
+          "In this step, the player explains what their character plans to do, whether that's punching a bully to break their nose or verbally tearing into an NPC's insecurities. There are always different approaches a character could take in enacting violence, and the stat the character uses should reflect that.",
+          "*If the violence is instigated by a player, the GM will tell the players what will inescapably happen to the group if they go through with it, then check pressure to confirm that all players at the table are comfortable with the attempted harm and the risk. This includes the GM.*",
+          "Any time any character tries to cause physical or emotional harm, there should be big stakes for not just them but the party as a whole. To start this process, the GM will let the players know what will happen to the group if they go through with it.",
+          "It's vital for everyone at the table to understand that no matter what happens with the rolls, this is a consequence that the group *will* suffer. Attempts to cause harm always have consequences, even if you \"win\".",
+          "If anyone is not comfortable with the consequences, their character should step in and resolve the conflict in another way, or the group can *backpedal* and go in a different direction.",
+          "Note: if the harm is instigated by an NPC, the GM does not need to set these inescapable consequences.",
+          "*The GM will ask the player controlling the character attempting the harm, “What are you personally risking, and what are you hoping to gain?\"*",
+          "When a character attempts harm, they have to accept some degree of risk for them directly, whether that's reciprocated physical harm or embarrassment in front of others. If the GM thinks the consequences need to be more serious, they can ask the player to *pedal harder*. If any of these stakes are unacceptable to anyone at the table, they can of course ask the player to *backpedal* or *coast*.",
+          "*The GM will then ask the player controlling the character being targeted, \"What are you risking, and what are you hoping to gain?\" The player should also indicate the stat they're planning to use to respond to or try to avoid the harm.*",
+          "In addition to being on more chance for the targeted character's player to agree to this possible harm, this is their chance to set the stakes for their character, just as the instigating character's player had to do. And again, if the GM things the consequences need to be more serious, they can ask the player to *pedal harder* on those potential consequences. If any of these stakes are unacceptable to anyone at the table, they can of course ask the player to *backpedal* or *coast*.",
+          "If the character being attacked is an NPC, the GM will go through this same process, sharing with the table just as a player would do if their PC was attacked.",
+          "*Once the stakes and the stats are clear, players roll to determine who controls the outcome, then the \"winning\" character's player and the GM narrate the consequences.*",
+          "If the instigating character's roll is better, their player decides who \"wins\" the conflict (meaning that they gain what they were hoping to gain) and who \"loses\" the conflict (meaning that they give up what they were risking.)",
+          "In the end, the player doesn't have to decide that their character wins. They could instead decide that:",
+          "the same character both wins and loses,",
+          "that both characters loser and neither wins,",
+          "that both characters lose and only one wins",
+          "or that both characters lose and both characters win.",
+          "To put it another way, the only requirement is that, when violence occurs, at least one of the characters gives up what they risked.",
+          "Alternatively, if the targeted character's roll is better, their player makes these decisions.",
+          "In either case, both players share the narration of what happens to their characters within the bounds of what the \"winner\" establishes as consequences",
+          "Whichever character's player rolled higher tells the story of the consequences, accepting input from other characters and getting their reactions to what occurs.",
+          "In addition, the GM narrates the consequences of the violence for the whole group."
+        ],
+        "callouts": [
+          {
+            "kind": "example",
+            "defaultOpen": false,
+            "paragraphs": [
+              "For example, Peter catches up with Isabella, and Gauthier, the GM, announces that Peter plans to attack her physically by riding up next to her and shoving her off of her bike, causing her to get a skinned elbow and to shred the knees on her new jeans. This will be a Fight roll. Because an NPC is attempting harm, there do not need to be any consequences for the group, and Gauthier decides not to set any. He announces that Peter is risking causing a fall and scrapes to happen to him, too—but also that an adult might see him and yell at him for picking on a younger kid. Everyone at the table agrees that they’re comfortable with these possible consequences.",
+              "Isabella says that she wants to knock Peter off his bike in response to prevent him from getting her. Isabella and Gauthier agree that this, too, is a Fight check. For risks, she’s risking the injury Gauthier described and embarrassment that Oswald would now be better dressed than she is. The GM tells her to pedal harder, asking her to lean into the consequences more because she’s trying to cause harm in response. Isabella clarifies that she’s not trying to harm Peter, just stop him physically for long enough that she and Oswald can get away—and maybe make it clear that she’s not an easy target for his bullying. Still, she offers that if she’s unsuccessful, she could land on her wrist, spraining it. The GM and other players agree that this is a good risk for what she’s trying to gain.",
+              "The GM rolls Peter’s Fight and gets a 2. Isabella rolls a 5. Even though she won the roll, Breanna decides that having Isabella tear her jeans is too good to pass up, so she decides that she’s going to have that happen. In addition, she likes the consequences that Gauthier laid out for Peter: hurting himself and getting in trouble with an adult. She narrates how Peter closes in on her and shoves her, her jeans getting caught in her bike’s chain at her ankle as she wildly swerves away. Before he can shove her again, though, Old Mrs. Herkle shouts from her nearby front porch, “Peter Endicott, are you shoving that little girl? You know I see your mother for bridge tomorrow. What do you think I’m going to tell her?” Startled, Peter veers away too quickly and falls off his bike. He rolls awkwardly into the middle of the road, cursing under his breath at both his bike and Isabella. As he gives her a look that guarantees he’ll get back at her, Isabella pedals off to catch up with Oswald so they can get to Kalsang’s garage.",
+              "Moments later, a few blocks away, Kalsang hears the mysterious figure pull something from a shelf near him. He taps it against the body of the car she’s trapped under. It sounds like a pipe. “Now then, Mrs. Barton, I’d like to cut right to the chase. I know you know what caused the mine’s collapse. You built the machine that made it all happen. I just want to know why.”",
+              "“I have no idea what you’re talking about, please,” she says, trying to pull her arm free but not quite able to do so. “I don’t have any idea what happened that day. I was almost killed, too.” The GM decides to have her roll a Charm check to convince the mysterious figure that she’s telling the truth, with a difficulty of 10. She and the GM agree that a short-term consequence of the failure might be the mysterious figure trying to attack her physically. Before she rolls, the GM confirms that Kalsang is willing to have the combat, which could cause harm, occur, though they’ll establish risks and specific goals of that fight if it’s necessary. Everyone at the table agrees.",
+              "Kalsang rolls the Charm check, getting a 2. They establish that her mysterious assailant is using Fight, hoping to harm her enough that she goes with him without further resistance. He’s risking making enough noise that others hear it and come to investigate. Kalsang offers to risk breaking her arm while defending herself, which would be a Grit check. If she’s successful, though, she’s hoping to show her attacker that she’s tough enough that physical attacks aren’t going to work against her. Everyone agrees, and the rolling proceeds.",
+              "The attacker gets a 13, and Gauthier narrates how the stranger grabs the car, tips it upward with inhuman strength, and grabs Kalsang by the leg and yanks her out as she gets her arm free just in time. Kalsang gets a 14, and explains that she manages to get her forearms blocking her face a split second before the assailant brings the pipe down on them. The force of the hit is so great that her forearms feel like they might be broken, but they hold. Kalsang now kicks her feet, trying to take the figure’s legs out so that she can get away, but the kick, thrown wildly, grazes his shin, but he doesn’t move. She throws a nearby wrench at his head, missing him but sending it flying into a table of spare parts, car parts clattering loudly to the shop’s concrete floor.",
+              "At that moment, Isabella and Oswald rush into the shop. The mysterious figure hears the door open and, not waiting to see who just came in, takes off out of the back of the shop. Kalsang rubs her arms, wincing. They’ll be bruised, but it was better than taking a pipe to the face. Oswald and Isabella burst into the room. “Mrs. Barton!! Daniel wasn’t at school today and… are you okay!?"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "spending-money",
+        "name": "Spending Money",
+        "paragraphs": [
+          "Children cannot have jobs and thus have almost no access to money beyond what is given to them. If they need to buy something, they almost certainly need to find someone to get it for them. Under rare circumstances, they might have saved up enough to buy a small item.",
+          "Teens have limited access to money, but they can probably afford necessities for a few days, depending on their socio-economic status. Most teens won't be able to buy a car outright, but they could certainly have enough saved to get a hotel room for a few days. They might, though, be able to convince their parents to give them some money.",
+          "Adults have much more access to money than teens and can, within reason, buy what they need to buy. If they needed to buy a car in a pinch, they most likely could—though that might represent a significant sacrifice for them."
+        ],
+        "callouts": [
+          {
+            "kind": "warning",
+            "defaultOpen": true,
+            "paragraphs": [
+              "In order to be wealthy in this story of your game, even an adult with a traditionally high-paying job must take the Wealthy strength."
+            ]
+          }
         ]
       }
     ],
@@ -2287,6 +2454,56 @@ export const kidsOnBikesContent: KidsOnBikesContent = {
         "minimum": 1,
         "maximum": 2,
         "explanation": "A task where success is nearly guaranteed, except in extreme cases.\n*Examples: A character lifting a 10-pound weight over their head; a character reciting a multiplication table.*"
+      }
+    ],
+    "outcomes": [
+      {
+        "range": "+10 or higher",
+        "minimum": 10,
+        "maximum": null,
+        "explanation": "The character succeeds smoothly and easily. Likely, it looks like the character is just showing off, or that the task is done so readily that it happens without any effort at all. At the GM’s discretion (and certainly not necessarily), there could be some unexpected positive results from a success of this degree"
+      },
+      {
+        "range": "+5 to +9",
+        "minimum": 5,
+        "maximum": 9,
+        "explanation": "The character succeeds quite impressively. At the GM’s discretion, the character might have some additional benefits beyond the success, but these will be slight—and only if important for pushing the game forward."
+      },
+      {
+        "range": "+1 to +4",
+        "minimum": 1,
+        "maximum": 4,
+        "explanation": "The character succeeds, but not impressively. Any benefits the character gains above and beyond the success should be quite limited—if present at all."
+      },
+      {
+        "range": "0",
+        "minimum": 0,
+        "maximum": 0,
+        "explanation": "The character succeeds, but just barely. Decidedly, nothing surprising happens—and the player and the GM should make this success as skin-of-the-teeth as possible."
+      },
+      {
+        "range": "-4 to -1",
+        "minimum": -4,
+        "maximum": -1,
+        "explanation": "The character fails, but not too badly. There might be some very, very minor short-term consequences, but these won’t shift the story for more than a minute or two. The character has tried and almost succeeded."
+      },
+      {
+        "range": "-9 to -5",
+        "minimum": -9,
+        "maximum": -5,
+        "explanation": "The failure is bad, but not a disaster. There will be some short-term consequences that might lead to some immediate difficulties—but nothing that the character can’t handle if they focus on them. The character has tried to do or has been forced to do something beyond their capabilities. And, not surprisingly, they’ve failed."
+      },
+      {
+        "range": "-14 to -10",
+        "minimum": -14,
+        "maximum": -10,
+        "explanation": "The failure is profound. There will be consequences for this failure, likely in keeping with what would be expected, but that doesn’t mean that those consequences won’t be very bad. These consequences may strongly influence the course of the current play session. Generally, though, characters will only find themselves failing this badly when they bite off more than they can chew—or because the GM has a reason for them to fail."
+      },
+      {
+        "range": "-15 or lower",
+        "minimum": null,
+        "maximum": -15,
+        "explanation": "The failure is staggering and catastrophic. There will be both immediate and long-term consequences for this failure, above and beyond what might be expected. These consequences might lead to serious changes in the course of the long-term arc of the story—especially because the character should only find themselves failing this badly through total recklessness or because the GM has purposefully put them in a staggeringly difficult situation"
       }
     ]
   },

@@ -3927,3 +3927,38 @@ export const ${safeName}: ImportedContentSourceFile = JSON.parse(${serializedObj
 export default ${safeName};
 `;
 };
+
+const importedAtPattern = /"importedAt":\s*"([^"]*)"/;
+const readStamp = (text) => importedAtPattern.exec(text.replaceAll('\\"', '"'))?.[1];
+
+/**
+ * Keeps the previous `importedAt` when the regenerated text is otherwise identical, so
+ * "regenerate and check the diff is empty" is a real check. `render(stamp)` produces the file
+ * text for a stamp; the one on disk is read off its `"importedAt": "..."` pair, escaped or not.
+ */
+export const settleImportedAt = (previousText, currentStamp, render) => {
+  if (typeof previousText !== 'string') return render(currentStamp);
+  const previousStamp = readStamp(previousText);
+  if (!previousStamp || previousStamp === currentStamp) return render(currentStamp);
+  const withPrevious = render(previousStamp);
+  return withPrevious === previousText ? withPrevious : render(currentStamp);
+};
+
+const readIfExists = async (fs, filePath) => {
+  try {
+    return await fs.readFile(filePath, 'utf8');
+  } catch (error) {
+    if (error?.code !== 'ENOENT') console.warn(`could not read ${filePath}`, error?.message);
+    return undefined;
+  }
+};
+
+/** Writes a pack's source module, keeping the stamp on disk when nothing else changed. */
+export const writeSourceModule = async (fs, targetPath, pack, exportName) => {
+  const previous = await readIfExists(fs, targetPath);
+  const text = settleImportedAt(previous, pack.source.importedAt, (importedAt) =>
+    generateSourceModuleText({ ...pack, source: { ...pack.source, importedAt } }, exportName)
+  );
+  await fs.writeFile(targetPath, text, 'utf8');
+  return readStamp(text) ?? pack.source.importedAt;
+};

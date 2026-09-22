@@ -1417,8 +1417,9 @@ export const deriveCharacterHitPoints = ({
 }) => {
   const constitutionModifier = getAbilityModifier(abilityScores?.constitution ?? 10);
   let maximum = 0;
+  let firstLevelCounted = false;
 
-  classes.forEach((entry, index) => {
+  classes.forEach((entry) => {
     const cls = getClassById(entry.classId);
     if (!cls || entry.level <= 0) {
       return;
@@ -1426,8 +1427,9 @@ export const deriveCharacterHitPoints = ({
 
     // Only the character's very first level takes the full die; every other level, in any class,
     // takes the average. The entry's first level is counted here, the rest below.
-    maximum += getPerLevelHitPointGain(cls.hitDie, constitutionModifier, index === 0);
+    maximum += getPerLevelHitPointGain(cls.hitDie, constitutionModifier, !firstLevelCounted);
     maximum += (entry.level - 1) * getPerLevelHitPointGain(cls.hitDie, constitutionModifier, false);
+    firstLevelCounted = true;
   });
 
   if (maximum <= 0) {

@@ -6,9 +6,9 @@ import { fileURLToPath } from 'node:url';
 import {
   coerceToCanonicalSourcePackage,
   countContentEntries,
-  generateSourceModuleText,
   parseDocumentToCanonicalSourcePackage,
-  validateCanonicalSourcePackage
+  validateCanonicalSourcePackage,
+  writeSourceModule
 } from './canonical-content.mjs';
 import { createFreeCorePackForSourceId } from './generate-free-core-sources.mjs';
 import { enrichCanonicalSourcePackageFeatureChoices } from './structured-feature-choices.mjs';
@@ -196,19 +196,23 @@ if (jsonOutput) {
   resolvedJsonOutput = path.resolve(workspaceRoot, 'imports', `${normalizedPack.source.sourceId}.canonical.json`);
 }
 
-if (resolvedJsonOutput) {
-  await fs.mkdir(path.dirname(resolvedJsonOutput), { recursive: true });
-  await fs.writeFile(resolvedJsonOutput, `${JSON.stringify(normalizedPack, null, 2)}\n`, 'utf8');
-  console.log(`Wrote ${resolvedJsonOutput}`);
-}
-
 const targetPath = path.resolve(projectRoot, output || defaultModulePath);
 const exportName = `${path.basename(targetPath, path.extname(targetPath)).replaceAll(/\W/g, '_')}_source`;
 
+// The module is written first because the previous stamp is read from it; the JSON beside it
+// then carries whichever stamp the module settled on.
+let settledPack = normalizedPack;
 if (output || documentPath || input) {
   await fs.mkdir(path.dirname(targetPath), { recursive: true });
-  await fs.writeFile(targetPath, generateSourceModuleText(normalizedPack, exportName), 'utf8');
+  const importedAt = await writeSourceModule(fs, targetPath, normalizedPack, exportName);
+  settledPack = { ...normalizedPack, source: { ...normalizedPack.source, importedAt } };
   console.log(`Wrote ${targetPath}`);
+}
+
+if (resolvedJsonOutput) {
+  await fs.mkdir(path.dirname(resolvedJsonOutput), { recursive: true });
+  await fs.writeFile(resolvedJsonOutput, `${JSON.stringify(settledPack, null, 2)}\n`, 'utf8');
+  console.log(`Wrote ${resolvedJsonOutput}`);
 }
 
 console.log(

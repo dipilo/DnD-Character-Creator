@@ -126,11 +126,16 @@ export interface KobAgeRules {
   text: string;
 }
 
-/** One `#` heading of `Playing The Game.md`, with the blockquoted rule text under it. */
+/** One heading of a chapter note, with the rule text under it. */
 export interface KobRuleSection {
   id: string;
   name: string;
   paragraphs: string[];
+}
+
+/** One `#` heading of `Playing The Game.md`, with its worked examples kept apart from the rule. */
+export interface KobPlayRuleSection extends KobRuleSection {
+  callouts: KobCallout[];
 }
 
 /** One row of the difficulty table, with the bounds its wording states. */
@@ -143,9 +148,21 @@ export interface KobDifficultyBand {
   explanation: string;
 }
 
+/** One row of the Consequences For Failure table: the margin of roll over target it covers. */
+export interface KobOutcomeBand {
+  /** As printed: "+10 or higher", "-4 to -1", "0". */
+  range: string;
+  /** Null for the open-ended bottom band. */
+  minimum: number | null;
+  /** Null for the open-ended top band. */
+  maximum: number | null;
+  explanation: string;
+}
+
 export interface KobPlayRules {
-  sections: KobRuleSection[];
+  sections: KobPlayRuleSection[];
   difficulties: KobDifficultyBand[];
+  outcomes: KobOutcomeBand[];
 }
 
 /** One of the Pre-Game Form's four lists (Appendix A), with the question the book prints under it. */

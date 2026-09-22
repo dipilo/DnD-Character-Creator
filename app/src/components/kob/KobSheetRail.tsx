@@ -9,6 +9,8 @@ import { ChevronDown, Minus, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { StatSpread } from '@/components/kob/StatSpread';
 import { getPlayRuleSection } from '@/data/gameSystems/kidsOnBikes/rules';
 import type { KobCharacter } from '@/types/kob';
@@ -96,6 +98,10 @@ export function KobSheetRail({ character, knacks, onChange }: Readonly<KobSheetR
   // The Lucky Break is the reason a stat is a button; the rule is quoted from the vault, never
   // paraphrased here.
   const statCheckRule = getPlayRuleSection('stat-checks')?.paragraphs[1] ?? '';
+  // The difficulty the GM names for this check. It is the table's number, not the character's,
+  // so it is never written to the document.
+  const [targetText, setTargetText] = useState('');
+  const target = /^-?\d+$/.test(targetText.trim()) ? Number.parseInt(targetText, 10) : null;
 
   return (
     <div className="space-y-4">
@@ -107,10 +113,25 @@ export function KobSheetRail({ character, knacks, onChange }: Readonly<KobSheetR
         </CardHeader>
         <CardContent className="space-y-2">
           {/* Two across in a 19rem column, three where the rail is a full-width strip. */}
+          <div className="flex items-center gap-2">
+            <Label htmlFor="kob-check-difficulty" className="text-xs text-muted-foreground">
+              Difficulty
+            </Label>
+            <Input
+              id="kob-check-difficulty"
+              type="number"
+              inputMode="numeric"
+              placeholder="Set by the GM"
+              value={targetText}
+              onChange={(event) => setTargetText(event.target.value)}
+              className="h-9 w-32 coarse:h-11"
+            />
+          </div>
           <StatSpread
             statDice={character.statDice}
             age={character.age}
             rollable
+            target={target}
             className="grid-cols-2 sm:grid-cols-3 lg:grid-cols-2"
           />
           <RuleNote label="How a check works" text={statCheckRule} />

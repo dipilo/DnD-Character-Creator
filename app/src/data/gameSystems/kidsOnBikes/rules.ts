@@ -4,8 +4,9 @@ import type {
   KobBikeOption,
   KobBondedAction,
   KobDifficultyBand,
+  KobOutcomeBand,
   KobFinishingTouch,
-  KobRuleSection,
+  KobPlayRuleSection,
   KobStatId,
   KobStrength,
   KobTrope,
@@ -98,7 +99,7 @@ export function needsSkilledAt(character: Pick<KobCharacter, 'age' | 'strengthId
 }
 
 /** One `#` section of the play rules, by its slug. */
-export function getPlayRuleSection(id: string): KobRuleSection | null {
+export function getPlayRuleSection(id: string): KobPlayRuleSection | null {
   return kob.playRules.sections.find((section) => section.id === id) ?? null;
 }
 
@@ -114,7 +115,20 @@ export function difficultyBandFor(total: number): KobDifficultyBand | null {
   );
 }
 
-/** The two questions a trope asks, so the builder can render exactly as many answer fields. */
+/**
+ * The outcome band a roll's margin over its target lands in, read off the imported Consequences
+ * For Failure table. Null when the table states no band for it.
+ */
+export function outcomeBandFor(margin: number): KobOutcomeBand | null {
+  return (
+    kob.playRules.outcomes.find(
+      (band) =>
+        (band.minimum === null || margin >= band.minimum) &&
+        (band.maximum === null || margin <= band.maximum),
+    ) ?? null
+  );
+}
+
 /** One Finishing Touches field's book text, by the slug of its printed name. */
 export function finishingTouch(id: string): KobFinishingTouch | null {
   return kob.finishingTouches.find((entry) => entry.id === id) ?? null;
