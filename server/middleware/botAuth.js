@@ -41,4 +41,14 @@ async function requireBotAuth(req, res, next) {
   }
 }
 
-module.exports = { requireBotAuth, keyMatches };
+/**
+ * The key alone, for what the bot reads on nobody's behalf — the content library. No Discord id
+ * is read, so nothing here can resolve to a user, and a route that needs one must use
+ * `requireBotAuth` instead.
+ */
+function requireBotKey(req, res, next) {
+  if (!keyMatches(req.get(KEY_HEADER))) return res.status(401).json({ error: 'bad_bot_key' });
+  next();
+}
+
+module.exports = { requireBotAuth, requireBotKey, keyMatches };

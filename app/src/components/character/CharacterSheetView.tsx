@@ -482,6 +482,8 @@ export function CharacterSheetView({
               <SheetLevelControl
                 character={character}
                 resolvedClasses={resolvedClasses}
+                classCatalogue={classCatalogue}
+                abilityScores={displayedAbilityScores}
                 onChange={onChange}
               />
               <Button

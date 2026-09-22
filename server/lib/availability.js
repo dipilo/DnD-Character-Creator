@@ -1,5 +1,5 @@
 const chrono = require('chrono-node');
-const { DateTime } = require('luxon');
+const { DateTime, IANAZone } = require('luxon');
 const db = require('../db');
 
 /* ---------- timezone mapping ---------- */
@@ -19,6 +19,9 @@ function tzFromAbbrev(tzRaw) {
   // sometimes user writes 'Est' or 'est ' etc
   const up = s.toUpperCase();
   if (map[up.toLowerCase()]) return map[up.toLowerCase()];
+  // A seat's stored zone is an IANA name (`Europe/London`); those pass through as they are.
+  const named = String(tzRaw).trim();
+  if (named.includes('/') && IANAZone.isValidZone(named)) return named;
   return null;
 }
 

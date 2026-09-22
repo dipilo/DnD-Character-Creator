@@ -19,6 +19,15 @@ import type {
   SpellcastingProgression,
   Subclass
 } from '@/types/dnd';
+import { getCharacterProficiencyBonus } from '@/lib/sheetMath';
+import {
+  classMatches,
+  deriveSlotTotals,
+  getCasterContribution,
+  getHighestUnlockedSpellLevel,
+  getSpellcastingSource,
+  normalizeName
+} from '@/lib/spellSlots';
 import { resolveSourceId } from '@/data/librarySources';
 import { isEquipmentChoiceOption } from '@/lib/startingEquipment';
 
@@ -134,8 +143,6 @@ export interface AbilityScoreChoiceConfig {
   options: (keyof AbilityScores)[];
   exclusiveGroupId?: string;
 }
-
-const normalizeName = (value: string) => value.toLowerCase().replaceAll(/[^a-z0-9]+/g, ' ').trim();
 
 const editionSourceIds = new Map<string, RulesEdition>([
   ['phb-2014', '2014'],
@@ -285,29 +292,6 @@ const abilityNamePattern = /(strength|dexterity|constitution|intelligence|wisdom
 const apostrophePattern = /['’]/g;
 const armorFormulaPrefixPattern = /(base armor class equals|armor class equals|your ac equals|your ac is|ac equals|ac is)/i;
 const plusOrAndPattern = /(?:\+|plus|and)/i;
-const multiclassSpellSlotsTable: number[][] = [
-  [2],
-  [3],
-  [4, 2],
-  [4, 3],
-  [4, 3, 2],
-  [4, 3, 3],
-  [4, 3, 3, 1],
-  [4, 3, 3, 2],
-  [4, 3, 3, 3, 1],
-  [4, 3, 3, 3, 2],
-  [4, 3, 3, 3, 2, 1],
-  [4, 3, 3, 3, 2, 1],
-  [4, 3, 3, 3, 2, 1, 1],
-  [4, 3, 3, 3, 2, 1, 1],
-  [4, 3, 3, 3, 2, 1, 1, 1],
-  [4, 3, 3, 3, 2, 1, 1, 1],
-  [4, 3, 3, 3, 2, 1, 1, 1, 1],
-  [4, 3, 3, 3, 3, 1, 1, 1, 1],
-  [4, 3, 3, 3, 3, 2, 1, 1, 1],
-  [4, 3, 3, 3, 3, 2, 2, 1, 1]
-];
-
 const slugify = (value: string) => value.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-').replaceAll(/^-+|-+$/g, '');
 const humanizeFallbackId = (value: string) => value.split('-').filter(Boolean).map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
 const quantityWords = new Map<string, number>([
@@ -745,14 +729,6 @@ const getProgressionValue = (values: number[] | undefined, level: number) => {
   return values[Math.max(0, level - 1)] ?? 0;
 };
 
-const getProgressionSlots = (values: number[][] | undefined, level: number) => {
-  if (!values || level <= 0) {
-    return [];
-  }
-
-  return values[Math.max(0, level - 1)] ?? [];
-};
-
 const getPreparedSpellLimit = (spellcasting: SpellcastingProgression | undefined, level: number, abilityScores: Partial<AbilityScores> | undefined) => {
   if (!spellcasting?.spellPreparation) {
     return undefined;
@@ -768,69 +744,11 @@ const getPreparedSpellLimit = (spellcasting: SpellcastingProgression | undefined
   return Math.max(1, level + (Number.isFinite(highestModifier) ? highestModifier : 0));
 };
 
-const getHighestUnlockedSpellLevel = (slotsByLevel: number[]) => {
-  return slotsByLevel.reduce((highestLevel, slotCount, index) => {
-    return slotCount > 0 ? index + 1 : highestLevel;
-  }, 0);
-};
-
-const getClassLookupKey = (cls: Class) => `${normalizeName(cls.id)} ${normalizeName(cls.name)}`;
-const classMatches = (cls: Class, token: string) => getClassLookupKey(cls).includes(token);
-
 const getSpellListClassName = (cls: Class) => {
   if (classMatches(cls, 'fighter') || classMatches(cls, 'rogue')) {
     return 'Wizard';
   }
   return cls.name;
-};
-
-const getSubclassSpellcasting = (entry: SelectedClassWithLevel) => {
-  if (!entry.subclass?.spellcasting) {
-    return undefined;
-  }
-
-  if (entry.cls.spellcasting) {
-    return entry.cls.spellcasting;
-  }
-
-  return entry.subclass.spellcasting;
-};
-
-const getSpellcastingSource = (entry: SelectedClassWithLevel) => {
-  return entry.cls.spellcasting ?? getSubclassSpellcasting(entry);
-};
-
-const getCasterContribution = (entry: SelectedClassWithLevel) => {
-  const spellcasting = getSpellcastingSource(entry);
-  if (!spellcasting) {
-    return { kind: 'none' as const, slotsByLevel: [] as number[] };
-  }
-
-  if (classMatches(entry.cls, 'warlock')) {
-    return {
-      kind: 'pact' as const,
-      slotsByLevel: getProgressionSlots(spellcasting.spellSlots, entry.level)
-    };
-  }
-
-  if (classMatches(entry.cls, 'paladin') || classMatches(entry.cls, 'ranger')) {
-    return {
-      kind: 'half' as const,
-      slotsByLevel: getProgressionSlots(spellcasting.spellSlots, entry.level)
-    };
-  }
-
-  if ((classMatches(entry.cls, 'fighter') || classMatches(entry.cls, 'rogue')) && entry.subclass?.spellcasting) {
-    return {
-      kind: 'third' as const,
-      slotsByLevel: getProgressionSlots(entry.subclass.spellcasting.spellSlots, entry.level)
-    };
-  }
-
-  return {
-    kind: 'full' as const,
-    slotsByLevel: getProgressionSlots(spellcasting.spellSlots, entry.level)
-  };
 };
 
 const toSortedArray = (values: Iterable<string>) => {
@@ -1376,7 +1294,7 @@ export const getAdditionalFeatSelectionLimit = (selectedClasses: SelectedClassWi
   return selectedClasses.reduce((total, entry) => total + getClassFeatSelectionCount(entry.cls.id, entry.level), 0);
 };
 
-export const getCharacterProficiencyBonus = (totalLevel: number) => Math.ceil(totalLevel / 4) + 1;
+export { getCharacterProficiencyBonus };
 
 export const resolveCharacterClasses = ({
   classes,
@@ -1506,10 +1424,10 @@ export const deriveCharacterHitPoints = ({
       return;
     }
 
+    // Only the character's very first level takes the full die; every other level, in any class,
+    // takes the average. The entry's first level is counted here, the rest below.
     maximum += getPerLevelHitPointGain(cls.hitDie, constitutionModifier, index === 0);
-
-    const remainingLevels = Math.max(0, entry.level - (index === 0 ? 1 : 0));
-    maximum += remainingLevels * getPerLevelHitPointGain(cls.hitDie, constitutionModifier, false);
+    maximum += (entry.level - 1) * getPerLevelHitPointGain(cls.hitDie, constitutionModifier, false);
   });
 
   if (maximum <= 0) {
@@ -2180,30 +2098,7 @@ export const getSpellcastingRulesSummary = ({
     })
     .filter((entry): entry is SpellcastingClassSummary => Boolean(entry));
 
-  const multiclassCasterLevel = selectedClasses.reduce((total, entry) => {
-    const contribution = getCasterContribution(entry);
-    if (contribution.kind === 'full') {
-      return total + entry.level;
-    }
-    if (contribution.kind === 'half') {
-      return total + Math.floor(entry.level / 2);
-    }
-    if (contribution.kind === 'third') {
-      return total + Math.floor(entry.level / 3);
-    }
-    return total;
-  }, 0);
-
-  const nonPactSpellcastingClasses = spellcastingClasses.filter((entry) => entry.slotsByLevel.length > 0);
-  const slotsByLevel = nonPactSpellcastingClasses.length <= 1
-    ? (nonPactSpellcastingClasses[0]?.slotsByLevel ?? [])
-    : (multiclassSpellSlotsTable[Math.max(0, multiclassCasterLevel - 1)] ?? []);
-  const pactSlotsByLevel = spellcastingClasses.reduce<number[]>((slots, entry) => {
-    entry.pactSlotsByLevel.forEach((slotCount, index) => {
-      slots[index] = (slots[index] ?? 0) + slotCount;
-    });
-    return slots;
-  }, []);
+  const { slotsByLevel, pactSlotsByLevel, multiclassCasterLevel } = deriveSlotTotals(selectedClasses);
 
   const selectedCountsByLevel: number[] = [];
   let selectedCantrips = 0;

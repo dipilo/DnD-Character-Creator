@@ -12,7 +12,9 @@
  * sheet and at the top of the builder.
  */
 import {
+  canMixClassEditions,
   deriveCharacterHitPoints,
+  evaluateMulticlassPrerequisites,
   getAdditionalFeatSelectionLimit,
   getClassProficiencyGrants,
   getMulticlassSkillSelections,
@@ -26,9 +28,11 @@ import {
   type ResolvedCharacterClass,
   type SpellcastingRulesSummary
 } from '@/lib/builderRules';
+import { dedupeCanonicalContent, getCanonicalContentKey, getClassSelectionScore } from '@/lib/contentSelection';
 import { featHasPendingChoices } from '@/lib/featGrants';
 import { featureChoiceCount, getChosenFeatureOptions, getSelectedFeatureOptionIds } from '@/lib/featureOptions';
 import type {
+  AbilityScores,
   Background,
   Character,
   Class,
@@ -82,6 +86,80 @@ export function applyLevelUp(
       getClassById
     })
   };
+}
+
+/**
+ * Take a first level in a class the character does not hold.
+ *
+ * The entry goes on the end, so the first entry keeps its full first-level hit die, and the new
+ * class's proficiency grants and skill pick follow from its position through
+ * `getClassProficiencyGrants` and `deriveAdvancementTasks` without anything written here.
+ */
+export function applyAddClass(
+  character: Character,
+  classId: string,
+  getClassById: (id: string) => Class | undefined
+): Partial<Character> {
+  const classes = [...character.classes, { classId, level: 1, hitDiceUsed: 0 }];
+
+  return {
+    classes,
+    hp: deriveCharacterHitPoints({
+      classes,
+      abilityScores: character.abilityScores,
+      previousHp: character.hp,
+      getClassById
+    })
+  };
+}
+
+/** A class the character could take a first level in, and what stops them if anything does. */
+export interface MulticlassCandidate {
+  cls: Class;
+  /** "Wisdom 13", or "Fighter Strength 13 or Dexterity 13" when a held class falls short. */
+  unmet?: string;
+}
+
+/**
+ * The classes a sheet may add, one printing per class, in the edition the character already plays.
+ * The prerequisite check is the Class step's (`evaluateMulticlassPrerequisites`), read against the
+ * scores the sheet displays; a class the character cannot take is listed with its reason rather
+ * than hidden, and `multiclassPrerequisitesWaived` clears every reason.
+ */
+export function listMulticlassCandidates({
+  character,
+  resolvedClasses,
+  catalogue,
+  abilityScores
+}: {
+  character: Pick<Character, 'multiclassPrerequisitesWaived'>;
+  resolvedClasses: readonly ResolvedCharacterClass[];
+  catalogue: readonly Class[];
+  abilityScores: AbilityScores;
+}): MulticlassCandidate[] {
+  if (resolvedClasses.length === 0 || !canLevelUp({ classes: resolvedClasses.map(({ entry }) => entry) })) return [];
+
+  const selectedClasses = resolvedClasses.map(({ cls, entry, subclass }) => ({
+    cls,
+    level: entry.level,
+    subclassId: entry.subclassId,
+    subclass
+  }));
+  const heldKeys = new Set(resolvedClasses.map(({ cls }) => getCanonicalContentKey(cls)));
+  const waived = character.multiclassPrerequisitesWaived === true;
+
+  const candidates = dedupeCanonicalContent(
+    catalogue.filter((cls) => !heldKeys.has(getCanonicalContentKey(cls)) && canMixClassEditions(selectedClasses, cls)),
+    getClassSelectionScore
+  );
+
+  return [...candidates]
+    .sort((left, right) => left.name.localeCompare(right.name))
+    .map((cls) => {
+      const failures = waived ? [] : evaluateMulticlassPrerequisites({ selectedClasses, candidateClass: cls, abilityScores });
+      const unmet = failures.map((failure) => failure.label).join(', ');
+      return unmet ? { cls, unmet } : { cls };
+    });
 }
 
 /** Whether another level can be taken at all, and in which class. */

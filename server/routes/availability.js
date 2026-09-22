@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const { buildRangesFromText, extractTzFromText, mergeInsertAvailability, tzFromAbbrev } = require('../lib/availability');
+const { aggregateAvailability } = require('../lib/botCampaigns');
 const { canUserModifyPlayer, getCampaignMembership, requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
@@ -83,47 +84,7 @@ router.get('/api/availability/aggregate', requireAuth, async (req, res) => {
     if (!mem) return res.status(403).json({ error: 'not_a_member' });
 
     const pids = req.query.player_ids ? String(req.query.player_ids).split(',').map(x=>Number.parseInt(x,10)).filter(Boolean) : null;
-
-    // Join to players either way so only this campaign's rows can be aggregated.
-    let rows;
-    if (pids && pids.length > 0) {
-      const placeholders = pids.map(()=> '?').join(',');
-      const sql = `SELECT a.player_id, a.start_iso, a.end_iso FROM availability a JOIN players p ON p.id = a.player_id
-                   WHERE p.campaign_id = ? AND a.player_id IN (${placeholders}) AND NOT (a.end_iso <= ? OR a.start_iso >= ?)`;
-      rows = await db.all(sql, campaignId, ...pids, start, end);
-    } else {
-      const sql = `SELECT a.player_id, a.start_iso, a.end_iso FROM availability a JOIN players p ON p.id = a.player_id
-                   WHERE p.campaign_id = ? AND NOT (a.end_iso <= ? OR a.start_iso >= ?)`;
-      rows = await db.all(sql, campaignId, start, end);
-    }
-
-    // build sorted unique timepoints
-    const points = new Set();
-    points.add(start);
-    points.add(end);
-    for (const r of rows) {
-      points.add(r.start_iso);
-      points.add(r.end_iso);
-    }
-    // convert to sorted array of DateTimes
-    const pts = Array.from(points).map(x => new Date(x).getTime()).sort((a,b)=>a-b);
-
-    // scan intervals between adjacent points and count overlapping players
-    const intervals = [];
-    for (let i = 0; i < pts.length - 1; i++) {
-      const s = new Date(pts[i]);
-      const e = new Date(pts[i+1]);
-      const sIso = new Date(s).toISOString();
-      const eIso = new Date(e).toISOString();
-      const playerSet = new Set();
-      for (const r of rows) {
-        // overlap if not (r.end_iso <= sIso or r.start_iso >= eIso)
-        if (!(new Date(r.end_iso) <= s || new Date(r.start_iso) >= e)) {
-          playerSet.add(r.player_id);
-        }
-      }
-      intervals.push({ start: sIso, end: eIso, count: playerSet.size, player_ids: Array.from(playerSet) });
-    }
+    const intervals = await aggregateAvailability(campaignId, start, end, pids);
     res.json({ intervals });
   } catch (e) {
     console.error(e);

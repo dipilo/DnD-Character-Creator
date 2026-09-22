@@ -6,8 +6,10 @@
  * Bludgeoning, Piercing, and Slashing damage"), so nothing here names a class, a species or a feat.
  * A feature whose text states neither simply appears in neither list.
  */
-import type { AbilityScores, Feature } from '@/types/dnd';
-import { abilityModifier, formatModifier, type DerivedAttack } from '@/lib/sheetDerivations';
+import type { Feature } from '@/types/dnd';
+import { deriveUnarmedStrike, formatModifier } from '@/lib/sheetMath';
+
+export { deriveUnarmedStrike };
 
 export type ActionTiming = 'action' | 'bonus-action' | 'reaction';
 
@@ -54,31 +56,6 @@ export function deriveAttacksPerAction(features: readonly Feature[]): number {
     }
   }
   return most;
-}
-
-/* -------------------------------------------------------------------------- *
- * Unarmed Strike
- * -------------------------------------------------------------------------- */
-
-/**
- * The Unarmed Strike every character has. Both printings state the same damage — 1 plus the
- * Strength modifier, bludgeoning — and every character is proficient with it, so it is derived
- * rather than being an item somebody has to remember to add to their equipment.
- */
-export function deriveUnarmedStrike(
-  abilityScores: AbilityScores,
-  proficiencyBonus: number
-): DerivedAttack {
-  const strength = abilityModifier(abilityScores.strength);
-  return {
-    name: 'Unarmed Strike',
-    kind: 'Melee Weapon Attack',
-    attackBonus: strength + proficiencyBonus,
-    damage: `${1 + strength} bludgeoning`,
-    ability: 'strength',
-    proficient: true,
-    properties: []
-  };
 }
 
 /* -------------------------------------------------------------------------- *
