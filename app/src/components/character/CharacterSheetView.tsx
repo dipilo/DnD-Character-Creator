@@ -41,8 +41,9 @@ import {
   resolveCharacterEquipment,
   sortFeaturesByLevel
 } from '@/lib/builderRules';
+import type { FeatureThrowContext } from '@/lib/featureFacets';
 import { deriveAttacks, deriveSheetVitals } from '@/lib/sheetDerivations';
-import { abilityModifier } from '@/lib/sheetMath';
+import { ABILITY_ORDER, abilityModifier } from '@/lib/sheetMath';
 import { deriveDefences, deriveSenses, deriveUnarmedStrike } from '@/lib/sheetCombat';
 import { deriveEncumbrance } from '@/lib/sheetInventory';
 import { resolveFeatOptionChoicePool, resolveFeatSpellEntries } from '@/lib/featGrants';
@@ -325,6 +326,22 @@ export function CharacterSheetView({
   const totalLevel = character.classes.reduce((sum, entry) => sum + entry.level, 0) || 1;
   const proficiencyBonus = getCharacterProficiencyBonus(totalLevel);
 
+  // What a feature's own sentences add to its dice: "1d10 plus your Fighter level", "+ PB". The
+  // level a "when you reach 14th level" clause counts is the class's, which each card passes.
+  const featureThrowContext = useMemo<FeatureThrowContext>(
+    () => ({
+      level: totalLevel,
+      classLevels: Object.fromEntries(
+        resolvedClasses.map(({ entry, cls }) => [(cls?.name ?? entry.classId).toLowerCase(), entry.level])
+      ),
+      abilityModifiers: Object.fromEntries(
+        ABILITY_ORDER.map((ability) => [ability, abilityModifier(displayedAbilityScores[ability])])
+      ),
+      proficiencyBonus
+    }),
+    [displayedAbilityScores, proficiencyBonus, resolvedClasses, totalLevel]
+  );
+
   // Rages, Ki Points, Channel Divinity, Second Wind: whatever this character's classes state, at
   // the level they hold in each. A pool sized by an ability reads the scores the sheet displays.
   const classResources = useMemo(
@@ -572,6 +589,7 @@ export function CharacterSheetView({
               castingStat={castingStat}
               combatActions={combatActions}
               characterLevel={totalLevel}
+              featureContext={featureThrowContext}
               slotsByLevel={spellcastingRules.slotsByLevel}
               pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
               onChange={onChange}
@@ -628,6 +646,7 @@ export function CharacterSheetView({
                   emptyMessage="No species features are recorded for this character."
                   character={character}
                   classResources={classResources}
+                  throwContext={featureThrowContext}
                   onChange={onChange}
                 />
               </CardContent>
@@ -645,6 +664,7 @@ export function CharacterSheetView({
                     idPrefix={cls.id}
                     character={character}
                     classResources={classResources}
+                    throwContext={{ ...featureThrowContext, level: entry.level }}
                     onChange={onChange}
                   />
                   {subclass && subclass.features.some((feature) => feature.level <= entry.level) && (
@@ -659,6 +679,7 @@ export function CharacterSheetView({
                         idPrefix={subclass.id}
                         character={character}
                         classResources={classResources}
+                        throwContext={{ ...featureThrowContext, level: entry.level }}
                         onChange={onChange}
                       />
                     </div>
@@ -679,6 +700,7 @@ export function CharacterSheetView({
                     idPrefix="feat"
                     character={character}
                     classResources={classResources}
+                    throwContext={featureThrowContext}
                     onChange={onChange}
                   />
                 </CardContent>

@@ -17,7 +17,7 @@ const ABILITY_NAMES: Record<string, keyof AbilityScores> = {
   charisma: 'charisma'
 };
 
-const DAMAGE_TYPES = [
+export const DAMAGE_TYPES = [
   'acid',
   'bludgeoning',
   'cold',
@@ -182,7 +182,7 @@ const isDigit = (value: string, index: number) => value[index] >= '0' && value[i
  * The level a tier's bracket belongs to: the last number the text states before it. Scanned rather
  * than matched, because an anchored `$` pattern over arbitrary prose backtracks (Sonar S8786).
  */
-function trailingLevel(before: string): number | null {
+export function trailingLevel(before: string): number | null {
   let end = before.length;
   while (end > 0 && !isDigit(before, end - 1)) end -= 1;
   let start = end;

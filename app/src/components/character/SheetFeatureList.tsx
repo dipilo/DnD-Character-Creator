@@ -14,12 +14,11 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/ui/badge';
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { SheetResourceControl } from '@/components/character/SheetResourceControl';
+import { deriveFeatureThrows, type FeatureThrowContext } from '@/lib/featureFacets';
 import { featureChoiceCount, getChosenFeatureOptions } from '@/lib/featureOptions';
 import { setClassResourceUsed, toggleResourceActive, type ResolvedClassResource } from '@/lib/sheetPlayState';
 import { rollOnScreen } from '@/store/diceTrayStore';
 import type { Character, CharacterFeatureSelection, Feature } from '@/types/dnd';
-
-const FEATURE_DICE_PATTERN = /\b(\d+d\d+)\b/;
 
 interface SheetFeatureListProps {
   readonly features: readonly Feature[];
@@ -33,6 +32,11 @@ interface SheetFeatureListProps {
    */
   readonly character?: Character;
   readonly classResources?: readonly ResolvedClassResource[];
+  /**
+   * What this character brings to a throw a feature states in words. Omitted where the list is not
+   * about a character, which leaves every throw at what the book prints.
+   */
+  readonly throwContext?: FeatureThrowContext;
   /** Absent on a read-only sheet, which is what leaves the counts and takes the buttons. */
   readonly onChange?: (patch: Partial<Character>) => void;
 }
@@ -44,6 +48,7 @@ export function SheetFeatureList({
   emptyMessage,
   character,
   classResources,
+  throwContext,
   onChange
 }: SheetFeatureListProps) {
   if (features.length === 0) {
@@ -56,7 +61,7 @@ export function SheetFeatureList({
         const chosen = getChosenFeatureOptions(feature, selections);
         const outstanding = Math.max(0, featureChoiceCount(feature) - chosen.length);
         const resource = classResources?.find((entry) => entry.featureName === feature.name);
-        const dice = FEATURE_DICE_PATTERN.exec(feature.description)?.[1];
+        const throws = deriveFeatureThrows(feature, throwContext);
 
         return (
           <AccordionItem key={feature.id} value={`${idPrefix}-${feature.id}`}>
@@ -75,15 +80,18 @@ export function SheetFeatureList({
               </AccordionTrigger>
               <div className="flex shrink-0 flex-wrap items-center gap-2 py-2">
                 {/* Rolling changes nothing about the character, so a shared sheet keeps this. */}
-                {dice ? (
+                {throws.map((entry) => (
                   <button
+                    key={entry.id}
                     type="button"
                     className="min-h-9 rounded px-2 text-sm font-semibold tabular-nums transition-colors hover:bg-accent coarse:min-h-11 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                    onClick={() => void rollOnScreen({ notation: dice, label: feature.name, detail: dice })}
+                    onClick={() =>
+                      void rollOnScreen({ notation: entry.notation, label: feature.name, detail: entry.detail })
+                    }
                   >
-                    {dice}
+                    {entry.label}
                   </button>
-                ) : null}
+                ))}
                 {resource && character ? (
                   <SheetResourceControl
                     resource={resource}

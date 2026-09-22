@@ -48,6 +48,8 @@ interface SheetActionsPanelProps {
   /** What every character can do, from the printing this character plays. */
   combatActions: SheetActionsInput['combatActions'];
   characterLevel: number;
+  /** What a feature's own sentences add to its dice, from the character the sheet is showing. */
+  featureContext?: SheetActionsInput['featureContext'];
   slotsByLevel: number[];
   pactSlotsByLevel: number[];
   onChange?: (patch: Partial<Character>) => void;
@@ -62,6 +64,7 @@ export function SheetActionsPanel({
   castingStat,
   combatActions,
   characterLevel,
+  featureContext,
   slotsByLevel,
   pactSlotsByLevel,
   onChange
@@ -70,8 +73,17 @@ export function SheetActionsPanel({
 
   const entries = useMemo(
     () =>
-      deriveSheetActions({ attacks, spells, features, classResources, castingStat, characterLevel, combatActions }),
-    [attacks, castingStat, characterLevel, classResources, combatActions, features, spells]
+      deriveSheetActions({
+        attacks,
+        spells,
+        features,
+        classResources,
+        castingStat,
+        characterLevel,
+        combatActions,
+        featureContext
+      }),
+    [attacks, castingStat, characterLevel, classResources, combatActions, featureContext, features, spells]
   );
   const attacksPerAction = useMemo(() => deriveAttacksPerAction(features), [features]);
   const visible = entries.filter((entry) => matchesActionFilter(entry, filter));

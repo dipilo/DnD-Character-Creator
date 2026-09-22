@@ -13,6 +13,7 @@
  * Dodge and Disengage are imported: each printing labels its own list, and `combatActions` carries
  * it.
  */
+import { deriveFeatureThrows, type FeatureThrowContext } from '@/lib/featureFacets';
 import { detectActionTiming, type ActionTiming } from '@/lib/sheetCombat';
 import {
   deriveSpellAttackOrSave,
@@ -240,8 +241,6 @@ function spellRows(
  * Features
  * -------------------------------------------------------------------------- */
 
-const FEATURE_DICE_PATTERN = /\b(\d+d\d+)\b/;
-
 const TIMING_TIME_LABELS: Record<ActionTiming, string> = {
   action: 'Action',
   'bonus-action': 'Bonus Action',
@@ -257,7 +256,8 @@ const TIMING_TIME_LABELS: Record<ActionTiming, string> = {
  */
 function featureRows(
   features: readonly Feature[],
-  resources: readonly ResolvedClassResource[]
+  resources: readonly ResolvedClassResource[],
+  throwContext: FeatureThrowContext
 ): SheetActionEntry[] {
   const rows: SheetActionEntry[] = [];
   const seen = new Set<string>();
@@ -269,7 +269,7 @@ function featureRows(
     if (!timing && !resource) continue;
     seen.add(feature.id);
 
-    const dice = FEATURE_DICE_PATTERN.exec(feature.description)?.[1];
+    const throws = deriveFeatureThrows(feature, throwContext);
     rows.push({
       id: `feature-${feature.id}`,
       name: feature.name,
@@ -278,7 +278,7 @@ function featureRows(
       group: timing ?? 'other',
       isAttack: false,
       time: timing ? TIMING_TIME_LABELS[timing] : undefined,
-      damages: dice ? [{ notation: dice, label: dice }] : [],
+      damages: throws.map((entry) => ({ notation: entry.notation, label: entry.label })),
       notes: resource?.resetsOn ? `Recharges on a ${resource.resetsOn} rest` : undefined,
       description: feature.description,
       resourceKey: resource?.key
@@ -327,6 +327,8 @@ export interface SheetActionsInput {
   characterLevel: number;
   /** What every character can do, from the printing this character plays. */
   combatActions?: readonly CombatAction[];
+  /** What a feature's own sentences add to its dice: ability modifiers, class levels, the bonus. */
+  featureContext?: FeatureThrowContext;
 }
 
 export function deriveSheetActions({
@@ -336,12 +338,13 @@ export function deriveSheetActions({
   classResources,
   castingStat,
   characterLevel,
-  combatActions = []
+  combatActions = [],
+  featureContext
 }: SheetActionsInput): SheetActionEntry[] {
   return [
     ...weaponRows(attacks),
     ...spellRows(spells, castingStat, characterLevel),
-    ...featureRows(features, classResources),
+    ...featureRows(features, classResources, { level: characterLevel, ...featureContext }),
     ...combatActionRows(combatActions)
   ];
 }
