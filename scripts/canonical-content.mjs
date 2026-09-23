@@ -1519,20 +1519,52 @@ const extractBasicRulesSpellcasting = (raw, classId, primaryAbility) => {
 // so a class that states one gets a tracker and a class that does not, does not.
 //
 // Everything else in the table is deliberately refused. A "Known" column is a build-time count, not
-// a pool a player spends; a proficiency bonus is "+2"; Sneak Attack and Martial Arts are dice; and
-// Unarmored Movement is a distance. Only a column whose every cell is a bare integer or a dash is
-// a resource.
-const NON_RESOURCE_HEADERS = new Set([
+// a pool a player spends; a proficiency bonus is "+2"; and Unarmored Movement is a distance. Only a
+// column whose every cell is a bare integer or a dash is a resource — Sneak Attack and Martial Arts
+// are dice, and `extractClassFeatureDice` reads those.
+const NON_TRACKED_HEADERS = new Set([
   'level', 'proficiencybonus', 'features', 'feature', 'spellslots', 'slotlevel',
   'cantripsknown', 'cantrips', 'spellsknown', 'preparedspells', 'spellsprepared',
 ]);
 
-const isResourceHeader = (header) => {
-  if (!header || NON_RESOURCE_HEADERS.has(header)) return false;
+const isTrackedColumnHeader = (header) => {
+  if (!header || NON_TRACKED_HEADERS.has(header)) return false;
   // "Invocations Known", "Infusions Known", "Maneuvers Known": how many you picked, not how many
   // you have left.
   if (header.endsWith('known')) return false;
   return /^\d+(?:st|nd|rd|th)?$/.test(header) === false;
+};
+
+/**
+ * Every column of every class table in a block, from level 1 up. The pool columns and the dice
+ * columns are read from the same walk, so the row-finding — including the 2014 caster tables'
+ * second header row of slot levels — is stated once.
+ */
+const collectClassTableColumns = (raw) => {
+  const columns = [];
+
+  for (const table of collectTableBlocks(raw)) {
+    const text = stripTags(table);
+    if (!/\bfeatures\b/i.test(text) || !/\blevel\b/i.test(text)) continue;
+
+    const rows = extractTableRows(table).map((row) => row.map((cell) => stripTags(cell)));
+    const firstDataRowIndex = rows.findIndex((row) => Number.isFinite(parseOrdinalLevel(row[0] ?? '', Number.NaN)));
+    if (firstDataRowIndex <= 0) continue;
+
+    const dataRows = rows.slice(firstDataRowIndex)
+      .filter((row) => Number.isFinite(parseOrdinalLevel(row[0] ?? '', Number.NaN)))
+      // The 2014 caster tables carry a second header row of slot levels ("1st" … "9th") under the
+      // merged "Spell Slots per Spell Level" cell. Its first cell is an ordinal too, so it reads as
+      // level 1 and shifts every column a row out of step.
+      .filter((row) => !row.every((cell) => /^\d+(?:st|nd|rd|th)$/i.test(cell.trim())));
+    if (dataRows.length === 0) continue;
+
+    rows[firstDataRowIndex - 1].forEach((header, index) => {
+      columns.push({ header, cells: dataRows.map((row) => row[index]) });
+    });
+  }
+
+  return columns;
 };
 
 /**
@@ -1704,49 +1736,70 @@ const extractMulticlassPrerequisites = ({ table, classId, primaryAbilityText, pr
 const extractClassResources = (raw, features) => {
   const resources = [];
 
-  for (const table of collectTableBlocks(raw)) {
-    const text = stripTags(table);
-    if (!/\bfeatures\b/i.test(text) || !/\blevel\b/i.test(text)) continue;
+  for (const { header, cells } of collectClassTableColumns(raw)) {
+    if (!isTrackedColumnHeader(normalizeLabel(header))) continue;
 
-    const rows = extractTableRows(table).map((row) => row.map((cell) => stripTags(cell)));
-    const firstDataRowIndex = rows.findIndex((row) => Number.isFinite(parseOrdinalLevel(row[0] ?? '', Number.NaN)));
-    if (firstDataRowIndex <= 0) continue;
+    const perLevel = cells.map((cell) => readResourceCell(cell));
+    if (perLevel.some((value) => value === undefined)) continue;
+    if (!perLevel.some((value) => value === null || value > 0)) continue;
 
-    const headers = rows[firstDataRowIndex - 1];
-    const dataRows = rows.slice(firstDataRowIndex)
-      .filter((row) => Number.isFinite(parseOrdinalLevel(row[0] ?? '', Number.NaN)))
-      // The 2014 caster tables carry a second header row of slot levels ("1st" … "9th") under the
-      // merged "Spell Slots per Spell Level" cell. Its first cell is an ordinal too, so it reads as
-      // level 1 and shifts every resource a row out of step.
-      .filter((row) => !row.every((cell) => /^\d+(?:st|nd|rd|th)$/i.test(cell.trim())));
-    if (dataRows.length === 0) continue;
+    const name = repairMojibake(stripTags(header)).trim();
+    if (!name || resources.some((one) => one.name === name)) continue;
 
-    headers.forEach((header, index) => {
-      if (!isResourceHeader(normalizeLabel(header))) return;
+    const feature = findResourceFeature(header, features);
+    const { resetsOn, shortRestRegain } = parseResourceReset(feature?.description ?? '');
+    if (!resetsOn) continue;
 
-      const perLevel = dataRows.map((row) => readResourceCell(row[index]));
-      if (perLevel.some((value) => value === undefined)) return;
-      if (!perLevel.some((value) => value === null || value > 0)) return;
-
-      const name = repairMojibake(stripTags(header)).trim();
-      if (!name || resources.some((one) => one.name === name)) return;
-
-      const feature = findResourceFeature(header, features);
-      const { resetsOn, shortRestRegain } = parseResourceReset(feature?.description ?? '');
-      if (!resetsOn) return;
-
-      resources.push({
-        id: slugify(name),
-        name,
-        perLevel,
-        resetsOn,
-        shortRestRegain: shortRestRegain ?? undefined,
-        featureName: feature?.name,
-      });
+    resources.push({
+      id: slugify(name),
+      name,
+      perLevel,
+      resetsOn,
+      shortRestRegain: shortRestRegain ?? undefined,
+      featureName: feature?.name,
     });
   }
 
   return resources.length > 0 ? resources : undefined;
+};
+
+/**
+ * One cell of a dice column: the notation, `null` where the table prints a dash, and `undefined`
+ * for anything else — which disqualifies the column, because a cell holding a bare number means it
+ * was a pool and one holding "+10 ft." means it was a distance.
+ */
+const readFeatureDiceCell = (value) => {
+  const text = stripTags(value ?? '').trim();
+  if (!text || /^[—–-]+$/.test(text)) return null;
+  const match = /^(\d*)[dD](\d+)$/.exec(text);
+  return match ? `${match[1] || '1'}d${match[2]}` : undefined;
+};
+
+// A class table's dice columns: the Monk's Martial Arts die, the Rogue's Sneak Attack, the 2024
+// Bard's Bardic die. The feature's own sentences state only what it rolls at 1st level and then
+// point at the column ("as shown in the Martial Arts column of the Monk table"), so without the
+// column a level-20 Monk still read 1d4. Which feature a column belongs to is that same
+// cross-reference, and a column no feature claims is dropped rather than guessed at.
+const extractClassFeatureDice = (raw, features) => {
+  const columns = [];
+
+  for (const { header, cells } of collectClassTableColumns(raw)) {
+    if (!isTrackedColumnHeader(normalizeLabel(header))) continue;
+
+    const perLevel = cells.map((cell) => readFeatureDiceCell(cell));
+    if (perLevel.some((value) => value === undefined)) continue;
+    if (!perLevel.some((value) => value !== null)) continue;
+
+    const name = repairMojibake(stripTags(header)).trim();
+    if (!name || columns.some((one) => one.name === name)) continue;
+
+    const feature = findResourceFeature(header, features);
+    if (!feature?.name) continue;
+
+    columns.push({ id: slugify(name), name, perLevel, featureName: feature.name });
+  }
+
+  return columns.length > 0 ? columns : undefined;
 };
 
 const extractClassFeaturesFromBlock = (raw, label, featureLevels) => {
@@ -2468,6 +2521,7 @@ const extractBasicRulesClasses = (raw, label, sourceId) => {
         subclasses: [],
         subclassLevel,
         resources: extractClassResources(block.content, classFeatures),
+        featureDice: extractClassFeatureDice(block.content, classFeatures),
         spellcasting: extractBasicRulesSpellcasting(block.content, classId, primaryAbility),
         equipmentOptions,
         startingGold,
@@ -3399,6 +3453,7 @@ const extractTashasArtificerClass = (raw, label, sourceId) => {
     subclasses: [],
     subclassLevel,
     resources: extractClassResources(content, artificerFeatures),
+    featureDice: extractClassFeatureDice(content, artificerFeatures),
     spellcasting: extractBasicRulesSpellcasting(content, 'artificer', spellcastingAbility ?? 'intelligence'),
     equipmentOptions,
     source: label,

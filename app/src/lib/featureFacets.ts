@@ -36,13 +36,29 @@ export interface FeatureThrow {
  * "+ your Dexterity modifier", "+ PB". A value this does not carry leaves the modifier unresolved
  * and the throw bare, which is what the sheet already did.
  */
-export interface FeatureThrowContext {
+export interface FeatureContext {
   /** The level a "when you reach 14th level" clause is measured against. */
   level?: number;
   /** Levels by lower-case class name, for a feature that names one ("Cleric levels 7 (2d8)"). */
   classLevels?: Readonly<Record<string, number>>;
   abilityModifiers?: Readonly<Partial<Record<keyof AbilityScores, number>>>;
   proficiencyBonus?: number;
+  /** What a feature means by "your spell save DC", which only the character knows. */
+  spellSaveDc?: number;
+  /** The class table's dice columns, by lower-case feature name. */
+  tableDice?: Readonly<Record<string, FeatureTableDice>>;
+}
+
+/**
+ * A die a class table states per level, for a feature whose own text prints only its first value
+ * and then points at the column: the Monk's Martial Arts die, the Rogue's Sneak Attack, the 2024
+ * Bard's Bardic die. Without it a level-20 Monk still read 1d4.
+ */
+export interface FeatureTableDice {
+  /** One entry per class level, index 0 being level 1; `null` where the table prints none. */
+  perLevel: readonly (string | null)[];
+  /** The level the character holds in the class whose table states it. */
+  level: number;
 }
 
 const DICE_PATTERN = /\b\d*d(?:100|20|12|10|8|6|4)\b/g;
@@ -129,16 +145,39 @@ function nearbyLevel(text: string, start: number, end: number): number | null {
   return inRange(stated === undefined ? null : Number.parseInt(stated, 10));
 }
 
+interface TierMention {
+  level: number | null;
+  /** What the clause says is growing, where it names more than one thing. */
+  kinds: FeatureThrowKind[];
+}
+
+/**
+ * What a restatement says is growing, read from the clause it stands in. Only a subject naming
+ * more than one thing is used — Land's Aid's "The damage and healing increase by 1d6" restates one
+ * die for two throws, and the nearest-throw rule alone gave the second die to the healing only.
+ */
+const TIER_SUBJECTS: ReadonlyArray<{ pattern: RegExp; kind: FeatureThrowKind }> = [
+  { pattern: /\btemporary hit points\b/i, kind: 'temporary-hit-points' },
+  { pattern: /\bheal(?:ing|s)?\b|\bhit points\b/i, kind: 'healing' },
+  { pattern: /\bdamage\b/i, kind: 'damage' }
+];
+
+function readTierSubjects(clause: string): FeatureThrowKind[] {
+  const kinds = TIER_SUBJECTS.filter(({ pattern }) => pattern.test(clause)).map((entry) => entry.kind);
+  // "Temporary hit points" holds the words "hit points", so one subject must not read as two.
+  return kinds.includes('temporary-hit-points') ? kinds.filter((kind) => kind !== 'healing') : kinds;
+}
+
 /**
  * Where the text restates a throw it has already made, and at which level.
  *
- * `null` is a restatement with no level in it — Divine Smite's "the damage increases by 1d8 if the
- * target is an undead" — which is neither a tier nor a throw of its own.
+ * A `level` of `null` is a restatement with no level in it — Divine Smite's "the damage increases
+ * by 1d8 if the target is an undead" — which is neither a tier nor a throw of its own.
  */
-function collectTiers(text: string): Map<number, number | null> {
-  const tiers = new Map<number, number | null>();
-  const record = (index: number, level: number | null) => {
-    if (!tiers.has(index)) tiers.set(index, level);
+function collectTiers(text: string): Map<number, TierMention> {
+  const tiers = new Map<number, TierMention>();
+  const record = (index: number, level: number | null, clauseStart = sentenceStart(text, index)) => {
+    if (!tiers.has(index)) tiers.set(index, { level, kinds: readTierSubjects(text.slice(clauseStart, index)) });
   };
 
   for (const match of text.matchAll(TIER_AT_LEVEL)) {
@@ -151,7 +190,7 @@ function collectTiers(text: string): Map<number, number | null> {
   }
   for (const match of text.matchAll(TIER_INCREASE)) {
     const index = (match.index ?? 0) + match[0].lastIndexOf(match[1]);
-    record(index, nearbyLevel(text, match.index ?? 0, index + match[1].length));
+    record(index, nearbyLevel(text, match.index ?? 0, index + match[1].length), sentenceStart(text, match.index ?? 0));
   }
   return tiers;
 }
@@ -217,14 +256,14 @@ interface ModifierTerm {
   value: number | undefined;
 }
 
-function readAbilityTerm(rest: string, context: FeatureThrowContext): ModifierTerm | null {
+function readAbilityTerm(rest: string, context: FeatureContext): ModifierTerm | null {
   const match = ABILITY_TERM.exec(rest);
   if (!match) return null;
   const ability = match[1].toLowerCase() as keyof AbilityScores;
   return { matched: match[0], value: context.abilityModifiers?.[ability] };
 }
 
-function readLevelTerm(rest: string, context: FeatureThrowContext): ModifierTerm | null {
+function readLevelTerm(rest: string, context: FeatureContext): ModifierTerm | null {
   const match = LEVEL_TERM.exec(rest);
   if (!match) return null;
   const named = match[2]?.toLowerCase();
@@ -233,7 +272,7 @@ function readLevelTerm(rest: string, context: FeatureThrowContext): ModifierTerm
   return { matched: match[0], value: level === undefined ? undefined : halved };
 }
 
-function readProficiencyTerm(rest: string, context: FeatureThrowContext): ModifierTerm | null {
+function readProficiencyTerm(rest: string, context: FeatureContext): ModifierTerm | null {
   const match = PROFICIENCY_TERM.exec(rest);
   if (!match) return null;
   return { matched: match[0], value: context.proficiencyBonus };
@@ -253,7 +292,7 @@ interface FeatureModifier {
  * stopping at the first thing it does not recognise. One unresolved term leaves the whole modifier
  * unresolved and the throw bare: a wrong number is worse than no number.
  */
-function readModifier(after: string, context: FeatureThrowContext): FeatureModifier {
+function readModifier(after: string, context: FeatureContext): FeatureModifier {
   let rest = after;
   let total = 0;
   let resolved = true;
@@ -289,11 +328,13 @@ interface ThrowDraft {
   modifier: FeatureModifier;
   tiers: FeatureTier[];
   className?: string;
+  /** What the class table states at this character's level, where a column states this die. */
+  tableDice?: string;
 }
 
 const WINDOW = 100;
 
-function draftAt(text: string, index: number, dice: string, context: FeatureThrowContext): ThrowDraft {
+function draftAt(text: string, index: number, dice: string, context: FeatureContext): ThrowDraft {
   const after = text.slice(index + dice.length, index + dice.length + WINDOW);
   const before = text.slice(Math.max(0, index - WINDOW), index);
   // Only a throw that deals damage takes a type from the sentences around it, or the Steel
@@ -310,15 +351,24 @@ function draftAt(text: string, index: number, dice: string, context: FeatureThro
   };
 }
 
-/** A tier belongs to the nearest throw already made in the same die, else to the nearest throw. */
-function tierTarget(drafts: readonly ThrowDraft[], face: string): ThrowDraft | undefined {
-  for (let i = drafts.length - 1; i >= 0; i -= 1) {
-    if (drafts[i].face === face) return drafts[i];
+/**
+ * Which throws a tier belongs to: the nearest one already made in the same die, else the nearest
+ * of any die — unless the clause names more than one thing, in which case it says so outright and
+ * every throw it names in that die grows ("The damage and healing increase by 1d6").
+ */
+function tierTargets(drafts: readonly ThrowDraft[], face: string, kinds: readonly FeatureThrowKind[]): ThrowDraft[] {
+  const inFace = drafts.filter((draft) => draft.face === face);
+  const named = inFace.filter((draft) => kinds.includes(draft.kind));
+  if (named.length > 0) {
+    // One thing named is one throw — the nearest of them, as before. More than one is the clause
+    // saying outright that several grow together.
+    return kinds.length > 1 ? named : named.slice(-1);
   }
-  return drafts.at(-1);
+  const nearest = inFace.at(-1) ?? drafts.at(-1);
+  return nearest ? [nearest] : [];
 }
 
-function readDrafts(text: string, context: FeatureThrowContext): ThrowDraft[] {
+function readDrafts(text: string, context: FeatureContext): ThrowDraft[] {
   const rejected = collectRejected(text);
   const tiers = collectTiers(text);
   const className = TIER_CLASS.exec(text)?.[1]?.toLowerCase();
@@ -331,13 +381,16 @@ function readDrafts(text: string, context: FeatureThrowContext): ThrowDraft[] {
     if (EXAMPLE_PATTERN.test(text.slice(sentenceStart(text, index), index))) continue;
 
     const face = DICE_FACE.exec(dice)?.[1] ?? '';
-    if (tiers.has(index)) {
-      const target = tierTarget(drafts, face);
-      const level = tiers.get(index) ?? null;
+    const mention = tiers.get(index);
+    if (mention) {
+      const targets = tierTargets(drafts, face, mention.kinds);
       // A restatement before the feature has stated anything is the throw: Improved Blessed
       // Strikes says only that your Divine Strike now rolls 2d8.
-      if (target) {
-        if (level !== null) target.tiers.push({ level, dice: normalizeDice(dice) });
+      if (targets.length > 0) {
+        const { level } = mention;
+        if (level !== null) {
+          for (const target of targets) target.tiers.push({ level, dice: normalizeDice(dice) });
+        }
         continue;
       }
     }
@@ -348,7 +401,9 @@ function readDrafts(text: string, context: FeatureThrowContext): ThrowDraft[] {
   return drafts;
 }
 
-function diceForLevel(draft: ThrowDraft, context: FeatureThrowContext): string {
+function diceForLevel(draft: ThrowDraft, context: FeatureContext): string {
+  // The column is the book stating the die outright, so it beats whatever the prose restates.
+  if (draft.tableDice) return draft.tableDice;
   if (draft.tiers.length === 0) return draft.dice;
   const named = draft.className ? context.classLevels?.[draft.className] : undefined;
   const level = named ?? context.level ?? 1;
@@ -358,7 +413,7 @@ function diceForLevel(draft: ThrowDraft, context: FeatureThrowContext): string {
 
 const signed = (bonus: number) => (bonus < 0 ? `${bonus}` : `+${bonus}`);
 
-function present(draft: ThrowDraft, index: number, context: FeatureThrowContext): FeatureThrow {
+function present(draft: ThrowDraft, index: number, context: FeatureContext): FeatureThrow {
   const dice = diceForLevel(draft, context);
   const bonus = draft.modifier.bonus;
   const notation = bonus ? `${dice}${signed(bonus)}` : dice;
@@ -373,6 +428,31 @@ function present(draft: ThrowDraft, index: number, context: FeatureThrowContext)
   };
 }
 
+/** The value a column states at level 1 and the one it states now, both as the sheet prints them. */
+interface ColumnDice {
+  base: string;
+  reached: string;
+}
+
+function readColumn(table: FeatureTableDice | undefined): ColumnDice | null {
+  if (!table) return null;
+  const stated = table.perLevel.slice(0, Math.max(1, table.level)).filter((value) => value !== null);
+  const base = table.perLevel.find((value) => value !== null);
+  const reached = stated.at(-1);
+  if (!base || !reached) return null;
+  return { base: normalizeDice(base.toLowerCase()), reached: normalizeDice(reached.toLowerCase()) };
+}
+
+/**
+ * The die a class table states for this feature, laid onto the throw the text prints at 1st level.
+ * Matching on that printed value rather than on position is what keeps a feature stating dice of
+ * its own — the Monk's Martial Arts states three — from taking the column by accident.
+ */
+function applyColumnDice(drafts: readonly ThrowDraft[], column: ColumnDice): void {
+  const target = drafts.find((draft) => draft.dice === column.base);
+  if (target) target.tableDice = column.reached;
+}
+
 /**
  * Every throw a feature states, already scaled to the level the context gives.
  *
@@ -380,16 +460,20 @@ function present(draft: ThrowDraft, index: number, context: FeatureThrowContext)
  * Divine Strike restates its die under each option — so the list is deduped on what it prints.
  */
 export function deriveFeatureThrows(
-  feature: Pick<Feature, 'description'>,
-  context: FeatureThrowContext = {}
+  feature: Pick<Feature, 'description'> & { name?: string },
+  context: FeatureContext = {}
 ): FeatureThrow[] {
   const text = (feature.description ?? '').replaceAll('’', "'");
   if (!text) return [];
 
+  const drafts = readDrafts(text, context);
+  const column = readColumn(context.tableDice?.[(feature.name ?? '').trim().toLowerCase()]);
+  if (column) applyColumnDice(drafts, column);
+
   const throws: FeatureThrow[] = [];
   const seen = new Set<string>();
   const notations = new Set<string>();
-  for (const draft of readDrafts(text, context)) {
+  for (const draft of drafts) {
     const entry = present(draft, throws.length, context);
     const key = `${entry.notation}|${entry.kind}|${entry.damageType ?? ''}`;
     // A later mention with nothing said about it is the same throw again: Emboldening Bond's
@@ -400,4 +484,106 @@ export function deriveFeatureThrows(
     throws.push(entry);
   }
   return throws;
+}
+
+/* -------------------------------------------------------------------------- *
+ * What the feature makes somebody else roll
+ * -------------------------------------------------------------------------- */
+
+/** A saving throw a feature imposes, at this character's own DC where the feature states one. */
+export interface FeatureSave {
+  /** Stable within the feature, so a list can key on it. */
+  id: string;
+  ability: keyof AbilityScores;
+  /** What the sheet prints: "DC 16 CON", or "CON Save" where nothing states the DC. */
+  label: string;
+  /** Absent where the feature states no DC, or where the context cannot resolve the one it states. */
+  dc?: number;
+}
+
+const ABILITY_WORDS = 'strength|dexterity|constitution|intelligence|wisdom|charisma';
+
+/**
+ * A save the feature *imposes*. "You have advantage on Dexterity saving throws" and "you gain
+ * proficiency in Wisdom saving throws" name the same words about the opposite thing, so the clause
+ * that calls for one is what is matched — forwards, never against the tail before it (S8786).
+ */
+const IMPOSED_SAVE = new RegExp(
+  String.raw`\b(?:must (?:succeed on|make)|unless it succeeds on|succeeds on)\s+an?\s+(${ABILITY_WORDS})\s+saving\s+throw`,
+  'gi'
+);
+/** "forcing the target to make a Strength saving throw". */
+const FORCED_SAVE = new RegExp(
+  String.raw`\bforc(?:e|es|ing)\b[^.]{0,40}?\bto\s+make\s+an?\s+(${ABILITY_WORDS})\s+saving\s+throw`,
+  'gi'
+);
+
+/** 2014 states the formula one way and 2024 the other; neither number is written in the app. */
+const DC_FORMULA_2014 = new RegExp(
+  String.raw`\b8\s*\+\s*your proficiency bonus\s*\+\s*your (${ABILITY_WORDS}) modifier`,
+  'i'
+);
+const DC_FORMULA_2024 = new RegExp(
+  String.raw`\b8 plus your (${ABILITY_WORDS}) modifier and (?:your )?proficiency bonus`,
+  'i'
+);
+/** "against your spell save DC" — a number only the character knows. */
+const DC_SPELL_SAVE = /\bspell save DC\b/i;
+/** A DC the feature simply prints. */
+const DC_STATED = /\bDC\s+(\d+)\b/i;
+
+/**
+ * The DC the feature states, resolved against this character. A feature that states none — Stunning
+ * Strike names the save and leaves the DC to the class's own feature — gets no number rather than a
+ * guessed one, exactly as an unstated spell facet stays unstated.
+ */
+function readSaveDc(text: string, context: FeatureContext): number | undefined {
+  const formula = DC_FORMULA_2014.exec(text) ?? DC_FORMULA_2024.exec(text);
+  if (formula) {
+    const modifier = context.abilityModifiers?.[formula[1].toLowerCase() as keyof AbilityScores];
+    const proficiency = context.proficiencyBonus;
+    if (modifier === undefined || proficiency === undefined) return undefined;
+    return 8 + proficiency + modifier;
+  }
+
+  const stated = DC_STATED.exec(text);
+  if (stated) return Number.parseInt(stated[1], 10);
+  return DC_SPELL_SAVE.test(text) ? context.spellSaveDc : undefined;
+}
+
+const abbreviate = (ability: keyof AbilityScores) => ability.slice(0, 3).toUpperCase();
+
+/**
+ * Every saving throw a feature calls for, in the order it names them.
+ *
+ * The other half of `deriveSpellAttackOrSave` for features. There is no attack half: no feature in
+ * either printing rolls an attack of its own — the ones that mention one are talking about the
+ * attack the character was already making.
+ */
+export function deriveFeatureSaves(
+  feature: Pick<Feature, 'description'>,
+  context: FeatureContext = {}
+): FeatureSave[] {
+  const text = (feature.description ?? '').replaceAll('’', "'");
+  if (!text) return [];
+
+  const dc = readSaveDc(text, context);
+  const saves: FeatureSave[] = [];
+  const seen = new Set<string>();
+
+  for (const pattern of [IMPOSED_SAVE, FORCED_SAVE]) {
+    for (const match of text.matchAll(pattern)) {
+      const ability = match[1].toLowerCase() as keyof AbilityScores;
+      if (seen.has(ability)) continue;
+      seen.add(ability);
+      saves.push({
+        id: `save-${saves.length}`,
+        ability,
+        label: dc === undefined ? `${abbreviate(ability)} Save` : `DC ${dc} ${abbreviate(ability)}`,
+        dc
+      });
+    }
+  }
+
+  return saves;
 }

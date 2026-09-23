@@ -1,4 +1,4 @@
-import type { AbilityScoreRequirement, Background, Class, ClassResource, CombatAction, Equipment, Feature, FeatureOption, Feat, Monster, MulticlassProficiencies, Species, SpeciesVariant, Spell, SpellcastingProgression, Subclass } from '@/types/dnd';
+import type { AbilityScoreRequirement, Background, Class, ClassFeatureDice, ClassResource, CombatAction, Equipment, Feature, FeatureOption, Feat, Monster, MulticlassProficiencies, Species, SpeciesVariant, Spell, SpellcastingProgression, Subclass } from '@/types/dnd';
 import { backgrounds as staticBackgrounds } from './backgrounds';
 import { classes as staticClasses } from './classes';
 import { species as staticSpecies } from './species';
@@ -791,6 +791,12 @@ const choosePreferredResources = (primary?: ClassResource[], fallback?: ClassRes
   return chosen.length > 0 ? chosen : undefined;
 };
 
+/** Dice columns are all-or-nothing per printing for the same reason the pool columns are. */
+const choosePreferredFeatureDice = (primary?: ClassFeatureDice[], fallback?: ClassFeatureDice[]) => {
+  const chosen = choosePreferredArray(primary ?? [], fallback ?? []);
+  return chosen.length > 0 ? chosen : undefined;
+};
+
 const mergeSubclassCandidatesById = (subclasses: Subclass[]) => {
   const grouped = subclasses.reduce<Map<string, Subclass[]>>((entries, subclass) => {
     const collection = entries.get(subclass.id);
@@ -1117,6 +1123,7 @@ const enrichClass = (primary: Class, fallback?: Class): Class => {
     multiclassPrerequisites: choosePreferredMulticlassPrerequisites(primary.multiclassPrerequisites, fallback?.multiclassPrerequisites),
     features: mergeFeatureCollections(primary.features, fallback?.features),
     resources: choosePreferredResources(primary.resources, fallback?.resources),
+    featureDice: choosePreferredFeatureDice(primary.featureDice, fallback?.featureDice),
     spellcasting: choosePreferredSpellcasting(primary.spellcasting, fallback?.spellcasting),
     equipmentOptions: choosePreferredArray(primary.equipmentOptions, equipmentSupplement ?? fallback?.equipmentOptions),
     startingGold: choosePreferredNumber(primary.startingGold, fallback?.startingGold)
@@ -1167,6 +1174,7 @@ const mergeClassCandidates = (candidates: Class[]) => {
       subclasses: mergeCollectionsById(current.subclasses, candidate.subclasses),
       subclassLevel: choosePreferredCount(current.subclassLevel, candidate.subclassLevel),
       resources: choosePreferredResources(current.resources, candidate.resources),
+      featureDice: choosePreferredFeatureDice(current.featureDice, candidate.featureDice),
       spellcasting: choosePreferredSpellcasting(current.spellcasting, candidate.spellcasting),
       equipmentOptions: choosePreferredArray(current.equipmentOptions, candidate.equipmentOptions),
       startingGold: choosePreferredNumber(current.startingGold, candidate.startingGold)

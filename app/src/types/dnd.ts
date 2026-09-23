@@ -164,6 +164,8 @@ export interface Class {
   subclassLevel: number;
   /** Pools the class table states: Rages, Ki Points, Channel Divinity, Second Wind. */
   resources?: ClassResource[];
+  /** Dice the class table states: the Monk's Martial Arts die, the Rogue's Sneak Attack. */
+  featureDice?: ClassFeatureDice[];
   spellcasting?: SpellcastingProgression;
   equipmentOptions: EquipmentOption[][];
   startingGold?: number;
@@ -209,6 +211,21 @@ export interface ClassResource {
   usesFromProficiencyBonus?: boolean;
   /** The feature the pool belongs to, for the tracker's subtitle. */
   featureName?: string;
+}
+
+/**
+ * A die a class table states per level, read by the importer from the column
+ * (`extractClassFeatureDice`). The feature's own sentences state only what it rolls at 1st level
+ * and then point at the column, so without this a level-20 Monk's Martial Arts still read 1d4.
+ */
+export interface ClassFeatureDice {
+  id: string;
+  /** The column heading. */
+  name: string;
+  /** One entry per class level, index 0 being level 1; `null` where the table prints a dash. */
+  perLevel: (string | null)[];
+  /** The feature the column belongs to, by the book's own cross-reference. */
+  featureName: string;
 }
 
 export interface EquipmentOption {

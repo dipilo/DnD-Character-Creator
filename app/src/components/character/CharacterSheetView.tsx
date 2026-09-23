@@ -41,7 +41,7 @@ import {
   resolveCharacterEquipment,
   sortFeaturesByLevel
 } from '@/lib/builderRules';
-import type { FeatureThrowContext } from '@/lib/featureFacets';
+import type { FeatureContext } from '@/lib/featureFacets';
 import { deriveAttacks, deriveSheetVitals } from '@/lib/sheetDerivations';
 import { ABILITY_ORDER, abilityModifier } from '@/lib/sheetMath';
 import { deriveDefences, deriveSenses, deriveUnarmedStrike } from '@/lib/sheetCombat';
@@ -326,22 +326,6 @@ export function CharacterSheetView({
   const totalLevel = character.classes.reduce((sum, entry) => sum + entry.level, 0) || 1;
   const proficiencyBonus = getCharacterProficiencyBonus(totalLevel);
 
-  // What a feature's own sentences add to its dice: "1d10 plus your Fighter level", "+ PB". The
-  // level a "when you reach 14th level" clause counts is the class's, which each card passes.
-  const featureThrowContext = useMemo<FeatureThrowContext>(
-    () => ({
-      level: totalLevel,
-      classLevels: Object.fromEntries(
-        resolvedClasses.map(({ entry, cls }) => [(cls?.name ?? entry.classId).toLowerCase(), entry.level])
-      ),
-      abilityModifiers: Object.fromEntries(
-        ABILITY_ORDER.map((ability) => [ability, abilityModifier(displayedAbilityScores[ability])])
-      ),
-      proficiencyBonus
-    }),
-    [displayedAbilityScores, proficiencyBonus, resolvedClasses, totalLevel]
-  );
-
   // Rages, Ki Points, Channel Divinity, Second Wind: whatever this character's classes state, at
   // the level they hold in each. A pool sized by an ability reads the scores the sheet displays.
   const classResources = useMemo(
@@ -458,6 +442,33 @@ export function CharacterSheetView({
   }, [allFeatData, background, character, feats, resolvedClasses, species, spellcastingRules, variant]);
 
   const castingStat = useMemo(() => primaryCastingStat(vitals.spellcasting), [vitals.spellcasting]);
+
+  // What a feature's own sentences add to its dice: "1d10 plus your Fighter level", "+ PB". The
+  // level a "when you reach 14th level" clause counts is the class's, which each card passes. The
+  // Monk's Martial Arts die and the Rogue's Sneak Attack are columns rather than sentences, so
+  // each class hands over its own table at the level this character holds in it.
+  const featureContext = useMemo<FeatureContext>(
+    () => ({
+      level: totalLevel,
+      classLevels: Object.fromEntries(
+        resolvedClasses.map(({ entry, cls }) => [(cls?.name ?? entry.classId).toLowerCase(), entry.level])
+      ),
+      abilityModifiers: Object.fromEntries(
+        ABILITY_ORDER.map((ability) => [ability, abilityModifier(displayedAbilityScores[ability])])
+      ),
+      proficiencyBonus,
+      spellSaveDc: castingStat?.saveDc,
+      tableDice: Object.fromEntries(
+        resolvedClasses.flatMap(({ entry, cls }) =>
+          (cls?.featureDice ?? []).map((column) => [
+            column.featureName.toLowerCase(),
+            { perLevel: column.perLevel, level: entry.level }
+          ])
+        )
+      )
+    }),
+    [castingStat, displayedAbilityScores, proficiencyBonus, resolvedClasses, totalLevel]
+  );
 
   const encumbrance = useMemo(() => {
     return deriveEncumbrance({
@@ -589,7 +600,7 @@ export function CharacterSheetView({
               castingStat={castingStat}
               combatActions={combatActions}
               characterLevel={totalLevel}
-              featureContext={featureThrowContext}
+              featureContext={featureContext}
               slotsByLevel={spellcastingRules.slotsByLevel}
               pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
               onChange={onChange}
@@ -646,7 +657,7 @@ export function CharacterSheetView({
                   emptyMessage="No species features are recorded for this character."
                   character={character}
                   classResources={classResources}
-                  throwContext={featureThrowContext}
+                  featureContext={featureContext}
                   onChange={onChange}
                 />
               </CardContent>
@@ -664,7 +675,7 @@ export function CharacterSheetView({
                     idPrefix={cls.id}
                     character={character}
                     classResources={classResources}
-                    throwContext={{ ...featureThrowContext, level: entry.level }}
+                    featureContext={{ ...featureContext, level: entry.level }}
                     onChange={onChange}
                   />
                   {subclass && subclass.features.some((feature) => feature.level <= entry.level) && (
@@ -679,7 +690,7 @@ export function CharacterSheetView({
                         idPrefix={subclass.id}
                         character={character}
                         classResources={classResources}
-                        throwContext={{ ...featureThrowContext, level: entry.level }}
+                        featureContext={{ ...featureContext, level: entry.level }}
                         onChange={onChange}
                       />
                     </div>
@@ -700,7 +711,7 @@ export function CharacterSheetView({
                     idPrefix="feat"
                     character={character}
                     classResources={classResources}
-                    throwContext={featureThrowContext}
+                    featureContext={featureContext}
                     onChange={onChange}
                   />
                 </CardContent>

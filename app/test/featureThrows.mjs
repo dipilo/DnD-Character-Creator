@@ -8,7 +8,7 @@
 // Run with `npm run test:feature-throws` from the workspace root.
 import assert from 'node:assert/strict';
 
-const { deriveFeatureThrows } = await import('@/lib/featureFacets');
+const { deriveFeatureSaves, deriveFeatureThrows } = await import('@/lib/featureFacets');
 
 const context = {
   level: 20,
@@ -155,7 +155,18 @@ check('a bracketed table, and the class it names sets the level (Land’s Aid)',
     'healing increase by 1d6 when you reach Druid levels 10 (3d6) and 14 (4d6).';
   // Two throws: a feature that states damage and healing offers both, not whichever came first.
   assert.deepEqual(labels(text, { classLevels: { druid: 9 } }), ['2d6 necrotic', '2d6 healing']);
-  assert.deepEqual(labels(text, { classLevels: { druid: 14 } }), ['2d6 necrotic', '4d6 healing']);
+  // "The damage and healing increase" names both, so both grow — the nearest-throw rule alone gave
+  // the bigger die to the healing and left the damage at what it is printed at.
+  assert.deepEqual(labels(text, { classLevels: { druid: 14 } }), ['4d6 necrotic', '4d6 healing']);
+});
+
+check('a clause naming one thing grows only that one (Storm Soul)', () => {
+  // Both throws are d6, and the nearest one is the healing — the clause naming the damage is the
+  // only thing that keeps the bigger die off it.
+  const text =
+    'The target takes 1d6 fire damage. You also regain 1d6 hit points. The damage increases to 2d6 ' +
+    'at 10th level.';
+  assert.deepEqual(labels(text, { level: 10 }), ['2d6 fire', '1d6 healing']);
 });
 
 check('a table the level has not reached leaves the printed die (Storm Aura)', () => {
@@ -259,6 +270,121 @@ check('a feature that states both keeps the roll it asks for (Tactical Mind)', (
 
 check('a feature that states no dice has no throw', () => {
   assert.deepEqual(notations('You can attack twice, instead of once, when you take the Attack action.'), []);
+});
+
+/* -------------------------------------------------------------------------- *
+ * The die a class table states
+ * -------------------------------------------------------------------------- */
+
+const MARTIAL_ARTS_2014 = [
+  '1d4', '1d4', '1d4', '1d4', '1d6', '1d6', '1d6', '1d6', '1d6', '1d6',
+  '1d8', '1d8', '1d8', '1d8', '1d8', '1d8', '1d10', '1d10', '1d10', '1d10'
+];
+const SNEAK_ATTACK = [
+  '1d6', '1d6', '2d6', '2d6', '3d6', '3d6', '4d6', '4d6', '5d6', '5d6',
+  '6d6', '6d6', '7d6', '7d6', '8d6', '8d6', '9d6', '9d6', '10d6', '10d6'
+];
+
+const withColumn = (description, name, perLevel, level) =>
+  deriveFeatureThrows({ name, description }, { ...context, tableDice: { [name.toLowerCase()]: { perLevel, level } } })
+    .map((entry) => entry.notation);
+
+check('a die stated only in the class table grows with the level (Martial Arts)', () => {
+  const text =
+    'You can roll a d4 in place of the normal damage of your unarmed strike or monk weapon. This die ' +
+    'changes as you gain monk levels, as shown in the Martial Arts column of the Monk table.';
+  assert.deepEqual(withColumn(text, 'Martial Arts', MARTIAL_ARTS_2014, 1), ['1d4']);
+  assert.deepEqual(withColumn(text, 'Martial Arts', MARTIAL_ARTS_2014, 11), ['1d8']);
+  assert.deepEqual(withColumn(text, 'Martial Arts', MARTIAL_ARTS_2014, 20), ['1d10']);
+});
+
+check('a column that changes the count, not the face (Sneak Attack)', () => {
+  const text =
+    'Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack. The ' +
+    'amount of the extra damage increases as you gain levels in this class, as shown in the Sneak ' +
+    'Attack column of the Rogue table.';
+  assert.deepEqual(withColumn(text, 'Sneak Attack', SNEAK_ATTACK, 20), ['10d6']);
+});
+
+check('a column with no entry for this feature leaves the printed die', () => {
+  const text = 'You can roll a d4 in place of the normal damage of your unarmed strike.';
+  assert.deepEqual(withColumn(text, 'Martial Arts', SNEAK_ATTACK, 20), ['1d4']);
+});
+
+check('the table beats what the prose restates (2024 Bardic Inspiration)', () => {
+  const text =
+    'This inspiration is represented by your Bardic Inspiration die, which is a d6. At Higher Levels. ' +
+    'Your Bardic Inspiration die changes when you reach certain Bard levels, as shown in the Bardic ' +
+    'Die column of the Bard Features table. The die becomes a d8 at level 5, a d10 at level 10, and ' +
+    'a d12 at level 15.';
+  const perLevel = [
+    '1d6', '1d6', '1d6', '1d6', '1d8', '1d8', '1d8', '1d8', '1d8', '1d10',
+    '1d10', '1d10', '1d10', '1d10', '1d12', '1d12', '1d12', '1d12', '1d12', '1d12'
+  ];
+  assert.deepEqual(withColumn(text, 'Bardic Inspiration', perLevel, 20), ['1d12']);
+  // The prose states the same steps, so the two readings must not disagree about one character.
+  assert.deepEqual(withColumn(text, 'Bardic Inspiration', perLevel, 7), ['1d8']);
+});
+
+/* -------------------------------------------------------------------------- *
+ * The save a feature calls for
+ * -------------------------------------------------------------------------- */
+
+const saves = (description, overrides) =>
+  deriveFeatureSaves({ description }, { ...context, ...overrides }).map((entry) => entry.label);
+
+check('the 2024 formula, at this character’s own numbers (Breath Weapon)', () => {
+  assert.deepEqual(
+    saves(
+      'Each creature in that area must make a Dexterity saving throw (DC 8 plus your Constitution ' +
+        'modifier and Proficiency Bonus). On a failed save, a creature takes 1d10 damage.'
+    ),
+    ['DC 16 DEX']
+  );
+});
+
+check('the 2014 formula (Necrotic Shroud)', () => {
+  assert.deepEqual(
+    saves(
+      'Creatures other than your allies within 10 feet of you that can see you must succeed on a ' +
+        'Charisma saving throw (DC 8 + your proficiency bonus + your Charisma modifier) or become ' +
+        'frightened of you.'
+    ),
+    ['DC 19 CHA']
+  );
+});
+
+check('"against your spell save DC" is the character’s (Land’s Aid)', () => {
+  assert.deepEqual(
+    saves(
+      'Each creature of your choice in the Sphere must make a Constitution saving throw against your ' +
+        'spell save DC, taking 2d6 Necrotic damage on a failed save.',
+      { spellSaveDc: 18 }
+    ),
+    ['DC 18 CON']
+  );
+});
+
+check('a feature that states no DC names the save and stops (Stunning Strike)', () => {
+  assert.deepEqual(
+    saves('The target must succeed on a Constitution saving throw or be Stunned until the end of your next turn.'),
+    ['CON Save']
+  );
+});
+
+check('a save the character is good at is not one the feature imposes', () => {
+  assert.deepEqual(saves('You have advantage on Dexterity saving throws against spells.'), []);
+  assert.deepEqual(saves('You gain proficiency in Wisdom saving throws.'), []);
+});
+
+check('a save the feature forces (Hammering Horns)', () => {
+  assert.deepEqual(
+    saves(
+      'Unless it succeeds on a Strength saving throw against a DC equal to 8 + your proficiency ' +
+        'bonus + your Strength modifier, you push it up to 10 feet away from you.'
+    ),
+    ['DC 17 STR']
+  );
 });
 
 for (const entry of checks) {

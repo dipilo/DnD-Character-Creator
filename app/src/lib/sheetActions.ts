@@ -13,7 +13,7 @@
  * Dodge and Disengage are imported: each printing labels its own list, and `combatActions` carries
  * it.
  */
-import { deriveFeatureThrows, type FeatureThrowContext } from '@/lib/featureFacets';
+import { deriveFeatureSaves, deriveFeatureThrows, type FeatureContext } from '@/lib/featureFacets';
 import { detectActionTiming, type ActionTiming } from '@/lib/sheetCombat';
 import {
   deriveSpellAttackOrSave,
@@ -257,7 +257,7 @@ const TIMING_TIME_LABELS: Record<ActionTiming, string> = {
 function featureRows(
   features: readonly Feature[],
   resources: readonly ResolvedClassResource[],
-  throwContext: FeatureThrowContext
+  featureContext: FeatureContext
 ): SheetActionEntry[] {
   const rows: SheetActionEntry[] = [];
   const seen = new Set<string>();
@@ -269,7 +269,10 @@ function featureRows(
     if (!timing && !resource) continue;
     seen.add(feature.id);
 
-    const throws = deriveFeatureThrows(feature, throwContext);
+    const throws = deriveFeatureThrows(feature, featureContext);
+    // The DC is the feature's own, read from its sentences: a feature that states none prints none
+    // rather than borrowing the caster's.
+    const save = deriveFeatureSaves(feature, featureContext).at(0);
     rows.push({
       id: `feature-${feature.id}`,
       name: feature.name,
@@ -278,6 +281,7 @@ function featureRows(
       group: timing ?? 'other',
       isAttack: false,
       time: timing ? TIMING_TIME_LABELS[timing] : undefined,
+      saveLabel: save?.label,
       damages: throws.map((entry) => ({ notation: entry.notation, label: entry.label })),
       notes: resource?.resetsOn ? `Recharges on a ${resource.resetsOn} rest` : undefined,
       description: feature.description,
@@ -328,7 +332,7 @@ export interface SheetActionsInput {
   /** What every character can do, from the printing this character plays. */
   combatActions?: readonly CombatAction[];
   /** What a feature's own sentences add to its dice: ability modifiers, class levels, the bonus. */
-  featureContext?: FeatureThrowContext;
+  featureContext?: FeatureContext;
 }
 
 export function deriveSheetActions({

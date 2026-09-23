@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2014 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-09-22T06:06:01.851Z",
+    "importedAt": "2026-09-23T00:34:45.848Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -2138,6 +2138,35 @@
             "featureName": "Ki"
           }
         ],
+        "featureDice": [
+          {
+            "id": "martial-arts",
+            "name": "Martial Arts",
+            "perLevel": [
+              "1d4",
+              "1d4",
+              "1d4",
+              "1d4",
+              "1d6",
+              "1d6",
+              "1d6",
+              "1d6",
+              "1d6",
+              "1d6",
+              "1d8",
+              "1d8",
+              "1d8",
+              "1d8",
+              "1d8",
+              "1d8",
+              "1d10",
+              "1d10",
+              "1d10",
+              "1d10"
+            ],
+            "featureName": "Martial Arts"
+          }
+        ],
         "equipmentOptions": [
           [
             {
@@ -2892,6 +2921,35 @@
             ],
             "resetsOn": "short",
             "featureName": "Stroke of Luck"
+          }
+        ],
+        "featureDice": [
+          {
+            "id": "sneak-attack",
+            "name": "Sneak Attack",
+            "perLevel": [
+              "1d6",
+              "1d6",
+              "2d6",
+              "2d6",
+              "3d6",
+              "3d6",
+              "4d6",
+              "4d6",
+              "5d6",
+              "5d6",
+              "6d6",
+              "6d6",
+              "7d6",
+              "7d6",
+              "8d6",
+              "8d6",
+              "9d6",
+              "9d6",
+              "10d6",
+              "10d6"
+            ],
+            "featureName": "Sneak Attack"
           }
         ],
         "equipmentOptions": [

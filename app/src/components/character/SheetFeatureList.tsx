@@ -14,7 +14,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/ui/badge';
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { SheetResourceControl } from '@/components/character/SheetResourceControl';
-import { deriveFeatureThrows, type FeatureThrowContext } from '@/lib/featureFacets';
+import { deriveFeatureSaves, deriveFeatureThrows, type FeatureContext } from '@/lib/featureFacets';
 import { featureChoiceCount, getChosenFeatureOptions } from '@/lib/featureOptions';
 import { setClassResourceUsed, toggleResourceActive, type ResolvedClassResource } from '@/lib/sheetPlayState';
 import { rollOnScreen } from '@/store/diceTrayStore';
@@ -36,7 +36,7 @@ interface SheetFeatureListProps {
    * What this character brings to a throw a feature states in words. Omitted where the list is not
    * about a character, which leaves every throw at what the book prints.
    */
-  readonly throwContext?: FeatureThrowContext;
+  readonly featureContext?: FeatureContext;
   /** Absent on a read-only sheet, which is what leaves the counts and takes the buttons. */
   readonly onChange?: (patch: Partial<Character>) => void;
 }
@@ -48,7 +48,7 @@ export function SheetFeatureList({
   emptyMessage,
   character,
   classResources,
-  throwContext,
+  featureContext,
   onChange
 }: SheetFeatureListProps) {
   if (features.length === 0) {
@@ -61,7 +61,8 @@ export function SheetFeatureList({
         const chosen = getChosenFeatureOptions(feature, selections);
         const outstanding = Math.max(0, featureChoiceCount(feature) - chosen.length);
         const resource = classResources?.find((entry) => entry.featureName === feature.name);
-        const throws = deriveFeatureThrows(feature, throwContext);
+        const throws = deriveFeatureThrows(feature, featureContext);
+        const saves = deriveFeatureSaves(feature, featureContext);
 
         return (
           <AccordionItem key={feature.id} value={`${idPrefix}-${feature.id}`}>
@@ -91,6 +92,10 @@ export function SheetFeatureList({
                   >
                     {entry.label}
                   </button>
+                ))}
+                {/* A save is the other side's roll, so it is a label rather than a button. */}
+                {saves.map((save) => (
+                  <Badge key={save.id} variant="outline" className="tabular-nums">{save.label}</Badge>
                 ))}
                 {resource && character ? (
                   <SheetResourceControl
