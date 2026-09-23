@@ -387,6 +387,204 @@ check('a save the feature forces (Hammering Horns)', () => {
   );
 });
 
+/* -------------------------------------------------------------------------- *
+ * A DC a sibling feature states
+ * -------------------------------------------------------------------------- */
+
+const MONKS_FOCUS = {
+  name: 'Monk’s Focus',
+  description:
+    'This energy is represented by Focus Points. You can expend these points to enhance or fuel ' +
+    'certain Monk features. You start knowing three such features: Flurry of Blows, Patient ' +
+    'Defense, and Step of the Wind, each of which is detailed below. Some features that use Focus ' +
+    'Points require your target to make a saving throw. The save DC equals 8 plus your Wisdom ' +
+    'modifier and Proficiency Bonus.'
+};
+
+const KI = {
+  name: 'Ki',
+  description:
+    'Your access to this energy is represented by a number of ki points. You can spend these points ' +
+    'to fuel various ki features. You start knowing three such features: Flurry of Blows, Patient ' +
+    'Defense, and Step of the Wind. Some of your ki features require your target to make a saving ' +
+    'throw to resist the feature’s effects. The saving throw DC is calculated as follows: Ki save ' +
+    'DC = 8 + your proficiency bonus + your Wisdom modifier'
+};
+
+const CUNNING_STRIKE = {
+  name: 'Cunning Strike',
+  description:
+    'When you deal Sneak Attack damage, you can add one of the following Cunning Strike effects. ' +
+    'If a Cunning Strike effect requires a saving throw, the DC equals 8 plus your Dexterity ' +
+    'modifier and Proficiency Bonus.'
+};
+
+const PALADIN_CHANNEL_DIVINITY = {
+  name: 'Channel Divinity',
+  description:
+    'You can channel divine energy directly from the Outer Planes. If a Channel Divinity effect ' +
+    'requires a saving throw, the DC equals the spell save DC from this class’s Spellcasting feature.'
+};
+
+const SACRED_OATH = {
+  name: 'Sacred Oath',
+  description:
+    'Some Channel Divinity effects require saving throws. When you use such an effect from this ' +
+    'class, the DC equals your paladin spell save DC.'
+};
+
+check('a Focus Point save takes its DC from Monk’s Focus (2024 Stunning Strike)', () => {
+  assert.deepEqual(
+    saves(
+      'Once per turn when you hit a creature, you can expend 1 Focus Point to attempt a stunning ' +
+        'strike. The target must make a Constitution saving throw.',
+      { siblingFeatures: [MONKS_FOCUS] }
+    ),
+    ['DC 17 CON']
+  );
+});
+
+check('a ki save takes its DC from Ki, whose formula is in the next sentence (2014)', () => {
+  assert.deepEqual(
+    saves(
+      'When you hit another creature with a melee weapon attack, you can spend 1 ki point to ' +
+        'attempt a stunning strike. The target must succeed on a Constitution saving throw.',
+      { siblingFeatures: [KI] }
+    ),
+    ['DC 17 CON']
+  );
+});
+
+check('a sibling states the DC for the features it says it fuels (Open Hand Technique)', () => {
+  assert.deepEqual(
+    saves(
+      'Whenever you hit a creature with an attack granted by your Flurry of Blows, you can impose ' +
+        'one of the following effects on that target. Push. The target must succeed on a Strength ' +
+        'saving throw or be pushed up to 15 feet away from you.',
+      { siblingFeatures: [MONKS_FOCUS] }
+    ),
+    ['DC 17 STR']
+  );
+});
+
+check('Devious Strikes takes its DC from Cunning Strike', () => {
+  assert.deepEqual(
+    saves(
+      'The following effects are now among your Cunning Strike options. Daze (Cost: 2d6). The ' +
+        'target must succeed on a Constitution saving throw.',
+      { siblingFeatures: [CUNNING_STRIKE] }
+    ),
+    ['DC 18 CON']
+  );
+});
+
+check('a sibling that points at the spell save DC resolves to it (Abjure Foes)', () => {
+  assert.deepEqual(
+    saves(
+      'You can expend one use of this class’s Channel Divinity to overwhelm foes with awe. Each ' +
+        'target must succeed on a Wisdom saving throw or have the Frightened condition.',
+      { siblingFeatures: [PALADIN_CHANNEL_DIVINITY], spellSaveDc: 19 }
+    ),
+    ['DC 19 WIS']
+  );
+});
+
+check('the declaring clause names what it covers, not only the feature (Sacred Oath)', () => {
+  assert.deepEqual(
+    saves(
+      'When you take this oath at 3rd level, you gain the following two Channel Divinity options. ' +
+        'Turn the Unholy. Each fiend that can see or hear you must make a Wisdom saving throw.',
+      { siblingFeatures: [SACRED_OATH], spellSaveDc: 19 }
+    ),
+    ['DC 19 WIS']
+  );
+});
+
+check('a sibling this feature never names states nothing for it', () => {
+  assert.deepEqual(
+    saves(
+      'Each hostile creature that starts its turn in this aura must succeed on a Wisdom saving ' +
+        'throw or be charmed until the aura ends.',
+      { siblingFeatures: [MONKS_FOCUS, CUNNING_STRIKE] }
+    ),
+    ['WIS Save']
+  );
+});
+
+check('a sibling that only imposes a save is not a source for anyone', () => {
+  assert.deepEqual(
+    saves('The target must succeed on a Constitution saving throw.', {
+      siblingFeatures: [
+        {
+          name: 'Quivering Palm',
+          description: 'When you end them, the target must make a Constitution saving throw, taking 10d12 Force damage.'
+        }
+      ]
+    }),
+    ['CON Save']
+  );
+});
+
+check('Tasha’s writes the summed formula the other way round (Infectious Fury)', () => {
+  assert.deepEqual(
+    saves(
+      'The target must succeed on a Wisdom saving throw (DC equal to 8 + your Constitution ' +
+        'modifier + your proficiency bonus) or suffer one of the following effects.'
+    ),
+    ['DC 16 WIS']
+  );
+});
+
+/* -------------------------------------------------------------------------- *
+ * What a success does to the damage
+ * -------------------------------------------------------------------------- */
+
+const LANDS_AID =
+  'Each creature of your choice in the Sphere must make a Constitution saving throw against your ' +
+  'spell save DC, taking 2d6 Necrotic damage on a failed save or half as much damage on a ' +
+  'successful one. One creature of your choice in that area regains 2d6 Hit Points.';
+
+check('a save that mitigates says so (Land’s Aid)', () => {
+  assert.deepEqual(saves(LANDS_AID, { spellSaveDc: 19 }), ['DC 19 CON (half)']);
+});
+
+check('the save is tied to the damage it halves, never the healing beside it', () => {
+  const [save] = deriveFeatureSaves({ description: LANDS_AID }, { ...context, spellSaveDc: 19 });
+  const damage = read(LANDS_AID, { spellSaveDc: 19 }).find((entry) => entry.kind === 'damage');
+  assert.equal(save.halvesDamage, true);
+  assert.equal(save.throwId, damage.id);
+});
+
+check('the clause is read when it is its own sentence (Storm Aura)', () => {
+  assert.deepEqual(
+    saves(
+      'The target must make a Dexterity saving throw. The target takes 1d6 lightning damage on a ' +
+        'failed save, or half as much damage on a successful one.'
+    ),
+    ['DEX Save (half)']
+  );
+});
+
+check('a save that negates rather than halves stays plain (Searing Sunburst)', () => {
+  assert.deepEqual(
+    saves(
+      'Each creature in that 20-foot-radius sphere must succeed on a Constitution saving throw or ' +
+        'take 2d6 radiant damage.'
+    ),
+    ['CON Save']
+  );
+});
+
+check('Evasion is about somebody else’s effect, not a save this feature imposes', () => {
+  assert.deepEqual(
+    saves(
+      'When you are subjected to an effect that allows you to make a Dexterity saving throw to ' +
+        'take only half damage, you instead take no damage if you succeed on the saving throw.'
+    ),
+    []
+  );
+});
+
 for (const entry of checks) {
   console.log(`${entry.ok ? 'ok  ' : 'FAIL'} ${entry.name}${entry.detail ? `\n       ${entry.detail}` : ''}`);
 }

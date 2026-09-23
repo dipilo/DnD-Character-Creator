@@ -14,7 +14,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/ui/badge';
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { SheetResourceControl } from '@/components/character/SheetResourceControl';
-import { deriveFeatureSaves, deriveFeatureThrows, type FeatureContext } from '@/lib/featureFacets';
+import {
+  deriveFeatureSaves,
+  deriveFeatureThrows,
+  describeFeatureThrow,
+  type FeatureContext
+} from '@/lib/featureFacets';
 import { featureChoiceCount, getChosenFeatureOptions } from '@/lib/featureOptions';
 import { setClassResourceUsed, toggleResourceActive, type ResolvedClassResource } from '@/lib/sheetPlayState';
 import { rollOnScreen } from '@/store/diceTrayStore';
@@ -87,7 +92,11 @@ export function SheetFeatureList({
                     type="button"
                     className="min-h-9 rounded px-2 text-sm font-semibold tabular-nums transition-colors hover:bg-accent coarse:min-h-11 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                     onClick={() =>
-                      void rollOnScreen({ notation: entry.notation, label: feature.name, detail: entry.detail })
+                      void rollOnScreen({
+                        notation: entry.notation,
+                        label: feature.name,
+                        detail: describeFeatureThrow(entry, saves)
+                      })
                     }
                   >
                     {entry.label}

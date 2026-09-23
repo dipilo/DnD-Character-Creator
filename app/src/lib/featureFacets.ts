@@ -47,7 +47,15 @@ export interface FeatureContext {
   spellSaveDc?: number;
   /** The class table's dice columns, by lower-case feature name. */
   tableDice?: Readonly<Record<string, FeatureTableDice>>;
+  /**
+   * The character's other features, for a save whose DC a sibling states: Stunning Strike leaves
+   * it to Monk's Focus and Devious Strikes to Cunning Strike.
+   */
+  siblingFeatures?: readonly SiblingFeature[];
 }
+
+/** A feature read only for what it says about its siblings' saves. */
+export type SiblingFeature = Pick<Feature, 'name' | 'description'>;
 
 /**
  * A die a class table states per level, for a feature whose own text prints only its first value
@@ -111,6 +119,16 @@ function sentenceStart(text: string, index: number): number {
     if (at >= 0) start = Math.max(start, at + marker.length);
   }
   return start;
+}
+
+/** Where the sentence holding `index` ends, so a clause can be read without its neighbours. */
+function sentenceEnd(text: string, index: number): number {
+  let end = text.length;
+  for (const marker of SENTENCE_BREAKS) {
+    const at = text.indexOf(marker, index);
+    if (at >= 0) end = Math.min(end, at + marker.length);
+  }
+  return end;
 }
 
 const EXAMPLE_PATTERN = /\bfor example\b/i;
@@ -321,6 +339,8 @@ function readModifier(after: string, context: FeatureContext): FeatureModifier {
  * -------------------------------------------------------------------------- */
 
 interface ThrowDraft {
+  /** Where the dice were read, so a save in the same sentence can say it halves this. */
+  at: number;
   dice: string;
   face: string;
   kind: FeatureThrowKind;
@@ -342,6 +362,7 @@ function draftAt(text: string, index: number, dice: string, context: FeatureCont
   const kind = readKind(before, after);
   const typed = kind === 'damage' || kind === 'reduction';
   return {
+    at: index,
     dice: normalizeDice(dice),
     face: DICE_FACE.exec(dice)?.[1] ?? '',
     kind,
@@ -463,6 +484,19 @@ export function deriveFeatureThrows(
   feature: Pick<Feature, 'description'> & { name?: string },
   context: FeatureContext = {}
 ): FeatureThrow[] {
+  return readThrows(feature, context).map((read) => read.entry);
+}
+
+/** A throw and where its dice were read, which is what links it to a save in the same sentence. */
+interface ReadThrow {
+  entry: FeatureThrow;
+  at: number;
+}
+
+function readThrows(
+  feature: Pick<Feature, 'description'> & { name?: string },
+  context: FeatureContext
+): ReadThrow[] {
   const text = (feature.description ?? '').replaceAll('’', "'");
   if (!text) return [];
 
@@ -470,26 +504,27 @@ export function deriveFeatureThrows(
   const column = readColumn(context.tableDice?.[(feature.name ?? '').trim().toLowerCase()]);
   if (column) applyColumnDice(drafts, column);
 
-  const throws: FeatureThrow[] = [];
+  const reads: ReadThrow[] = [];
   const seen = new Set<string>();
   const notations = new Set<string>();
   for (const draft of drafts) {
-    const entry = present(draft, throws.length, context);
+    const entry = present(draft, reads.length, context);
     const key = `${entry.notation}|${entry.kind}|${entry.damageType ?? ''}`;
     // A later mention with nothing said about it is the same throw again: Emboldening Bond's
     // "each creature can add the d4 no more than once per turn" is not a second d4.
     if (seen.has(key) || (entry.kind === 'other' && notations.has(entry.notation))) continue;
     seen.add(key);
     notations.add(entry.notation);
-    throws.push(entry);
+    reads.push({ entry, at: draft.at });
   }
-  return throws;
+  return reads;
 }
 
 /* -------------------------------------------------------------------------- *
  * What the feature makes somebody else roll
  * -------------------------------------------------------------------------- */
 
+/** A saving throw a feature imposes, at this character's own DC where the feature states one. */
 /** A saving throw a feature imposes, at this character's own DC where the feature states one. */
 export interface FeatureSave {
   /** Stable within the feature, so a list can key on it. */
@@ -499,6 +534,10 @@ export interface FeatureSave {
   label: string;
   /** Absent where the feature states no DC, or where the context cannot resolve the one it states. */
   dc?: number;
+  /** Whether a success halves the damage, which both printings word "half as much damage". */
+  halvesDamage?: boolean;
+  /** The throw this save is rolled against, where the feature states both. */
+  throwId?: string;
 }
 
 const ABILITY_WORDS = 'strength|dexterity|constitution|intelligence|wisdom|charisma';
@@ -518,9 +557,14 @@ const FORCED_SAVE = new RegExp(
   'gi'
 );
 
-/** 2014 states the formula one way and 2024 the other; neither number is written in the app. */
-const DC_FORMULA_2014 = new RegExp(
-  String.raw`\b8\s*\+\s*your proficiency bonus\s*\+\s*your (${ABILITY_WORDS}) modifier`,
+/**
+ * 2014 sums the two terms and 2024 spells them out; neither number is written in the app. Tasha's
+ * writes 2014's terms in the opposite order — "8 + your Constitution modifier + your proficiency
+ * bonus" — which is a third wording, not a third rule.
+ */
+const DC_FORMULA_SUMMED = new RegExp(
+  String.raw`\b8\s*\+\s*(?:your proficiency bonus\s*\+\s*your (${ABILITY_WORDS}) modifier`
+    + String.raw`|your (${ABILITY_WORDS}) modifier\s*\+\s*your proficiency bonus)`,
   'i'
 );
 const DC_FORMULA_2024 = new RegExp(
@@ -534,13 +578,14 @@ const DC_STATED = /\bDC\s+(\d+)\b/i;
 
 /**
  * The DC the feature states, resolved against this character. A feature that states none — Stunning
- * Strike names the save and leaves the DC to the class's own feature — gets no number rather than a
- * guessed one, exactly as an unstated spell facet stays unstated.
+ * Strike leaves the DC to the class's own feature — gets no number here rather than a guessed one,
+ * exactly as an unstated spell facet stays unstated.
  */
 function readSaveDc(text: string, context: FeatureContext): number | undefined {
-  const formula = DC_FORMULA_2014.exec(text) ?? DC_FORMULA_2024.exec(text);
+  const formula = DC_FORMULA_SUMMED.exec(text) ?? DC_FORMULA_2024.exec(text);
   if (formula) {
-    const modifier = context.abilityModifiers?.[formula[1].toLowerCase() as keyof AbilityScores];
+    const ability = (formula[1] ?? formula[2]).toLowerCase() as keyof AbilityScores;
+    const modifier = context.abilityModifiers?.[ability];
     const proficiency = context.proficiencyBonus;
     if (modifier === undefined || proficiency === undefined) return undefined;
     return 8 + proficiency + modifier;
@@ -551,7 +596,124 @@ function readSaveDc(text: string, context: FeatureContext): number | undefined {
   return DC_SPELL_SAVE.test(text) ? context.spellSaveDc : undefined;
 }
 
+/* -------------------------------------------------------------------------- *
+ * A DC a sibling feature states
+ * -------------------------------------------------------------------------- */
+
+/**
+ * The sentence that makes a feature the DC source for its siblings: "Some features that use Focus
+ * Points require your target to make a saving throw", "If a Cunning Strike effect requires a
+ * saving throw". A feature that merely imposes one says "must succeed on" instead.
+ */
+const DECLARES_SIBLING_SAVE = /\brequires?\b[^.]{0,60}?\bsaving\s+throws?\b/i;
+
+/** Both printings list what a pool fuels the same way, and Open Hand Technique names one of them. */
+const FUELLED_FEATURES = /\bsuch features:\s*([^.]+)/i;
+
+/** "Monk's Focus" is what Stunning Strike calls simply Focus; "Ki" is already what Ki is called. */
+const POSSESSIVE_PREFIX = /^[A-Za-z]+'s\s+/;
+
+const escapeForPattern = (value: string) => value.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+
+/**
+ * What the books capitalise is what they are naming, so a term of two or more capitalised words in
+ * the declaring clause is the thing that clause covers: "Some **Channel Divinity** effects require
+ * saving throws". The clause's own first word is dropped — it starts the sentence.
+ */
+const NAMED_TERM = /\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+/g;
+
+/** Every name a sibling's dependants use for it: its own, what it covers, and what it fuels. */
+function referenceNames(sibling: SiblingFeature, clause: string): string[] {
+  const name = (sibling.name ?? '').replaceAll('’', "'").trim();
+  const names = name ? [name, name.replace(POSSESSIVE_PREFIX, '')] : [];
+  names.push(...clause.replace(/^\S+\s+/, '').match(NAMED_TERM) ?? []);
+  const fuelled = FUELLED_FEATURES.exec(sibling.description ?? '')?.[1] ?? '';
+  for (const part of fuelled.split(/,|\band\b/)) {
+    const trimmed = part.trim();
+    if (trimmed) names.push(trimmed);
+  }
+  return names.filter((value) => value.length > 1);
+}
+
+/**
+ * Whether the text names one of them. The bounds are lookarounds rather than `\b`, which asserts
+ * nothing after a name ending in punctuation and would match "ki" inside "taking" without them.
+ */
+const namedIn = (text: string, names: readonly string[]) =>
+  names.some((name) =>
+    new RegExp(String.raw`(?<![A-Za-z0-9])${escapeForPattern(name)}(?![A-Za-z0-9])`, 'i').test(text)
+  );
+
+/**
+ * The DC a sibling states for this feature.
+ *
+ * Both books put it on the feature that owns the pool rather than on every feature that spends it,
+ * and both cross-reference it by name — which is the same link `findResourceFeature` follows for a
+ * class table's columns, so nothing about which feature owns which DC is written here.
+ */
+function siblingSaveDc(text: string, context: FeatureContext): number | undefined {
+  for (const sibling of context.siblingFeatures ?? []) {
+    const description = (sibling.description ?? '').replaceAll('’', "'");
+    // The same feature read back out of the character's own list is not its own source.
+    if (!description || description === text) continue;
+    const declares = DECLARES_SIBLING_SAVE.exec(description);
+    if (!declares) continue;
+    const start = sentenceStart(description, declares.index);
+    if (!namedIn(text, referenceNames(sibling, description.slice(start, declares.index)))) continue;
+    // 2014's Ki states the formula in the sentence after the declaration, so the window runs one
+    // sentence past it: "Ki save DC = 8 + your proficiency bonus + your Wisdom modifier".
+    const dc = readSaveDc(description.slice(start, sentenceEnd(description, sentenceEnd(description, declares.index))), context);
+    if (dc !== undefined) return dc;
+  }
+  return undefined;
+}
+
+/* -------------------------------------------------------------------------- *
+ * What a success does to the damage
+ * -------------------------------------------------------------------------- */
+
+/**
+ * The books' fixed phrase for a save that mitigates rather than negates. "only half damage" and
+ * "half the cantrip's damage" are Evasion and its cousins talking about somebody else's effect, so
+ * the phrase is matched whole.
+ */
+const HALVED_ON_SAVE = /\bhalf as much damage\b/i;
+
 const abbreviate = (ability: keyof AbilityScores) => ability.slice(0, 3).toUpperCase();
+
+/**
+ * The tray's line under a throw: the book's own phrase, plus what a save against it does. A throw
+ * no save mitigates reads exactly as it did.
+ */
+export function describeFeatureThrow(entry: FeatureThrow, saves: readonly FeatureSave[]): string {
+  const save = saves.find((candidate) => candidate.throwId === entry.id);
+  return save ? `${entry.detail} · half on a successful ${abbreviate(save.ability)} save` : entry.detail;
+}
+
+/** Land's Aid states a damage throw and a healing one; only the first is what its save mitigates. */
+function nearestThrow(damages: readonly ReadThrow[], at: number): ReadThrow | undefined {
+  return damages.reduce<ReadThrow | undefined>((closest, read) => {
+    if (!closest) return read;
+    return Math.abs(read.at - at) < Math.abs(closest.at - at) ? read : closest;
+  }, undefined);
+}
+
+/** Every save the text calls for, with where it was read, in the order the feature names them. */
+function readSaves(text: string): Array<{ ability: keyof AbilityScores; at: number }> {
+  const found: Array<{ ability: keyof AbilityScores; at: number }> = [];
+  const seen = new Set<string>();
+  for (const pattern of [IMPOSED_SAVE, FORCED_SAVE]) {
+    for (const match of text.matchAll(pattern)) {
+      found.push({ ability: match[1].toLowerCase() as keyof AbilityScores, at: match.index ?? 0 });
+    }
+  }
+  found.sort((a, b) => a.at - b.at);
+  return found.filter((entry) => {
+    if (seen.has(entry.ability)) return false;
+    seen.add(entry.ability);
+    return true;
+  });
+}
 
 /**
  * Every saving throw a feature calls for, in the order it names them.
@@ -561,29 +723,30 @@ const abbreviate = (ability: keyof AbilityScores) => ability.slice(0, 3).toUpper
  * attack the character was already making.
  */
 export function deriveFeatureSaves(
-  feature: Pick<Feature, 'description'>,
+  feature: Pick<Feature, 'description'> & { name?: string },
   context: FeatureContext = {}
 ): FeatureSave[] {
   const text = (feature.description ?? '').replaceAll('’', "'");
   if (!text) return [];
 
-  const dc = readSaveDc(text, context);
-  const saves: FeatureSave[] = [];
-  const seen = new Set<string>();
+  const dc = readSaveDc(text, context) ?? siblingSaveDc(text, context);
+  const damages = readThrows(feature, context).filter((read) => read.entry.kind === 'damage');
 
-  for (const pattern of [IMPOSED_SAVE, FORCED_SAVE]) {
-    for (const match of text.matchAll(pattern)) {
-      const ability = match[1].toLowerCase() as keyof AbilityScores;
-      if (seen.has(ability)) continue;
-      seen.add(ability);
-      saves.push({
-        id: `save-${saves.length}`,
-        ability,
-        label: dc === undefined ? `${abbreviate(ability)} Save` : `DC ${dc} ${abbreviate(ability)}`,
-        dc
-      });
-    }
-  }
-
-  return saves;
+  return readSaves(text).map((found, index) => {
+    const { ability, at } = found;
+    // "On a successful save, the creature takes half as much damage" is its own sentence as often
+    // as it is a clause, so the window runs one sentence past the save.
+    const clause = text.slice(at, sentenceEnd(text, sentenceEnd(text, at)));
+    const halvesDamage = HALVED_ON_SAVE.test(clause);
+    const mitigated = halvesDamage ? nearestThrow(damages, at) : undefined;
+    const label = dc === undefined ? `${abbreviate(ability)} Save` : `DC ${dc} ${abbreviate(ability)}`;
+    return {
+      id: `save-${index}`,
+      ability,
+      label: halvesDamage ? `${label} (half)` : label,
+      dc,
+      ...(halvesDamage ? { halvesDamage } : {}),
+      ...(mitigated ? { throwId: mitigated.entry.id } : {})
+    };
+  });
 }

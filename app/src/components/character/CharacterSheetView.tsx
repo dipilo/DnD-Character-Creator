@@ -458,6 +458,7 @@ export function CharacterSheetView({
       ),
       proficiencyBonus,
       spellSaveDc: castingStat?.saveDc,
+      siblingFeatures: activeFeaturesWithChoices,
       tableDice: Object.fromEntries(
         resolvedClasses.flatMap(({ entry, cls }) =>
           (cls?.featureDice ?? []).map((column) => [
@@ -467,7 +468,7 @@ export function CharacterSheetView({
         )
       )
     }),
-    [castingStat, displayedAbilityScores, proficiencyBonus, resolvedClasses, totalLevel]
+    [activeFeaturesWithChoices, castingStat, displayedAbilityScores, proficiencyBonus, resolvedClasses, totalLevel]
   );
 
   const encumbrance = useMemo(() => {
