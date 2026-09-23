@@ -17,6 +17,7 @@ import { SheetResourceControl } from '@/components/character/SheetResourceContro
 import {
   deriveFeatureSaves,
   deriveFeatureThrows,
+  describeFeatureSave,
   describeFeatureThrow,
   type FeatureContext
 } from '@/lib/featureFacets';
@@ -104,7 +105,7 @@ export function SheetFeatureList({
                 ))}
                 {/* A save is the other side's roll, so it is a label rather than a button. */}
                 {saves.map((save) => (
-                  <Badge key={save.id} variant="outline" className="tabular-nums">{save.label}</Badge>
+                  <Badge key={save.id} variant="outline" className="tabular-nums">{describeFeatureSave(save)}</Badge>
                 ))}
                 {resource && character ? (
                   <SheetResourceControl

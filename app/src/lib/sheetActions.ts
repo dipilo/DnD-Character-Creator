@@ -13,7 +13,13 @@
  * Dodge and Disengage are imported: each printing labels its own list, and `combatActions` carries
  * it.
  */
-import { deriveFeatureSaves, deriveFeatureThrows, type FeatureContext } from '@/lib/featureFacets';
+import {
+  deriveFeatureSaves,
+  deriveFeatureThrows,
+  describeFeatureSave,
+  type FeatureContext,
+  type FeatureSave
+} from '@/lib/featureFacets';
 import { detectActionTiming, type ActionTiming } from '@/lib/sheetCombat';
 import {
   deriveSpellAttackOrSave,
@@ -254,6 +260,18 @@ const TIMING_TIME_LABELS: Record<ActionTiming, string> = {
  * points in it is something a player uses in a fight whether or not the sentence names an action.
  * Everything else stays in the Features tab.
  */
+/** What the Notes column carries for a feature row: what a failed save does, then the recharge. */
+function featureNotes(
+  save: FeatureSave | undefined,
+  resource: ResolvedClassResource | undefined
+): string | undefined {
+  const parts = [
+    save?.effect ? `Failed save: ${save.effect}` : undefined,
+    resource?.resetsOn ? `Recharges on a ${resource.resetsOn} rest` : undefined
+  ].filter(Boolean);
+  return parts.length > 0 ? parts.join(' · ') : undefined;
+}
+
 function featureRows(
   features: readonly Feature[],
   resources: readonly ResolvedClassResource[],
@@ -281,9 +299,9 @@ function featureRows(
       group: timing ?? 'other',
       isAttack: false,
       time: timing ? TIMING_TIME_LABELS[timing] : undefined,
-      saveLabel: save?.label,
+      saveLabel: save ? describeFeatureSave(save) : undefined,
       damages: throws.map((entry) => ({ notation: entry.notation, label: entry.label })),
-      notes: resource?.resetsOn ? `Recharges on a ${resource.resetsOn} rest` : undefined,
+      notes: featureNotes(save, resource),
       description: feature.description,
       resourceKey: resource?.key
     });

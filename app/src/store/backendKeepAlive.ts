@@ -3,8 +3,8 @@
  *
  * The free host sleeps after 15 minutes with no request, so a tab left open over a long session
  * pays a cold start on its next save. This keeps that one host awake for as long as somebody is
- * actually looking at the app; waking a host that has already slept is the scheduled ping's job
- * (`.github/workflows/keepalive.yml`), which is the half that runs when no tab is open.
+ * actually looking at the app; waking a host that has already slept is the external uptime
+ * pinger's job (`docs/keepalive.md`), which is the half that runs when no tab is open.
  *
  * A hidden tab pings nothing — a backgrounded phone browser freezes its timers anyway, and a
  * hundred idle tabs holding a host awake between them is not what this is for.

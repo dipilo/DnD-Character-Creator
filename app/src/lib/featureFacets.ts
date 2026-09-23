@@ -6,6 +6,7 @@
  * states two. Nothing here is a per-feature table — a feature an imported pack adds is read exactly
  * as `deriveSpellAttackOrSave` reads a spell, and one that states no throw gets none.
  */
+import { CONDITION_NAMES } from '@/lib/sheetPlayState';
 import { DAMAGE_TYPES, trailingLevel, type SpellDamageType } from '@/lib/spellFacets';
 import type { AbilityScores, Feature } from '@/types/dnd';
 
@@ -525,7 +526,6 @@ function readThrows(
  * -------------------------------------------------------------------------- */
 
 /** A saving throw a feature imposes, at this character's own DC where the feature states one. */
-/** A saving throw a feature imposes, at this character's own DC where the feature states one. */
 export interface FeatureSave {
   /** Stable within the feature, so a list can key on it. */
   id: string;
@@ -538,6 +538,10 @@ export interface FeatureSave {
   halvesDamage?: boolean;
   /** The throw this save is rolled against, where the feature states both. */
   throwId?: string;
+  /** What a failure does, in the feature's own words, where the damage is not the whole of it. */
+  effect?: string;
+  /** The conditions that clause names, from the list the sheet's own toggles use. */
+  conditions?: readonly string[];
 }
 
 const ABILITY_WORDS = 'strength|dexterity|constitution|intelligence|wisdom|charisma';
@@ -690,6 +694,72 @@ export function describeFeatureThrow(entry: FeatureThrow, saves: readonly Featur
   return save ? `${entry.detail} · half on a successful ${abbreviate(save.ability)} save` : entry.detail;
 }
 
+/** What the sheet prints beside a save: its DC, and the conditions a failure imposes. */
+export function describeFeatureSave(save: FeatureSave): string {
+  return save.conditions?.length ? `${save.label} → ${save.conditions.join(', ')}` : save.label;
+}
+
+/* -------------------------------------------------------------------------- *
+ * What a failure does
+ * -------------------------------------------------------------------------- */
+
+/**
+ * The four ways both printings word a failure. The `or` clause has to be anchored to the save it
+ * belongs to, and it skips the mitigation phrase: "on a failed save or half as much damage" is the
+ * `halvesDamage` reading, not an effect.
+ */
+const FAILURE_CLAUSES = [
+  /^[^.•]*?\bsaving\s+throw\b[^.•]*?,?\s+\bor\s+(?!half as much)/i,
+  /\bon a (?:failed (?:save|saving throw)|failure),\s+(?!or\b)/i,
+  /\bif (?:it|the save|the creature|the target) fails(?: its (?:save|saving throw))?,\s+/i,
+  /\bunless the save succeeds,\s+/i
+];
+
+/**
+ * A part of the clause that says nothing but how much damage. The subject has to lead it — "it is
+ * turned for 1 minute or until it takes any damage" is an effect that mentions damage, not a damage
+ * phrase.
+ */
+const DAMAGE_PART = /^(?:(?:it|a creature|the (?:target|creature|attacker))\s+)?(?:takes?|taking)\b.*\bdamage\b/i;
+
+/** The damage is already a throw, so what is left of the clause is what the save does. */
+function withoutDamage(clause: string): string | undefined {
+  const kept = clause.split(/\s+and\s+/).filter((part) => !DAMAGE_PART.test(part.trim()));
+  const effect = kept.join(' and ').trim();
+  // A clause that announces a list ("suffer one of the following effects:") is not the effect: the
+  // bullets it points at are a sentence break away and nothing carries them here.
+  return effect && !effect.endsWith(':') ? effect : undefined;
+}
+
+/**
+ * What a failed save does. 2014 writes "or be stunned until the end of your next turn" and 2024
+ * puts it in a sentence of its own, which can be two sentences down: Shadow Lore states what a
+ * success does first. The window a caller passes ends at the next save, so a feature with two never
+ * reads one's clause for the other.
+ */
+function readFailureEffect(window: string): string | undefined {
+  for (const pattern of FAILURE_CLAUSES) {
+    const match = pattern.exec(window);
+    if (!match) continue;
+    const start = (match.index ?? 0) + match[0].length;
+    const clause = window.slice(start, sentenceEnd(window, start)).trim().replace(/[.•]$/, '');
+    const effect = withoutDamage(clause);
+    if (effect) return effect;
+  }
+  return undefined;
+}
+
+/** The conditions the clause names, in the order it names them. */
+function readConditions(effect: string): string[] {
+  const found: Array<{ name: string; at: number }> = [];
+  for (const name of CONDITION_NAMES) {
+    const at = new RegExp(String.raw`\b${name}\b`, 'i').exec(effect)?.index;
+    if (at !== undefined) found.push({ name, at });
+  }
+  found.sort((a, b) => a.at - b.at);
+  return found.map((entry) => entry.name);
+}
+
 /** Land's Aid states a damage throw and a healing one; only the first is what its save mitigates. */
 function nearestThrow(damages: readonly ReadThrow[], at: number): ReadThrow | undefined {
   return damages.reduce<ReadThrow | undefined>((closest, read) => {
@@ -729,24 +799,35 @@ export function deriveFeatureSaves(
   const text = (feature.description ?? '').replaceAll('’', "'");
   if (!text) return [];
 
-  const dc = readSaveDc(text, context) ?? siblingSaveDc(text, context);
+  const featureDc = readSaveDc(text, context) ?? siblingSaveDc(text, context);
   const damages = readThrows(feature, context).filter((read) => read.entry.kind === 'damage');
 
-  return readSaves(text).map((found, index) => {
-    const { ability, at } = found;
+  const found = readSaves(text);
+  return found.map((entry, index) => {
+    const { ability, at } = entry;
+    // The failure clause can be further off than the halving one — Shadow Lore states what a
+    // success does first — so it is read up to wherever the next save begins.
+    const effectWindow = text.slice(at, found[index + 1]?.at ?? text.length);
     // "On a successful save, the creature takes half as much damage" is its own sentence as often
     // as it is a clause, so the window runs one sentence past the save.
     const clause = text.slice(at, sentenceEnd(text, sentenceEnd(text, at)));
+    // A feature's two saves usually share one DC, but each one's own clause states it where they
+    // differ, so the nearest reading wins over the feature-wide one.
+    const dc = readSaveDc(clause, context) ?? featureDc;
     const halvesDamage = HALVED_ON_SAVE.test(clause);
     const mitigated = halvesDamage ? nearestThrow(damages, at) : undefined;
     const label = dc === undefined ? `${abbreviate(ability)} Save` : `DC ${dc} ${abbreviate(ability)}`;
+    const effect = readFailureEffect(effectWindow);
+    const conditions = effect ? readConditions(effect) : [];
     return {
       id: `save-${index}`,
       ability,
       label: halvesDamage ? `${label} (half)` : label,
       dc,
       ...(halvesDamage ? { halvesDamage } : {}),
-      ...(mitigated ? { throwId: mitigated.entry.id } : {})
+      ...(mitigated ? { throwId: mitigated.entry.id } : {}),
+      ...(effect ? { effect } : {}),
+      ...(conditions.length > 0 ? { conditions } : {})
     };
   });
 }

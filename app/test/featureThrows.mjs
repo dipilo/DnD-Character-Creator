@@ -585,6 +585,131 @@ check('Evasion is about somebody else’s effect, not a save this feature impose
   );
 });
 
+/* -------------------------------------------------------------------------- *
+ * What a failed save does
+ * -------------------------------------------------------------------------- */
+
+const saveEntries = (description, overrides) =>
+  deriveFeatureSaves({ description }, { ...context, ...overrides });
+const effects = (description, overrides) => saveEntries(description, overrides).map((entry) => entry.effect);
+const conditions = (description, overrides) =>
+  saveEntries(description, overrides).map((entry) => entry.conditions ?? []);
+
+check('the 2014 "or" clause is the effect (Stunning Strike)', () => {
+  const description =
+    'The target must succeed on a Constitution saving throw or be stunned until the end of your ' +
+    'next turn.';
+  assert.deepEqual(effects(description), ['be stunned until the end of your next turn']);
+  assert.deepEqual(conditions(description), [['Stunned']]);
+});
+
+check('2024 states it in a sentence of its own (Stunning Strike)', () => {
+  const description =
+    'The target must make a Constitution saving throw. On a failed save, the target has the ' +
+    'Stunned condition until the start of your next turn. On a successful save, the target’s ' +
+    'Speed is halved until the start of your next turn.';
+  assert.deepEqual(effects(description), [
+    'the target has the Stunned condition until the start of your next turn'
+  ]);
+  assert.deepEqual(conditions(description), [['Stunned']]);
+});
+
+check('two conditions are read in the order the clause names them (Channel Divinity)', () => {
+  assert.deepEqual(
+    conditions(
+      'Each creature in a 30-foot Emanation originating from you must make a Wisdom saving throw. ' +
+        'If the creature fails its save, it has the Frightened and Incapacitated conditions for 1 ' +
+        'minute.'
+    ),
+    [['Frightened', 'Incapacitated']]
+  );
+});
+
+check('"If it fails," is the same clause (Quivering Palm)', () => {
+  assert.deepEqual(
+    effects(
+      'The creature must make a Constitution saving throw. If it fails, it is reduced to 0 hit ' +
+        'points. If it succeeds, it takes 10d10 necrotic damage.'
+    ),
+    ['it is reduced to 0 hit points']
+  );
+});
+
+check('"Unless the save succeeds," is the same clause (Rune Carver)', () => {
+  assert.deepEqual(
+    effects(
+      'You can force the creature to make a Wisdom saving throw. Unless the save succeeds, the ' +
+        'creature is charmed by you for 1 minute.'
+    ),
+    ['the creature is charmed by you for 1 minute']
+  );
+});
+
+check('a 2024 condition clause with no verb of its own (Cunning Strike)', () => {
+  const description = 'The target must succeed on a Dexterity saving throw or have the Prone condition.';
+  assert.deepEqual(effects(description), ['have the Prone condition']);
+  assert.deepEqual(conditions(description), [['Prone']]);
+});
+
+check('damage is already a throw, so a damage-only clause is no effect (Deflect Attacks)', () => {
+  assert.deepEqual(
+    effects(
+      'The creature must succeed on a Dexterity saving throw or take damage equal to two rolls of ' +
+        'your Martial Arts die plus your Dexterity modifier.'
+    ),
+    [undefined]
+  );
+});
+
+check('the mitigation phrase is not an effect (Land’s Aid)', () => {
+  assert.deepEqual(
+    effects(
+      'Each creature in that area must make a Constitution saving throw against your spell save ' +
+        'DC, taking 2d6 Necrotic damage on a failed save or half as much damage on a successful one.'
+    ),
+    [undefined]
+  );
+});
+
+check('nor is it when the save states it in its own sentence (Storm Aura)', () => {
+  assert.deepEqual(
+    effects(
+      'The target must make a Dexterity saving throw. The target takes 1d6 lightning damage on a ' +
+        'failed save, or half as much damage on a successful one.'
+    ),
+    [undefined]
+  );
+});
+
+check('what is left beside the damage is the effect (Wild Surge)', () => {
+  const description =
+    'Each creature within 10 feet of you must succeed on a Constitution saving throw or take 1d6 ' +
+    'radiant damage and be blinded until the start of your next turn.';
+  assert.deepEqual(effects(description), ['be blinded until the start of your next turn']);
+  assert.deepEqual(conditions(description), [['Blinded']]);
+});
+
+check('a clause that only announces a list is not the effect (Infectious Fury)', () => {
+  assert.deepEqual(
+    effects(
+      'The target must succeed on a Wisdom saving throw (DC equal to 8 + your Constitution ' +
+        'modifier + your proficiency bonus) or suffer one of the following effects (your choice): ' +
+        '• The target must use its reaction to make a melee attack against another creature.'
+    ),
+    [undefined]
+  );
+});
+
+check('two saves take the DC each one’s own clause states', () => {
+  assert.deepEqual(
+    saves(
+      'The target must succeed on a Strength saving throw (DC 15) or be pushed 15 feet away. The ' +
+        'target must succeed on a Dexterity saving throw (DC 12) or have the Prone condition.'
+    ),
+    ['DC 15 STR', 'DC 12 DEX']
+  );
+});
+
 for (const entry of checks) {
   console.log(`${entry.ok ? 'ok  ' : 'FAIL'} ${entry.name}${entry.detail ? `\n       ${entry.detail}` : ''}`);
 }
