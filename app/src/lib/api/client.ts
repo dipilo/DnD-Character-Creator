@@ -18,9 +18,9 @@ export const NETWORK_ERROR_STATUS = 0;
  * `fetch` has no timeout of its own, so a connection the host never answers leaves the promise
  * pending for as long as the page is open: every page that derives its spinner from "no result
  * yet" then spins forever, with nothing in the console. The bound is generous because the free
- * host sleeps and a cold start measures ~33 s; anything past that is not waking up.
+ * host can take about a minute to wake. A failed request remains retryable in the UI.
  */
-export const REQUEST_TIMEOUT_MS = 45_000;
+export const REQUEST_TIMEOUT_MS = 90_000;
 
 function withTimeout(signal: AbortSignal | undefined): AbortSignal {
   const timeout = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
@@ -87,6 +87,7 @@ function errorCodeFrom(body: unknown, status: number): string {
 export async function apiRequest<T>(method: string, path: string, options: RequestOptions = {}): Promise<T> {
   const hasBody = options.body !== undefined;
   let response: Response;
+  let body: unknown;
   try {
     response = await fetch(`${API_BASE}${path}`, {
       method,
@@ -97,6 +98,7 @@ export async function apiRequest<T>(method: string, path: string, options: Reque
       body: hasBody ? JSON.stringify(options.body) : undefined,
       signal: withTimeout(options.signal),
     });
+    body = await readBody(response);
   } catch (e) {
     const timedOut = e instanceof DOMException && e.name === 'TimeoutError';
     const message = e instanceof Error ? e.message : String(e);
@@ -110,7 +112,6 @@ export async function apiRequest<T>(method: string, path: string, options: Reque
     );
   }
 
-  const body = await readBody(response);
   if (!response.ok) {
     throw new ApiError(response.status, errorCodeFrom(body, response.status), body);
   }

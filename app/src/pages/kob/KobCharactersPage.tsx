@@ -7,9 +7,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import { describeKobCharacter, fullName, outstandingChoices } from '@/data/gameSystems/kidsOnBikes/rules';
 import { useKobCharacterStore } from '@/store/kobCharacterStore';
+import { CharacterSyncStatus } from '@/components/character/CharacterSyncStatus';
+import { useCharacterLibraryStatus } from '@/hooks/useCharacterLibraryStatus';
 
 export function KobCharactersPage() {
   const navigate = useNavigate();
+  const { emptyConfirmed } = useCharacterLibraryStatus();
   const characters = useKobCharacterStore((state) => state.characters);
   const { createCharacter, deleteCharacter, duplicateCharacter } = useKobCharacterStore.getState();
 
@@ -20,6 +23,7 @@ export function KobCharactersPage() {
 
   return (
     <div className="space-y-6">
+      <CharacterSyncStatus />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl short:text-xl">Kids on Bikes</h1>
@@ -33,7 +37,7 @@ export function KobCharactersPage() {
         </Button>
       </div>
 
-      {characters.length === 0 ? (
+      {characters.length === 0 && emptyConfirmed ? (
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">

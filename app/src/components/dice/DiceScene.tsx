@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useId, useImperativeHandle, useRef, useState } from 'react';
 import DiceBox from '@3d-dice/dice-box';
+import { waitForDice } from '@/lib/diceOperation';
 import { DiceAudioController } from '@/lib/diceAudio';
 import { expandDiceNotation as parseNotationDice, type DiceRollResult } from '@/lib/diceNotation';
 import { AVAILABLE_DICE_THEMES, DEFAULT_DICE_COLOR, type DiceColorMode } from '@/components/dice/diceOptions';
@@ -137,6 +138,7 @@ export const DiceScene = forwardRef<DiceSceneHandle, DiceSceneProps>(function Di
 }, ref) {
   const containerId = useId().replaceAll(':', '-');
   const diceBoxRef = useRef<DiceBox | null>(null);
+  const rollLifetimeRef = useRef<AbortController | null>(null);
   const audioControllerRef = useRef(new DiceAudioController());
   const [ready, setReady] = useState(false);
   const resolvedTheme = getResolvedTheme(theme);
@@ -161,11 +163,24 @@ export const DiceScene = forwardRef<DiceSceneHandle, DiceSceneProps>(function Di
   }, [soundEnabled]);
 
   const clearScene = () => {
+    rollLifetimeRef.current?.abort();
+    rollLifetimeRef.current = diceBoxRef.current ? new AbortController() : null;
     try {
       diceBoxRef.current?.clear();
-    } catch {
-      // DiceBox can be mid-disposal during React cleanup in development.
+    } catch (error) {
+      console.warn('Could not clear the dice scene', error);
     }
+  };
+
+  const throwDice = (notation: string, action: (box: DiceBox) => Promise<DiceSceneResult[]>) => {
+    const box = diceBoxRef.current;
+    const lifetime = rollLifetimeRef.current;
+    if (!box || !lifetime) return Promise.reject(new Error('Dice scene is still initializing.'));
+    return waitForDice(async () => {
+      await audioControllerRef.current.playRollStart(notation);
+      lifetime.signal.throwIfAborted();
+      return action(box);
+    }, lifetime.signal);
   };
 
   useImperativeHandle(ref, () => ({
@@ -175,15 +190,12 @@ export const DiceScene = forwardRef<DiceSceneHandle, DiceSceneProps>(function Di
       if (!ready || !diceBoxRef.current) {
         throw new Error('Dice scene is still initializing.');
       }
-      await audioControllerRef.current.playRollStart(`1d${die.sides ?? 20}`);
-      return diceBoxRef.current.reroll(die, { remove: true }) as Promise<DiceSceneResult[]>;
+      return throwDice(`1d${die.sides ?? 20}`, (box) => box.reroll(die, { remove: true }) as Promise<DiceSceneResult[]>);
     },
     roll: async (notation: string) => {
       if (!ready || !diceBoxRef.current) {
         throw new Error('Dice scene is still initializing.');
       }
-
-      await audioControllerRef.current.playRollStart(notation);
 
       const { colorMode: mode, colorPalette: palette } = colorRef.current;
       const dice = mode === 'random' || mode === 'random-any' ? expandDiceNotation(notation) : null;
@@ -192,15 +204,16 @@ export const DiceScene = forwardRef<DiceSceneHandle, DiceSceneProps>(function Di
         // them independently within a single roll.
         const colors = mode === 'random-any' ? pickAnyRandomColors(dice.length) : pickPerDieColors(dice.length, palette);
         const groups = dice.map((sides, index) => ({ sides, qty: 1, themeColor: colors[index] }));
-        return diceBoxRef.current.roll(groups) as Promise<DiceSceneResult[]>;
+        return throwDice(notation, (box) => box.roll(groups) as Promise<DiceSceneResult[]>);
       }
 
-      return diceBoxRef.current.roll(notation) as Promise<DiceSceneResult[]>;
+      return throwDice(notation, (box) => box.roll(notation) as Promise<DiceSceneResult[]>);
     }
   }), [ready]);
 
   useEffect(() => {
     let cancelled = false;
+    const lifetime = new AbortController();
     let localDiceBox: DiceBox | null = null;
     const canvasId = `${containerId}-canvas-${(diceInstanceCounter += 1)}`;
 
@@ -213,8 +226,8 @@ export const DiceScene = forwardRef<DiceSceneHandle, DiceSceneProps>(function Di
     const teardown = () => {
       try {
         localDiceBox?.clear();
-      } catch {
-        // DiceBox can be mid-disposal during React cleanup in development.
+      } catch (error) {
+        console.warn('Could not clear the disposed dice scene', error);
       }
       document.getElementById(canvasId)?.remove();
     };
@@ -239,10 +252,10 @@ export const DiceScene = forwardRef<DiceSceneHandle, DiceSceneProps>(function Di
         };
 
         diceBox.onDieComplete = (result) => {
-          audioControllerRef.current.playImpact(result.sides);
+          if (!cancelled) audioControllerRef.current.playImpact(result.sides);
         };
         diceBox.onRollComplete = (results) => {
-          audioControllerRef.current.playRollComplete(results.length);
+          if (!cancelled) audioControllerRef.current.playRollComplete(results.length);
         };
 
         localDiceBox = diceBox;
@@ -255,6 +268,7 @@ export const DiceScene = forwardRef<DiceSceneHandle, DiceSceneProps>(function Di
         }
 
         diceBoxRef.current = diceBox;
+        rollLifetimeRef.current = lifetime;
         setReady(true);
         onReadyChange?.(true);
         onError?.(null);
@@ -272,6 +286,9 @@ export const DiceScene = forwardRef<DiceSceneHandle, DiceSceneProps>(function Di
 
     return () => {
       cancelled = true;
+      lifetime.abort();
+      rollLifetimeRef.current?.abort();
+      rollLifetimeRef.current = null;
       onReadyChange?.(false);
       diceBoxRef.current = null;
       teardown();

@@ -110,8 +110,7 @@ async function pullCharacter(id: string): Promise<void> {
   const before = holder?.find(id);
   const record = await getRemoteCharacter(id);
   if (!record?.data) {
-    console.warn('character', id, 'came back from the server without a readable document');
-    return;
+    throw new Error(`Character ${id} came back from the server without a readable document.`);
   }
   // Edited here while the fetch was in the air: keep the local edit. It is dirty, so the next pass
   // pushes it, and the server answers 409 — which keeps both copies rather than dropping one.
@@ -433,10 +432,20 @@ function hasOutstandingWork(): boolean {
 
 /** Watch every cache for local changes and push them. Returns the unsubscribe. */
 export function startCharacterSyncWatcher(): () => void {
+  const retryFailedSync = () => {
+    const { enabled, status } = useCharacterSyncStore.getState();
+    if (enabled && (status === 'offline' || status === 'error')) void syncCharacters();
+  };
+  window.addEventListener('online', retryFailedSync);
+  window.addEventListener('focus', retryFailedSync);
   const unsubscribes = DOCUMENT_STORES.map((store) => store.subscribe(() => {
     if (!useCharacterSyncStore.getState().enabled) return;
     if (hasOutstandingWork()) schedulePush();
   }));
 
-  return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
+  return () => {
+    window.removeEventListener('online', retryFailedSync);
+    window.removeEventListener('focus', retryFailedSync);
+    unsubscribes.forEach((unsubscribe) => unsubscribe());
+  };
 }

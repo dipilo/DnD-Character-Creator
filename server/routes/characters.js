@@ -6,7 +6,7 @@
 const express = require('express');
 const crypto = require('node:crypto');
 const db = require('../db');
-const { characterVisibility, listGrants, normaliseVisibility, resolveCharacterAccess } = require('../lib/characterAccess');
+const { characterVisibility, normaliseVisibility, resolveCharacterAccess } = require('../lib/characterAccess');
 const { SUMMARY_COLUMNS, characterSummary, publicCharacter, serializeDocument } = require('../lib/characters');
 const { genToken } = require('../lib/tokens');
 const { canUserModifyPlayer, getCampaignMembership, holdsPlayerSeat, optionalAuth, requireAuth } = require('../middleware/auth');
@@ -28,7 +28,7 @@ function isValidId(id) {
 /** Fetch a row the caller owns, deleted rows included. Callers decide what a tombstone means. */
 async function findOwnedCharacter(userId, id) {
   if (!isValidId(id)) return null;
-  return await db.get('SELECT * FROM characters WHERE id = ? AND user_id = ?', id, userId);
+  return await db.get(`SELECT ${SUMMARY_COLUMNS}, share_token FROM characters WHERE id = ? AND user_id = ?`, id, userId);
 }
 
 /**
@@ -514,10 +514,17 @@ async function sharesACampaign(userId, otherUserId) {
  * bare ids is not something anyone can revoke with confidence.
  */
 async function sharingPayload(row) {
-  const grants = [];
-  for (const grant of await listGrants(row.id)) {
-    grants.push({ ...grant, label: await describeGrantSubject(grant) });
-  }
+  const rows = await db.all(`
+    SELECT g.*, u.username AS subject_username, c.name AS subject_campaign_name
+    FROM character_grants g
+    LEFT JOIN users u ON g.subject_type = 'user' AND u.id = g.subject_id
+    LEFT JOIN campaigns c ON g.subject_type = 'campaign_owner' AND c.id = g.subject_id
+    WHERE g.character_id = ? ORDER BY g.id
+  `, row.id);
+  const grants = rows.map(({ subject_username, subject_campaign_name, ...grant }) => ({
+    ...grant,
+    label: describeGrantSubject(grant, subject_username, subject_campaign_name),
+  }));
   return {
     character_id: row.id,
     visibility: characterVisibility(row),
@@ -526,13 +533,11 @@ async function sharingPayload(row) {
   };
 }
 
-async function describeGrantSubject(grant) {
+function describeGrantSubject(grant, username, campaignName) {
   if (grant.subject_type === 'user') {
-    const user = await db.get('SELECT username FROM users WHERE id = ?', grant.subject_id);
-    return user?.username || `Account ${grant.subject_id}`;
+    return username || `Account ${grant.subject_id}`;
   }
-  const campaign = await db.get('SELECT name FROM campaigns WHERE id = ?', grant.subject_id);
-  return campaign?.name ? `GM of ${campaign.name}` : `GM of campaign ${grant.subject_id}`;
+  return campaignName ? `GM of ${campaignName}` : `GM of campaign ${grant.subject_id}`;
 }
 
 function normaliseSchemaVersion(value) {

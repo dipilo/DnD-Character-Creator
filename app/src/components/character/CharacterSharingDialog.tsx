@@ -72,6 +72,8 @@ export function CharacterSharingDialog({ characterId, characterName }: Readonly<
   const [pickedAccess, setPickedAccess] = useState<CharacterGrantAccess>('edit');
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const userId = useAuthStore((state) => state.user?.id ?? null);
 
   useEffect(() => {
@@ -82,7 +84,7 @@ export function CharacterSharingDialog({ characterId, characterName }: Readonly<
         if (!cancelled) setSharing(state);
       })
       .catch((e: unknown) => {
-        if (!cancelled) toast.error('Could not read this sheet’s sharing', { description: describeError(e) });
+        if (!cancelled) setLoadError(describeError(e) ?? 'Could not read this sheet’s sharing.');
       });
     loadShareCandidates(userId)
       .then((found) => {
@@ -94,7 +96,21 @@ export function CharacterSharingDialog({ characterId, characterName }: Readonly<
     return () => {
       cancelled = true;
     };
-  }, [characterId, open, userId]);
+  }, [characterId, open, userId, loadAttempt]);
+
+  const retrySharing = () => {
+    setLoadError(null);
+    setLoadAttempt((attempt) => attempt + 1);
+  };
+
+  const changeOpen = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+    if (nextOpen) {
+      setSharing(null);
+      setLoadError(null);
+      setCandidates([]);
+    }
+  };
 
   const run = useCallback(async (action: () => Promise<CharacterSharing>, success: string) => {
     setBusy(true);
@@ -147,7 +163,7 @@ export function CharacterSharingDialog({ characterId, characterName }: Readonly<
   const offerable = candidates.filter((entry) => !alreadyGranted.has(candidateKey(entry.subjectType, entry.subjectId)));
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={changeOpen}>
       <DialogTrigger asChild>
         <Button size="sm" variant="outline" className="min-h-11">
           <Share2 className="mr-2 h-4 w-4" />
@@ -275,12 +291,20 @@ export function CharacterSharingDialog({ characterId, characterName }: Readonly<
               )}
             </div>
           </div>
-        ) : (
+        ) : null}
+        {loadError ? (
+          <div role="alert" className="space-y-3 py-6 text-sm">
+            <p>Could not read this sheet’s sharing.</p>
+            <p className="text-muted-foreground">{loadError}</p>
+            <Button type="button" variant="outline" onClick={retrySharing}>Try again</Button>
+          </div>
+        ) : null}
+        {!sharing && !loadError ? (
           <output className="flex items-center gap-2 py-6 text-sm text-muted-foreground">
             <Spinner className="size-4" />
             Reading this sheet’s sharing...
           </output>
-        )}
+        ) : null}
       </DialogContent>
     </Dialog>
   );

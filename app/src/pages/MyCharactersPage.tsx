@@ -21,6 +21,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { CharacterUploadOffer } from '@/components/CharacterUploadOffer';
+import { CharacterSyncStatus } from '@/components/character/CharacterSyncStatus';
+import { useCharacterLibraryStatus } from '@/hooks/useCharacterLibraryStatus';
 import { SharedWithYouList } from '@/components/character/SharedWithYouList';
 import { Plus, MoreVertical, Copy, Eye, Pencil, Trash2, User, FileDown } from 'lucide-react';
 import { toast } from 'sonner';
@@ -29,6 +31,7 @@ import { exportCharacterToFillablePdf } from '@/lib/characterPdf';
 export function MyCharactersPage() {
   const navigate = useNavigate();
   const characters = useCharacterSummaries();
+  const { emptyConfirmed } = useCharacterLibraryStatus();
   const {
     builderState,
     deleteCharacter,
@@ -85,9 +88,10 @@ export function MyCharactersPage() {
 
   // The shared list renders in both branches: an account with no characters of its own can still
   // have been granted somebody else's, and the empty state used to return before reaching it.
-  if (characters.length === 0) {
+  if (characters.length === 0 && emptyConfirmed) {
     return (
       <div className="space-y-10">
+        <CharacterSyncStatus />
         <div className="flex flex-col items-center justify-center py-20 space-y-6">
           <div className="text-center space-y-2">
             <User className="h-16 w-16 text-muted-foreground mx-auto" />
@@ -110,6 +114,7 @@ export function MyCharactersPage() {
 
   return (
     <div className="space-y-6">
+      <CharacterSyncStatus />
       <CharacterUploadOffer />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">

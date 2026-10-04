@@ -106,15 +106,16 @@ let hydration: Promise<void> | null = null;
  */
 export function hydrateAuth(): Promise<void> {
   hydration ??= (async () => {
+    useAuthStore.setState({ status: 'unknown', error: null });
     try {
       const user = await fetchCurrentUser();
-      useAuthStore.setState({ status: user ? 'authenticated' : 'anonymous', user });
+      useAuthStore.setState({ status: user ? 'authenticated' : 'anonymous', user, error: null });
       applyIdentity(user);
     } catch (e) {
       console.warn('could not resolve the current session', errorCode(e));
-      useAuthStore.setState({ status: 'anonymous', user: null });
+      useAuthStore.setState({ status: 'anonymous', user: null, error: errorCode(e) });
       applyIdentity(null);
     }
-  })();
+  })().finally(() => { hydration = null; });
   return hydration;
 }

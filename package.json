@@ -27,6 +27,7 @@
     "test:sheet-intake": "node server/test/sheetIntake.mjs",
     "test:spell-scaling": "node app/test/spellScaling.mjs",
     "test:conflict": "node app/test/characterConflict.mjs",
+    "test:runtime-recovery": "node --test app/test/runtimeRecovery.mjs",
     "test:senses": "node app/test/sheetSenses.mjs",
     "test:hit-points": "node --import ./app/test/aliasLoader.mjs app/test/hitPoints.mjs",
     "test:feature-throws": "node --import ./app/test/aliasLoader.mjs app/test/featureThrows.mjs",
