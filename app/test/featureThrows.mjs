@@ -565,6 +565,29 @@ check('the clause is read when it is its own sentence (Storm Aura)', () => {
   );
 });
 
+check('the clause is read however many sentences past the save it sits (Rebuke the Violent)', () => {
+  assert.deepEqual(
+    saves(
+      'Immediately after an attacker within 30 feet of you deals damage with an attack against a ' +
+        'creature other than you, you can use your reaction to force the attacker to make a Wisdom ' +
+        'saving throw. On a failed save, the attacker takes radiant damage equal to the damage it ' +
+        'just dealt. On a successful save, it takes half as much damage.'
+    ),
+    ['WIS Save (half)']
+  );
+});
+
+check('the clause belongs to its own save, not to the one before it (Arcane Shot Options)', () => {
+  assert.deepEqual(
+    saves(
+      'Each creature in that 20-foot-radius sphere must succeed on a Constitution saving throw or ' +
+        'take 2d6 radiant damage. The target must make a Dexterity saving throw. The target takes ' +
+        '1d6 lightning damage on a failed save, or half as much damage on a successful one.'
+    ),
+    ['CON Save', 'DEX Save (half)']
+  );
+});
+
 check('a save that negates rather than halves stays plain (Searing Sunburst)', () => {
   assert.deepEqual(
     saves(

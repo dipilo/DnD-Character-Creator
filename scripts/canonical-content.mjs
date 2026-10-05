@@ -1415,6 +1415,20 @@ const parseBasicRulesEquipmentBullets = (classBlockContent) => {
     .filter((group) => group.length > 0);
 };
 
+/**
+ * The 2014 caster tables print their slot levels on a second header row, under a merged "Spell
+ * Slots per Spell Level" cell. Its first cell is an ordinal too, so it reads as a level-1 data row
+ * and shifts every per-level column one out of step.
+ */
+const isSlotLevelHeaderRow = (row) => row.length > 0
+  && row.every((cell) => /^\d+(?:st|nd|rd|th)$/i.test(String(cell ?? '').trim()));
+
+/**
+ * Where that row's first cell sits in a data row. The columns before the merged cell carry
+ * `rowspan="2"`, so they are absent from it: the gap is the difference in width.
+ */
+const slotLevelColumnOffset = (slotLevelRow, dataRow) => Math.max(dataRow.length - slotLevelRow.length, 0);
+
 const extractBasicRulesSpellcasting = (raw, classId, primaryAbility) => {
   const spellcastingTable = collectTableBlocks(raw)
     .map((table) => ({
@@ -1453,16 +1467,25 @@ const extractBasicRulesSpellcasting = (raw, classId, primaryAbility) => {
   const spellSlotsIndex = normalizedHeaders.indexOf('spellslots');
   const slotLevelIndex = normalizedHeaders.indexOf('slotlevel');
   // Slot columns are numbered either "1".."9" (Basic Rules) or "1st".."9th" (Tasha's).
-  const slotColumns = headers
+  const headerSlotColumns = headers
     .map((header, index) => ({ header: stripTags(header), index }))
     .filter(({ header }) => /^\d+(?:st|nd|rd|th)?$/i.test(header))
     .map(({ header, index }) => ({ level: parseOrdinalLevel(header), index }));
+
+  const dataRows = rowTexts.slice(firstDataRowIndex).filter((row) => !isSlotLevelHeaderRow(row));
+  const slotLevelRow = rowTexts.slice(firstDataRowIndex).find((row) => isSlotLevelHeaderRow(row));
+  const slotColumns = headerSlotColumns.length > 0 || !slotLevelRow || dataRows.length === 0
+    ? headerSlotColumns
+    : slotLevelRow.map((header, index) => ({
+        level: parseOrdinalLevel(stripTags(header)),
+        index: index + slotLevelColumnOffset(slotLevelRow, dataRows[0]),
+      }));
 
   const cantripsKnown = [];
   const spellsKnown = [];
   const spellSlots = [];
 
-  rowTexts.slice(firstDataRowIndex).forEach((row) => {
+  dataRows.forEach((row) => {
     const level = parseOrdinalLevel(row[0] ?? '', Number.NaN);
     if (!Number.isFinite(level)) {
       return;
@@ -1553,10 +1576,7 @@ const collectClassTableColumns = (raw) => {
 
     const dataRows = rows.slice(firstDataRowIndex)
       .filter((row) => Number.isFinite(parseOrdinalLevel(row[0] ?? '', Number.NaN)))
-      // The 2014 caster tables carry a second header row of slot levels ("1st" … "9th") under the
-      // merged "Spell Slots per Spell Level" cell. Its first cell is an ordinal too, so it reads as
-      // level 1 and shifts every column a row out of step.
-      .filter((row) => !row.every((cell) => /^\d+(?:st|nd|rd|th)$/i.test(cell.trim())));
+      .filter((row) => !isSlotLevelHeaderRow(row));
     if (dataRows.length === 0) continue;
 
     rows[firstDataRowIndex - 1].forEach((header, index) => {

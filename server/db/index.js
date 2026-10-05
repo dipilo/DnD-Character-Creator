@@ -7,7 +7,6 @@
 //   - the transport is HTTP, not the WebSocket a `libsql:` URL selects, and
 //   - every statement has a deadline.
 const { createClient } = require('@libsql/client');
-const { fetch: libsqlFetch } = require('@libsql/isomorphic-fetch');
 
 const configuredUrl = process.env.TURSO_DATABASE_URL || process.env.LIBSQL_URL || process.env.DATABASE_URL;
 const authToken = process.env.TURSO_AUTH_TOKEN || process.env.LIBSQL_AUTH_TOKEN || process.env.AUTH_TOKEN;
@@ -60,24 +59,19 @@ const HTTP_TIMEOUT_MS = STATEMENT_TIMEOUT_MS + 1_000;
  * The deadline for the handful of statements that read `characters.data`.
  *
  * That column is a whole character sheet and a portrait is stored inline, so a row is routinely
- * hundreds of kilobytes. Turso took over 15 s to hand back a 217 KB one against a warm host whose
- * metadata reads answer in 240 ms, which meant every character with a picture on it answered 500
- * and vanished from its owner's list. The short deadline above exists to notice a dead socket
- * quickly, not to bound a large transfer, so a document read gets its own.
+ * hundreds of kilobytes. The short deadline above exists to notice a dead socket quickly, not to
+ * bound a large transfer, so a document read gets its own. What actually stalled such a read was
+ * the fetch below, not the transfer; this bound is the margin, not the fix.
  */
 const DOCUMENT_TIMEOUT_MS = envInt('DB_DOCUMENT_TIMEOUT_MS', 60_000);
 
 /**
- * The driver's fetch, with a deadline of its own.
- *
- * `@libsql/isomorphic-fetch` is node-fetch over keep-alive agents held at module scope, and
- * node-fetch has no timeout: a pooled socket the network dropped without a FIN takes the request
- * with it and the promise never settles. Aborting destroys that socket, which is what `recycleClient`
- * on its own could not do — every client, new or old, draws from those same two agents, so the read
- * retry went out over the same dead connection and timed out again.
+ * The driver's fetch, with a deadline of its own. The platform's `fetch` is the one to hand it:
+ * `@libsql/isomorphic-fetch` never settles `json()` on a body over 64 KiB, which is every character
+ * carrying a portrait, and nothing in the driver has a timeout of its own.
  */
 function timedFetch(input, init) {
-  return libsqlFetch(input, { ...init, signal: AbortSignal.timeout(HTTP_TIMEOUT_MS) });
+  return globalThis.fetch(input, { ...init, signal: AbortSignal.timeout(HTTP_TIMEOUT_MS) });
 }
 
 /**
@@ -86,7 +80,7 @@ function timedFetch(input, init) {
  * socket on the ordinary path hanging for three quarters of a minute instead of sixteen seconds.
  */
 function timedDocumentFetch(input, init) {
-  return libsqlFetch(input, { ...init, signal: AbortSignal.timeout(DOCUMENT_TIMEOUT_MS + 1_000) });
+  return globalThis.fetch(input, { ...init, signal: AbortSignal.timeout(DOCUMENT_TIMEOUT_MS + 1_000) });
 }
 
 let client = createClient({ url, authToken, fetch: timedFetch });

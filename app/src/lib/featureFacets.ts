@@ -832,13 +832,13 @@ export function deriveFeatureSaves(
     // The failure clause can be further off than the halving one — Shadow Lore states what a
     // success does first — so it is read up to wherever the next save begins.
     const effectWindow = text.slice(at, found[index + 1]?.at ?? text.length);
-    // "On a successful save, the creature takes half as much damage" is its own sentence as often
-    // as it is a clause, so the window runs one sentence past the save.
-    const clause = text.slice(at, sentenceEnd(text, sentenceEnd(text, at)));
     // A feature's two saves usually share one DC, but each one's own clause states it where they
     // differ, so the nearest reading wins over the feature-wide one.
+    const clause = text.slice(at, sentenceEnd(text, sentenceEnd(text, at)));
     const dc = readSaveDc(clause, context) ?? featureDc;
-    const halvesDamage = HALVED_ON_SAVE.test(clause);
+    // "On a successful save, it takes half as much damage" can sit any number of sentences past the
+    // save — Rebuke the Violent states the failure first — so it is read to the same bound.
+    const halvesDamage = HALVED_ON_SAVE.test(effectWindow);
     const mitigated = halvesDamage ? nearestThrow(damages, at) : undefined;
     const label = dc === undefined ? `${abbreviate(ability)} Save` : `DC ${dc} ${abbreviate(ability)}`;
     const effect = readFailureEffect(effectWindow);
