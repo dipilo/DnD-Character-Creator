@@ -14,6 +14,7 @@ import { useDicePreferencesStore } from '@/store/dicePreferencesStore';
 import { MAX_LUCKY_BREAKS, isMaximum, recordRoll, rollInstantly, summarizeRoll, useDiceTrayStore } from '@/store/diceTrayStore';
 import { resolveActiveGameSystem, useGameSystemStore } from '@/store/gameSystemStore';
 import { parseDiceNotation } from '@/lib/diceNotation';
+import { isDiceRollCancelled } from '@/lib/diceOperation';
 
 const ghostButtonClass = 'border-white/20 bg-white/10 text-white hover:bg-white/20';
 
@@ -43,6 +44,9 @@ export function DiceRollerPage() {
   const reviseLogEntry = useDiceTrayStore((state) => state.reviseLogEntry);
   const latestEntryId = useDiceTrayStore((state) => state.log[0]?.id ?? null);
   const diceSceneRef = useRef<DiceSceneHandle | null>(null);
+  // Only a die this page is still rendering can be thrown again, so the control goes away with the
+  // surface rather than becoming a button that quietly does nothing.
+  const canRerollLiveDice = show3dDice && Boolean(liveEntryId) && liveEntryId === latestEntryId;
   // Nothing has to load when the dice are not being thrown, so the roll button is live immediately.
   const ready = show3dDice ? sceneReady : true;
   let readyLabel = 'Instant rolls';
@@ -87,21 +91,23 @@ export function DiceRollerPage() {
     }
 
     setNotation(nextNotation);
+    // A banner from a previous attempt must not outlive it, or a cancelled throw leaves the page
+    // reporting an error through every roll that follows.
+    setError(null);
     // The rule is written for one die; on a handful there is no "the die" to throw again.
     const explodesNow = Boolean(explodingRule) && exploding && (parseDiceNotation(nextNotation)?.groups.length === 1);
 
-    if (!show3dDice) {
-      const outcome = rollInstantly({
-        notation: nextNotation,
-        label: system.shortName,
-        explodeOnMax: explodesNow,
-      });
+    const resolveInstantly = (live: boolean) => {
+      const outcome = rollInstantly({ notation: nextNotation, label: system.shortName, explodeOnMax: explodesNow });
       if (!outcome) {
         setError(`"${nextNotation}" is not dice notation this roller understands.`);
         return;
       }
-      setError(null);
-      finish(outcome.results, nextNotation, false, outcome.luckyBreaks);
+      finish(outcome.results, nextNotation, live, outcome.luckyBreaks);
+    };
+
+    if (!show3dDice) {
+      resolveInstantly(false);
       return;
     }
 
@@ -112,12 +118,16 @@ export function DiceRollerPage() {
     try {
       setRolling(true);
       const settled = await diceSceneRef.current.roll(nextNotation);
-      const thrown = explodesNow
-        ? await explodeOnSurface(diceSceneRef.current, settled)
+      const scene = diceSceneRef.current;
+      const thrown = explodesNow && scene
+        ? await explodeOnSurface(scene, settled)
         : { results: settled, luckyBreaks: 0 };
       finish(thrown.results, nextNotation, true, thrown.luckyBreaks);
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : 'The dice roll could not be completed.');
+      // Turning 3D dice off mid-throw unmounts the surface and strands the roll. The player still
+      // asked for a number, so give them the one they switched the preference to get.
+      if (isDiceRollCancelled(nextError)) resolveInstantly(false);
+      else setError(nextError instanceof Error ? nextError.message : 'The dice roll could not be completed.');
     } finally {
       setRolling(false);
     }
@@ -139,6 +149,7 @@ export function DiceRollerPage() {
     const die = entry?.results[index];
     if (!scene || !entry || !die?.rollId) return;
 
+    setError(null);
     try {
       setRolling(true);
       const replacement = (await scene.reroll(die))[0];
@@ -146,7 +157,8 @@ export function DiceRollerPage() {
       const results = entry.results.map((result, i) => (i === index ? replacement : result));
       reviseLogEntry(entry.id, summarizeRoll(results, entry.modifier, entry.luckyBreaks));
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : 'That die could not be thrown again.');
+      if (isDiceRollCancelled(nextError)) setLiveEntryId(null);
+      else setError(nextError instanceof Error ? nextError.message : 'That die could not be thrown again.');
     } finally {
       setRolling(false);
     }
@@ -275,7 +287,7 @@ export function DiceRollerPage() {
               <CardContent>
                 <DiceRollLog
                   dark
-                  onRerollDie={liveEntryId && liveEntryId === latestEntryId ? (index) => void handleRerollDie(index) : undefined}
+                  onRerollDie={canRerollLiveDice ? (index) => void handleRerollDie(index) : undefined}
                   rerollDisabled={rolling}
                 />
               </CardContent>

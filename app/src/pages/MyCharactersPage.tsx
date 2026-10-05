@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { BuilderDraftBanner } from '@/components/builder/BuilderDraftBanner';
 import { CharacterUploadOffer } from '@/components/CharacterUploadOffer';
 import { CharacterSyncStatus } from '@/components/character/CharacterSyncStatus';
 import { useCharacterLibraryStatus } from '@/hooks/useCharacterLibraryStatus';
@@ -92,6 +93,7 @@ export function MyCharactersPage() {
     return (
       <div className="space-y-10">
         <CharacterSyncStatus />
+        <BuilderDraftBanner variant="library" />
         <div className="flex flex-col items-center justify-center py-20 space-y-6">
           <div className="text-center space-y-2">
             <User className="h-16 w-16 text-muted-foreground mx-auto" />
@@ -115,6 +117,7 @@ export function MyCharactersPage() {
   return (
     <div className="space-y-6">
       <CharacterSyncStatus />
+      <BuilderDraftBanner variant="library" />
       <CharacterUploadOffer />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">

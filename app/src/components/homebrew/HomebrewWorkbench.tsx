@@ -215,6 +215,28 @@ const splitCsv = (value: string) => {
     .filter(Boolean);
 };
 
+/**
+ * Components, where a comma inside the material's parenthetical is part of the material and not a
+ * separator: "V, S, M (six objects, each worth at least 10,000 gp)" is three components, not five.
+ */
+const splitComponents = (value: string) => {
+  const entries: string[] = [];
+  let depth = 0;
+  let current = '';
+  for (const character of value) {
+    if (character === '(') depth += 1;
+    if (character === ')') depth = Math.max(0, depth - 1);
+    if (character === ',' && depth === 0) {
+      entries.push(current);
+      current = '';
+      continue;
+    }
+    current += character;
+  }
+  entries.push(current);
+  return entries.map((entry) => entry.trim()).filter(Boolean);
+};
+
 const splitLines = (value: string) => {
   return value
     .split(/\r?\n/)
@@ -520,7 +542,7 @@ const spellDraftToEntry = (draft: SpellDraft): Spell => {
     school: draft.school.trim(),
     castingTime: draft.castingTime.trim(),
     range: draft.range.trim(),
-    components: splitCsv(draft.components),
+    components: splitComponents(draft.components),
     duration: draft.duration.trim(),
     description: draft.description.trim(),
     higherLevels: draft.higherLevels.trim() || undefined,
@@ -1501,7 +1523,7 @@ export function HomebrewWorkbench() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <FieldHeading>Components</FieldHeading>
-                  <ComboboxInput value={draft.components} onChange={(value) => setDraft((current) => ({ ...current, components: value }))} suggestions={spellComponentOptions} placeholder="V, S, M" />
+                  <ComboboxInput value={draft.components} onChange={(value) => setDraft((current) => ({ ...current, components: value }))} suggestions={spellComponentOptions} placeholder="V, S, M (a phoenix heart, which the spell consumes)" />
                 </div>
                 <div className="space-y-2">
                   <FieldHeading>Classes</FieldHeading>

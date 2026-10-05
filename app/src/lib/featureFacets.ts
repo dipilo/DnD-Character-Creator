@@ -771,16 +771,40 @@ function nearestThrow(damages: readonly ReadThrow[], at: number): ReadThrow | un
 /** Every save the text calls for, with where it was read, in the order the feature names them. */
 function readSaves(text: string): Array<{ ability: keyof AbilityScores; at: number }> {
   const found: Array<{ ability: keyof AbilityScores; at: number }> = [];
-  const seen = new Set<string>();
   for (const pattern of [IMPOSED_SAVE, FORCED_SAVE]) {
     for (const match of text.matchAll(pattern)) {
       found.push({ ability: match[1].toLowerCase() as keyof AbilityScores, at: match.index ?? 0 });
     }
   }
   found.sort((a, b) => a.at - b.at);
-  return found.filter((entry) => {
-    if (seen.has(entry.ability)) return false;
-    seen.add(entry.ability);
+  return dropRestatedSaves(text, found);
+}
+
+/**
+ * The same ability twice is not always the same save.
+ *
+ * A feature restates the throw it just called for all the time ("on a failed Constitution saving
+ * throw, …"), and counting that twice puts two identical rows on the sheet. But Wild Surge's
+ * table imposes a Constitution save on its first effect and a different one, "or be blinded", on
+ * its eighth, and deduping on the ability folded the second into the first and lost the condition.
+ * So the clause is what is compared: a repeat that says nothing the earlier one did not is the
+ * same save said again.
+ */
+function dropRestatedSaves(
+  text: string,
+  found: Array<{ ability: keyof AbilityScores; at: number }>
+): Array<{ ability: keyof AbilityScores; at: number }> {
+  const clausesByAbility = new Map<keyof AbilityScores, Set<string>>();
+  return found.filter((entry, index) => {
+    const effect = readFailureEffect(text.slice(entry.at, found[index + 1]?.at ?? text.length)) ?? '';
+    const seen = clausesByAbility.get(entry.ability);
+    if (!seen) {
+      clausesByAbility.set(entry.ability, new Set([effect]));
+      return true;
+    }
+    // A repeat with no clause of its own is a restatement: there is nothing it could add.
+    if (!effect || seen.has(effect)) return false;
+    seen.add(effect);
     return true;
   });
 }

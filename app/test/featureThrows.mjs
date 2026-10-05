@@ -710,6 +710,32 @@ check('two saves take the DC each one’s own clause states', () => {
   );
 });
 
+check('the same ability twice is two saves when the clauses differ (Wild Surge)', () => {
+  // The table's first effect and its eighth both call for Constitution. Deduping on the ability
+  // folded the second into the first and the Blinded condition was never shown.
+  const description =
+    '1: Each creature of your choice that you can see within 30 feet of you must succeed on a ' +
+    'Constitution saving throw or take 1d12 necrotic damage. ' +
+    '3: Each creature within 5 feet of it must succeed on a Dexterity saving throw or take 1d6 force damage. ' +
+    '8: Each creature within 10 feet of you must succeed on a Constitution saving throw or take 1d6 ' +
+    'radiant damage and be blinded until the start of your next turn.';
+  assert.deepEqual(saves(description), ['CON Save', 'DEX Save', 'CON Save']);
+  assert.deepEqual(conditions(description), [[], [], ['Blinded']]);
+});
+
+check('the same ability saying the same thing again is one save', () => {
+  // The clause is what separates a second save from the first one restated, so a repeat that
+  // reaches the same failure clause must not put a second identical row on the sheet.
+  assert.deepEqual(
+    saves(
+      'Each creature in the area must make a Wisdom saving throw or be frightened for 1 minute. ' +
+        'A creature that enters the area must also make a Wisdom saving throw or be frightened ' +
+        'for 1 minute.'
+    ),
+    ['WIS Save']
+  );
+});
+
 for (const entry of checks) {
   console.log(`${entry.ok ? 'ok  ' : 'FAIL'} ${entry.name}${entry.detail ? `\n       ${entry.detail}` : ''}`);
 }

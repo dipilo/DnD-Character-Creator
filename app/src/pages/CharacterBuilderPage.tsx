@@ -8,8 +8,10 @@ import { ChevronLeft, ChevronRight, Swords, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { getRuntimeClassById, getRuntimeSubclass } from '@/data';
 import { matchesCharacterClassEntry, removeCharacterClasses } from '@/lib/builderRules';
+import { builderStepIdForPath, builderSteps } from '@/lib/builderSteps';
 import { useAdvancementTasks } from '@/hooks/useAdvancementTasks';
 import { AdvancementTasks } from '@/components/character/AdvancementTasks';
+import { BuilderDraftBanner } from '@/components/builder/BuilderDraftBanner';
 
 const classDetailTabLabels = {
   features: 'Features',
@@ -35,21 +37,10 @@ function describeSubclassLine(
   return level >= cls.subclassLevel ? 'No subclass chosen' : `Subclass unlocks at level ${cls.subclassLevel}`;
 }
 
-const builderSteps = [
-  { id: 'species', name: 'Species', path: '/builder/species' },
-  { id: 'class', name: 'Class', path: '/builder/class' },
-  { id: 'background', name: 'Background', path: '/builder/background' },
-  { id: 'ability-scores', name: 'Ability Scores', path: '/builder/ability-scores' },
-  { id: 'advancements', name: 'Feats', path: '/builder/advancements' },
-  { id: 'spells', name: 'Spells', path: '/builder/spells' },
-  { id: 'equipment', name: 'Equipment', path: '/builder/equipment' },
-  { id: 'review', name: 'Review', path: '/builder/review' }
-];
-
 export function CharacterBuilderPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { resetBuilder, builderState, getCharacter, updateBuilderCharacter, updateBuilderState } = useCharacterStore();
+  const { resetBuilder, builderState, getCharacter, setBuilderStep, updateBuilderCharacter, updateBuilderState } = useCharacterStore();
   const editedCharacter = builderState.editingCharacterId ? getCharacter(builderState.editingCharacterId) : undefined;
   // Someone else's character, opened on a grant: there is no local copy, so leaving goes back to
   // the party sheet it was opened from rather than to My Characters.
@@ -183,6 +174,13 @@ export function CharacterBuilderPage() {
     if (returnTo) navigate(returnTo);
   };
 
+  // Which step the draft resumes at. Navigation is the event, so recording it from one is not
+  // state mirrored from props; the store is the only place that outlives the page.
+  const routeStepId = builderStepIdForPath(location.pathname);
+  useEffect(() => {
+    if (routeStepId) setBuilderStep(routeStepId);
+  }, [routeStepId, setBuilderStep]);
+
   // Eight steps do not fit a phone, so the rail scrolls — and a scrolled rail that never follows
   // the wizard leaves the current step off-screen. Scrolling an element is a DOM effect, not
   // component state mirrored from props, so it belongs in an effect.
@@ -246,6 +244,8 @@ export function CharacterBuilderPage() {
             </Button>
           </div>
         ) : null}
+
+        <BuilderDraftBanner variant="builder" className="mt-4" />
       </div>
 
       <div className={shellClassName}>

@@ -182,18 +182,22 @@ export function ClassSelection() {
                     }}
                   >
                     <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                      <div className="flex items-start justify-between gap-2">
+                        {/* min-w-0 all the way down: a prerequisite naming two abilities is wider
+                            than a third of the grid, and Badge is nowrap and shrink-0 by default. */}
+                        <div className="flex min-w-0 items-center gap-3">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
                             <Sword className="h-5 w-5 text-primary" />
                           </div>
-                          <div>
+                          <div className="min-w-0">
                             <CardTitle className="text-base">{cls.name}</CardTitle>
                             <CardDescription className="text-xs">{cls.source}</CardDescription>
                             <div className="mt-2 flex flex-wrap gap-2">
                               <Badge variant="outline">{getRulesEditionLabel(cls.sourceId, cls.source)}</Badge>
                               {unmetPrerequisitesByClassId.has(cls.id) && (
-                                <Badge variant="secondary">Requires {unmetPrerequisitesByClassId.get(cls.id)}</Badge>
+                                <Badge variant="secondary" className="max-w-full whitespace-normal text-left">
+                                  Requires {unmetPrerequisitesByClassId.get(cls.id)}
+                                </Badge>
                               )}
                             </div>
                           </div>

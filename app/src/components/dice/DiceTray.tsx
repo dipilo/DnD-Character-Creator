@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { DICE_PALETTE_COLORS } from '@/components/dice/dicePalette';
 import type { DiceSceneHandle } from '@/components/dice/DiceScene';
 import { parseDiceNotation } from '@/lib/diceNotation';
+import { isDiceRollCancelled } from '@/lib/diceOperation';
 import { resolveDiceColorMode, useDicePreferencesStore } from '@/store/dicePreferencesStore';
 import {
   MAX_LUCKY_BREAKS,
@@ -209,7 +210,11 @@ async function resolveRoll(pending: PendingRoll, scene: DiceSceneHandle | null) 
 
     return summarizeRoll(results, modifier, luckyBreaks, request.keep);
   } catch (error) {
-    console.warn('the dice surface could not throw', error instanceof Error ? error.message : error);
+    // Turning 3D dice off mid-throw unmounts the surface and aborts the roll. That is the
+    // preference taking effect, not a fault, and the instant path below is what it asked for.
+    if (!isDiceRollCancelled(error)) {
+      console.warn('the dice surface could not throw', error instanceof Error ? error.message : error);
+    }
     return rollInstantly(request) ?? summarizeRoll([], modifier, 0, request.keep);
   }
 }

@@ -97,10 +97,10 @@ export function SheetLevelControl({
                       key={`add-${cls.id}`}
                       disabled={Boolean(unmet)}
                       onSelect={() => add(cls.id)}
-                      className="flex-col items-start gap-0"
+                      className="max-w-[18rem] flex-col items-start gap-0"
                     >
                       <span>{cls.name}</span>
-                      {unmet ? <span className="text-xs text-muted-foreground">Requires {unmet}</span> : null}
+                      {unmet ? <span className="whitespace-normal text-xs text-muted-foreground">Requires {unmet}</span> : null}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuSubContent>

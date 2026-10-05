@@ -25,6 +25,11 @@ function isValidId(id) {
   return typeof id === 'string' && ID_PATTERN.test(id);
 }
 
+/** One row with its document, under the longer deadline a sheet-sized read needs. */
+async function readCharacterDocument(id) {
+  return await db.getDocument(`SELECT ${SUMMARY_COLUMNS}, share_token, data FROM characters WHERE id = ?`, id);
+}
+
 /** Fetch a row the caller owns, deleted rows included. Callers decide what a tombstone means. */
 async function findOwnedCharacter(userId, id) {
   if (!isValidId(id)) return null;
@@ -36,10 +41,17 @@ async function findOwnedCharacter(userId, id) {
  * plus sharing). Every rule lives in `lib/characterAccess.js`; this is the id check in front of it.
  *
  * Invisible still means **404 rather than 403**, because a 403 would confirm the id exists.
+ *
+ * `withDocument` is opt-in, and `SELECT *` is gone, because `characters.data` is a whole sheet
+ * with its portrait inlined: reading it to answer a sharing or seat question put a 217 KB
+ * character past the database's statement deadline, so every character with a picture on it
+ * answered 500 and disappeared from its owner's list.
  */
-async function resolveAccess(user, id) {
+async function resolveAccess(user, id, { withDocument = false } = {}) {
   if (!isValidId(id)) return null;
-  const row = await db.get('SELECT * FROM characters WHERE id = ?', id);
+  const columns = withDocument ? `${SUMMARY_COLUMNS}, share_token, data` : `${SUMMARY_COLUMNS}, share_token`;
+  const read = withDocument ? db.getDocument : db.get;
+  const row = await read(`SELECT ${columns} FROM characters WHERE id = ?`, id);
   return await resolveCharacterAccess(user, row);
 }
 
@@ -157,7 +169,7 @@ router.get('/api/characters/shared-with-me', requireAuth, async (req, res) => {
 
 router.get('/api/characters/:id', requireAuth, async (req, res) => {
   try {
-    const access = await resolveAccess(req.user, req.params.id);
+    const access = await resolveAccess(req.user, req.params.id, { withDocument: true });
     if (!access) return res.status(404).json({ error: 'character_not_found' });
     res.json({ ok: true, character: publicCharacter(access.row, access) });
   } catch (e) {
@@ -191,8 +203,10 @@ router.post('/api/characters', requireAuth, async (req, res) => {
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`,
       id, req.user.id, scope.campaignId, scope.playerId, doc.name, doc.summary, doc.text, normaliseSchemaVersion(body.schema_version), now, now,
     );
-    const created = await db.get('SELECT * FROM characters WHERE id = ?', id);
-    res.status(201).json({ ok: true, character: publicCharacter(created) });
+    // Same reasoning as the update below: echo the document the request carried rather than
+    // reading a sheet-sized row straight back out of the database.
+    const created = await db.get(`SELECT ${SUMMARY_COLUMNS} FROM characters WHERE id = ?`, id);
+    res.status(201).json({ ok: true, character: publicCharacter({ ...created, data: doc.text }) });
   } catch (e) {
     console.error('POST /api/characters', e);
     res.status(500).json({ error: e.message });
@@ -220,7 +234,10 @@ router.put('/api/characters/:id', requireAuth, async (req, res) => {
     const expected = normaliseId(body.version);
     if (expected === null) return res.status(400).json({ error: 'version_required' });
     if (expected !== Number(row.version)) {
-      return res.status(409).json({ error: 'version_conflict', character: publicCharacter(row, access) });
+      // A 409 is the one answer that has to carry the server's own document, so it is also the
+      // only place an ordinary update pays for reading one.
+      const current = await readCharacterDocument(row.id);
+      return res.status(409).json({ error: 'version_conflict', character: publicCharacter(current ?? row, access) });
     }
 
     const doc = serializeDocument(body.data, body.name, body.summary);
@@ -236,8 +253,11 @@ router.put('/api/characters/:id', requireAuth, async (req, res) => {
       normaliseSchemaVersion(body.schema_version ?? row.schema_version),
       new Date().toISOString(), row.id, expected,
     );
-    const updated = await db.get('SELECT * FROM characters WHERE id = ?', row.id);
-    res.json({ ok: true, character: publicCharacter(updated, access) });
+    // The document that just landed is the document to echo, so the row is re-read for its new
+    // version and nothing else: fetching `data` back out would charge the write the same
+    // hundreds of kilobytes the request already carried.
+    const updated = await db.get(`SELECT ${SUMMARY_COLUMNS} FROM characters WHERE id = ?`, row.id);
+    res.json({ ok: true, character: publicCharacter({ ...updated, data: doc.text }, access) });
   } catch (e) {
     console.error('PUT /api/characters/:id', e);
     res.status(500).json({ error: e.message });
@@ -287,7 +307,8 @@ router.put('/api/characters/:id/seat', requireAuth, async (req, res) => {
       'UPDATE characters SET campaign_id = ?, player_id = ? WHERE id = ? AND user_id = ?',
       scope.campaignId, scope.playerId, row.id, req.user.id,
     );
-    const updated = await db.get('SELECT * FROM characters WHERE id = ?', row.id);
+    // The seat is row metadata and the answer is a summary, so the document is not read.
+    const updated = await db.get(`SELECT ${SUMMARY_COLUMNS} FROM characters WHERE id = ?`, row.id);
     res.json({ ok: true, character: characterSummary(updated) });
   } catch (e) {
     console.error('PUT /api/characters/:id/seat', e);
@@ -482,7 +503,8 @@ router.get('/api/shared/characters/:token', optionalAuth, async (req, res) => {
     if (typeof token !== 'string' || !SHARE_TOKEN_PATTERN.test(token)) {
       return res.status(404).json({ error: 'character_not_found' });
     }
-    const row = await db.get('SELECT * FROM characters WHERE share_token = ?', token);
+    const row = await db.getDocument(
+      `SELECT ${SUMMARY_COLUMNS}, share_token, data FROM characters WHERE share_token = ?`, token);
     const access = await resolveCharacterAccess(req.user, row);
     if (!access) return res.status(404).json({ error: 'character_not_found' });
     res.json({ ok: true, character: publicCharacter(access.row, access) });

@@ -176,10 +176,20 @@ const saveLabel = (
 ) =>
   save?.ability && castingStat ? `DC ${castingStat.saveDc} ${ABILITY_ABBREVIATIONS[save.ability]}` : undefined;
 
-/** The letters, not the shopping list: the material's parenthetical belongs to the statblock. */
+/**
+ * The letters, not the shopping list: the material's parenthetical belongs to the statblock.
+ *
+ * Only V, S and M count, because a material list is comma-separated prose and every source splits
+ * it into entries of its own — Animate Dead arrives as five components and read as "V/S/M/a/and".
+ */
+const componentLetters = (components: readonly string[]) =>
+  [...new Set(components.map((component) => component.split(' ')[0]))]
+    .filter((letter) => letter === 'V' || letter === 'S' || letter === 'M')
+    .join('/');
+
 const spellNotes = (spell: Spell) =>
   [
-    spell.components.map((component) => component.split(' ')[0]).join('/'),
+    componentLetters(spell.components),
     spell.concentration ? 'Concentration' : '',
     spell.ritual ? 'Ritual' : ''
   ]

@@ -8,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { DiceScene, type DiceSceneHandle, type DiceSceneResult } from '@/components/dice/DiceScene';
+import { isDiceRollCancelled } from '@/lib/diceOperation';
 import { useDicePreferencesStore } from '@/store/dicePreferencesStore';
 import { toast } from 'sonner';
 import type { AbilityScores, BuilderState } from '@/types/dnd';
@@ -215,6 +216,9 @@ export function AbilityScoresPage() {
 
   const handleRoll = async () => {
     setRollingDice(true);
+    // A banner from a previous attempt must not outlive it; turning 3D dice off mid-roll used to
+    // leave "Dice Scene Error" on the card for the rest of the session.
+    setDiceError(null);
 
     // Sweep any dice still resting on screen from a previous throw before rolling again.
     if (diceClearTimeoutRef.current) {
@@ -235,7 +239,10 @@ export function AbilityScoresPage() {
         groups = buildAbilityRollGroups(diceValues);
       }
     } catch (error) {
-      setDiceError(error instanceof Error ? error.message : 'The dice scene could not complete the roll.');
+      // Cancelling is what turning 3D dice off means, and the spread below still gets rolled.
+      if (!isDiceRollCancelled(error)) {
+        setDiceError(error instanceof Error ? error.message : 'The dice scene could not complete the roll.');
+      }
     }
 
     if (groups.length !== 6) {

@@ -41,7 +41,7 @@ router.get('/api/bot/characters', requireBotAuth, async (req, res) => {
 router.get('/api/bot/characters/:id', requireBotAuth, async (req, res) => {
   try {
     if (!ID_PATTERN.test(req.params.id)) return res.status(404).json({ error: 'character_not_found' });
-    const row = await db.get('SELECT * FROM characters WHERE id = ?', req.params.id);
+    const row = await db.getDocument(`SELECT ${SUMMARY_COLUMNS}, data FROM characters WHERE id = ?`, req.params.id);
     const access = await resolveCharacterAccess(req.user, row);
     if (!access) return res.status(404).json({ error: 'character_not_found' });
     res.json({ ok: true, character: publicCharacter(access.row, access) });
@@ -57,7 +57,7 @@ router.get('/api/bot/characters/:id', requireBotAuth, async (req, res) => {
 router.get('/api/bot/characters/:id/sheet', requireBotAuth, async (req, res) => {
   try {
     if (!ID_PATTERN.test(req.params.id)) return res.status(404).json({ error: 'character_not_found' });
-    const row = await db.get('SELECT * FROM characters WHERE id = ?', req.params.id);
+    const row = await db.getDocument(`SELECT ${SUMMARY_COLUMNS}, data FROM characters WHERE id = ?`, req.params.id);
     const access = await resolveCharacterAccess(req.user, row);
     if (!access) return res.status(404).json({ error: 'character_not_found' });
     const character = publicCharacter(access.row, access);
@@ -80,7 +80,7 @@ async function loadEditable(req, res) {
     res.status(404).json({ error: 'character_not_found' });
     return null;
   }
-  const row = await db.get('SELECT * FROM characters WHERE id = ?', req.params.id);
+  const row = await db.getDocument(`SELECT ${SUMMARY_COLUMNS}, data FROM characters WHERE id = ?`, req.params.id);
   const access = await resolveCharacterAccess(req.user, row);
   if (!access) {
     res.status(404).json({ error: 'character_not_found' });

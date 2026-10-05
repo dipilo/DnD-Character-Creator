@@ -57,6 +57,17 @@ const url = resolveUrl(configuredUrl);
 const HTTP_TIMEOUT_MS = STATEMENT_TIMEOUT_MS + 1_000;
 
 /**
+ * The deadline for the handful of statements that read `characters.data`.
+ *
+ * That column is a whole character sheet and a portrait is stored inline, so a row is routinely
+ * hundreds of kilobytes. Turso took over 15 s to hand back a 217 KB one against a warm host whose
+ * metadata reads answer in 240 ms, which meant every character with a picture on it answered 500
+ * and vanished from its owner's list. The short deadline above exists to notice a dead socket
+ * quickly, not to bound a large transfer, so a document read gets its own.
+ */
+const DOCUMENT_TIMEOUT_MS = envInt('DB_DOCUMENT_TIMEOUT_MS', 60_000);
+
+/**
  * The driver's fetch, with a deadline of its own.
  *
  * `@libsql/isomorphic-fetch` is node-fetch over keep-alive agents held at module scope, and
@@ -69,7 +80,17 @@ function timedFetch(input, init) {
   return libsqlFetch(input, { ...init, signal: AbortSignal.timeout(HTTP_TIMEOUT_MS) });
 }
 
+/**
+ * The same, for a document read. One `fetch` is shared by every statement a client sends, so the
+ * longer deadline needs a client of its own: raising `HTTP_TIMEOUT_MS` globally would leave a dead
+ * socket on the ordinary path hanging for three quarters of a minute instead of sixteen seconds.
+ */
+function timedDocumentFetch(input, init) {
+  return libsqlFetch(input, { ...init, signal: AbortSignal.timeout(DOCUMENT_TIMEOUT_MS + 1_000) });
+}
+
 let client = createClient({ url, authToken, fetch: timedFetch });
+let documentClient = createClient({ url, authToken, fetch: timedDocumentFetch });
 
 /**
  * Replace the connection after a statement was abandoned. The old one is closed best-effort: it is
@@ -79,6 +100,16 @@ let client = createClient({ url, authToken, fetch: timedFetch });
 function recycleClient() {
   const stale = client;
   client = createClient({ url, authToken, fetch: timedFetch });
+  closeStale(stale);
+}
+
+function recycleDocumentClient() {
+  const stale = documentClient;
+  documentClient = createClient({ url, authToken, fetch: timedDocumentFetch });
+  closeStale(stale);
+}
+
+function closeStale(stale) {
   try {
     stale.close();
   } catch (e) {
@@ -98,14 +129,14 @@ function isReadOnly(sql) {
   return /^\s*(?:select|pragma|with)\b/i.test(String(sql));
 }
 
-function deadline(promise, sql) {
+function deadline(promise, sql, timeoutMs = STATEMENT_TIMEOUT_MS) {
   let timer;
   const expiry = new Promise((_, reject) => {
     timer = setTimeout(() => {
-      const error = new Error(`db_timeout after ${STATEMENT_TIMEOUT_MS}ms: ${String(sql).slice(0, 120)}`);
+      const error = new Error(`db_timeout after ${timeoutMs}ms: ${String(sql).slice(0, 120)}`);
       error.code = 'db_timeout';
       reject(error);
-    }, STATEMENT_TIMEOUT_MS);
+    }, timeoutMs);
   });
   return Promise.race([promise, expiry]).finally(() => clearTimeout(timer));
 }
@@ -124,6 +155,32 @@ async function execute(sql, params = []) {
     recycleClient();
     if (!isReadOnly(sql)) throw e;
     return await deadline(client.execute({ sql, args: params }), sql);
+  }
+}
+
+/**
+ * One row from a statement that reads `characters.data`, under `DOCUMENT_TIMEOUT_MS`.
+ *
+ * Reserved for exactly that: a caller who does not need the document must select the columns it
+ * needs and use `get`, or a dead connection takes a minute to be noticed on a read that had no
+ * reason to be slow.
+ *
+ * Unlike `execute`, a timeout here is **not** retried. The retry there exists because a short
+ * deadline most likely means a connection that died between requests; at a minute the likelier
+ * cause is the transfer itself, and sending it again would put the answer past the client's own
+ * 90 s budget and turn a slow sheet into no sheet. The connection is still recycled, so the next
+ * request does not inherit a suspect socket.
+ */
+async function getDocument(sql, ...args) {
+  try {
+    const res = await deadline(documentClient.execute({ sql, args: normParams(args) }), sql, DOCUMENT_TIMEOUT_MS);
+    return (res.rows && res.rows[0]) || null;
+  } catch (e) {
+    if (e?.code === 'db_timeout') {
+      console.warn('libsql document read timed out, recycling the connection:', e.message);
+      recycleDocumentClient();
+    }
+    throw e;
   }
 }
 
@@ -198,4 +255,7 @@ async function transaction(callback) {
   }
 }
 
-module.exports = { execute, get, all, run, exec, pragma, transaction, STATEMENT_TIMEOUT_MS };
+module.exports = {
+  execute, get, getDocument, all, run, exec, pragma, transaction,
+  STATEMENT_TIMEOUT_MS, DOCUMENT_TIMEOUT_MS,
+};

@@ -211,9 +211,13 @@ export function ReviewPage() {
     try {
       const imageDataUrl = await readFileAsDataUrl(file);
       if (target === 'portrait') {
+        // `avatar` predates `portrait` and every reader falls back to it, so a document that has
+        // a portrait must not carry a second copy of the same data URL. Writing both doubled the
+        // stored sheet to 217 KB, which is what put the document read past the database's
+        // statement deadline and 500'd every character with a picture on it.
         updateIdentityField({
           portrait: { ...character.portrait, imageDataUrl },
-          avatar: imageDataUrl
+          avatar: undefined
         });
       } else {
         updateIdentityField({
@@ -339,7 +343,8 @@ export function ReviewPage() {
     return {
       id: editedCharacter?.id ?? crypto.randomUUID(),
       name: characterName,
-      avatar: character.portrait?.imageDataUrl || character.avatar,
+      // Only a document with no portrait keeps the legacy field; see `handleImageUpload`.
+      avatar: character.portrait?.imageDataUrl ? undefined : character.avatar,
       speciesId: species.id,
       variantId: variant?.id,
       size: character.size,

@@ -579,6 +579,9 @@ export type BuilderStep =
   | 'spells'
   | 'equipment'
   | 'feats'
+  // The rail's name for the Feats step, which is the route it actually navigates to. The builder
+  // shell records the step here as the route changes, so a recovered draft resumes where it was.
+  | 'advancements'
   | 'description'
   | 'review';
 

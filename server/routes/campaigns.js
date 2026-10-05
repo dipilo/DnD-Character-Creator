@@ -717,8 +717,9 @@ router.delete('/api/campaigns/:campaignId/members/:memberId', requireCampaignAcc
  */
 router.delete('/api/campaigns/:campaignId/characters/:characterId', requireCampaignAccess('owner'), async (req, res) => {
   try {
+    // Detaching reads the row to confirm it is at this table, never for its document.
     const row = await db.get(
-      'SELECT * FROM characters WHERE id = ? AND campaign_id = ?',
+      'SELECT id FROM characters WHERE id = ? AND campaign_id = ?',
       String(req.params.characterId), req.campaign.id,
     );
     if (!row) return res.status(404).json({ error: 'character_not_found' });

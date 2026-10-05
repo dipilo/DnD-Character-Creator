@@ -13,6 +13,7 @@ import {
 } from '@/lib/builderRules';
 import type { Character, CharacterSummary, BuilderState, BuilderStep, AbilityScores, RemoteEditTarget } from '@/types/dnd';
 import { dndContent } from '@/data/contentResolvers';
+import { restorableBuilderState } from '@/lib/builderDraft';
 import { createDebouncedLocalStorage } from '@/lib/debouncedStorage';
 import type { CharacterSyncMeta, PendingSeat } from '@/store/syncTypes';
 
@@ -351,8 +352,19 @@ export const useCharacterStore = create<CharacterState>()(
         syncMeta: state.syncMeta,
         pendingDeletes: state.pendingDeletes,
         pendingSeats: state.pendingSeats,
-        uploadPromptDismissedAt: state.uploadPromptDismissedAt
-      })
+        uploadPromptDismissedAt: state.uploadPromptDismissedAt,
+        // The character being built, so a refresh or a tab the phone froze does not take an hour
+        // of choices with it. `restorableBuilderState` decides what may come back.
+        builderState: state.builderState
+      }),
+      merge: (persisted, current) => {
+        const stored = (persisted ?? {}) as Partial<CharacterState>;
+        return {
+          ...current,
+          ...stored,
+          builderState: restorableBuilderState(stored.builderState, initialBuilderState)
+        };
+      }
     }
   )
 );
