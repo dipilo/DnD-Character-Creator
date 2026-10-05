@@ -1,4 +1,4 @@
-import type { AbilityScoreRequirement, Background, Class, ClassFeatureDice, ClassResource, CombatAction, Equipment, Feature, FeatureOption, Feat, Monster, MulticlassProficiencies, Species, SpeciesVariant, Spell, SpellcastingProgression, Subclass } from '@/types/dnd';
+import type { AbilityScoreRequirement, Background, Class, ClassFeatureDice, ClassResource, CombatAction, Equipment, Feature, FeatureOption, Feat, LanguageOption, Monster, MulticlassProficiencies, Species, SpeciesVariant, Spell, SpellcastingProgression, Subclass } from '@/types/dnd';
 import { backgrounds as staticBackgrounds } from './backgrounds';
 import { classes as staticClasses } from './classes';
 import { species as staticSpecies } from './species';
@@ -7,7 +7,7 @@ import { useContentStore } from '@/store/contentStore';
 import type { ImportedContentBucket } from '@/data/librarySources';
 import { resolveSourceId } from '@/data/librarySources';
 import type { ContentBucketKey } from '@/lib/canonicalContent';
-import { getRulesEdition } from '@/lib/builderRules';
+import { defaultLanguageOptions, getRulesEdition } from '@/lib/builderRules';
 
 const getStoreBucket = <K extends ContentBucketKey>(bucket: K): ImportedContentBucket[K] => {
   const { importedPacks, homebrewLibrary } = useContentStore.getState();
@@ -24,6 +24,7 @@ const staticEquipment = () => getImportedBucket('equipment') as Equipment[];
 const staticMonsters = () => getImportedBucket('monsters') as Monster[];
 const staticSubclasses = () => getImportedBucket('subclasses') as Subclass[];
 const staticCombatActions = () => getImportedBucket('combatActions') as CombatAction[];
+const staticLanguages = () => getImportedBucket('languages') as LanguageOption[];
 const unsupportedStaticSourceIds = new Set(['phb-2014', 'phb-2024']);
 const isUnsupportedLegacyStaticEntry = (sourceId?: string) => {
   return sourceId ? unsupportedStaticSourceIds.has(sourceId) : false;
@@ -1469,6 +1470,38 @@ export const getRuntimeCombatActions = memoizeRuntime('combat-actions', () => {
   const { importedPacks } = useContentStore.getState();
   const imported = importedPacks.flatMap((pack) => pack.content.combatActions ?? []);
   return mergeCollectionsById(staticCombatActions(), imported);
+});
+
+/**
+ * The languages each printing tabulates. Not a `ContentBucketKey` for the same reason
+ * `combatActions` is not, so an imported pack contributes through its own optional field.
+ */
+export const getRuntimeLanguages = memoizeRuntime('languages', () => {
+  const { importedPacks } = useContentStore.getState();
+  const imported = importedPacks.flatMap((pack) => pack.content.languages ?? []);
+  return mergeCollectionsById(staticLanguages(), imported);
+});
+
+// 2024 prints "Thieves’ Cant" with a curly apostrophe and the static list a straight one, and a
+// name is normalised by nothing, so the two would read as two languages.
+const getLanguageNameKey = (name: string) => name.toLowerCase().replaceAll(/['’]/g, '\'').replaceAll(/\s+/g, ' ').trim();
+
+/**
+ * The names a language slot may be filled with. `defaultLanguageOptions` leads the union because a
+ * pack generated before the tables were extracted carries none, because 2014 states Primordial's
+ * four dialects in prose rather than in its table, and because a selection already stored under its
+ * spelling has to keep matching the option offered.
+ */
+export const getRuntimeLanguageNames = memoizeRuntime('languages:names', () => {
+  const namesByKey = new Map<string, string>();
+  for (const name of [...defaultLanguageOptions, ...getRuntimeLanguages().map((language) => language.name)]) {
+    const key = getLanguageNameKey(name);
+    if (key && !namesByKey.has(key)) {
+      namesByKey.set(key, name);
+    }
+  }
+
+  return [...namesByKey.values()].sort((left, right) => left.localeCompare(right));
 });
 
 export const getRuntimeSpeciesById = memoizeRuntimeIndex('species:index', getRuntimeSpecies);

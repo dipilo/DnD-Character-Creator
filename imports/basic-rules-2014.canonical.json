@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2014 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-10-05T07:27:45.177Z",
+    "importedAt": "2026-10-05T08:47:18.301Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -45485,6 +45485,152 @@
         "name": "Use an Object",
         "timing": "action",
         "description": "You normally interact with an object while doing something else, such as when you draw a sword as part of an attack. When an object requires your action for its use, you take the Use an Object action. This action is also useful when you want to interact with more than one object on your turn.\n\nIMPROVISING AN ACTION\n\nYour character can do things not covered by the actions in this section, such as breaking down doors, intimidating enemies, sensing weaknesses in magical defenses, or calling for a parley with a foe. The only limits to the actions you can attempt are your imagination and your character’s ability scores. See the descriptions of the ability scores in the Using Ability Scores section for inspiration as you improvise.\n\nWhen you describe an action not detailed elsewhere in the rules, the DM tells you whether that action is possible and what kind of roll you need to make, if any, to determine success or failure.",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      }
+    ],
+    "languages": [
+      {
+        "id": "basic-rules-2014-common",
+        "name": "Common",
+        "rarity": "standard",
+        "origin": "Humans",
+        "script": "Common",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-dwarvish",
+        "name": "Dwarvish",
+        "rarity": "standard",
+        "origin": "Dwarves",
+        "script": "Dwarvish",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-elvish",
+        "name": "Elvish",
+        "rarity": "standard",
+        "origin": "Elves",
+        "script": "Elvish",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-giant",
+        "name": "Giant",
+        "rarity": "standard",
+        "origin": "Ogres, giants",
+        "script": "Dwarvish",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-gnomish",
+        "name": "Gnomish",
+        "rarity": "standard",
+        "origin": "Gnomes",
+        "script": "Dwarvish",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-goblin",
+        "name": "Goblin",
+        "rarity": "standard",
+        "origin": "Goblinoids",
+        "script": "Dwarvish",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-halfling",
+        "name": "Halfling",
+        "rarity": "standard",
+        "origin": "Halflings",
+        "script": "Common",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-orc",
+        "name": "Orc",
+        "rarity": "standard",
+        "origin": "Orcs",
+        "script": "Dwarvish",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-abyssal",
+        "name": "Abyssal",
+        "rarity": "rare",
+        "origin": "Demons",
+        "script": "Infernal",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-celestial",
+        "name": "Celestial",
+        "rarity": "rare",
+        "origin": "Celestials",
+        "script": "Celestial",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-draconic",
+        "name": "Draconic",
+        "rarity": "rare",
+        "origin": "Dragons, dragonborn",
+        "script": "Draconic",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-deep-speech",
+        "name": "Deep Speech",
+        "rarity": "rare",
+        "origin": "Aboleths, cloakers",
+        "script": "—",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-infernal",
+        "name": "Infernal",
+        "rarity": "rare",
+        "origin": "Devils",
+        "script": "Infernal",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-primordial",
+        "name": "Primordial",
+        "rarity": "rare",
+        "origin": "Elementals",
+        "script": "Dwarvish",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-sylvan",
+        "name": "Sylvan",
+        "rarity": "rare",
+        "origin": "Fey creatures",
+        "script": "Elvish",
+        "source": "Basic Rules (2014)",
+        "sourceId": "basic-rules-2014"
+      },
+      {
+        "id": "basic-rules-2014-undercommon",
+        "name": "Undercommon",
+        "rarity": "rare",
+        "origin": "Underworld traders",
+        "script": "Elvish",
         "source": "Basic Rules (2014)",
         "sourceId": "basic-rules-2014"
       }

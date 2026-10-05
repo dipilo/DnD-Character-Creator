@@ -15,6 +15,8 @@ export {
 	getRuntimeEquipment,
 	getRuntimeFeatById,
 	getRuntimeFeats,
+	getRuntimeLanguageNames,
+	getRuntimeLanguages,
 	getRuntimeMonsterById,
 	getRuntimeCombatActions,
 	getRuntimeMonsters,

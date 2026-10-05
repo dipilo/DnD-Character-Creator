@@ -59,6 +59,20 @@ export interface CombatAction {
   sourceId?: string;
 }
 
+export interface LanguageOption {
+  id: string;
+  name: string;
+  /** 'standard' | 'rare', as each printing files it; 2014 titles its second table Exotic. */
+  rarity: string;
+  /** The book's own second column: 2024 prints Origin, 2014 Typical Speakers. */
+  origin?: string;
+  script?: string;
+  /** The table's footnote, for a row that carries its marker (Primordial's dialects). */
+  note?: string;
+  source: string;
+  sourceId?: string;
+}
+
 export interface FeatureOptionPrerequisites {
   text?: string;
   minimumLevel?: number;

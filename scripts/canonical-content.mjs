@@ -1,4 +1,5 @@
-import { applyProseResources, parseResourceReset } from './lib/classResources.mjs';
+import { applyProseResources } from './lib/classResources.mjs';
+import { featureDiceFromColumns, resourcesFromColumns } from './lib/classTables.mjs';
 import { extractFeatBenefitStructures } from './lib/featBenefits.mjs';
 
 export const canonicalSchemaVersion = 'ddbcc-v1';
@@ -314,6 +315,26 @@ const sanitizeContent = (content, source) => {
     }))
     .filter((entry) => entry.id && entry.description);
 
+  // Not one of `contentBucketKeys` either: a language is picked in a slot a species or background
+  // opens, not out of the library. Omitted when empty, so regenerating a pack from a document that
+  // tabulates no languages stays a byte-identical diff.
+  const languages = (Array.isArray(content?.languages) ? content.languages : [])
+    .filter((entry) => isObject(entry) && entry.name && entry.rarity)
+    .map((entry) => ({
+      id: String(entry.id ?? ''),
+      name: String(entry.name),
+      rarity: String(entry.rarity),
+      ...(entry.origin ? { origin: String(entry.origin) } : {}),
+      ...(entry.script ? { script: String(entry.script) } : {}),
+      ...(entry.note ? { note: String(entry.note) } : {}),
+      source: String(entry.source ?? source.label ?? ''),
+      sourceId: source.sourceId
+    }))
+    .filter((entry) => entry.id);
+  if (languages.length > 0) {
+    sanitized.languages = languages;
+  }
+
   return sanitized;
 };
 
@@ -597,7 +618,8 @@ const countWords = new Map([
   ['five', 5],
   ['six', 6]
 ]);
-const skillNames = [
+// Shared with the 5etools adapter, so the two importers cannot offer different skill lists.
+export const skillNames = [
   'Acrobatics',
   'Animal Handling',
   'Arcana',
@@ -1537,31 +1559,11 @@ const extractBasicRulesSpellcasting = (raw, classId, primaryAbility) => {
   return spellcasting;
 };
 
-// A class table's numeric columns are its resources: Rages, Ki Points, Sorcery Points, Channel
-// Divinity, Second Wind, Wild Shape. They are read from the table rather than written into the app,
-// so a class that states one gets a tracker and a class that does not, does not.
-//
-// Everything else in the table is deliberately refused. A "Known" column is a build-time count, not
-// a pool a player spends; a proficiency bonus is "+2"; and Unarmored Movement is a distance. Only a
-// column whose every cell is a bare integer or a dash is a resource — Sneak Attack and Martial Arts
-// are dice, and `extractClassFeatureDice` reads those.
-const NON_TRACKED_HEADERS = new Set([
-  'level', 'proficiencybonus', 'features', 'feature', 'spellslots', 'slotlevel',
-  'cantripsknown', 'cantrips', 'spellsknown', 'preparedspells', 'spellsprepared',
-]);
-
-const isTrackedColumnHeader = (header) => {
-  if (!header || NON_TRACKED_HEADERS.has(header)) return false;
-  // "Invocations Known", "Infusions Known", "Maneuvers Known": how many you picked, not how many
-  // you have left.
-  if (header.endsWith('known')) return false;
-  return /^\d+(?:st|nd|rd|th)?$/.test(header) === false;
-};
-
 /**
  * Every column of every class table in a block, from level 1 up. The pool columns and the dice
  * columns are read from the same walk, so the row-finding — including the 2014 caster tables'
- * second header row of slot levels — is stated once.
+ * second header row of slot levels — is stated once. What a column *means* is
+ * `lib/classTables.mjs`, which the 5etools adapter reads the same answers out of.
  */
 const collectClassTableColumns = (raw) => {
   const columns = [];
@@ -1580,47 +1582,11 @@ const collectClassTableColumns = (raw) => {
     if (dataRows.length === 0) continue;
 
     rows[firstDataRowIndex - 1].forEach((header, index) => {
-      columns.push({ header, cells: dataRows.map((row) => row[index]) });
+      columns.push({ header: repairMojibake(stripTags(header)).trim(), cells: dataRows.map((row) => row[index]) });
     });
   }
 
   return columns;
-};
-
-/**
- * One cell of a resource column: the number, `null` for the 2014 Barbarian's level-20 "Unlimited"
- * Rages, and `undefined` for anything else — which is what disqualifies the whole column, because
- * a cell holding "1d6" or "+10 ft." means it was never a pool.
- */
-const readResourceCell = (value) => {
-  const text = stripTags(value ?? '').trim();
-  if (!text || /^[—–-]+$/.test(text)) return 0;
-  if (/^unlimited$/i.test(text)) return null;
-  return /^\d+$/.test(text) ? Number(text) : undefined;
-};
-
-/**
- * Which feature a column belongs to, from the book's own cross-reference: every one of these says
- * "as shown in the <Column> column of the <Class> table". Matching on the feature *name* instead
- * misses the ones the book named differently — the 2014 Sorcery Points column belongs to Font of
- * Magic — so the name is only the fallback.
- */
-const resourceFeatureKey = (header) => normalizeLabel(header).replace(/points$/, '').replace(/s$/, '');
-
-const findResourceFeature = (header, features) => {
-  const label = stripTags(header).trim();
-  if (!label) return null;
-
-  const columnReference = new RegExp(String.raw`\b${escapeRegExp(label)}\s+column\b`, 'i');
-  const byReference = features.find((feature) => columnReference.test(feature.description ?? ''));
-  if (byReference) return byReference;
-
-  const key = resourceFeatureKey(header);
-  if (!key) return null;
-  return features.find((feature) => {
-    const name = normalizeLabel(feature.name ?? '').replace(/s$/, '');
-    return name === key || name.includes(key) || key.includes(name);
-  }) ?? null;
 };
 
 // What a class hands a character who takes it after their first. 2014 states it once, in the
@@ -1753,74 +1719,14 @@ const extractMulticlassPrerequisites = ({ table, classId, primaryAbilityText, pr
   return undefined;
 };
 
-const extractClassResources = (raw, features) => {
-  const resources = [];
-
-  for (const { header, cells } of collectClassTableColumns(raw)) {
-    if (!isTrackedColumnHeader(normalizeLabel(header))) continue;
-
-    const perLevel = cells.map((cell) => readResourceCell(cell));
-    if (perLevel.some((value) => value === undefined)) continue;
-    if (!perLevel.some((value) => value === null || value > 0)) continue;
-
-    const name = repairMojibake(stripTags(header)).trim();
-    if (!name || resources.some((one) => one.name === name)) continue;
-
-    const feature = findResourceFeature(header, features);
-    const { resetsOn, shortRestRegain } = parseResourceReset(feature?.description ?? '');
-    if (!resetsOn) continue;
-
-    resources.push({
-      id: slugify(name),
-      name,
-      perLevel,
-      resetsOn,
-      shortRestRegain: shortRestRegain ?? undefined,
-      featureName: feature?.name,
-    });
-  }
-
-  return resources.length > 0 ? resources : undefined;
-};
-
-/**
- * One cell of a dice column: the notation, `null` where the table prints a dash, and `undefined`
- * for anything else — which disqualifies the column, because a cell holding a bare number means it
- * was a pool and one holding "+10 ft." means it was a distance.
- */
-const readFeatureDiceCell = (value) => {
-  const text = stripTags(value ?? '').trim();
-  if (!text || /^[—–-]+$/.test(text)) return null;
-  const match = /^(\d*)[dD](\d+)$/.exec(text);
-  return match ? `${match[1] || '1'}d${match[2]}` : undefined;
-};
+const extractClassResources = (raw, features) => resourcesFromColumns(collectClassTableColumns(raw), features);
 
 // A class table's dice columns: the Monk's Martial Arts die, the Rogue's Sneak Attack, the 2024
 // Bard's Bardic die. The feature's own sentences state only what it rolls at 1st level and then
 // point at the column ("as shown in the Martial Arts column of the Monk table"), so without the
 // column a level-20 Monk still read 1d4. Which feature a column belongs to is that same
 // cross-reference, and a column no feature claims is dropped rather than guessed at.
-const extractClassFeatureDice = (raw, features) => {
-  const columns = [];
-
-  for (const { header, cells } of collectClassTableColumns(raw)) {
-    if (!isTrackedColumnHeader(normalizeLabel(header))) continue;
-
-    const perLevel = cells.map((cell) => readFeatureDiceCell(cell));
-    if (perLevel.some((value) => value === undefined)) continue;
-    if (!perLevel.some((value) => value !== null)) continue;
-
-    const name = repairMojibake(stripTags(header)).trim();
-    if (!name || columns.some((one) => one.name === name)) continue;
-
-    const feature = findResourceFeature(header, features);
-    if (!feature?.name) continue;
-
-    columns.push({ id: slugify(name), name, perLevel, featureName: feature.name });
-  }
-
-  return columns.length > 0 ? columns : undefined;
-};
+const extractClassFeatureDice = (raw, features) => featureDiceFromColumns(collectClassTableColumns(raw), features);
 
 const extractClassFeaturesFromBlock = (raw, label, featureLevels) => {
   const headingBlocks = [...collectHeadingBlocks(raw, 3), ...collectHeadingBlocks(raw, 4), ...collectHeadingBlocks(raw, 5)];
@@ -2927,6 +2833,109 @@ const extractCombatActions = (raw, label, sourceId) => {
   return [...byName.values()];
 };
 
+// Both printings tabulate their languages — 2024 as Standard and Rare, 2014 as Standard and
+// Exotic — so neither list is written in the app.
+const languageTableAnchors = [
+  ['StandardLanguages', 'standard'],
+  ['RareLanguages', 'rare'],
+  ['ExoticLanguages', 'rare']
+];
+
+// A footnote marker on a name ("Primordial*") points at the table's own tfoot, never a value.
+// Scanned rather than matched: an anchored pattern over arbitrary prose trips Sonar's S8786.
+const hasFootnoteMarker = (value) => value.trimEnd().endsWith('*');
+const stripFootnoteMarker = (value) => {
+  let trimmed = value.trimEnd();
+  while (trimmed.endsWith('*')) {
+    trimmed = trimmed.slice(0, -1).trimEnd();
+  }
+
+  return trimmed;
+};
+const stripLeadingFootnoteMarker = (value) => {
+  let trimmed = value.trimStart();
+  while (trimmed.startsWith('*')) {
+    trimmed = trimmed.slice(1).trimStart();
+  }
+
+  return trimmed;
+};
+const tfootPattern = /<tfoot[^>]*>([\s\S]*?)<\/tfoot>/i;
+
+// 2024 puts the anchor in the table's own caption and 2014 in the heading above it, so a table
+// carrying the anchor wins and the next one is taken only when none does.
+const findAnchoredTable = (raw, anchorId) => {
+  const anchorIndex = raw.indexOf(`id="${anchorId}"`);
+  if (anchorIndex === -1) {
+    return null;
+  }
+
+  const tables = [...raw.matchAll(/<table\b[^>]*>[\s\S]*?<\/table>/gi)];
+  const enclosing = tables.find((match) => match.index < anchorIndex && match.index + match[0].length > anchorIndex);
+  return (enclosing ?? tables.find((match) => match.index > anchorIndex))?.[0] ?? null;
+};
+
+const extractLanguageTable = (raw, anchorId, rarity, label, sourceId) => {
+  const table = findAnchoredTable(raw, anchorId);
+  if (!table) {
+    return [];
+  }
+
+  const headerRow = /<tr[^>]*>([\s\S]*?)<\/tr>/i.exec(table)?.[1] ?? '';
+  const headerCells = [...headerRow.matchAll(/<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/gi)]
+    .map((cell) => normalizeLabel(stripTags(cell[1])));
+  const nameIndex = headerCells.indexOf('language');
+  if (nameIndex === -1) {
+    return [];
+  }
+
+  const originIndex = headerCells.findIndex((cell) => cell === 'origin' || cell === 'typicalspeakers');
+  const scriptIndex = headerCells.indexOf('script');
+  const footnote = stripLeadingFootnoteMarker(stripTags(tfootPattern.exec(table)?.[1] ?? '')).trim();
+  // The tfoot is a row like any other to `tableRowRegex`, and its one cell sits where the Rare
+  // table's name column does, so it would read back as a language.
+  const body = table.replace(tfootPattern, '');
+  const languages = [];
+
+  for (const rowMatch of body.matchAll(tableRowRegex)) {
+    const cells = [...rowMatch[1].matchAll(tableCellRegex)].map((cell) => stripTags(cell[1]));
+    const rawName = cells[nameIndex] ?? '';
+    const name = stripFootnoteMarker(rawName).trim();
+    if (!name) {
+      continue;
+    }
+
+    const origin = (cells[originIndex] ?? '').trim();
+    const script = (cells[scriptIndex] ?? '').trim();
+    languages.push({
+      id: toSourceSpecificId(sourceId, name),
+      name: repairMojibake(name),
+      rarity,
+      ...(origin ? { origin: repairMojibake(origin) } : {}),
+      ...(script ? { script: repairMojibake(script) } : {}),
+      ...(footnote && hasFootnoteMarker(rawName) ? { note: repairMojibake(footnote) } : {}),
+      source: label,
+      sourceId
+    });
+  }
+
+  return languages;
+};
+
+const extractLanguages = (raw, label, sourceId) => {
+  const byId = new Map();
+
+  for (const [anchorId, rarity] of languageTableAnchors) {
+    for (const language of extractLanguageTable(raw, anchorId, rarity, label, sourceId)) {
+      if (!byId.has(language.id)) {
+        byId.set(language.id, language);
+      }
+    }
+  }
+
+  return [...byId.values()];
+};
+
 const extractBasicRulesContent = (raw, label, sourceId) => {
   const content = createEmptyImportedContentBucket();
   content.classes = extractBasicRulesClasses(raw, label, sourceId);
@@ -2934,6 +2943,10 @@ const extractBasicRulesContent = (raw, label, sourceId) => {
   content.species = extractBasicRulesSpecies(raw, label, sourceId);
   content.spells = extractCompendiumSpells(raw, label, sourceId);
   content.combatActions = extractCombatActions(raw, label, sourceId);
+  const languages = extractLanguages(raw, label, sourceId);
+  if (languages.length > 0) {
+    content.languages = languages;
+  }
   if (sourceId === 'basic-rules-2024') {
     content.monsters = extractBasicRules2024Monsters(raw, label, sourceId);
   }

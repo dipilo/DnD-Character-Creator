@@ -4,6 +4,7 @@ import type {
   CombatAction,
   Equipment,
   Feat,
+  LanguageOption,
   Monster,
   Species,
   Spell,
@@ -37,6 +38,12 @@ export interface ImportedContentBucket {
    * before it carries none, which is why every read guards the array.
    */
   combatActions?: CombatAction[];
+  /**
+   * The languages each printing tabulates. Not one of `contentBucketKeys` for the same reason
+   * `combatActions` is not: a language is picked in a slot a species or background opens, not from
+   * the library, so it is neither counted in a pack's entry total nor listed in the homebrew hub.
+   */
+  languages?: LanguageOption[];
 }
 
 export interface ImportedContentDocument {

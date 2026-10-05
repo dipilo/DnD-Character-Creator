@@ -59,7 +59,7 @@ const aggregateBucketEntries = <K extends keyof ImportedContentSourceFile['conte
 
   modules.forEach(({ source }) => {
     const priority = sourceOriginPriority(source);
-    // `combatActions` is optional on the bucket, and a pack written before it carries none.
+    // `combatActions` and `languages` are optional, and a pack written before one carries none.
     (source.content[bucket] ?? []).forEach((entry) => {
       if (hasEntryId(entry)) {
         const current = dedupedById.get(entry.id);
@@ -103,15 +103,18 @@ export const getSourceBucketsById = <K extends keyof ImportedContentSourceFile['
   return aggregateBucketEntries(matchingModules, bucket);
 };
 
+// An action every character already has and a language picked in a slot are not entries a player
+// picks out of the library, so neither counts towards a pack's total.
+const uncountedBuckets = new Set(['combatActions', 'languages']);
+
 export const getSourceEntryCount = (sourceId: string) => {
   const matchingModules = sourceModuleRegistry.filter((entry) => entry.source.sourceId === sourceId);
   if (matchingModules.length === 0) {
     return 0;
   }
 
-  // An action every character already has is not an entry a player picks, so it is not counted.
   const buckets = Object.keys(matchingModules[0].source.content)
-    .filter((bucket) => bucket !== 'combatActions') as Array<keyof ImportedContentSourceFile['content']>;
+    .filter((bucket) => !uncountedBuckets.has(bucket)) as Array<keyof ImportedContentSourceFile['content']>;
   return buckets.reduce((total, bucket) => total + aggregateBucketEntries(matchingModules, bucket).length, 0);
 };
 

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacterStore } from '@/store/characterStore';
-import { useContentLibrary } from '@/data';
+import { getRuntimeLanguageNames, useContentLibrary } from '@/data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +10,7 @@ import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { ToolProficiencyChoices } from '@/components/builder/ToolProficiencyChoices';
 import { ArrowLeft, Check } from 'lucide-react';
 import { toast } from 'sonner';
-import { defaultLanguageOptions, getRulesEdition, getToolChoiceIdPrefix, resolveBackgroundGrantedFeat } from '@/lib/builderRules';
+import { getRulesEdition, getToolChoiceIdPrefix, resolveBackgroundGrantedFeat } from '@/lib/builderRules';
 
 const formatEquipmentOptionLabel = (item: { name: string; count?: number }) => {
   const prefix = item.count ? `${item.count} ` : '';
@@ -133,7 +133,7 @@ export function BackgroundDetails() {
   }
   const availableLanguageOptions = Array.from(
     new Set([
-      ...defaultLanguageOptions,
+      ...getRuntimeLanguageNames(),
       ...species.flatMap((entry) => [
         ...entry.languages,
         ...(entry.proficiencies ?? []).filter((prof) => prof.type === 'language').map((prof) => prof.name)

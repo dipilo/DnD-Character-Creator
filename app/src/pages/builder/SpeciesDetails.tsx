@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacterStore } from '@/store/characterStore';
-import { getRuntimeSpeciesById, getRuntimeSpeciesVariant } from '@/data';
+import { getRuntimeLanguageNames, getRuntimeSpeciesById, getRuntimeSpeciesVariant } from '@/data';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +11,7 @@ import { FeatureOptionSelector } from '@/components/builder/FeatureOptionSelecto
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { ArrowLeft, Check } from 'lucide-react';
 import { toast } from 'sonner';
-import { defaultLanguageOptions, getRulesEditionLabel, isChoicePlaceholderLabel } from '@/lib/builderRules';
+import { getRulesEditionLabel, isChoicePlaceholderLabel } from '@/lib/builderRules';
 import { getPoolBlockedOptionIds, getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
 
 const getAsiKey = (prefix: string, ability: string, amount: number, chooseFrom?: string[]) => {
@@ -59,7 +59,7 @@ export function SpeciesDetails() {
   // "One skill of choice" is the Skills feature restated; that feature already renders a selector.
   const visibleProficiencies = [...(species.proficiencies ?? []), ...(selectedVariantData?.proficiencies ?? [])]
     .filter((entry) => !isChoicePlaceholderLabel(entry.name));
-  const availableLanguageOptions = Array.from(new Set(defaultLanguageOptions)).sort((left, right) => left.localeCompare(right));
+  const availableLanguageOptions = getRuntimeLanguageNames();
   const speciesLanguageSlotIds = Array.from(
     { length: languageChoiceCount },
     (_, slotNumber) => `${species.id}-language-slot-${slotNumber + 1}`
