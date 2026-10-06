@@ -8,17 +8,10 @@ import { ChevronLeft, ChevronRight, Swords, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { getRuntimeClassById, getRuntimeSubclass } from '@/data';
 import { matchesCharacterClassEntry, removeCharacterClasses } from '@/lib/builderRules';
-import { builderStepIdForPath, builderSteps } from '@/lib/builderSteps';
+import { builderStepIdForPath, builderSteps, outstandingByBuilderStep } from '@/lib/builderSteps';
 import { useAdvancementTasks } from '@/hooks/useAdvancementTasks';
 import { AdvancementTasks } from '@/components/character/AdvancementTasks';
 import { BuilderDraftBanner } from '@/components/builder/BuilderDraftBanner';
-
-const classDetailTabLabels = {
-  features: 'Features',
-  subclasses: 'Subclasses',
-  proficiencies: 'Proficiencies',
-  spellcasting: 'Spellcasting'
-} as const;
 
 /**
  * What the Class Levels card says under a class name. A subclass chosen above the class's current
@@ -47,9 +40,18 @@ export function CharacterBuilderPage() {
   const remoteEditing = builderState.remoteEditing;
   const [classLevelDrafts, setClassLevelDrafts] = useState<Record<string, string>>({});
   const stepRailRef = useRef<HTMLDivElement>(null);
+  const tasksRef = useRef<HTMLDivElement>(null);
+  // Which step the player has already been shown the outstanding choices for. Pressing Next on a
+  // step that still owes some shows them first; pressing it again goes on anyway.
+  const [acknowledgedStep, setAcknowledgedStep] = useState<string | null>(null);
   // Everything a level has granted and nobody has chosen: shown here as well as on the sheet, so a
   // level raised in either place says the same thing about what is now outstanding.
   const advancementTasks = useAdvancementTasks(builderState.character);
+  const outstandingByStep = outstandingByBuilderStep(advancementTasks);
+  // Which step the draft resumes at. Navigation is the event, so recording it from one is not
+  // state mirrored from props; the store is the only place that outlives the page.
+  const routeStepId = builderStepIdForPath(location.pathname);
+  const outstandingOnThisStep = routeStepId ? outstandingByStep[routeStepId] ?? 0 : 0;
   const isAbilityScoresRoute = location.pathname.startsWith('/builder/ability-scores');
   const isSubclassRoute = location.pathname.startsWith('/builder/subclass');
   const subclassRouteParts = isSubclassRoute ? location.pathname.split('/') : [];
@@ -59,34 +61,12 @@ export function CharacterBuilderPage() {
     ? builderSteps.findIndex((step) => step.id === 'class')
     : builderSteps.findIndex((step) => location.pathname.startsWith(step.path));
 
-  const detailSearchParams = new URLSearchParams(location.search);
-  const currentClassId = location.pathname.startsWith('/builder/class/')
-    ? location.pathname.split('/')[3]
-    : undefined;
-  const currentClass = currentClassId ? getRuntimeClassById(currentClassId) : undefined;
-  let classDetailTabs: string[] | null = null;
-  if (currentClass) {
-    classDetailTabs = ['features', 'subclasses', 'proficiencies'];
-    if (currentClass.spellcasting) {
-      classDetailTabs.push('spellcasting');
-    }
-  }
-  const currentDetailTab = classDetailTabs?.includes(detailSearchParams.get('tab') ?? '')
-    ? (detailSearchParams.get('tab') as (typeof classDetailTabs)[number])
-    : classDetailTabs?.[0];
-  const currentDetailTabIndex = currentDetailTab && classDetailTabs
-    ? classDetailTabs.indexOf(currentDetailTab)
-    : -1;
-
-  const navigateToDetailTab = (tab: string) => {
-    const nextSearchParams = new URLSearchParams(location.search);
-    nextSearchParams.set('tab', tab);
-    navigate(`${location.pathname}?${nextSearchParams.toString()}`);
-  };
-
   const handleNext = () => {
-    if (classDetailTabs && currentDetailTabIndex >= 0 && currentDetailTabIndex < classDetailTabs.length - 1) {
-      navigateToDetailTab(classDetailTabs[currentDetailTabIndex + 1]);
+    // Pressing Next past a step that still owes choices shows them once. They are easy to walk
+    // straight past otherwise: most of them live inside a tab or a card further down the page.
+    if (outstandingOnThisStep > 0 && acknowledgedStep !== routeStepId) {
+      setAcknowledgedStep(routeStepId ?? null);
+      tasksRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       return;
     }
 
@@ -106,11 +86,6 @@ export function CharacterBuilderPage() {
   };
 
   const handleBack = () => {
-    if (classDetailTabs && currentDetailTabIndex > 0) {
-      navigateToDetailTab(classDetailTabs[currentDetailTabIndex - 1]);
-      return;
-    }
-
     if (isSubclassRoute) {
       if (currentSubclassClassId) {
         navigate(`/builder/class/${currentSubclassClassId}?tab=subclasses`);
@@ -174,9 +149,6 @@ export function CharacterBuilderPage() {
     if (returnTo) navigate(returnTo);
   };
 
-  // Which step the draft resumes at. Navigation is the event, so recording it from one is not
-  // state mirrored from props; the store is the only place that outlives the page.
-  const routeStepId = builderStepIdForPath(location.pathname);
   useEffect(() => {
     if (routeStepId) setBuilderStep(routeStepId);
   }, [routeStepId, setBuilderStep]);
@@ -191,12 +163,9 @@ export function CharacterBuilderPage() {
 
   const isFirstStep = currentStepIndex <= 0;
   const isLastStep = currentStepIndex === builderSteps.length - 1;
-  const nextButtonLabel = classDetailTabs && currentDetailTabIndex >= 0 && currentDetailTabIndex < classDetailTabs.length - 1
-    ? classDetailTabLabels[classDetailTabs[currentDetailTabIndex + 1] as keyof typeof classDetailTabLabels]
+  const nextButtonLabel = outstandingOnThisStep > 0 && acknowledgedStep !== routeStepId
+    ? `${outstandingOnThisStep} left on this step`
     : 'Next';
-  const backButtonLabel = classDetailTabs && currentDetailTabIndex > 0
-    ? classDetailTabLabels[classDetailTabs[currentDetailTabIndex - 1] as keyof typeof classDetailTabLabels]
-    : 'Back';
   const shellClassName = isAbilityScoresRoute ? 'mx-auto w-full max-w-6xl px-4 md:px-6' : '';
   const editingName = editedCharacter?.name ?? (remoteEditing ? builderState.character.name : undefined);
   const builderSubtitle = editingName
@@ -254,6 +223,7 @@ export function CharacterBuilderPage() {
             {builderSteps.map((step, index) => {
               const isActive = index === currentStepIndex;
               const isCompleted = index < currentStepIndex;
+              const outstanding = outstandingByStep[step.id] ?? 0;
               let stepCircleClasses = 'bg-muted text-muted-foreground';
 
               if (isActive) {
@@ -274,6 +244,16 @@ export function CharacterBuilderPage() {
                     {isCompleted ? '✓' : index + 1}
                   </div>
                   <span className="min-w-0 whitespace-nowrap text-sm font-medium leading-tight">{step.name}</span>
+                  {/* A choice this step still owes. The rail is the only thing on screen the whole
+                      way through, so it is where an unmade one has to be visible. */}
+                  {outstanding > 0 ? (
+                    <span
+                      className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-amber-500 px-1 text-xs font-semibold text-amber-950"
+                      aria-label={`${outstanding} choices left`}
+                    >
+                      {outstanding}
+                    </span>
+                  ) : null}
                 </Button>
               );
             })}
@@ -345,7 +325,7 @@ export function CharacterBuilderPage() {
       )}
 
       {advancementTasks.length > 0 ? (
-        <div className={shellClassName}>
+        <div ref={tasksRef} className={shellClassName}>
           <AdvancementTasks tasks={advancementTasks} />
         </div>
       ) : null}
@@ -372,13 +352,17 @@ export function CharacterBuilderPage() {
               className="min-h-11 gap-2"
             >
               <ChevronLeft className="h-4 w-4" />
-              <span className="truncate">{backButtonLabel}</span>
+              <span className="truncate">Back</span>
             </Button>
 
             {isLastStep ? (
               <div />
             ) : (
-              <Button onClick={handleNext} className="min-h-11 gap-2">
+              <Button
+                onClick={handleNext}
+                variant={outstandingOnThisStep > 0 && acknowledgedStep !== routeStepId ? 'outline' : 'default'}
+                className="min-h-11 gap-2"
+              >
                 <span className="truncate">{nextButtonLabel}</span>
                 <ChevronRight className="h-4 w-4" />
               </Button>

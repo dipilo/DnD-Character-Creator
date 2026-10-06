@@ -6,6 +6,7 @@ import {
 } from '@/lib/sheetDerivations';
 import { senseLabel } from '@/lib/sheetCombat';
 import { rollD20 } from '@/lib/d20Rolls';
+import { applyRollEffects, type AppliedRollEffects } from '@/lib/rollEffects';
 import { SheetAbilityBlocks } from '@/components/character/SheetAbilityBlocks';
 import { cn } from '@/lib/utils';
 
@@ -20,7 +21,7 @@ export function Stat({
   label: string;
   value: string;
   hint?: string;
-  roll?: { label: string; modifier: number };
+  roll?: { label: string; modifier: number; effects?: AppliedRollEffects };
   /** The rail's version: one size down, because the column is 19rem wide and very tall. */
   compact?: boolean;
 }>) {
@@ -45,7 +46,7 @@ export function Stat({
         shell,
         'min-h-11 transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
       )}
-      onClick={() => void rollD20({ modifier: roll.modifier, label: roll.label })}
+      onClick={() => void rollD20({ modifier: roll.modifier, label: roll.label, effects: roll.effects })}
     >
       {body}
     </button>
@@ -78,7 +79,11 @@ export function SheetVitalsPanel({
           label="Initiative"
           value={formatModifier(vitals.initiative)}
           compact={inRail}
-          roll={{ label: 'Initiative', modifier: vitals.initiative }}
+          roll={{
+            label: 'Initiative',
+            modifier: vitals.initiative,
+            effects: applyRollEffects(vitals.rollEffects, { kind: 'initiative', ability: 'dexterity' })
+          }}
         />
         <Stat label="Speed" value={`${vitals.speed} ft`} compact={inRail} />
         <Stat label="Passive Perc." value={String(vitals.passivePerception)} compact={inRail} />
@@ -97,7 +102,12 @@ export function SheetVitalsPanel({
         ))}
       </div>
 
-      <SheetAbilityBlocks saves={vitals.saves} skills={vitals.skills} variant={variant} />
+      <SheetAbilityBlocks
+        saves={vitals.saves}
+        skills={vitals.skills}
+        variant={variant}
+        rollEffects={vitals.rollEffects}
+      />
     </div>
   );
 }

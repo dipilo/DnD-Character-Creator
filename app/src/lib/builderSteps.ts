@@ -34,3 +34,19 @@ export function builderStepPath(id: string | undefined): string {
 export function builderStepName(id: string | undefined): string {
   return builderSteps.find((step) => step.id === id)?.name ?? builderSteps[0].name;
 }
+
+/**
+ * How many choices each step still owes, from the one derivation the sheet and the builder share.
+ * A task whose route is outside the rail is counted nowhere rather than against the first step.
+ */
+export function outstandingByBuilderStep(
+  tasks: readonly { href: string; count: number }[],
+): Partial<Record<BuilderRailStepId, number>> {
+  const totals: Partial<Record<BuilderRailStepId, number>> = {};
+  for (const task of tasks) {
+    const id = builderStepIdForPath(task.href);
+    if (!id) continue;
+    totals[id] = (totals[id] ?? 0) + task.count;
+  }
+  return totals;
+}

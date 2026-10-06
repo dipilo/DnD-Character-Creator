@@ -35,6 +35,12 @@ export interface DiceRollRequest {
    */
   keep?: DiceKeepRule;
   /**
+   * Count any die that lands below this as this, without changing what settled on the surface.
+   * Reliable Talent and Silver Tongue are 5e's only two, but "a die below n counts as n" is as
+   * generic as a keep rule, so the tray takes it rather than knowing what either feature is.
+   */
+  floor?: number;
+  /**
    * A line the tray prints under the total, computed from the outcome. It is a callback so the
    * tray needs to know nothing about any game's rules — the caller reads its own difficulty table.
    */
@@ -61,6 +67,10 @@ export interface DiceRollOutcome {
    * die is still on the surface and still in the log, so the reader can see what was discarded.
    */
   keptIndexes?: number[];
+  /** The floor the total was counted under, where one applied. The dice on screen are unchanged. */
+  floor?: number;
+  /** Which entries of `results` the floor raised, so the reader can see the die it overrode. */
+  raisedIndexes?: number[];
 }
 
 export interface PendingRoll {
@@ -127,12 +137,16 @@ export function isMaximum(result: DiceRollResult | undefined): boolean {
  * Which dice a keep rule counts. Only the first group is subject to it — the rule exists for the
  * pair of d20s in an advantage roll, and a `2d20+1d4` would still add the d4.
  */
-function resolveKeptIndexes(results: DiceRollResult[], keep: DiceKeepRule | undefined): number[] | undefined {
+function resolveKeptIndexes(
+  results: DiceRollResult[],
+  counts: readonly number[],
+  keep: DiceKeepRule | undefined,
+): number[] | undefined {
   if (!keep || keep.count >= results.length) return undefined;
 
   const sides = results[0]?.sides;
   const candidates = results
-    .map((result, index) => ({ index, value: result.value ?? 0, sides: result.sides }))
+    .map((result, index) => ({ index, value: counts[index], sides: result.sides }))
     .filter((entry) => entry.sides === sides);
   if (candidates.length <= keep.count) return undefined;
 
@@ -145,23 +159,52 @@ function resolveKeptIndexes(results: DiceRollResult[], keep: DiceKeepRule | unde
     .filter((index) => kept.has(index) || candidates.every((entry) => entry.index !== index));
 }
 
+/**
+ * Which dice a floor raises, and what each counts as. Only the first group is subject to it, for
+ * the same reason a keep rule is: it exists for the d20 of a test, not for a damage die beside it.
+ */
+function applyFloor(results: DiceRollResult[], floor: number | undefined): {
+  counts: number[];
+  raisedIndexes?: number[];
+} {
+  const counts = results.map((result) => result.value ?? 0);
+  if (floor === undefined) return { counts };
+
+  const sides = results[0]?.sides;
+  const raisedIndexes: number[] = [];
+  results.forEach((result, index) => {
+    if (result.sides !== sides || counts[index] >= floor) return;
+    counts[index] = floor;
+    raisedIndexes.push(index);
+  });
+
+  return { counts, raisedIndexes: raisedIndexes.length > 0 ? raisedIndexes : undefined };
+}
+
 /** The total, and what a caller needs to read a check off it, from dice the surface settled. */
 export function summarizeRoll(
   results: DiceRollResult[],
   modifier: number,
   luckyBreaks = 0,
   keep?: DiceKeepRule,
+  floor?: number,
 ): DiceRollOutcome {
-  const keptIndexes = resolveKeptIndexes(results, keep);
-  const counted = keptIndexes ? keptIndexes.map((index) => results[index]) : results;
+  // The floor is applied before the keep rule, so advantage keeps the higher of what each die
+  // counts as rather than of what it shows.
+  const { counts, raisedIndexes } = applyFloor(results, floor);
+  const keptIndexes = resolveKeptIndexes(results, counts, keep);
+  const countedIndexes = keptIndexes ?? results.map((_, index) => index);
 
   return {
     results,
     modifier,
-    total: counted.reduce((sum, result) => sum + (result.value ?? 0), 0) + modifier,
-    natural: counted[0]?.value ?? null,
+    total: countedIndexes.reduce((sum, index) => sum + counts[index], 0) + modifier,
+    // A natural 20 or a 1 is what the die shows, which no floor changes.
+    natural: results[countedIndexes[0]]?.value ?? null,
     luckyBreaks,
     keptIndexes,
+    floor,
+    raisedIndexes,
   };
 }
 
@@ -193,7 +236,7 @@ export function rollInstantly(request: DiceRollRequest): DiceRollOutcome | null 
     luckyBreaks += 1;
   }
 
-  return summarizeRoll(results, parsed.modifier, luckyBreaks, request.keep);
+  return summarizeRoll(results, parsed.modifier, luckyBreaks, request.keep, request.floor);
 }
 
 export const useDiceTrayStore = create<DiceTrayState>()(

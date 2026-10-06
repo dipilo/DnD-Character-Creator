@@ -1,5 +1,6 @@
 import { getCharacterProficiencyBonus, skillNames } from '@/lib/builderRules';
 import type { DerivedSense } from '@/lib/sheetCombat';
+import type { ResolvedRollEffect } from '@/lib/rollEffects';
 import type { AbilityScores, Character } from '@/types/dnd';
 import { ABILITY_ORDER, abilityModifier, deriveSpellcastingStats, type DerivedSpellcastingStats, type ResolvedClassLike } from '@/lib/sheetMath';
 import type { DerivedCharacterProficiencies } from '@/lib/builderRules';
@@ -161,6 +162,8 @@ export interface SheetVitals {
   passiveInsight: number;
   /** Darkvision and its siblings, read from the character's own features. */
   senses: DerivedSense[];
+  /** What those features do to a d20 test: Silver Tongue's floor, Brave's advantage. */
+  rollEffects: readonly ResolvedRollEffect[];
   skills: DerivedSkill[];
   saves: DerivedSave[];
   hitDice: DerivedHitDie[];
@@ -174,6 +177,7 @@ export function deriveSheetVitals({
   speed,
   totalLevel,
   senses = [],
+  rollEffects = [],
   expertiseKeys,
 }: {
   abilityScores: AbilityScores;
@@ -187,6 +191,8 @@ export function deriveSheetVitals({
    * is what `sheetCombat` reads its modifiers from, so importing it back would be a cycle.
    */
   senses?: DerivedSense[];
+  /** Read from the features by `resolveCharacterRollEffects`, and passed in for the same reason. */
+  rollEffects?: readonly ResolvedRollEffect[];
   /**
    * Read from the features by `resolveCharacterExpertise` and passed in for the same reason the
    * senses are: this module must not reach back into the content library.
@@ -203,6 +209,7 @@ export function deriveSheetVitals({
     passiveInvestigation: passiveScore(skills, 'Investigation'),
     passiveInsight: passiveScore(skills, 'Insight'),
     senses,
+    rollEffects,
     skills,
     saves: deriveSaves(abilityScores, proficiencies, proficiencyBonus),
     hitDice: deriveHitDice(resolvedClasses),

@@ -9,6 +9,7 @@
 // optional `onChange`, and a roll goes to the shared dice tray, which changes no document.
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { rollD20 } from '@/lib/d20Rolls';
+import { applyRollEffects } from '@/lib/rollEffects';
 import { ABILITY_ABBREVIATIONS, formatModifier, type SheetVitals } from '@/lib/sheetDerivations';
 import type { DerivedArmorClass } from '@/lib/builderRules';
 import { SheetHitPointsPanel } from '@/components/character/SheetHitPointsPanel';
@@ -114,6 +115,10 @@ export function SheetQuickInfoRail({
                   modifier: mod,
                   label: `${abilityLabel} check`,
                   detail: 'd20 check',
+                  effects: applyRollEffects(vitals.rollEffects, {
+                    kind: 'check',
+                    ability: ability as keyof AbilityScores,
+                  }),
                 })
               }
             >
@@ -138,6 +143,7 @@ export function SheetQuickInfoRail({
       <SheetHitPointsPanel
         character={character}
         constitutionSave={vitals.saves.find((save) => save.ability === 'constitution')?.modifier ?? 0}
+        rollEffects={vitals.rollEffects}
         onChange={onChange}
       />
 

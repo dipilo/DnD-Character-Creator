@@ -21,13 +21,6 @@ import { getDescriptionPreview } from '@/lib/contentPresentation';
 import { getPoolBlockedOptionIds, getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
 import { resolveCharacterExpertise, type ExpertiseSource } from '@/lib/expertise';
 
-const getOrdinalLevelLabel = (levelIndex: number) => {
-  if (levelIndex === 0) return '1st';
-  if (levelIndex === 1) return '2nd';
-  if (levelIndex === 2) return '3rd';
-  return `${levelIndex + 1}th`;
-};
-
 const getSourceLabel = (sourceId?: string, sourceText?: string) => {
   if (sourceText?.trim()) {
     return sourceText;
@@ -445,11 +438,12 @@ export function ClassDetails() {
       <Tabs value={activeTab} onValueChange={(value) => updateSearchParam('tab', value)} className="w-full">
         {/* Scrolls at natural label width on a phone, equal columns from sm up — see the note on
             the same pattern in CharacterSheetView. */}
-        <TabsList className={`w-full justify-start [&>*]:flex-none sm:grid sm:[&>*]:flex-1 ${cls.spellcasting ? 'sm:grid-cols-4' : 'sm:grid-cols-3'}`}>
+        {/* No Spellcasting tab: every number it printed is on the Spells step beside the spells
+            it governs, and there it is a count of what is still unpicked rather than a restatement. */}
+        <TabsList className="w-full justify-start [&>*]:flex-none sm:grid sm:grid-cols-3 sm:[&>*]:flex-1">
           <TabsTrigger value="features">Features</TabsTrigger>
           <TabsTrigger value="subclasses">Subclasses</TabsTrigger>
           <TabsTrigger value="proficiencies">Proficiencies</TabsTrigger>
-          {cls.spellcasting && <TabsTrigger value="spellcasting">Spellcasting</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="features" className="space-y-4">
@@ -609,18 +603,6 @@ export function ClassDetails() {
                             )}
                           </div>
                         )}
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="w-fit"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            navigate(`/builder/subclass/${cls.id}/${subclass.id}`);
-                          }}
-                        >
-                          View Details
-                        </Button>
                       </CardContent>
                     </Card>
                   );
@@ -635,21 +617,14 @@ export function ClassDetails() {
                         <CardTitle>{inspectedSubclass.name}</CardTitle>
                         <p className="mt-1 text-sm text-muted-foreground">{getSourceLabel(inspectedSubclass.sourceId ?? cls.sourceId, inspectedSubclass.source ?? cls.source)}</p>
                       </div>
-                      <div className="flex flex-wrap gap-2">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          onClick={() => navigate(`/builder/subclass/${cls.id}/${inspectedSubclass.id}`)}
-                        >
-                          Open Details
-                        </Button>
-                        <Button
-                          variant={selectedSubclass?.id === inspectedSubclass.id ? 'default' : 'outline'}
-                          onClick={() => handleToggleSubclass(inspectedSubclass.id)}
-                        >
-                          {selectedSubclass?.id === inspectedSubclass.id ? 'Selected' : 'Select Subclass'}
-                        </Button>
-                      </div>
+                      {/* The card below is the whole subclass, so choosing one is one press here
+                          rather than a trip to a page that prints the same features again. */}
+                      <Button
+                        variant={selectedSubclass?.id === inspectedSubclass.id ? 'default' : 'outline'}
+                        onClick={() => handleToggleSubclass(inspectedSubclass.id)}
+                      >
+                        {selectedSubclass?.id === inspectedSubclass.id ? 'Selected' : 'Select Subclass'}
+                      </Button>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <Badge variant="outline">Unlocks at level {cls.subclassLevel}</Badge>
@@ -805,69 +780,6 @@ export function ClassDetails() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="spellcasting" className="space-y-4">
-          {cls.spellcasting ? (
-            <Card>
-              <CardHeader>
-                <CardTitle>Spellcasting</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <span className="font-medium">Spellcasting Ability: </span>
-                    <span className="text-muted-foreground">
-                    {Array.isArray(cls.spellcasting.ability)
-                      ? cls.spellcasting.ability.map((ability) => ability.charAt(0).toUpperCase() + ability.slice(1)).join(' or ')
-                      : cls.spellcasting.ability.charAt(0).toUpperCase() + cls.spellcasting.ability.slice(1)}
-                  </span>
-                </div>
-                {cls.spellcasting.spellPreparation && (
-                  <div>
-                    <Badge variant="secondary">Spell Preparation</Badge>
-                    <p className="mt-1 text-sm text-muted-foreground"><ContentReferenceText text="You must prepare spells before casting them." /></p>
-                  </div>
-                )}
-                {cls.spellcasting.cantripsKnown && (
-                  <div>
-                    <span className="font-medium">Cantrips Known: </span>
-                    <span className="text-muted-foreground">{cls.spellcasting.cantripsKnown[characterLevel - 1]} at level {characterLevel}</span>
-                  </div>
-                )}
-                {cls.spellcasting.spellsKnown && (
-                  <div>
-                    <span className="font-medium">Spells Known: </span>
-                    <span className="text-muted-foreground">{cls.spellcasting.spellsKnown[characterLevel - 1]} at level {characterLevel}</span>
-                  </div>
-                )}
-                {cls.spellcasting.spellSlots && (
-                  <div>
-                    <span className="font-medium">Spell Slots at Level {characterLevel}: </span>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {(cls.spellcasting.spellSlots[characterLevel - 1] ?? [])
-                        .map((slots, level) => ({ slots, level }))
-                        .filter(({ slots }) => slots > 0)
-                        .map(({ slots, level }) => {
-                          const isWarlock = /warlock/i.test(`${cls.id} ${cls.name}`);
-                          const label = isWarlock ? `Pact Slot ${level + 1}` : getOrdinalLevelLabel(level);
-
-                          return (
-                            <Badge key={`spell-slot-${level + 1}-${slots}`} variant="outline">
-                              {label}: {slots}
-                            </Badge>
-                          );
-                        })}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardContent className="py-8 text-center">
-                <p className="text-muted-foreground">This class does not have spellcasting abilities.</p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
       </Tabs>
     </div>
   );

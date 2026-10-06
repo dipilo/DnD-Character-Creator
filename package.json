@@ -36,7 +36,8 @@
     "import:source": "node scripts/import-source.mjs --",
     "import:5etools": "node scripts/import-5etools.mjs",
     "import:kids-on-bikes": "node scripts/import-kids-on-bikes.mjs",
-    "generate:free-core": "node scripts/generate-free-core-sources.mjs"
+    "generate:free-core": "node scripts/generate-free-core-sources.mjs",
+    "test:roll-effects": "node --import ./app/test/aliasLoader.mjs app/test/rollEffects.mjs"
   },
   "devDependencies": {
     "febdnddata": "^1.0.0-09f6c01",

@@ -27,6 +27,7 @@ import { deriveSpellAttackOrSave, deriveSpellDamageOrEffect, deriveSpellDice } f
 import { ABILITY_ABBREVIATIONS, formatModifier } from '@/lib/sheetDerivations';
 import { rollOnScreen } from '@/store/diceTrayStore';
 import { rollD20 } from '@/lib/d20Rolls';
+import { applyRollEffects, type AppliedRollEffects, type ResolvedRollEffect } from '@/lib/rollEffects';
 import type { DerivedSpellcastingStats } from '@/lib/sheetDerivations';
 import type { Character, Spell } from '@/types/dnd';
 
@@ -58,6 +59,8 @@ interface SheetSpellsPanelProps {
    * so a limit there would be a rule they do not play under.
    */
   preparedLimit?: number;
+  /** What the character's features do to a spell attack, read from their own sentences. */
+  rollEffects?: readonly ResolvedRollEffect[];
   onChange?: (patch: Partial<Character>) => void;
 }
 
@@ -86,8 +89,11 @@ export function SheetSpellsPanel({
   pactSlotsByLevel,
   characterLevel,
   preparedLimit,
+  rollEffects = [],
   onChange
 }: Readonly<SheetSpellsPanelProps>) {
+  // Every spell on this tab rolls the same kind of test, so the features are read once.
+  const attackEffects = applyRollEffects(rollEffects, { kind: 'attack' });
   const hasSlots = slotsByLevel.some((count) => count > 0) || pactSlotsByLevel.some((count) => count > 0);
   if (spells.length === 0 && !hasSlots && !onChange) {
     return null;
@@ -206,7 +212,8 @@ export function SheetSpellsPanel({
         makesAttack ? castingStat?.attackBonus : undefined,
         save?.ability && castingStat
           ? `DC ${castingStat.saveDc} ${ABILITY_ABBREVIATIONS[save.ability]}`
-          : undefined
+          : undefined,
+        attackEffects
       ),
       damage: damageCell(spell.name, dice, damageLabel),
       notes: spellNotes(spell),
@@ -307,13 +314,18 @@ export function SheetSpellsPanel({
 }
 
 /** A to-hit is a button; a save is the DC this character imposes, which nothing rolls for them. */
-function hitCell(spellName: string, attackBonus: number | undefined, saveLabel: string | undefined) {
+function hitCell(
+  spellName: string,
+  attackBonus: number | undefined,
+  saveLabel: string | undefined,
+  effects: AppliedRollEffects,
+) {
   if (attackBonus !== undefined) {
     return (
       <button
         type="button"
         className={rollButtonClass}
-        onClick={() => void rollD20({ modifier: attackBonus, label: `${spellName} attack` })}
+        onClick={() => void rollD20({ modifier: attackBonus, label: `${spellName} attack`, effects })}
       >
         {formatModifier(attackBonus)}
       </button>

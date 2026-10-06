@@ -8,8 +8,16 @@
 //
 // The ability *check* is not here: the score boxes above the blocks are the check button, and
 // rendering it twice would put two of the same roll on one sheet.
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { rollD20 } from '@/lib/d20Rolls';
+import {
+  applyRollEffects,
+  describeRollEffects,
+  type AppliedRollEffects,
+  type ResolvedRollEffect,
+  type RollTarget
+} from '@/lib/rollEffects';
 import {
   ABILITY_ORDER,
   formatModifier,
@@ -38,17 +46,38 @@ function ProficiencyDot({ proficient, expertise = false }: Readonly<{ proficient
   );
 }
 
+/**
+ * What a feature does to this row, marked on the row itself. The tray's detail line names the
+ * feature; this is only the sign that the number about to be rolled is not the bare one.
+ */
+export function RollEffectMark({ effects }: Readonly<{ effects: AppliedRollEffects }>) {
+  const { advantage, disadvantage, floor, applied } = effects;
+  if (applied.length === 0) return null;
+
+  const title = describeRollEffects(applied);
+  const swing = advantage !== disadvantage;
+
+  return (
+    <span className="flex shrink-0 items-center text-primary" title={title} aria-label={title}>
+      {swing && advantage ? <ChevronUp className="h-3.5 w-3.5" /> : null}
+      {swing && disadvantage ? <ChevronDown className="h-3.5 w-3.5" /> : null}
+      {floor ? <span className="text-[0.65rem] font-semibold leading-none">≥{floor}</span> : null}
+    </span>
+  );
+}
+
 interface RollRowProps {
   readonly name: string;
   readonly proficient: boolean;
   readonly expertise?: boolean;
   readonly modifier: number;
   readonly rollLabel: string;
+  readonly effects: AppliedRollEffects;
   readonly className?: string;
 }
 
 /** One rollable line. Rolling changes nothing, so a read-only sheet keeps every one of these. */
-function RollRow({ name, proficient, expertise = false, modifier, rollLabel, className }: RollRowProps) {
+function RollRow({ name, proficient, expertise = false, modifier, rollLabel, effects, className }: RollRowProps) {
   return (
     <button
       type="button"
@@ -57,13 +86,16 @@ function RollRow({ name, proficient, expertise = false, modifier, rollLabel, cla
         proficient && 'bg-accent',
         className
       )}
-      onClick={() => void rollD20({ modifier, label: rollLabel, detail: 'd20 check' })}
+      onClick={() => void rollD20({ modifier, label: rollLabel, detail: 'd20 check', effects })}
     >
       <span className="flex min-w-0 items-center gap-2">
         <ProficiencyDot proficient={proficient} expertise={expertise} />
         <span className="truncate">{name}</span>
       </span>
-      <span className="shrink-0 font-semibold tabular-nums">{formatModifier(modifier)}</span>
+      <span className="flex shrink-0 items-center gap-1.5">
+        <RollEffectMark effects={effects} />
+        <span className="font-semibold tabular-nums">{formatModifier(modifier)}</span>
+      </span>
     </button>
   );
 }
@@ -73,10 +105,13 @@ interface SheetAbilityBlocksProps {
   readonly skills: readonly DerivedSkill[];
   /** `rail` is one 19rem column; `panel` has room for two blocks side by side. */
   readonly variant?: 'rail' | 'panel';
+  /** What the character's features do to a d20 test, read from their own sentences. */
+  readonly rollEffects?: readonly ResolvedRollEffect[];
 }
 
-export function SheetAbilityBlocks({ saves, skills, variant = 'panel' }: SheetAbilityBlocksProps) {
+export function SheetAbilityBlocks({ saves, skills, variant = 'panel', rollEffects = [] }: SheetAbilityBlocksProps) {
   const inRail = variant === 'rail';
+  const effectsFor = (target: RollTarget) => applyRollEffects(rollEffects, target);
 
   return (
     <Card>
@@ -85,6 +120,9 @@ export function SheetAbilityBlocks({ saves, skills, variant = 'panel' }: SheetAb
           const save = saves.find((entry) => entry.ability === ability);
           const owned = skills.filter((skill) => skill.ability === ability);
           const label = abilityLabel(ability);
+          const saveEffects = save
+            ? effectsFor({ kind: 'save', ability, proficient: save.proficient })
+            : undefined;
 
           return (
             <div key={ability} className="min-w-0">
@@ -93,16 +131,22 @@ export function SheetAbilityBlocks({ saves, skills, variant = 'panel' }: SheetAb
                 <h4 className="truncate text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   {label}
                 </h4>
-                {save ? (
+                {save && saveEffects ? (
                   <button
                     type="button"
                     className="flex min-h-9 shrink-0 items-center gap-1.5 rounded px-2 text-xs transition-colors hover:bg-accent coarse:min-h-11 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                     onClick={() =>
-                      void rollD20({ modifier: save.modifier, label: `${label} save`, detail: 'd20 check' })
+                      void rollD20({
+                        modifier: save.modifier,
+                        label: `${label} save`,
+                        detail: 'd20 check',
+                        effects: saveEffects
+                      })
                     }
                   >
                     <ProficiencyDot proficient={save.proficient} />
                     <span className="uppercase tracking-wide text-muted-foreground">Save</span>
+                    <RollEffectMark effects={saveEffects} />
                     <span className="font-semibold tabular-nums">{formatModifier(save.modifier)}</span>
                   </button>
                 ) : null}
@@ -115,6 +159,12 @@ export function SheetAbilityBlocks({ saves, skills, variant = 'panel' }: SheetAb
                   expertise={skill.expertise}
                   modifier={skill.modifier}
                   rollLabel={skill.name}
+                  effects={effectsFor({
+                    kind: 'check',
+                    ability: skill.ability,
+                    skill: skill.name,
+                    proficient: skill.proficient
+                  })}
                 />
               ))}
             </div>

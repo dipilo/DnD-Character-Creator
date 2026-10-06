@@ -30,6 +30,7 @@ import { deriveAttacksPerAction } from '@/lib/sheetCombat';
 import { castPatch, castableSlots } from '@/lib/spellCasting';
 import { setClassResourceUsed, toggleResourceActive } from '@/lib/sheetPlayState';
 import { rollD20 } from '@/lib/d20Rolls';
+import { applyRollEffects, type AppliedRollEffects, type ResolvedRollEffect } from '@/lib/rollEffects';
 import { rollOnScreen } from '@/store/diceTrayStore';
 import { formatModifier } from '@/lib/sheetDerivations';
 import { cn } from '@/lib/utils';
@@ -52,6 +53,8 @@ interface SheetActionsPanelProps {
   featureContext?: SheetActionsInput['featureContext'];
   slotsByLevel: number[];
   pactSlotsByLevel: number[];
+  /** What the character's features do to an attack roll, read from their own sentences. */
+  rollEffects?: readonly ResolvedRollEffect[];
   onChange?: (patch: Partial<Character>) => void;
 }
 
@@ -67,9 +70,12 @@ export function SheetActionsPanel({
   featureContext,
   slotsByLevel,
   pactSlotsByLevel,
+  rollEffects = [],
   onChange
 }: Readonly<SheetActionsPanelProps>) {
   const [filter, setFilter] = useState<SheetActionFilter>('all');
+  // Every row in this table rolls the same kind of test, so the features are read once.
+  const attackEffects = useMemo(() => applyRollEffects(rollEffects, { kind: 'attack' }), [rollEffects]);
 
   const entries = useMemo(
     () =>
@@ -127,7 +133,7 @@ export function SheetActionsPanel({
     meta: entry.meta,
     time: entry.time,
     range: entry.range,
-    hit: hitCell(entry, () => castOnAttack(entry)),
+    hit: hitCell(entry, attackEffects, () => castOnAttack(entry)),
     damage: damageCell(entry),
     notes: entry.notes,
     controls: controlsFor(entry),
@@ -206,7 +212,7 @@ export function SheetActionsPanel({
 }
 
 /** The Hit/DC cell: a to-hit is a button, a save is the DC this character imposes. */
-function hitCell(entry: SheetActionEntry, onRoll: () => void) {
+function hitCell(entry: SheetActionEntry, effects: AppliedRollEffects, onRoll: () => void) {
   if (entry.attackBonus !== undefined) {
     return (
       <button
@@ -214,7 +220,12 @@ function hitCell(entry: SheetActionEntry, onRoll: () => void) {
         className={rollButtonClass}
         onClick={() => {
           onRoll();
-          void rollD20({ modifier: entry.attackBonus ?? 0, label: `${entry.name} attack`, detail: entry.meta });
+          void rollD20({
+            modifier: entry.attackBonus ?? 0,
+            label: `${entry.name} attack`,
+            detail: entry.meta,
+            effects,
+          });
         }}
       >
         {formatModifier(entry.attackBonus)}

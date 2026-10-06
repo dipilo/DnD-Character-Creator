@@ -140,6 +140,9 @@ function DiceOutcomeCard({ onDismiss }: Readonly<{ onDismiss: () => void }>) {
   const note = request.describeOutcome?.(outcome) ?? null;
   const kept = outcome.keptIndexes ? new Set(outcome.keptIndexes) : null;
   const dropped = (index: number) => Boolean(kept && !kept.has(index));
+  // A floored die stays on the surface showing what it landed on; the badge says what it counted
+  // as, because a total that does not add up is how a feature reads as a bug.
+  const raised = outcome.raisedIndexes ? new Set(outcome.raisedIndexes) : null;
 
   return (
     <div className="pointer-events-auto w-full max-w-md rounded-xl border bg-card/95 shadow-lg backdrop-blur">
@@ -155,6 +158,7 @@ function DiceOutcomeCard({ onDismiss }: Readonly<{ onDismiss: () => void }>) {
                 className={`tabular-nums ${dropped(index) ? 'opacity-40 line-through' : ''}`}
               >
                 d{result.sides ?? '?'}: {result.value ?? '?'}
+                {raised?.has(index) ? ` → ${outcome.floor}` : ''}
               </Badge>
             ))}
             {outcome.modifier !== 0 ? (
@@ -195,7 +199,7 @@ async function resolveRoll(pending: PendingRoll, scene: DiceSceneHandle | null) 
   const modifier = parseDiceNotation(request.notation)?.modifier ?? 0;
 
   if (!scene) {
-    return rollInstantly(request) ?? summarizeRoll([], modifier, 0, request.keep);
+    return rollInstantly(request) ?? summarizeRoll([], modifier, 0, request.keep, request.floor);
   }
 
   try {
@@ -208,13 +212,13 @@ async function resolveRoll(pending: PendingRoll, scene: DiceSceneHandle | null) 
       luckyBreaks += 1;
     }
 
-    return summarizeRoll(results, modifier, luckyBreaks, request.keep);
+    return summarizeRoll(results, modifier, luckyBreaks, request.keep, request.floor);
   } catch (error) {
     // Turning 3D dice off mid-throw unmounts the surface and aborts the roll. That is the
     // preference taking effect, not a fault, and the instant path below is what it asked for.
     if (!isDiceRollCancelled(error)) {
       console.warn('the dice surface could not throw', error instanceof Error ? error.message : error);
     }
-    return rollInstantly(request) ?? summarizeRoll([], modifier, 0, request.keep);
+    return rollInstantly(request) ?? summarizeRoll([], modifier, 0, request.keep, request.floor);
   }
 }

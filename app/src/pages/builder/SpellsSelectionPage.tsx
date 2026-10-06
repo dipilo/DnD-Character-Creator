@@ -19,6 +19,7 @@ import { Search, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { applyAbilityScoreBonuses, getSelectedClassEdition, getSpellcastingRulesSummary, resolveCharacterClasses, type SelectedClassWithLevel } from '@/lib/builderRules';
 import { dedupeByNamePreferringEdition } from '@/lib/contentSelection';
+import type { AbilityScores } from '@/types/dnd';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Link } from 'react-router-dom';
 import { SpellDetail } from '@/components/spells/SpellDetail';
@@ -58,6 +59,17 @@ export function SpellsSelectionPage() {
   }, [builderState.character?.classes, classes]);
 
   const spellMap = useMemo(() => new Map(spells.map((spell) => [spell.id, spell])), [spells]);
+
+  // The ability a class casts with, which is the one fact the Class step's old Spellcasting tab
+  // carried that is not already a count on this page.
+  const castingAbilityFor = (classId: string) => {
+    const ability = selectedClasses.find((entry) => entry.cls.id === classId)?.cls.spellcasting?.ability;
+    const names = Array.isArray(ability) ? ability : [ability];
+    return names
+      .filter((name): name is keyof AbilityScores => Boolean(name))
+      .map((name) => name.slice(0, 3).toUpperCase())
+      .join('/');
+  };
   const effectiveAbilityScores = useMemo(() => {
     return applyAbilityScoreBonuses(builderState.character?.abilityScores, builderState.character?.abilityScoreBonuses);
   }, [builderState.character?.abilityScoreBonuses, builderState.character?.abilityScores]);
@@ -200,6 +212,7 @@ export function SpellsSelectionPage() {
                 {spellRules.classes.map((entry) => (
                   <Badge key={`${entry.classId}-${entry.level}`} variant="secondary">
                     {entry.className} {entry.level}
+                    {castingAbilityFor(entry.classId) ? ` · ${castingAbilityFor(entry.classId)}` : ''}
                   </Badge>
                 ))}
               </div>

@@ -44,6 +44,7 @@ import {
 import type { FeatureContext } from '@/lib/featureFacets';
 import { deriveAttacks, deriveSheetVitals } from '@/lib/sheetDerivations';
 import { collectExpertiseSources, expertiseProficiencyKeys, resolveCharacterExpertise } from '@/lib/expertise';
+import { resolveCharacterRollEffects } from '@/lib/rollEffects';
 import { ABILITY_ORDER, abilityModifier } from '@/lib/sheetMath';
 import { deriveDefences, deriveSenses, deriveUnarmedStrike } from '@/lib/sheetCombat';
 import { deriveEncumbrance } from '@/lib/sheetInventory';
@@ -348,6 +349,17 @@ export function CharacterSheetView({
   );
   const expertiseKeys = useMemo(() => expertiseProficiencyKeys(expertise), [expertise]);
 
+  // What a feature does to a d20 test, read the same way the senses and the defences are. A pool
+  // the character has not entered states its advantage flatly, so Rage's is held back until it is.
+  const rollEffects = useMemo(() => {
+    const dormantFeatureNames = new Set(
+      classResources
+        .filter((resource) => resource.activatable && !resource.active)
+        .map((resource) => (resource.featureName ?? resource.name).toLowerCase()),
+    );
+    return resolveCharacterRollEffects(activeFeaturesWithChoices, { dormantFeatureNames });
+  }, [activeFeaturesWithChoices, classResources]);
+
   const vitals = useMemo(() => {
     return deriveSheetVitals({
       abilityScores: displayedAbilityScores,
@@ -357,9 +369,10 @@ export function CharacterSheetView({
       speed: species?.speed ?? 30,
       totalLevel,
       senses,
+      rollEffects,
       expertiseKeys
     });
-  }, [derivedProficiencies, displayedAbilityScores, expertiseKeys, resolvedClasses, senses, species, totalLevel]);
+  }, [derivedProficiencies, displayedAbilityScores, expertiseKeys, resolvedClasses, rollEffects, senses, species, totalLevel]);
 
   const attacks = useMemo(() => {
     return [
@@ -618,6 +631,7 @@ export function CharacterSheetView({
               featureContext={featureContext}
               slotsByLevel={spellcastingRules.slotsByLevel}
               pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
+              rollEffects={rollEffects}
               onChange={onChange}
             />
 
@@ -644,6 +658,7 @@ export function CharacterSheetView({
                 pactSlotsByLevel={spellcastingRules.pactSlotsByLevel}
                 characterLevel={totalLevel}
                 preparedLimit={spellcastingRules.preparedSpellLimit}
+                rollEffects={rollEffects}
                 onChange={onChange}
               />
             </TabsContent>

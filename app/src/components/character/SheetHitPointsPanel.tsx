@@ -26,6 +26,7 @@ import {
   toggleCondition
 } from '@/lib/sheetPlayState';
 import { rollD20 } from '@/lib/d20Rolls';
+import { applyRollEffects, type ResolvedRollEffect } from '@/lib/rollEffects';
 import { rollOnScreen } from '@/store/diceTrayStore';
 import { cn } from '@/lib/utils';
 import type { Character } from '@/types/dnd';
@@ -40,6 +41,8 @@ interface SheetHitPointsPanelProps {
   character: Character;
   /** The Constitution save, which is the only roll concentration ever asks for. */
   constitutionSave: number;
+  /** What the character's features do to that save, read from their own sentences. */
+  rollEffects?: readonly ResolvedRollEffect[];
   onChange?: (patch: Partial<Character>) => void;
 }
 
@@ -78,7 +81,12 @@ function DeathSaveRow({
   );
 }
 
-export function SheetHitPointsPanel({ character, constitutionSave, onChange }: Readonly<SheetHitPointsPanelProps>) {
+export function SheetHitPointsPanel({
+  character,
+  constitutionSave,
+  rollEffects = [],
+  onChange
+}: Readonly<SheetHitPointsPanelProps>) {
   const [amount, setAmount] = useState('');
   const [conditionsOpen, setConditionsOpen] = useState(false);
   // The last blow taken while concentrating, which is what sets the save's DC. Not on the
@@ -120,7 +128,8 @@ export function SheetHitPointsPanel({ character, constitutionSave, onChange }: R
     const outcome = await rollD20({
       modifier: constitutionSave,
       label: `Concentration save (${concentration?.spellName ?? 'spell'})`,
-      detail: `DC ${dc}`
+      detail: `DC ${dc}`,
+      effects: applyRollEffects(rollEffects, { kind: 'save', ability: 'constitution' })
     });
     setPendingSave(null);
     if (outcome.total < dc) onChange?.(endConcentration());
