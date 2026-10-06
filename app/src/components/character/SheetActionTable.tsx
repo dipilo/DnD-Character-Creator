@@ -67,7 +67,7 @@ function Cell({
       <span className="shrink-0 text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground lg:hidden">
         {label}
       </span>
-      <span className="min-w-0 break-words">
+      <span className="min-w-0">
         {children ?? <span className="text-muted-foreground">&mdash;</span>}
       </span>
     </div>
@@ -80,7 +80,7 @@ function ActionRow({ row, showTime }: Readonly<{ row: SheetActionTableRow; showT
 
   const nameBlock = (
     <span className="flex min-w-0 flex-col text-left">
-      <span className="break-words font-medium leading-5">{row.name}</span>
+      <span className="font-medium leading-5">{row.name}</span>
       {row.meta ? <span className="text-xs leading-4 text-muted-foreground">{row.meta}</span> : null}
     </span>
   );

@@ -21,13 +21,17 @@ import type { AbilityScores } from '@/types/dnd';
 
 const abilityLabel = (ability: keyof AbilityScores) => ability.charAt(0).toUpperCase() + ability.slice(1);
 
-/** The filled dot every proficient row carries, in the saves and the skills alike. */
-function ProficiencyDot({ proficient }: Readonly<{ proficient: boolean }>) {
+/**
+ * The filled dot every proficient row carries, in the saves and the skills alike. Expertise rings
+ * it rather than taking a column of its own: it is the same proficiency, counted twice.
+ */
+function ProficiencyDot({ proficient, expertise = false }: Readonly<{ proficient: boolean; expertise?: boolean }>) {
   return (
     <span
       className={cn(
         'h-2 w-2 shrink-0 rounded-full border',
-        proficient ? 'border-primary bg-primary' : 'border-muted-foreground/50'
+        proficient ? 'border-primary bg-primary' : 'border-muted-foreground/50',
+        expertise && 'ring-1 ring-primary ring-offset-1 ring-offset-background'
       )}
       aria-hidden="true"
     />
@@ -37,13 +41,14 @@ function ProficiencyDot({ proficient }: Readonly<{ proficient: boolean }>) {
 interface RollRowProps {
   readonly name: string;
   readonly proficient: boolean;
+  readonly expertise?: boolean;
   readonly modifier: number;
   readonly rollLabel: string;
   readonly className?: string;
 }
 
 /** One rollable line. Rolling changes nothing, so a read-only sheet keeps every one of these. */
-function RollRow({ name, proficient, modifier, rollLabel, className }: RollRowProps) {
+function RollRow({ name, proficient, expertise = false, modifier, rollLabel, className }: RollRowProps) {
   return (
     <button
       type="button"
@@ -55,7 +60,7 @@ function RollRow({ name, proficient, modifier, rollLabel, className }: RollRowPr
       onClick={() => void rollD20({ modifier, label: rollLabel, detail: 'd20 check' })}
     >
       <span className="flex min-w-0 items-center gap-2">
-        <ProficiencyDot proficient={proficient} />
+        <ProficiencyDot proficient={proficient} expertise={expertise} />
         <span className="truncate">{name}</span>
       </span>
       <span className="shrink-0 font-semibold tabular-nums">{formatModifier(modifier)}</span>
@@ -107,6 +112,7 @@ export function SheetAbilityBlocks({ saves, skills, variant = 'panel' }: SheetAb
                   key={skill.name}
                   name={skill.name}
                   proficient={skill.proficient}
+                  expertise={skill.expertise}
                   modifier={skill.modifier}
                   rollLabel={skill.name}
                 />

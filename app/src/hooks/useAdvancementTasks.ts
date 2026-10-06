@@ -14,7 +14,7 @@ import {
   getRuntimeSubclass,
   useContentLibrary
 } from '@/data';
-import { getSpellcastingRulesSummary, resolveCharacterClasses } from '@/lib/builderRules';
+import { deriveCharacterProficiencies, getSpellcastingRulesSummary, resolveCharacterClasses } from '@/lib/builderRules';
 import { deriveAdvancementTasks, type AdvancementTask } from '@/lib/characterAdvancement';
 import type { Character, Feat } from '@/types/dnd';
 
@@ -62,17 +62,23 @@ export function useAdvancementTasks(character: Partial<Character> | undefined): 
     if (!character || resolvedClasses.length === 0) return [];
 
     const species = speciesId ? getRuntimeSpeciesById(speciesId) : undefined;
+    const variant = speciesId && variantId ? getRuntimeSpeciesVariant(speciesId, variantId) : undefined;
+    const background = backgroundId ? backgrounds.find((entry) => entry.id === backgroundId) : undefined;
+    // Expertise doubles a proficiency the character already holds, so its options are the merged
+    // list rather than the builder's pick layer.
+    const merged = deriveCharacterProficiencies({ character, resolvedClasses, background, species, variant });
     return deriveAdvancementTasks({
       character,
       // The builder's `proficiencies` is the pick layer already.
       selectedSkills: character.proficiencies?.skills ?? [],
       resolvedClasses,
       species,
-      variant: speciesId && variantId ? getRuntimeSpeciesVariant(speciesId, variantId) : undefined,
-      background: backgroundId ? backgrounds.find((entry) => entry.id === backgroundId) : undefined,
+      variant,
+      background,
       featCatalogue: feats,
       feats: heldFeats,
-      spellcastingRules
+      spellcastingRules,
+      expertiseProficiencies: { skills: merged.skills, tools: merged.tools }
     });
   }, [backgroundId, backgrounds, character, feats, heldFeats, resolvedClasses, speciesId, spellcastingRules, variantId]);
 }

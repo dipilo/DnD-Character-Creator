@@ -85,6 +85,11 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
+    /* Inherited, so one declaration covers every imported description. A source's long unbroken
+       token otherwise paints straight out of its card and scrolls the whole page sideways.
+       `anywhere`, not `break-word`: only `anywhere` shrinks min-content, and a flex item's
+       automatic minimum size is what actually refuses to give. */
+    overflow-wrap: anywhere;
   }
 
   /* Safari zooms the whole page when a focused field is under 16px, and never zooms back out.

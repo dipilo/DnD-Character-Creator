@@ -65,7 +65,7 @@ export function CampaignLayout() {
             Campaigns
           </Link>
         </Button>
-        <h1 className="min-w-0 break-words text-xl font-bold tracking-tight short:text-base sm:text-2xl">
+        <h1 className="min-w-0 text-xl font-bold tracking-tight short:text-base sm:text-2xl">
           {campaign?.name ?? (
             <span className="inline-flex items-center gap-2 text-muted-foreground">
               <Spinner className="size-4" />

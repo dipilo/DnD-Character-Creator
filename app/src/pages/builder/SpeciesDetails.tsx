@@ -126,12 +126,12 @@ export function SpeciesDetails() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <Button variant="outline" size="sm" onClick={() => navigate('/builder/species')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
-        <div className="flex-1">
+        <div className="order-last w-full min-w-0 sm:order-none sm:w-auto sm:flex-1">
           <h2 className="text-2xl font-bold">{species.name}</h2>
           <p className="text-sm text-muted-foreground">{species.source}</p>
           <div className="mt-2 flex flex-wrap gap-2">

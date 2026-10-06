@@ -43,6 +43,7 @@ import {
 } from '@/lib/builderRules';
 import type { FeatureContext } from '@/lib/featureFacets';
 import { deriveAttacks, deriveSheetVitals } from '@/lib/sheetDerivations';
+import { collectExpertiseSources, expertiseProficiencyKeys, resolveCharacterExpertise } from '@/lib/expertise';
 import { ABILITY_ORDER, abilityModifier } from '@/lib/sheetMath';
 import { deriveDefences, deriveSenses, deriveUnarmedStrike } from '@/lib/sheetCombat';
 import { deriveEncumbrance } from '@/lib/sheetInventory';
@@ -336,6 +337,17 @@ export function CharacterSheetView({
     [character, displayedAbilityScores, proficiencyBonus],
   );
 
+  // Expertise doubles the bonus on the proficiencies the feature's own text says it covers.
+  const expertise = useMemo(
+    () => resolveCharacterExpertise(
+      collectExpertiseSources(resolvedClasses.map(({ cls, subclass, entry }) => ({ cls, subclass, level: entry.level }))),
+      { skills: derivedProficiencies.skills, tools: derivedProficiencies.tools },
+      character.expertiseSelections
+    ),
+    [character.expertiseSelections, derivedProficiencies.skills, derivedProficiencies.tools, resolvedClasses],
+  );
+  const expertiseKeys = useMemo(() => expertiseProficiencyKeys(expertise), [expertise]);
+
   const vitals = useMemo(() => {
     return deriveSheetVitals({
       abilityScores: displayedAbilityScores,
@@ -344,9 +356,10 @@ export function CharacterSheetView({
       // Species speed is the walking speed; 30 is the default when nothing is chosen yet.
       speed: species?.speed ?? 30,
       totalLevel,
-      senses
+      senses,
+      expertiseKeys
     });
-  }, [derivedProficiencies, displayedAbilityScores, resolvedClasses, senses, species, totalLevel]);
+  }, [derivedProficiencies, displayedAbilityScores, expertiseKeys, resolvedClasses, senses, species, totalLevel]);
 
   const attacks = useMemo(() => {
     return [
@@ -437,9 +450,10 @@ export function CharacterSheetView({
       background,
       featCatalogue: feats,
       feats: allFeatData,
-      spellcastingRules
+      spellcastingRules,
+      expertiseProficiencies: { skills: derivedProficiencies.skills, tools: derivedProficiencies.tools }
     });
-  }, [allFeatData, background, character, feats, resolvedClasses, species, spellcastingRules, variant]);
+  }, [allFeatData, background, character, derivedProficiencies.skills, derivedProficiencies.tools, feats, resolvedClasses, species, spellcastingRules, variant]);
 
   const castingStat = useMemo(() => primaryCastingStat(vitals.spellcasting), [vitals.spellcasting]);
 
@@ -503,7 +517,7 @@ export function CharacterSheetView({
       <div className="flex flex-wrap items-center gap-3 sm:gap-4">
         {leading}
         <div className="min-w-0 flex-1">
-          <h1 className="break-words text-2xl font-bold sm:text-3xl short:text-xl">{character.name}</h1>
+          <h1 className="text-2xl font-bold sm:text-3xl short:text-xl">{character.name}</h1>
           <p className="text-muted-foreground short:hidden">
             Level {totalLevel} {species?.name ?? 'Unknown Species'} {classSummary}
           </p>

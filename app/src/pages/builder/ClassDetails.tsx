@@ -11,13 +11,15 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FeatureOptionSelector } from '@/components/builder/FeatureOptionSelector';
+import { ExpertiseSelector } from '@/components/builder/ExpertiseSelector';
 import { ToolProficiencyChoices } from '@/components/builder/ToolProficiencyChoices';
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { ArrowLeft, Check, Shield, Sword, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { applyAbilityScoreBonuses, canMixClassEditions, deriveSkillsHeldElsewhere, evaluateMulticlassPrerequisites, findCharacterClassEntry, getClassProficiencyGrants, getMulticlassSkillSelections, getRulesEditionLabel, resolveCharacterClasses, sortFeaturesByLevel, updateCharacterClassEntry, type SelectedClassWithLevel } from '@/lib/builderRules';
+import { applyAbilityScoreBonuses, canMixClassEditions, deriveCharacterProficiencies, deriveSkillsHeldElsewhere, evaluateMulticlassPrerequisites, findCharacterClassEntry, getClassProficiencyGrants, getMulticlassSkillSelections, getRulesEditionLabel, resolveCharacterClasses, sortFeaturesByLevel, updateCharacterClassEntry, type SelectedClassWithLevel } from '@/lib/builderRules';
 import { getDescriptionPreview } from '@/lib/contentPresentation';
 import { getPoolBlockedOptionIds, getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
+import { resolveCharacterExpertise, type ExpertiseSource } from '@/lib/expertise';
 
 const getOrdinalLevelLabel = (levelIndex: number) => {
   if (levelIndex === 0) return '1st';
@@ -77,6 +79,25 @@ export function ClassDetails() {
       species: character.speciesId ? getRuntimeSpeciesById(character.speciesId) : undefined,
       variant: character.speciesId && character.variantId ? getRuntimeSpeciesVariant(character.speciesId, character.variantId) : undefined
     });
+  // Expertise doubles a proficiency the character already holds, so the options are the merged
+  // list, not this class's pick layer.
+  const mergedProficiencies = !character
+    ? { skills: [], tools: [] }
+    : (() => {
+      const derived = deriveCharacterProficiencies({
+        character,
+        resolvedClasses: resolveCharacterClasses({
+          classes: character.classes ?? [],
+          getClassById: getRuntimeClassById,
+          getSubclassById: getRuntimeSubclass
+        }),
+        background: character.backgroundId ? getRuntimeBackgroundById(character.backgroundId) : undefined,
+        species: character.speciesId ? getRuntimeSpeciesById(character.speciesId) : undefined,
+        variant: character.speciesId && character.variantId ? getRuntimeSpeciesVariant(character.speciesId, character.variantId) : undefined
+      });
+      return { skills: derived.skills, tools: derived.tools };
+    })();
+
   const availableTabs = cls?.spellcasting
     ? ['features', 'subclasses', 'proficiencies', 'spellcasting']
     : ['features', 'subclasses', 'proficiencies'];
@@ -171,6 +192,25 @@ export function ClassDetails() {
     updateBuilderCharacter({
       features: updateFeatureOptionSelections(builderState.character?.features, featureId, slotIndex, optionId, chooseCount)
     });
+  };
+
+  const updateExpertiseSelection = (grantId: string, slotIndex: number, value: string | undefined) => {
+    const current = [...(character?.expertiseSelections?.[grantId] ?? [])];
+    if (value === undefined) {
+      current.splice(slotIndex, 1);
+    } else {
+      current[slotIndex] = value;
+    }
+
+    const next = { ...(character?.expertiseSelections ?? {}) };
+    const picks = current.filter(Boolean);
+    if (picks.length > 0) {
+      next[grantId] = picks;
+    } else {
+      delete next[grantId];
+    }
+
+    updateBuilderCharacter({ expertiseSelections: Object.keys(next).length > 0 ? next : undefined });
   };
 
   const refuseHeldSkill = (skill: string) => {
@@ -296,6 +336,14 @@ export function ClassDetails() {
   };
 
   const renderFeatureCard = (feature: (typeof visibleFeatures)[number]) => {
+    // Expertise doubles a proficiency the character already holds, so its options come from the
+    // merged list rather than from this class's own skill choices.
+    const expertiseGrants = resolveCharacterExpertise(
+      [{ feature, heldLevel: characterLevel, sourceName: cls.name, sourceClassId: cls.id }] satisfies ExpertiseSource[],
+      mergedProficiencies,
+      character?.expertiseSelections
+    );
+
     const selected = selectedFeatureChoices.some((entry) => entry.featureId === feature.id);
     const replacementNames = (feature.replacesFeatureIds ?? [])
       .map((featureId) => allFeatureNamesById.get(featureId))
@@ -331,6 +379,7 @@ export function ClassDetails() {
             selectionContext={featureSelectionContext}
             blockedOptionIds={getBlockedOptionIds(feature.id)}
           />
+          <ExpertiseSelector grants={expertiseGrants} onValueChange={updateExpertiseSelection} disabled={!isSelected} />
         </AccordionContent>
       </AccordionItem>
     );
@@ -355,12 +404,12 @@ export function ClassDetails() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <Button variant="outline" size="sm" onClick={() => navigate('/builder/class')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
-        <div className="flex-1">
+        <div className="order-last w-full min-w-0 sm:order-none sm:w-auto sm:flex-1">
           <h2 className="text-2xl font-bold">{cls.name}</h2>
           <p className="text-sm text-muted-foreground">{cls.source}</p>
           <div className="mt-2 flex flex-wrap gap-2">

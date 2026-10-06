@@ -31,6 +31,7 @@ import {
 import { dedupeCanonicalContent, getCanonicalContentKey, getClassSelectionScore } from '@/lib/contentSelection';
 import { featHasPendingChoices } from '@/lib/featGrants';
 import { featureChoiceCount, getChosenFeatureOptions, getSelectedFeatureOptionIds } from '@/lib/featureOptions';
+import { collectExpertiseSources, resolveCharacterExpertise, type ExpertiseProficiencies } from '@/lib/expertise';
 import type {
   AbilityScores,
   Background,
@@ -218,6 +219,7 @@ export type AdvancementCharacter = Partial<
     | 'multiclassSkillSelections'
     | 'backgroundLanguageSelections'
     | 'speciesLanguageSelections'
+    | 'expertiseSelections'
   >
 >;
 
@@ -237,6 +239,11 @@ export interface AdvancementContext {
   /** The feats this character holds, resolved. */
   feats: readonly Feat[];
   spellcastingRules: SpellcastingRulesSummary;
+  /**
+   * The proficiencies an Expertise pick may double. Passed in rather than derived, because the
+   * merged list needs the content library and this module stays pure.
+   */
+  expertiseProficiencies?: ExpertiseProficiencies;
 }
 
 const classFeaturesPath = (classId: string) => `/builder/class/${encodeURIComponent(classId)}?tab=features`;
@@ -323,6 +330,33 @@ function skillTask(cls: Class, limit: number, chosen: number): AdvancementTask[]
     href: classProficienciesPath(cls.id),
     count: outstanding
   }];
+}
+
+/**
+ * Expertise doubles a proficiency the character already holds, so an unmade pick is an unfinished
+ * choice exactly as a subclass is. It is read from the feature's own text, so a pack that adds a
+ * feature granting it is counted with nothing added here.
+ */
+function expertiseTasks(context: AdvancementContext): AdvancementTask[] {
+  const proficiencies = context.expertiseProficiencies;
+  if (!proficiencies) return [];
+
+  const sources = collectExpertiseSources(
+    context.resolvedClasses.map(({ cls, subclass, entry }) => ({ cls, subclass, level: entry.level }))
+  );
+  const resolved = resolveCharacterExpertise(sources, proficiencies, context.character.expertiseSelections);
+
+  return resolved
+    .filter((entry) => entry.outstanding > 0)
+    .map((entry) => ({
+      id: `expertise:${entry.grant.id}`,
+      label: entry.outstanding === 1
+        ? `Choose a proficiency for ${entry.featureName}`
+        : `Choose ${entry.outstanding} proficiencies for ${entry.featureName}`,
+      detail: `${entry.sourceName}, level ${entry.grant.level}`,
+      href: classFeaturesPath(entry.sourceClassId),
+      count: entry.outstanding
+    }));
 }
 
 function collectClassTasks(context: AdvancementContext): AdvancementTask[] {
@@ -517,6 +551,7 @@ export function deriveAdvancementTasks(context: AdvancementContext): Advancement
     ...collectSpeciesTasks(context),
     ...collectBackgroundTasks(context),
     ...collectFeatTasks(context),
-    ...collectSpellTasks(context)
+    ...collectSpellTasks(context),
+    ...expertiseTasks(context)
   ];
 }

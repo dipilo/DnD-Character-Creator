@@ -60,7 +60,7 @@ export function SourceFilterBar({
               variant={active ? 'default' : 'outline'}
               size="sm"
               onClick={() => toggleSource(source.id)}
-              className="h-auto min-w-0 max-w-full flex-col items-start gap-1 px-3 py-2 text-left whitespace-normal break-words"
+              className="h-auto min-w-0 max-w-full flex-col items-start gap-1 px-3 py-2 text-left whitespace-normal"
             >
               <span className="text-xs uppercase tracking-wide opacity-70">{source.category}</span>
               <span className="max-w-full text-sm leading-tight">{source.label}</span>
@@ -74,7 +74,7 @@ export function SourceFilterBar({
           {selectedSourceIds.map((id) => {
             const source = sources.find((entry) => entry.id === id);
             return (
-              <Badge key={id} variant="secondary" className="max-w-full gap-1 whitespace-normal break-words text-left">
+              <Badge key={id} variant="secondary" className="max-w-full gap-1 whitespace-normal text-left">
                 <span className="max-w-full">{source?.label || id}</span>
                 <button type="button" aria-label={`Remove ${source?.label || id}`} onClick={() => toggleSource(id)}>
                   <X className="h-3 w-3" />

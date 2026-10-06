@@ -66,8 +66,9 @@ const ROW_CLASS =
 function AdvancementTaskBody({ task }: Readonly<{ task: AdvancementTask }>) {
   return (
     <>
-      <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2">
-        <span className="break-words font-medium leading-5">{task.label}</span>
+      {/* shadcn's Button is whitespace-nowrap and the row inherits it, which no wrap rule beats. */}
+      <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 whitespace-normal">
+        <span className="font-medium leading-5">{task.label}</span>
         {task.detail ? <span className="text-xs leading-4 text-muted-foreground">{task.detail}</span> : null}
       </span>
       <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />

@@ -234,7 +234,7 @@ export function CharacterSharingDialog({ characterId, characterName }: Readonly<
                   {sharing.grants.map((grant) => (
                     <li key={grant.id} className="flex flex-wrap items-center justify-between gap-2 rounded border p-2">
                       <div className="min-w-0">
-                        <span className="break-words text-sm font-medium">{grant.label}</span>
+                        <span className="text-sm font-medium">{grant.label}</span>
                         <p className="text-xs text-muted-foreground">{grant.access === 'edit' ? 'Can edit' : 'Can read'}</p>
                       </div>
                       <Button

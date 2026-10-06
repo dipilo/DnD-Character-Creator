@@ -58,7 +58,7 @@ function EquipmentRow({
   return (
     <div className="flex flex-wrap items-center justify-between gap-2 rounded border p-2">
       <div className="min-w-0">
-        <span className="break-words font-medium">{entry.name}</span>
+        <span className="font-medium">{entry.name}</span>
         {entry.quantity > 1 ? <span className="ml-2 text-sm text-muted-foreground">×{entry.quantity}</span> : null}
         <p className="text-xs text-muted-foreground">{describeItem(entry.item) ?? entry.sourceLabel}</p>
       </div>

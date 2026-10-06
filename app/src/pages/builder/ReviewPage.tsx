@@ -367,6 +367,7 @@ export function ReviewPage() {
       multiclassSkillSelections: character.multiclassSkillSelections,
       multiclassPrerequisitesWaived: character.multiclassPrerequisitesWaived,
       featSpellSelections: character.featSpellSelections,
+      expertiseSelections: character.expertiseSelections,
       abilityScoreMethod: builderState.abilityScoreMethod,
       rolledScores: builderState.rolledScores,
       rolledScoreAssignments: builderState.rolledScoreAssignments,

@@ -339,26 +339,26 @@ export function FeatsSelectionPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">Background feat: {grantedBackgroundFeat ? grantedBackgroundFeat.name : 'None'}</Badge>
-            <Badge variant="secondary">Class feat picks available: {classFeatSelectionLimit}</Badge>
-            <Badge variant="secondary">Species feat picks available: {speciesFeatSelectionSources.reduce((total, entry) => total + entry.count, 0)}</Badge>
-            <Badge variant={remainingFeatSelections > 0 ? 'default' : 'outline'}>
+            <Badge variant="secondary" className="max-w-full whitespace-normal text-left">Background feat: {grantedBackgroundFeat ? grantedBackgroundFeat.name : 'None'}</Badge>
+            <Badge variant="secondary" className="max-w-full whitespace-normal text-left">Class feat picks available: {classFeatSelectionLimit}</Badge>
+            <Badge variant="secondary" className="max-w-full whitespace-normal text-left">Species feat picks available: {speciesFeatSelectionSources.reduce((total, entry) => total + entry.count, 0)}</Badge>
+            <Badge variant={remainingFeatSelections > 0 ? 'default' : 'outline'} className="max-w-full whitespace-normal text-left">
               Remaining picks: {remainingFeatSelections}
             </Badge>
           </div>
           <div className="flex flex-wrap gap-2">
             {grantedBackgroundFeat && background ? (
-              <Badge variant="outline">
+              <Badge variant="outline" className="max-w-full whitespace-normal text-left">
                 {background.name}: {grantedBackgroundFeat.name}
               </Badge>
             ) : null}
             {featSelectionSources.map((entry) => (
-              <Badge key={`${entry.classId}-${entry.level}-${entry.featureName}`} variant="outline">
+              <Badge key={`${entry.classId}-${entry.level}-${entry.featureName}`} variant="outline" className="max-w-full whitespace-normal text-left">
                 {entry.className} {entry.level}: {entry.featureName}
               </Badge>
             ))}
             {speciesFeatSelectionSources.map((entry) => (
-              <Badge key={`${entry.sourceName}-${entry.featureId}`} variant="outline">
+              <Badge key={`${entry.sourceName}-${entry.featureId}`} variant="outline" className="max-w-full whitespace-normal text-left">
                 {entry.sourceName}: {entry.featureName}{entry.featType === 'origin' ? ' (Origin feat)' : ''}
               </Badge>
             ))}

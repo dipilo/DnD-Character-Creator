@@ -27,7 +27,7 @@ function Stat({ label, value }: StatProps) {
       <p className="text-[0.6875rem] font-semibold uppercase leading-4 tracking-wide text-muted-foreground">
         {label}
       </p>
-      <p className="break-words text-sm font-medium leading-5">{value}</p>
+      <p className="text-sm font-medium leading-5">{value}</p>
     </div>
   );
 }

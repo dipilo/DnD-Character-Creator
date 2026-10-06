@@ -489,6 +489,12 @@ export interface Character {
    * class's: they do not count against a class's known or prepared limits.
    */
   featSpellSelections?: Record<string, string[]>;
+  /**
+   * The proficiencies a feature's Expertise covers, keyed by `ExpertiseGrant.id`. Kept apart from
+   * `proficiencies.skills` because Expertise doubles a proficiency the character already holds:
+   * folding it in would read as a second grant of the skill itself.
+   */
+  expertiseSelections?: Record<string, string[]>;
   proficiencies: {
     skills: string[];
     tools: string[];

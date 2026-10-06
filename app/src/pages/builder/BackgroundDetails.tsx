@@ -174,12 +174,12 @@ export function BackgroundDetails() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <Button variant="outline" size="sm" onClick={() => navigate('/builder/background')}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
-        <div className="flex-1">
+        <div className="order-last w-full min-w-0 sm:order-none sm:w-auto sm:flex-1">
           <h2 className="text-2xl font-bold">{background.name}</h2>
           <p className="text-sm text-muted-foreground">{background.source}</p>
         </div>

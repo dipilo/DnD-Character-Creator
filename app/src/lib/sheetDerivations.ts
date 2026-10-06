@@ -64,6 +64,8 @@ export interface DerivedSkill {
   name: string;
   ability: keyof AbilityScores;
   proficient: boolean;
+  /** The feature's Expertise covers it, so the proficiency bonus counts twice. */
+  expertise: boolean;
   modifier: number;
 }
 
@@ -87,16 +89,23 @@ export function deriveSkills(
   abilityScores: AbilityScores,
   proficiencies: DerivedCharacterProficiencies,
   proficiencyBonus: number,
+  /** Folded proficiency names the character has Expertise in (`expertiseProficiencyKeys`). */
+  expertiseKeys: ReadonlySet<string> = new Set(),
 ): DerivedSkill[] {
   const proficient = proficientSkillSet(proficiencies);
   return skillNames.map((name) => {
     const ability = SKILL_ABILITIES[name];
     const isProficient = proficient.has(name);
+    // Expertise doubles a bonus the character already has, so a skill they are not proficient in
+    // gains nothing from a stale pick.
+    const hasExpertise = isProficient && expertiseKeys.has(name.toLowerCase());
+    const multiplier = hasExpertise ? 2 : 1;
     return {
       name,
       ability,
       proficient: isProficient,
-      modifier: abilityModifier(abilityScores[ability]) + (isProficient ? proficiencyBonus : 0),
+      expertise: hasExpertise,
+      modifier: abilityModifier(abilityScores[ability]) + (isProficient ? proficiencyBonus * multiplier : 0),
     };
   });
 }
@@ -165,6 +174,7 @@ export function deriveSheetVitals({
   speed,
   totalLevel,
   senses = [],
+  expertiseKeys,
 }: {
   abilityScores: AbilityScores;
   proficiencies: DerivedCharacterProficiencies;
@@ -177,9 +187,14 @@ export function deriveSheetVitals({
    * is what `sheetCombat` reads its modifiers from, so importing it back would be a cycle.
    */
   senses?: DerivedSense[];
+  /**
+   * Read from the features by `resolveCharacterExpertise` and passed in for the same reason the
+   * senses are: this module must not reach back into the content library.
+   */
+  expertiseKeys?: ReadonlySet<string>;
 }): SheetVitals {
   const proficiencyBonus = getCharacterProficiencyBonus(totalLevel);
-  const skills = deriveSkills(abilityScores, proficiencies, proficiencyBonus);
+  const skills = deriveSkills(abilityScores, proficiencies, proficiencyBonus, expertiseKeys);
   return {
     proficiencyBonus,
     initiative: abilityModifier(abilityScores.dexterity),
