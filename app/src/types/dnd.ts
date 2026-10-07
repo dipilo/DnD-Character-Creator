@@ -16,6 +16,8 @@ export interface AbilityScoreIncrease {
   amount: number;
   chooseFrom?: (keyof AbilityScores)[];
   chooseCount?: number;
+  /** The ceiling the source states for this increase, if it states one. */
+  maximum?: number;
 }
 
 export interface Proficiency {

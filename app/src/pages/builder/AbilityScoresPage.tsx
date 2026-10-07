@@ -138,6 +138,7 @@ export function AbilityScoresPage() {
   }, [background, builderState.character?.abilityScoreChoiceModes, selectedFeats, species, variant]);
   const derivedAbilityScoreBonuses = useMemo(() => {
     return deriveAbilityScoreBonuses({
+      abilityScores: scores,
       background,
       species,
       variant,
@@ -145,7 +146,7 @@ export function AbilityScoresPage() {
       abilityScoreChoiceModes: builderState.character?.abilityScoreChoiceModes,
       abilityScoreChoiceSelections: builderState.character?.abilityScoreChoiceSelections
     });
-  }, [background, builderState.character?.abilityScoreChoiceModes, builderState.character?.abilityScoreChoiceSelections, selectedFeats, species, variant]);
+  }, [background, builderState.character?.abilityScoreChoiceModes, builderState.character?.abilityScoreChoiceSelections, scores, selectedFeats, species, variant]);
   const totalScores = useMemo(() => applyAbilityScoreBonuses(scores, derivedAbilityScoreBonuses), [derivedAbilityScoreBonuses, scores]);
   const backgroundSupportsOriginBonuses = background
     && !background.abilityScoreIncreases?.length
@@ -410,6 +411,12 @@ export function AbilityScoresPage() {
     return `Base ${scores[ability]}, bonus ${formatSignedValue(bonus)}`;
   };
 
+  // A score already at the ceiling the source states would take nothing from this pick, so the
+  // option says so rather than being chosen for no effect.
+  const isAtStatedMaximum = (config: AbilityScoreChoiceConfig, ability: keyof AbilityScores, currentValue: string) => {
+    return config.maximum !== undefined && currentValue !== ability && totalScores[ability] >= config.maximum;
+  };
+
   const renderAbilityChoiceSlot = (config: AbilityScoreChoiceConfig, slotIndex: number) => {
     const currentValue = builderState.character?.abilityScoreChoiceSelections?.[config.id]?.[slotIndex] ?? '';
     const blockedAbilities = getBlockedAbilities(config, slotIndex);
@@ -422,16 +429,27 @@ export function AbilityScoresPage() {
         className={nativeSelectClassName}
       >
         <option value="">Select an ability...</option>
-        {config.options.map((ability) => (
-          <option
-            key={`${config.id}-${ability}`}
-            value={ability}
-            disabled={blockedAbilities.has(ability) && currentValue !== ability}
-          >
-            {ability.charAt(0).toUpperCase() + ability.slice(1)}
-            {blockedAbilities.has(ability) && currentValue !== ability ? ' (already used)' : ''}
-          </option>
-        ))}
+        {config.options.map((ability) => {
+          const alreadyUsed = blockedAbilities.has(ability) && currentValue !== ability;
+          const atMaximum = isAtStatedMaximum(config, ability, currentValue);
+          let suffix = '';
+          if (alreadyUsed) {
+            suffix = ' (already used)';
+          } else if (atMaximum) {
+            suffix = ` (already at ${config.maximum})`;
+          }
+
+          return (
+            <option
+              key={`${config.id}-${ability}`}
+              value={ability}
+              disabled={alreadyUsed || atMaximum}
+            >
+              {ability.charAt(0).toUpperCase() + ability.slice(1)}
+              {suffix}
+            </option>
+          );
+        })}
       </select>
     );
   };

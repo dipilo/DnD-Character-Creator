@@ -64,10 +64,15 @@ export interface D20RollRequest {
   mode?: D20Mode;
   /**
    * What the character's own features do to this roll (`applyRollEffects`). They are folded in
-   * here rather than by each caller so one sheet row cannot apply them and the next forget.
+   * here rather than by each caller so one sheet row cannot apply them and the next forget. A row
+   * that prints its modifier must print `effectiveModifier`, or the total will not add up.
    */
   effects?: AppliedRollEffects;
 }
+
+/** What a row showing a modifier has to show once its features are read. */
+export const effectiveModifier = (modifier: number, effects: AppliedRollEffects | undefined) =>
+  modifier + (effects?.bonus ?? 0);
 
 /** Throw a d20 test under the given advantage state, or whatever the sheet is currently set to. */
 export function rollD20({ modifier, label, detail, mode, effects }: D20RollRequest): Promise<DiceRollOutcome> {
@@ -78,7 +83,7 @@ export function rollD20({ modifier, label, detail, mode, effects }: D20RollReque
   const applied = effects ? describeRollEffects(effects.applied) : undefined;
 
   return rollOnScreen({
-    notation: modifierNotation(20, modifier, dice),
+    notation: modifierNotation(20, modifier + (effects?.bonus ?? 0), dice),
     label: modeLabel ? `${label} (${modeLabel})` : label,
     detail: [detail, applied].filter(Boolean).join(' · ') || undefined,
     keep: keepRuleFor(activeMode),

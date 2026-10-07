@@ -5,7 +5,7 @@ import {
   type SheetVitals,
 } from '@/lib/sheetDerivations';
 import { senseLabel } from '@/lib/sheetCombat';
-import { rollD20 } from '@/lib/d20Rolls';
+import { effectiveModifier, rollD20 } from '@/lib/d20Rolls';
 import { applyRollEffects, type AppliedRollEffects } from '@/lib/rollEffects';
 import { SheetAbilityBlocks } from '@/components/character/SheetAbilityBlocks';
 import { cn } from '@/lib/utils';
@@ -69,6 +69,7 @@ export function SheetVitalsPanel({
   variant?: 'rail' | 'panel';
 }>) {
   const inRail = variant === 'rail';
+  const initiativeEffects = applyRollEffects(vitals.rollEffects, { kind: 'initiative', ability: 'dexterity' });
 
   return (
     <div className="space-y-3">
@@ -77,13 +78,9 @@ export function SheetVitalsPanel({
       <div className={cn('grid gap-2', inRail ? 'grid-cols-3' : 'grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5')}>
         <Stat
           label="Initiative"
-          value={formatModifier(vitals.initiative)}
+          value={formatModifier(effectiveModifier(vitals.initiative, initiativeEffects))}
           compact={inRail}
-          roll={{
-            label: 'Initiative',
-            modifier: vitals.initiative,
-            effects: applyRollEffects(vitals.rollEffects, { kind: 'initiative', ability: 'dexterity' })
-          }}
+          roll={{ label: 'Initiative', modifier: vitals.initiative, effects: initiativeEffects }}
         />
         <Stat label="Speed" value={`${vitals.speed} ft`} compact={inRail} />
         <Stat label="Passive Perc." value={String(vitals.passivePerception)} compact={inRail} />

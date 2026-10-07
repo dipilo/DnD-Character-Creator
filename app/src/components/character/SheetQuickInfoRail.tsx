@@ -8,7 +8,7 @@
 // It writes nothing of its own. The hit-point panel hands its patches back through the single
 // optional `onChange`, and a roll goes to the shared dice tray, which changes no document.
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { rollD20 } from '@/lib/d20Rolls';
+import { effectiveModifier, rollD20 } from '@/lib/d20Rolls';
 import { applyRollEffects } from '@/lib/rollEffects';
 import { ABILITY_ABBREVIATIONS, formatModifier, type SheetVitals } from '@/lib/sheetDerivations';
 import type { DerivedArmorClass } from '@/lib/builderRules';
@@ -105,6 +105,10 @@ export function SheetQuickInfoRail({
           const mod = calculateModifier(score);
           const bonus = abilityBonusFor(ability as keyof AbilityScores);
           const abilityLabel = ability.charAt(0).toUpperCase() + ability.slice(1);
+          const checkEffects = applyRollEffects(vitals.rollEffects, {
+            kind: 'check',
+            ability: ability as keyof AbilityScores,
+          });
           return (
             <button
               key={ability}
@@ -115,17 +119,14 @@ export function SheetQuickInfoRail({
                   modifier: mod,
                   label: `${abilityLabel} check`,
                   detail: 'd20 check',
-                  effects: applyRollEffects(vitals.rollEffects, {
-                    kind: 'check',
-                    ability: ability as keyof AbilityScores,
-                  }),
+                  effects: checkEffects,
                 })
               }
             >
               <p className="text-[0.65rem] font-medium uppercase leading-4 tracking-wide text-muted-foreground">
                 {railIsColumn ? ABILITY_ABBREVIATIONS[ability as keyof AbilityScores] : ability}
               </p>
-              <p className="text-xl font-bold leading-6 tabular-nums">{formatModifier(mod)}</p>
+              <p className="text-xl font-bold leading-6 tabular-nums">{formatModifier(effectiveModifier(mod, checkEffects))}</p>
               <p className="text-xs leading-4 text-muted-foreground tabular-nums">
                 {score}
                 {bonus === 0 ? null : (

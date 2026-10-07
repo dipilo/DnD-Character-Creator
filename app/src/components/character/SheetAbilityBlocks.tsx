@@ -8,9 +8,9 @@
 //
 // The ability *check* is not here: the score boxes above the blocks are the check button, and
 // rendering it twice would put two of the same roll on one sheet.
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { rollD20 } from '@/lib/d20Rolls';
+import { effectiveModifier, rollD20 } from '@/lib/d20Rolls';
 import {
   applyRollEffects,
   describeRollEffects,
@@ -51,7 +51,7 @@ function ProficiencyDot({ proficient, expertise = false }: Readonly<{ proficient
  * feature; this is only the sign that the number about to be rolled is not the bare one.
  */
 export function RollEffectMark({ effects }: Readonly<{ effects: AppliedRollEffects }>) {
-  const { advantage, disadvantage, floor, applied } = effects;
+  const { advantage, disadvantage, floor, bonus, applied } = effects;
   if (applied.length === 0) return null;
 
   const title = describeRollEffects(applied);
@@ -62,6 +62,9 @@ export function RollEffectMark({ effects }: Readonly<{ effects: AppliedRollEffec
       {swing && advantage ? <ChevronUp className="h-3.5 w-3.5" /> : null}
       {swing && disadvantage ? <ChevronDown className="h-3.5 w-3.5" /> : null}
       {floor ? <span className="text-[0.65rem] font-semibold leading-none">≥{floor}</span> : null}
+      {/* The row's own number already carries the bonus, so this says a feature is in it, not how
+          much — two signed numbers side by side read as one sum. */}
+      {bonus ? <Plus className="h-3 w-3" /> : null}
     </span>
   );
 }
@@ -94,7 +97,7 @@ function RollRow({ name, proficient, expertise = false, modifier, rollLabel, eff
       </span>
       <span className="flex shrink-0 items-center gap-1.5">
         <RollEffectMark effects={effects} />
-        <span className="font-semibold tabular-nums">{formatModifier(modifier)}</span>
+        <span className="font-semibold tabular-nums">{formatModifier(effectiveModifier(modifier, effects))}</span>
       </span>
     </button>
   );
@@ -147,7 +150,7 @@ export function SheetAbilityBlocks({ saves, skills, variant = 'panel', rollEffec
                     <ProficiencyDot proficient={save.proficient} />
                     <span className="uppercase tracking-wide text-muted-foreground">Save</span>
                     <RollEffectMark effects={saveEffects} />
-                    <span className="font-semibold tabular-nums">{formatModifier(save.modifier)}</span>
+                    <span className="font-semibold tabular-nums">{formatModifier(effectiveModifier(save.modifier, saveEffects))}</span>
                   </button>
                 ) : null}
               </div>

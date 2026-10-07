@@ -48,16 +48,29 @@ const readAbilities = (fragment) => {
   return Array.from(new Set(matches.map((entry) => entry.toLowerCase())));
 };
 
-const toIncrease = (abilities, amount, chooseCount) => {
+const toIncrease = (abilities, amount, chooseCount, maximum) => {
   if (abilities.length === 1 && chooseCount === 1) {
-    return { ability: abilities[0], amount };
+    return maximum ? { ability: abilities[0], amount, maximum } : { ability: abilities[0], amount };
   }
-  return {
+  const increase = {
     ability: 'choose',
     amount,
     chooseFrom: abilities.length > 0 ? abilities : [...ABILITY_NAMES],
     chooseCount
   };
+  return maximum ? { ...increase, maximum } : increase;
+};
+
+// "…by 1, to a maximum of 20" rides on the clause itself; the 2024 Ability Score Improvement feat
+// states its ceiling in a sentence of its own, which has to name an ability score to count.
+const CLAUSE_MAXIMUM_PATTERN = /\bto\s+a\s+maximum\s+of\s+(\d+)\b/i;
+const SENTENCE_MAXIMUM_PATTERN = /ability\s+scores?\s+above\s+(\d+)\b/i;
+
+const readMaximum = (clause, text) => {
+  const clauseMatch = CLAUSE_MAXIMUM_PATTERN.exec(clause);
+  if (clauseMatch) return Number(clauseMatch[1]);
+  const sentenceMatch = SENTENCE_MAXIMUM_PATTERN.exec(String(text ?? ''));
+  return sentenceMatch ? Number(sentenceMatch[1]) : undefined;
 };
 
 // The abilities named before "by N" are words joined by spaces, commas and "or", so the list
@@ -68,10 +81,10 @@ const NAMED_INCREASE_PATTERN = /increase\s+your\s+((?:[a-z]+[ ,]+){1,8}?)(?:scor
  * One "increase ..." clause. Both printings occur: the named form ("Increase your Strength or
  * Dexterity score by 1") and the open one ("Increase one ability score of your choice by 2").
  */
-const parseIncreaseClause = (clause) => {
+const parseIncreaseClause = (clause, maximum) => {
   const openMatch = /increase\s+(a|an|one|two|three|\d+)\s+ability\s+scores?\s+of\s+your\s+choice\s+by\s+(\d+)/i.exec(clause);
   if (openMatch) {
-    return toIncrease([], Number(openMatch[2]), readCount(openMatch[1]));
+    return toIncrease([], Number(openMatch[2]), readCount(openMatch[1]), maximum);
   }
 
   // Tasha's Crusher, Piercer and Slasher print "Increase your Strength or Dexterity by 1" with
@@ -79,7 +92,7 @@ const parseIncreaseClause = (clause) => {
   const namedMatch = NAMED_INCREASE_PATTERN.exec(clause);
   if (namedMatch) {
     const abilities = readAbilities(namedMatch[1]);
-    return abilities.length > 0 ? toIncrease(abilities, Number(namedMatch[2]), 1) : null;
+    return abilities.length > 0 ? toIncrease(abilities, Number(namedMatch[2]), 1, maximum) : null;
   }
 
   return null;
@@ -98,7 +111,7 @@ export const parseFeatAbilityScoreIncreases = (texts) => {
       if (!/\bincrease\b/i.test(sentence)) continue;
 
       const clauses = sentence.split(/,?\s+or\s+(?=increase\b)/i);
-      const parsed = clauses.map((clause) => parseIncreaseClause(clause)).filter(Boolean);
+      const parsed = clauses.map((clause) => parseIncreaseClause(clause, readMaximum(clause, text))).filter(Boolean);
       if (parsed.length === 0) continue;
 
       if (clauses.length > 1 && parsed.length === clauses.length) {

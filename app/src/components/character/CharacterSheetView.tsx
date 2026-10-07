@@ -287,6 +287,7 @@ export function CharacterSheetView({
 
   const derivedAbilityBonuses = useMemo(() => {
     return deriveAbilityScoreBonuses({
+      abilityScores: character.abilityScores,
       background,
       species,
       variant,
@@ -294,7 +295,7 @@ export function CharacterSheetView({
       abilityScoreChoiceModes: character.abilityScoreChoiceModes,
       abilityScoreChoiceSelections: character.abilityScoreChoiceSelections
     });
-  }, [character.abilityScoreChoiceModes, character.abilityScoreChoiceSelections, allFeatData, background, species, variant]);
+  }, [character.abilityScores, character.abilityScoreChoiceModes, character.abilityScoreChoiceSelections, allFeatData, background, species, variant]);
 
   const displayedAbilityScores = useMemo(() => {
     const storedBonuses = Object.keys(character.abilityScoreBonuses ?? {}).length > 0
@@ -357,8 +358,14 @@ export function CharacterSheetView({
         .filter((resource) => resource.activatable && !resource.active)
         .map((resource) => (resource.featureName ?? resource.name).toLowerCase()),
     );
-    return resolveCharacterRollEffects(activeFeaturesWithChoices, { dormantFeatureNames });
-  }, [activeFeaturesWithChoices, classResources]);
+    const abilityModifiers = Object.fromEntries(
+      Object.entries(displayedAbilityScores).map(([ability, score]) => [ability, calculateModifier(score)]),
+    );
+    return resolveCharacterRollEffects(activeFeaturesWithChoices, {
+      dormantFeatureNames,
+      bonusContext: { proficiencyBonus, abilityModifiers }
+    });
+  }, [activeFeaturesWithChoices, classResources, displayedAbilityScores, proficiencyBonus]);
 
   const vitals = useMemo(() => {
     return deriveSheetVitals({

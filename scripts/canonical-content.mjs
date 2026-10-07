@@ -301,8 +301,9 @@ const sanitizeContent = (content, source) => {
   }
 
   // Not one of `contentBucketKeys`: an action every character already has is not an entry anybody
-  // picks, so it is neither counted in a pack's total nor offered in the homebrew hub.
-  sanitized.combatActions = (Array.isArray(content?.combatActions) ? content.combatActions : [])
+  // picks, so it is neither counted in a pack's total nor offered in the homebrew hub. Omitted when
+  // empty, for the same reason `languages` is.
+  const combatActions = (Array.isArray(content?.combatActions) ? content.combatActions : [])
     .filter((entry) => isObject(entry) && entry.name && entry.timing)
     .map((entry) => ({
       id: String(entry.id ?? ''),
@@ -314,6 +315,11 @@ const sanitizeContent = (content, source) => {
       sourceId: source.sourceId
     }))
     .filter((entry) => entry.id && entry.description);
+  if (combatActions.length > 0) {
+    sanitized.combatActions = combatActions;
+  } else {
+    delete sanitized.combatActions;
+  }
 
   // Not one of `contentBucketKeys` either: a language is picked in a slot a species or background
   // opens, not out of the library. Omitted when empty, so regenerating a pack from a document that

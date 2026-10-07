@@ -29,7 +29,7 @@ import {
 import { deriveAttacksPerAction } from '@/lib/sheetCombat';
 import { castPatch, castableSlots } from '@/lib/spellCasting';
 import { setClassResourceUsed, toggleResourceActive } from '@/lib/sheetPlayState';
-import { rollD20 } from '@/lib/d20Rolls';
+import { effectiveModifier, rollD20 } from '@/lib/d20Rolls';
 import { applyRollEffects, type AppliedRollEffects, type ResolvedRollEffect } from '@/lib/rollEffects';
 import { rollOnScreen } from '@/store/diceTrayStore';
 import { formatModifier } from '@/lib/sheetDerivations';
@@ -228,7 +228,7 @@ function hitCell(entry: SheetActionEntry, effects: AppliedRollEffects, onRoll: (
           });
         }}
       >
-        {formatModifier(entry.attackBonus)}
+        {formatModifier(effectiveModifier(entry.attackBonus ?? 0, effects))}
       </button>
     );
   }

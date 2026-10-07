@@ -24,19 +24,19 @@ const read = (...lines) => extractFeatBenefitStructures('feat', lines);
 check('a named increase with several abilities is a choice', () => {
   const out = read('Increase your Intelligence, Wisdom, or Charisma score by 1, to a maximum of 20.');
   assert.deepEqual(out.abilityScoreIncreases, [
-    { ability: 'choose', amount: 1, chooseFrom: ['intelligence', 'wisdom', 'charisma'], chooseCount: 1 },
+    { ability: 'choose', amount: 1, chooseFrom: ['intelligence', 'wisdom', 'charisma'], chooseCount: 1, maximum: 20 },
   ]);
 });
 
 check('a named increase with one ability is a grant', () => {
   const out = read('Increase your Constitution score by 1, to a maximum of 20.');
-  assert.deepEqual(out.abilityScoreIncreases, [{ ability: 'constitution', amount: 1 }]);
+  assert.deepEqual(out.abilityScoreIncreases, [{ ability: 'constitution', amount: 1, maximum: 20 }]);
 });
 
 check('Tasha’s printing without the word "score" still parses', () => {
   const out = read('Increase your Strength or Dexterity by 1, to a maximum of 20.');
   assert.deepEqual(out.abilityScoreIncreases, [
-    { ability: 'choose', amount: 1, chooseFrom: ['strength', 'dexterity'], chooseCount: 1 },
+    { ability: 'choose', amount: 1, chooseFrom: ['strength', 'dexterity'], chooseCount: 1, maximum: 20 },
   ]);
 });
 
@@ -44,6 +44,27 @@ check('an open increase draws on every ability', () => {
   const out = read('Increase one ability score of your choice by 1, to a maximum of 30.');
   assert.equal(out.abilityScoreIncreases[0].chooseFrom.length, 6);
   assert.equal(out.abilityScoreIncreases[0].chooseCount, 1);
+});
+
+check('an epic boon states 30, not 20', () => {
+  const out = read('Increase one ability score of your choice by 1, to a maximum of 30.');
+  assert.equal(out.abilityScoreIncreases[0].maximum, 30);
+});
+
+check('a ceiling stated in a sentence of its own reaches both alternatives', () => {
+  const out = read('Increase one ability score of your choice by 2, or increase two ability scores of your choice by 1. This feat can’t increase an ability score above 20.');
+  assert.equal(out.abilityScoreIncreaseAlternatives[0][0].maximum, 20);
+  assert.equal(out.abilityScoreIncreaseAlternatives[1][0].maximum, 20);
+});
+
+check('an increase that states no ceiling is given none', () => {
+  const out = read('Increase your Constitution score by 1.');
+  assert.deepEqual(out.abilityScoreIncreases, [{ ability: 'constitution', amount: 1 }]);
+});
+
+check('a maximum stated for something other than a score is not read as one', () => {
+  const out = read('Increase your Strength score by 1. The extra damage is 1d8 for each level higher than 1st, to a maximum of 5d8.');
+  assert.equal(out.abilityScoreIncreases[0].maximum, undefined);
 });
 
 check('"by 2, or two scores by 1" is two alternatives, not two grants', () => {

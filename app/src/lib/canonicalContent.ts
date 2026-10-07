@@ -87,7 +87,8 @@ const abilityScoreIncreaseSchema: z.ZodType<AbilityScoreIncrease> = z.object({
   ability: z.union([abilityScoreKeySchema, z.literal('choose')]),
   amount: z.number(),
   chooseFrom: z.array(abilityScoreKeySchema).optional(),
-  chooseCount: z.number().int().positive().optional()
+  chooseCount: z.number().int().positive().optional(),
+  maximum: z.number().int().positive().optional()
 });
 
 const featureSchema: z.ZodType<Feature> = z.object({

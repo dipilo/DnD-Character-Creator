@@ -300,6 +300,7 @@ export const useCharacterStore = create<CharacterState>()(
             .filter((feat): feat is NonNullable<typeof feat> => Boolean(feat));
 
           nextCharacter.abilityScoreBonuses = deriveAbilityScoreBonuses({
+            abilityScores: nextCharacter.abilityScores,
             background,
             species,
             variant,

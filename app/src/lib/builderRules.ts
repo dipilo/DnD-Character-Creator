@@ -142,6 +142,8 @@ export interface AbilityScoreChoiceConfig {
   chooseCount: number;
   options: (keyof AbilityScores)[];
   exclusiveGroupId?: string;
+  /** The ceiling the source states for this increase, if it states one. */
+  maximum?: number;
 }
 
 const editionSourceIds = new Map<string, RulesEdition>([
@@ -771,26 +773,39 @@ const addProficiencyEntries = (entries: Proficiency[] | undefined, type: Profici
   });
 };
 
+/**
+ * One increase, clamped to the ceiling its own source states. A feat that states none is applied
+ * whole, because no printing caps a score the source did not cap.
+ */
 const addAbilityScoreBonus = (
   bonuses: Partial<Record<keyof AbilityScores, number>>,
   ability: keyof AbilityScores,
-  amount: number
+  amount: number,
+  limit?: { baseScores: AbilityScores; maximum?: number }
 ) => {
-  bonuses[ability] = (bonuses[ability] ?? 0) + amount;
+  const current = bonuses[ability] ?? 0;
+  if (limit?.maximum === undefined) {
+    bonuses[ability] = current + amount;
+    return;
+  }
+
+  const headroom = limit.maximum - (limit.baseScores[ability] + current);
+  bonuses[ability] = current + Math.max(0, Math.min(amount, headroom));
 };
 
 const getChoiceConfigId = (prefix: string, index: number) => `${prefix}:choice:${index}`;
 
 const applyFixedAbilityScoreIncreases = (
   bonuses: Partial<Record<keyof AbilityScores, number>>,
-  increases: AbilityScoreIncrease[] | undefined
+  increases: AbilityScoreIncrease[] | undefined,
+  baseScores: AbilityScores
 ) => {
   increases?.forEach((increase) => {
     if (increase.ability === 'choose') {
       return;
     }
 
-    addAbilityScoreBonus(bonuses, increase.ability, increase.amount);
+    addAbilityScoreBonus(bonuses, increase.ability, increase.amount, { baseScores, maximum: increase.maximum });
   });
 };
 
@@ -821,7 +836,8 @@ const getChoiceConfigsFromIncreases = ({
       sourceLabel,
       amount: increase.amount,
       chooseCount,
-      options
+      options,
+      maximum: increase.maximum
     } satisfies AbilityScoreChoiceConfig];
   });
 };
@@ -957,7 +973,18 @@ export const getAbilityScoreChoiceConfigs = ({
   return configs;
 };
 
+export const applyAbilityScoreBonuses = (
+  abilityScores: Partial<AbilityScores> | undefined,
+  bonuses: Partial<Record<keyof AbilityScores, number>> | undefined
+): AbilityScores => {
+  return abilityDisplayOrder.reduce<AbilityScores>((scores, ability) => {
+    scores[ability] = (abilityScores?.[ability] ?? defaultAbilityScores[ability]) + (bonuses?.[ability] ?? 0);
+    return scores;
+  }, { ...defaultAbilityScores });
+};
+
 export const deriveAbilityScoreBonuses = ({
+  abilityScores,
   background,
   species,
   variant,
@@ -965,6 +992,7 @@ export const deriveAbilityScoreBonuses = ({
   abilityScoreChoiceModes,
   abilityScoreChoiceSelections
 }: {
+  abilityScores?: Partial<AbilityScores>;
   background?: Background;
   species?: Species;
   variant?: SpeciesVariant;
@@ -974,16 +1002,20 @@ export const deriveAbilityScoreBonuses = ({
 }) => {
   const bonuses: Partial<Record<keyof AbilityScores, number>> = {};
   const usedAbilitiesByExclusiveGroup = new Map<string, Set<keyof AbilityScores>>();
+  // A ceiling is on the resulting score, so an increase that states one has to see the scores the
+  // player entered as well as what every earlier increase already added.
+  const baseScores = applyAbilityScoreBonuses(abilityScores, undefined);
 
   if (background?.abilityScoreIncreases?.length) {
-    applyFixedAbilityScoreIncreases(bonuses, background.abilityScoreIncreases);
+    applyFixedAbilityScoreIncreases(bonuses, background.abilityScoreIncreases, baseScores);
   }
 
-  applyFixedAbilityScoreIncreases(bonuses, species?.abilityScoreIncreases);
-  applyFixedAbilityScoreIncreases(bonuses, variant?.abilityScoreIncreases);
+  applyFixedAbilityScoreIncreases(bonuses, species?.abilityScoreIncreases, baseScores);
+  applyFixedAbilityScoreIncreases(bonuses, variant?.abilityScoreIncreases, baseScores);
   feats?.forEach((feat) => applyFixedAbilityScoreIncreases(
     bonuses,
-    getSelectedFeatAbilityScoreAlternative(feat, abilityScoreChoiceModes).increases
+    getSelectedFeatAbilityScoreAlternative(feat, abilityScoreChoiceModes).increases,
+    baseScores
   ));
 
   getAbilityScoreChoiceConfigs({ background, species, variant, feats, abilityScoreChoiceModes }).forEach((config) => {
@@ -999,7 +1031,7 @@ export const deriveAbilityScoreBonuses = ({
     uniqueSelections
       .filter((ability) => !exclusiveGroup?.has(ability))
       .forEach((ability) => {
-        addAbilityScoreBonus(bonuses, ability, config.amount);
+        addAbilityScoreBonus(bonuses, ability, config.amount, { baseScores, maximum: config.maximum });
         exclusiveGroup?.add(ability);
       });
 
@@ -1009,16 +1041,6 @@ export const deriveAbilityScoreBonuses = ({
   });
 
   return bonuses;
-};
-
-export const applyAbilityScoreBonuses = (
-  abilityScores: Partial<AbilityScores> | undefined,
-  bonuses: Partial<Record<keyof AbilityScores, number>> | undefined
-): AbilityScores => {
-  return abilityDisplayOrder.reduce<AbilityScores>((scores, ability) => {
-    scores[ability] = (abilityScores?.[ability] ?? defaultAbilityScores[ability]) + (bonuses?.[ability] ?? 0);
-    return scores;
-  }, { ...defaultAbilityScores });
 };
 
 const parseArmorFormula = (text: string) => {

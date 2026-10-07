@@ -156,6 +156,88 @@ check("Rage's advantage does not reach a Dexterity check", () => {
 });
 
 /* -------------------------------------------------------------------------- *
+ * A flat bonus
+ * -------------------------------------------------------------------------- */
+
+const jackOfAllTrades = {
+  id: 'joat',
+  name: 'Jack of All Trades',
+  source: 'Basic Rules (2014)',
+  description:
+    'Starting at 2nd level, you can add half your proficiency bonus, rounded down, to any ability '
+    + "check you make that doesn’t already include your proficiency bonus.",
+};
+
+const remarkableAthlete = {
+  id: 'ra',
+  name: 'Remarkable Athlete',
+  source: 'Basic Rules (2014)',
+  description:
+    'Starting at 3rd level, you can add half your proficiency bonus (round up) to any Strength, '
+    + "Dexterity, or Constitution check you make that doesn’t already use your proficiency bonus.",
+};
+
+const alert = {
+  id: 'alert',
+  name: 'Initiative Proficiency',
+  source: 'Basic Rules (2024)',
+  description: 'When you roll Initiative, you can add your Proficiency Bonus to the roll.',
+};
+
+const flashOfGenius = {
+  id: 'fog',
+  name: 'Flash of Genius',
+  source: "Tasha’s Cauldron of Everything",
+  description:
+    'When a creature you can see within 30 feet of you makes an ability check or a saving throw, '
+    + 'you can use your reaction to add your Intelligence modifier to the roll.',
+};
+
+const context = { proficiencyBonus: 3, abilityModifiers: { charisma: 4, dexterity: 2 } };
+
+check('Jack of All Trades is half the proficiency bonus, rounded down', () => {
+  const [effect] = deriveRollEffects(jackOfAllTrades);
+  assert.equal(effect.kind, 'bonus');
+  assert.deepEqual(effect.scope.rolls, ['check']);
+  assert.equal(effect.scope.excludesProficiency, true);
+  assert.deepEqual(effect.bonus, { source: 'proficiency', ability: undefined, half: true, rounding: 'down', minimum: undefined });
+});
+
+check('Jack of All Trades reaches an unproficient check and not a proficient one', () => {
+  const effects = resolveCharacterRollEffects([jackOfAllTrades], { bonusContext: context });
+  assert.equal(applyRollEffects(effects, { kind: 'check', skill: 'Arcana', proficient: false }).bonus, 1);
+  assert.equal(applyRollEffects(effects, { kind: 'check', skill: 'Persuasion', proficient: true }).bonus, undefined);
+});
+
+check('Remarkable Athlete rounds up and is held to the three abilities it names', () => {
+  const effects = resolveCharacterRollEffects([remarkableAthlete], { bonusContext: context });
+  assert.equal(applyRollEffects(effects, { kind: 'check', ability: 'strength' }).bonus, 2);
+  assert.equal(applyRollEffects(effects, { kind: 'check', ability: 'charisma' }).bonus, undefined);
+});
+
+check('the Alert feat states its scope before the figure, not after', () => {
+  const effects = resolveCharacterRollEffects([alert], { bonusContext: context });
+  assert.equal(applyRollEffects(effects, { kind: 'initiative', ability: 'dexterity' }).bonus, 3);
+  assert.equal(applyRollEffects(effects, { kind: 'check', ability: 'dexterity' }).bonus, undefined);
+});
+
+check("Flash of Genius adds to somebody else's roll, so it grants nothing here", () => {
+  assert.deepEqual(deriveRollEffects(flashOfGenius), []);
+});
+
+check('a bonus whose figure cannot be placed is left off', () => {
+  const effects = resolveCharacterRollEffects([jackOfAllTrades]);
+  assert.equal(effects.length, 0);
+});
+
+check('a clause adding a die is a throw, not a bonus', () => {
+  assert.deepEqual(
+    read('When you fail an ability check, you can add a d10 to your roll.').filter((e) => e.kind === 'bonus'),
+    [],
+  );
+});
+
+/* -------------------------------------------------------------------------- *
  * Report
  * -------------------------------------------------------------------------- */
 

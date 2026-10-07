@@ -12,7 +12,7 @@ import type { AbilityScores, Feature } from '@/types/dnd';
 /** The four d20 tests the sheet rolls. Initiative is kept apart: it is not an ability check here. */
 export type RollKind = 'check' | 'save' | 'attack' | 'initiative';
 
-export type RollEffectKind = 'advantage' | 'disadvantage' | 'floor';
+export type RollEffectKind = 'advantage' | 'disadvantage' | 'floor' | 'bonus';
 
 export interface RollScope {
   /** Which tests the clause covers. Empty means it named none and the effect is dropped. */
@@ -21,6 +21,22 @@ export interface RollScope {
   skills?: readonly string[];
   /** "that lets you add your proficiency bonus", "that uses one of your skill proficiencies". */
   requiresProficiency?: boolean;
+  /** Jack of All Trades' own narrowing: "that doesn't already include your proficiency bonus". */
+  excludesProficiency?: boolean;
+}
+
+/**
+ * How big a bonus is, as the book states it rather than as a number: the size is one of the
+ * character's own figures and is resolved against them in `resolveCharacterRollEffects`.
+ */
+export interface RollBonus {
+  source: 'ability' | 'proficiency';
+  ability?: keyof AbilityScores;
+  /** "half your proficiency bonus". Both books round a halved value down unless they say up. */
+  half?: boolean;
+  rounding?: 'up' | 'down';
+  /** "(with a minimum bonus of +1)". */
+  minimum?: number;
 }
 
 export interface RollEffect {
@@ -29,6 +45,8 @@ export interface RollEffect {
   kind: RollEffectKind;
   /** `floor` only: a d20 that lands below this counts as this. */
   value?: number;
+  /** `bonus` only: the figure the clause names, before it is placed against a character. */
+  bonus?: RollBonus;
   scope: RollScope;
   /**
    * The words that narrow the clause, verbatim — "against being frightened", "to avoid or end the
@@ -41,6 +59,8 @@ export interface RollEffect {
 
 /** An effect placed against the character who holds it. */
 export interface ResolvedRollEffect extends RollEffect {
+  /** `bonus` only: what the clause's figure comes to for this character. */
+  amount?: number;
   featureName: string;
   /** The book the feature came from, for the selector's helper line. */
   source: string;
@@ -99,6 +119,24 @@ function sentenceStart(text: string, index: number): number {
   return start;
 }
 
+/**
+ * "add half your proficiency bonus, rounded down, to ...", "add your Charisma modifier to ...".
+ * The size is closed to the character's own figures: a clause adding a die is a throw, which
+ * `featureFacets` reads, and a number nobody can place is not a d20 effect.
+ */
+const BONUS_PATTERN =
+  /\badd (half )?your (strength|dexterity|constitution|intelligence|wisdom|charisma|proficiency) (?:modifier|bonus)\b([^.;]{0,40}?) to /gi;
+
+/** The test has to be one the character makes: Flash of Genius adds its modifier to someone else's. */
+const SELF_TEST = /\byou (?:make|roll)\b|\byour (?:initiative|ability check|attack roll|saving throw)/i;
+
+/** "any ability check you make that doesn't already include your proficiency bonus". */
+const EXCLUDES_PROFICIENCY =
+  /\bdoesn[’']t (?:already|otherwise) (?:include|use)\b[^.;]{0,24}proficiency bonus/i;
+
+const ROUNDING_UP = /round(?:ed)? up/i;
+const MINIMUM_BONUS = /minimum (?:bonus )?of \+?(\d+)/i;
+
 const PROFICIENCY_SCOPE =
   /\b(?:lets you add your proficiency bonus|uses one of your (?:skill|tool)|you(?:'re| are) proficient)/i;
 
@@ -107,7 +145,7 @@ const PROFICIENCY_SCOPE =
  * make" is not among them: it is how both printings open a clause that states the scope.
  */
 const CONDITION_PATTERN =
-  /\b(?:against|while|unless|if you|to avoid|to end|to escape|to maintain|to track|to navigate|to influence|to produce|that rely on|that you can see)\b/i;
+  /\b(?:against|while|unless|if you|to avoid|to end|to escape|to maintain|to track|to navigate|to influence|to produce|that rely on|that you can see|with that|made with)\b/i;
 
 function readRolls(clause: string): RollKind[] {
   const rolls: RollKind[] = [];
@@ -131,10 +169,15 @@ function readSkills(clause: string): string[] {
   return SKILL_PATTERNS.filter(([, pattern]) => pattern.test(clause)).map(([skill]) => skill);
 }
 
+/** What follows ", and" is a further effect, not more qualification — Sacred Weapon states both. */
+const CONDITION_END = /,\s+and\s/i;
+
 function readCondition(clause: string): string | undefined {
   const match = CONDITION_PATTERN.exec(clause);
   if (!match) return undefined;
-  const condition = clause.slice(match.index).trim();
+  const rest = clause.slice(match.index);
+  const end = CONDITION_END.exec(rest);
+  const condition = (end ? rest.slice(0, end.index) : rest).trim();
   return condition.length > 0 ? condition : undefined;
 }
 
@@ -154,6 +197,28 @@ function readScope(clause: string): RollScope {
     abilities: narrowsByAbility ? abilities : undefined,
     skills: skills.length > 0 ? skills : undefined,
     requiresProficiency: PROFICIENCY_SCOPE.test(clause) || undefined,
+    excludesProficiency: EXCLUDES_PROFICIENCY.test(clause) || undefined,
+  };
+}
+
+/** The size a bonus clause names, with the rounding and the floor the same clause states. */
+function readBonus(match: RegExpMatchArray, clause: string): RollBonus {
+  const named = match[2].toLowerCase();
+  const trailing = match[3] ?? '';
+  const minimum = MINIMUM_BONUS.exec(clause);
+  const half = Boolean(match[1]);
+  const isProficiency = named === 'proficiency';
+  // Both books round a halved value down unless the clause says otherwise.
+  const roundsUp = ROUNDING_UP.test(trailing);
+  let rounding: 'up' | 'down' | undefined;
+  if (half) rounding = roundsUp ? 'up' : 'down';
+
+  return {
+    source: isProficiency ? 'proficiency' : 'ability',
+    ability: isProficiency ? undefined : (named as keyof AbilityScores),
+    half: half || undefined,
+    rounding,
+    minimum: minimum ? Number.parseInt(minimum[1], 10) : undefined,
   };
 }
 
@@ -194,7 +259,48 @@ export function deriveRollEffects(
     });
   }
 
+  for (const match of text.matchAll(BONUS_PATTERN)) {
+    const start = (match.index ?? 0) + match[0].length;
+    const clause = clauseFrom(text, start);
+    // A bonus states its scope on either side of the figure: Jack of All Trades after it, the
+    // Alert feat before it ("When you roll Initiative, you can add your Proficiency Bonus…").
+    const lead = text.slice(sentenceStart(text, match.index ?? 0), match.index ?? 0);
+    const scope = readScope(`${lead} ${clause}`);
+    if (scope.rolls.length === 0) continue;
+    if (!SELF_TEST.test(`${lead} ${clause}`)) continue;
+    effects.push({
+      id: `${feature.id}::bonus::${match.index ?? 0}`,
+      kind: 'bonus',
+      bonus: readBonus(match, clause),
+      scope,
+      condition: readCondition(clause),
+      detail: `${match[0].trim()} ${clause}`,
+    });
+  }
+
   return effects;
+}
+
+/** The character's own figures, which is what a bonus clause names rather than a number. */
+export interface RollBonusContext {
+  proficiencyBonus?: number;
+  abilityModifiers?: Partial<Record<keyof AbilityScores, number>>;
+}
+
+/**
+ * What a bonus clause comes to for this character. A figure that cannot be resolved leaves the
+ * effect off rather than reporting a wrong number, exactly as an unreadable term does to a
+ * feature's throw.
+ */
+function resolveBonusAmount(bonus: RollBonus, context: RollBonusContext): number | undefined {
+  const base = bonus.source === 'proficiency'
+    ? context.proficiencyBonus
+    : bonus.ability && context.abilityModifiers?.[bonus.ability];
+  if (typeof base !== 'number') return undefined;
+
+  const halved = bonus.rounding === 'up' ? Math.ceil(base / 2) : Math.floor(base / 2);
+  const amount = bonus.half ? halved : base;
+  return bonus.minimum === undefined ? amount : Math.max(amount, bonus.minimum);
 }
 
 /* -------------------------------------------------------------------------- *
@@ -209,6 +315,8 @@ export interface RollEffectOptions {
    * printed.
    */
   dormantFeatureNames?: ReadonlySet<string>;
+  /** What a bonus clause's figure comes to. Without it, bonus effects resolve to nothing. */
+  bonusContext?: RollBonusContext;
 }
 
 /**
@@ -225,7 +333,14 @@ export function resolveCharacterRollEffects(
   for (const feature of features) {
     if (dormant.has(feature.name.toLowerCase())) continue;
     for (const effect of deriveRollEffects(feature)) {
-      resolved.push({ ...effect, featureName: feature.name, source: feature.source });
+      if (effect.kind !== 'bonus') {
+        resolved.push({ ...effect, featureName: feature.name, source: feature.source });
+        continue;
+      }
+
+      const amount = effect.bonus && resolveBonusAmount(effect.bonus, options.bonusContext ?? {});
+      if (typeof amount !== 'number') continue;
+      resolved.push({ ...effect, amount, featureName: feature.name, source: feature.source });
     }
   }
 
@@ -239,6 +354,7 @@ export function resolveCharacterRollEffects(
 function matchesScope(scope: RollScope, target: RollTarget): boolean {
   if (!scope.rolls.includes(target.kind)) return false;
   if (scope.requiresProficiency && !target.proficient) return false;
+  if (scope.excludesProficiency && target.proficient) return false;
   if (scope.skills?.length) {
     return target.skill ? scope.skills.includes(target.skill) : false;
   }
@@ -261,6 +377,8 @@ export interface AppliedRollEffects {
   disadvantage: boolean;
   /** The highest floor that covers the roll; a d20 below it counts as it. */
   floor?: number;
+  /** What the covering features add to the roll, on top of the row's own modifier. */
+  bonus?: number;
   /** Every effect that applied, for the roll's own detail line. */
   applied: readonly ResolvedRollEffect[];
 }
@@ -277,11 +395,16 @@ export function applyRollEffects(
   const applied = effectsForRoll(effects, target);
   const floors = applied.flatMap((effect) =>
     effect.kind === 'floor' && typeof effect.value === 'number' ? [effect.value] : []);
+  const bonus = applied.reduce(
+    (total, effect) => (effect.kind === 'bonus' ? total + (effect.amount ?? 0) : total),
+    0,
+  );
 
   return {
     advantage: applied.some((effect) => effect.kind === 'advantage'),
     disadvantage: applied.some((effect) => effect.kind === 'disadvantage'),
     floor: floors.length > 0 ? Math.max(...floors) : undefined,
+    bonus: bonus !== 0 ? bonus : undefined,
     applied,
   };
 }

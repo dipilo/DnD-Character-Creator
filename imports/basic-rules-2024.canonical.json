@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Generated from local 2024 SRD/free-core data bundled via febdnddata.",
     "origin": "parsed-html",
-    "importedAt": "2026-10-05T08:47:28.839Z",
+    "importedAt": "2026-10-06T23:38:21.041Z",
     "parser": "basic-rules-html+free-core-enriched",
     "visibility": "private"
   },
@@ -19935,7 +19935,8 @@
                 "wisdom",
                 "charisma"
               ],
-              "chooseCount": 1
+              "chooseCount": 1,
+              "maximum": 20
             }
           ],
           [
@@ -19950,7 +19951,8 @@
                 "wisdom",
                 "charisma"
               ],
-              "chooseCount": 2
+              "chooseCount": 2,
+              "maximum": 20
             }
           ]
         ],
@@ -19970,7 +19972,8 @@
               "strength",
               "dexterity"
             ],
-            "chooseCount": 1
+            "chooseCount": 1,
+            "maximum": 20
           }
         ],
         "features": [
@@ -20054,7 +20057,8 @@
               "wisdom",
               "charisma"
             ],
-            "chooseCount": 1
+            "chooseCount": 1,
+            "maximum": 30
           }
         ],
         "features": [
@@ -20092,7 +20096,8 @@
               "wisdom",
               "charisma"
             ],
-            "chooseCount": 1
+            "chooseCount": 1,
+            "maximum": 30
           }
         ],
         "features": [
@@ -20130,7 +20135,8 @@
               "wisdom",
               "charisma"
             ],
-            "chooseCount": 1
+            "chooseCount": 1,
+            "maximum": 30
           }
         ],
         "features": [
@@ -20168,7 +20174,8 @@
               "wisdom",
               "charisma"
             ],
-            "chooseCount": 1
+            "chooseCount": 1,
+            "maximum": 30
           }
         ],
         "features": [
@@ -20213,7 +20220,8 @@
               "wisdom",
               "charisma"
             ],
-            "chooseCount": 1
+            "chooseCount": 1,
+            "maximum": 30
           }
         ],
         "features": [
@@ -20251,7 +20259,8 @@
               "wisdom",
               "charisma"
             ],
-            "chooseCount": 1
+            "chooseCount": 1,
+            "maximum": 30
           }
         ],
         "features": [
@@ -20296,7 +20305,8 @@
               "wisdom",
               "charisma"
             ],
-            "chooseCount": 1
+            "chooseCount": 1,
+            "maximum": 30
           }
         ],
         "features": [

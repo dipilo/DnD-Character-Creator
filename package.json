@@ -33,6 +33,7 @@
     "test:hit-points": "node --import ./app/test/aliasLoader.mjs app/test/hitPoints.mjs",
     "test:feature-throws": "node --import ./app/test/aliasLoader.mjs app/test/featureThrows.mjs",
     "test:expertise": "node --import ./app/test/aliasLoader.mjs app/test/expertise.mjs",
+    "test:ability-ceilings": "node --import ./app/test/aliasLoader.mjs app/test/abilityScoreCeilings.mjs",
     "import:source": "node scripts/import-source.mjs --",
     "import:5etools": "node scripts/import-5etools.mjs",
     "import:kids-on-bikes": "node scripts/import-kids-on-bikes.mjs",
