@@ -21,11 +21,17 @@ const GRANTABLE_PERMISSIONS = [
 const GRANTABLE_PERMISSION_SET = new Set(GRANTABLE_PERMISSIONS);
 
 /**
- * What a campaign grants arrivals when it has no opinion of its own. A member who can change
- * nothing on their own row cannot correct their own timezone, so "no default" used to mean a seat
- * its holder could not touch.
+ * The floor a seat-holder always gets, whatever the campaign's defaults say. A member who can
+ * change nothing on their own row cannot correct their own timezone.
  */
-const DEFAULT_MEMBER_PERMISSIONS = Object.freeze({ can_edit_self: true, players_self_delete: true });
+const SELF_SERVICE_PERMISSIONS = Object.freeze({ can_edit_self: true, players_self_delete: true });
+
+/**
+ * What a campaign grants arrivals when it has no opinion of its own. Seats are what a player joins
+ * to make: without `can_create_players` an invited player landed on a roster with no Add button and
+ * nothing to claim, so every campaign had to grant it by hand before anyone could play.
+ */
+const DEFAULT_MEMBER_PERMISSIONS = Object.freeze({ ...SELF_SERVICE_PERMISSIONS, can_create_players: true });
 
 /**
  * Normalise a permissions object from a request body.
@@ -95,6 +101,7 @@ function normaliseDefaultPermissions(value) {
 
 module.exports = {
   DEFAULT_MEMBER_PERMISSIONS,
+  SELF_SERVICE_PERMISSIONS,
   GRANTABLE_PERMISSIONS,
   joinPermissionsBlob,
   normaliseDefaultPermissions,

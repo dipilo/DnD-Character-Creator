@@ -201,8 +201,15 @@ async function inviteFlow(campaignId, players) {
   const playerCampaigns = await call('player', 'GET', '/api/campaigns');
   check('the invited player now sees the campaign', playerCampaigns.json.campaigns?.some((c) => c.id === campaignId), JSON.stringify(playerCampaigns.json).slice(0, 200));
 
-  // A plain member holds no permissions until the owner grants them: the roster page hides the
-  // add button for exactly this reason, and the server is what makes it true.
+  // The built-in default lets an arrival make their own seat: a campaign that has said nothing
+  // used to hand them a roster with no Add button and nothing of their own to claim.
+  const byDefault = await call('player', 'POST', '/api/players', { campaign_id: campaignId, name: 'Default seat' });
+  check('the default grant lets a new member make a seat', byDefault.status === 200, `${byDefault.status} ${JSON.stringify(byDefault.json)}`);
+
+  // And the gate is still a gate: the owner narrowing the member's row is what shuts it.
+  await call('dm', 'PATCH', `/api/campaigns/${campaignId}/members/${(await call('dm', 'GET', `/api/campaigns/${campaignId}/members`)).json.members?.find((m) => m.role !== 'owner').id}/permissions`, {
+    permissions: { can_edit_self: true },
+  });
   const refused = await call('player', 'POST', '/api/players', { campaign_id: campaignId, name: 'Uninvited' });
   check('a member without can_create_players is refused', refused.status === 403, `${refused.status} ${JSON.stringify(refused.json)}`);
 

@@ -101,9 +101,11 @@ router.post('/api/sync', requireAuth, async (req, res) => {
 
     const mem = await getCampaignMembership(req.user.id, campaignId);
     if (!mem) return res.status(403).json({ error: 'not_a_member' });
-    // An import creates and edits seats, so it is gated like creating one. The old route let any
-    // member of a campaign rewrite everyone's seats. Same shape as POST /api/players.
-    if (!await isCampaignOwner(req.user.id, campaignId) && !memberHasPermission(mem, 'can_create_players')) {
+    // An import rewrites seats that are not the caller's, so it takes the right over other
+    // people's seats as well as the right to make one. `can_create_players` alone is the default
+    // every arrival holds — gating on it by itself let any member rewrite the whole roster.
+    const mayImport = memberHasPermission(mem, 'can_create_players') && memberHasPermission(mem, 'can_delete_players');
+    if (!await isCampaignOwner(req.user.id, campaignId) && !mayImport) {
       return res.status(403).json({ error: 'forbidden' });
     }
 

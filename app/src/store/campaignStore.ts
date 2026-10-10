@@ -21,8 +21,12 @@ export const CAMPAIGN_PERMISSION_FLAGS = [
   { key: 'players_self_delete', label: 'Release own seat', hint: 'Give up or delete the seat they hold' },
 ] as const satisfies readonly { key: keyof CampaignPermissions; label: string; hint: string }[];
 
-/** What a campaign grants arrivals when it has never said — mirrors the server's own floor. */
-export const DEFAULT_MEMBER_PERMISSIONS: CampaignPermissions = { can_edit_self: true, players_self_delete: true };
+/** What a campaign grants arrivals when it has never said — mirrors the server's own default. */
+export const DEFAULT_MEMBER_PERMISSIONS: CampaignPermissions = {
+  can_create_players: true,
+  can_edit_self: true,
+  players_self_delete: true,
+};
 
 export type CampaignPermissionFlag = (typeof CAMPAIGN_PERMISSION_FLAGS)[number]['key'];
 

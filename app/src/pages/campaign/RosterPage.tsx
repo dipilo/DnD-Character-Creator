@@ -70,6 +70,7 @@ export function RosterPage() {
   const isOwner = isCampaignOwner(membership);
   const canAdd = memberCan(membership, 'can_create_players');
   const canDeleteAny = memberCan(membership, 'can_delete_players');
+  const canImport = isOwner || (canAdd && canDeleteAny);
 
   // Holding a seat is not the same as being allowed to change it: the server checks the flag too,
   // so a button shown without it would only ever produce a 403.
@@ -130,11 +131,14 @@ export function RosterPage() {
         </div>
         {canAdd ? (
           <div className="flex flex-wrap gap-2">
-            {/* Importing creates and edits seats, so it is the same right as adding one (§20). */}
-            <Button variant="outline" onClick={() => setImporting(true)}>
-              <Upload className="h-4 w-4" />
-              Import from a sheet
-            </Button>
+            {/* An import rewrites seats the caller does not hold, so it takes the right over other
+                people's seats too — adding one is a default every member has. */}
+            {canImport ? (
+              <Button variant="outline" onClick={() => setImporting(true)}>
+                <Upload className="h-4 w-4" />
+                Import from a sheet
+              </Button>
+            ) : null}
             <Button onClick={() => setEditing('new')}>
               <Plus className="h-4 w-4" />
               Add a seat

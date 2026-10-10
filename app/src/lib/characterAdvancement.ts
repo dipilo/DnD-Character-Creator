@@ -246,7 +246,12 @@ export interface AdvancementContext {
   expertiseProficiencies?: ExpertiseProficiencies;
 }
 
-const classFeaturesPath = (classId: string) => `/builder/class/${encodeURIComponent(classId)}?tab=features`;
+/**
+ * Which feature owes the choice, so the Class step can unfold the card holding it. A pick inside a
+ * collapsed accordion is one nobody finds.
+ */
+const featurePointer = (featureId: string | undefined) => (featureId ? `&feature=${encodeURIComponent(featureId)}` : '');
+const classFeaturesPath = (classId: string, featureId?: string) => `/builder/class/${encodeURIComponent(classId)}?tab=features${featurePointer(featureId)}`;
 const classSubclassesPath = (classId: string) => `/builder/class/${encodeURIComponent(classId)}?tab=subclasses`;
 const classProficienciesPath = (classId: string) => `/builder/class/${encodeURIComponent(classId)}?tab=proficiencies`;
 const speciesPath = (speciesId: string) => `/builder/species/${encodeURIComponent(speciesId)}`;
@@ -301,7 +306,7 @@ const outstandingOptionCount = (feature: Feature, character: AdvancementCharacte
 function collectFeatureTasks(
   features: readonly Feature[],
   character: AdvancementCharacter,
-  href: string,
+  hrefFor: (featureId: string) => string,
   idPrefix: string,
   ownerName: string
 ): AdvancementTask[] {
@@ -313,7 +318,7 @@ function collectFeatureTasks(
       id: `${idPrefix}:${feature.id}`,
       label: outstanding === 1 ? `Choose an option for ${feature.name}` : `Choose ${outstanding} options for ${feature.name}`,
       detail: `${ownerName} · level ${feature.level}`,
-      href,
+      href: hrefFor(feature.id),
       count: outstanding
     });
   }
@@ -354,7 +359,7 @@ function expertiseTasks(context: AdvancementContext): AdvancementTask[] {
         ? `Choose a proficiency for ${entry.featureName}`
         : `Choose ${entry.outstanding} proficiencies for ${entry.featureName}`,
       detail: `${entry.sourceName}, level ${entry.grant.level}`,
-      href: classFeaturesPath(entry.sourceClassId),
+      href: classFeaturesPath(entry.sourceClassId, entry.featureId),
       count: entry.outstanding
     }));
 }
@@ -384,7 +389,7 @@ function collectClassTasks(context: AdvancementContext): AdvancementTask[] {
       ...collectFeatureTasks(
         cls.features.filter((feature) => feature.level <= entry.level),
         character,
-        classFeaturesPath(cls.id),
+        (featureId) => classFeaturesPath(cls.id, featureId),
         `class:${cls.id}`,
         cls.name
       )
@@ -395,7 +400,7 @@ function collectClassTasks(context: AdvancementContext): AdvancementTask[] {
         ...collectFeatureTasks(
           subclass.features.filter((feature) => feature.level <= entry.level),
           character,
-          classSubclassesPath(cls.id),
+          () => classSubclassesPath(cls.id),
           `subclass:${subclass.id}`,
           subclass.name
         )
@@ -504,7 +509,7 @@ function collectSpeciesTasks(context: AdvancementContext): AdvancementTask[] {
     ...collectFeatureTasks(
       [...species.features, ...(variant?.features ?? [])],
       character,
-      speciesPath(species.id),
+      () => speciesPath(species.id),
       `species:${species.id}`,
       ownerName
     ),

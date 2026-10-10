@@ -1,3 +1,4 @@
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useCharacterStore } from '@/store/characterStore';
 import { getContentSourceLabel, getRuntimeBackgroundById, getRuntimeClassById, getRuntimeSpeciesById, getRuntimeSpeciesVariant, getRuntimeSubclass } from '@/data';
@@ -130,6 +131,33 @@ export function ClassDetails() {
     selectedFeatureChoices,
     selectedSpellIds: (builderState.character?.spells ?? []).map((entry) => entry.spellId)
   };
+
+  // An unfinished choice links here naming the feature that owes it, and a pick inside a collapsed
+  // card is one nobody finds. The link opens that card until it is closed by hand.
+  const requestedFeatureId = searchParams.get('feature') ?? undefined;
+  const [openedByHand, setOpenedByHand] = useState<readonly string[]>([]);
+  const [closedByHand, setClosedByHand] = useState<readonly string[]>([]);
+  const openFeatureIds = useMemo(() => {
+    const open = new Set(openedByHand);
+    if (requestedFeatureId && !closedByHand.includes(requestedFeatureId)) {
+      open.add(requestedFeatureId);
+    }
+    return [...open];
+  }, [openedByHand, closedByHand, requestedFeatureId]);
+  // Two accordions share this set, so a change carries the ids of the one that reported it. Taking
+  // the values alone would close every card in the other list.
+  const handleOpenFeatureIdsChange = (values: string[], scopeIds: readonly string[]) => {
+    setOpenedByHand((current) => [...current.filter((id) => !scopeIds.includes(id)), ...values]);
+    if (requestedFeatureId && scopeIds.includes(requestedFeatureId) && !values.includes(requestedFeatureId)) {
+      setClosedByHand((current) => (current.includes(requestedFeatureId) ? current : [...current, requestedFeatureId]));
+    }
+  };
+  // A ref callback rather than an effect: it is re-attached when the link names another feature,
+  // which is the only time the card has to be brought into view.
+  const scrollRequestedIntoView = useCallback((node: HTMLDivElement | null) => {
+    if (!requestedFeatureId) return;
+    node?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, [requestedFeatureId]);
 
   if (!cls) {
     return (
@@ -342,8 +370,15 @@ export function ClassDetails() {
       .map((featureId) => allFeatureNamesById.get(featureId))
       .filter((value): value is string => Boolean(value));
 
+    // Expertise is read from the feature's own text, so nothing on a collapsed card said it had
+    // picks to make.
+    const outstandingExpertise = expertiseGrants.reduce((total, entry) => total + entry.outstanding, 0);
+    const expertiseLabel = outstandingExpertise === 1
+      ? 'Expertise: choose 1'
+      : `Expertise: choose ${outstandingExpertise}`;
+
     return (
-      <AccordionItem key={feature.id} value={feature.id}>
+      <AccordionItem key={feature.id} value={feature.id} ref={feature.id === requestedFeatureId ? scrollRequestedIntoView : undefined}>
         <AccordionTrigger>
           <div className="flex flex-wrap items-center gap-2 text-left">
             <span className="font-medium">{feature.name}</span>
@@ -351,6 +386,7 @@ export function ClassDetails() {
             {feature.optional && <Badge variant="outline">Optional</Badge>}
             {feature.replacesFeatureIds?.length ? <Badge variant="outline">Replacement</Badge> : null}
             {feature.requiresChoice && <Badge variant="outline">Requires Choice</Badge>}
+            {outstandingExpertise > 0 ? <Badge variant="destructive" className="max-w-full whitespace-normal text-left">{expertiseLabel}</Badge> : null}
           </div>
         </AccordionTrigger>
         <AccordionContent className="space-y-3">
@@ -382,6 +418,8 @@ export function ClassDetails() {
   const futureFeatures = sortFeaturesByLevel(cls.features.filter((feature) => (feature.name.trim() || feature.description.trim()) && feature.level > characterLevel));
   const visibleSubclassFeatures = sortFeaturesByLevel(selectedSubclass?.features.filter((feature) => (feature.name.trim() || feature.description.trim()) && feature.level <= characterLevel) || []);
   const futureSubclassFeatures = sortFeaturesByLevel(selectedSubclass?.features.filter((feature) => (feature.name.trim() || feature.description.trim()) && feature.level > characterLevel) || []);
+  const visibleFeatureIds = visibleFeatures.map((feature) => feature.id);
+  const visibleSubclassFeatureIds = visibleSubclassFeatures.map((feature) => feature.id);
   const inspectedSubclass = cls.subclasses.find((subclass) => subclass.id === activeSubclassId) ?? cls.subclasses[0];
   const inspectedSubclassFeatures = sortFeaturesByLevel(inspectedSubclass?.features.filter((feature) => (feature.name.trim() || feature.description.trim())) || []);
   const grants = proficiencyGrants ?? getClassProficiencyGrants(cls, classIndex);
@@ -467,8 +505,8 @@ export function ClassDetails() {
                 )}
               </CardHeader>
               <CardContent className="space-y-4">
-                <Accordion type="multiple" className="w-full">
-                  {visibleFeatures.map(renderFeatureCard)}
+                <Accordion type="multiple" className="w-full" value={openFeatureIds} onValueChange={(values) => handleOpenFeatureIdsChange(values, visibleFeatureIds)}>
+                  {visibleFeatures.map((feature) => renderFeatureCard(feature))}
                 </Accordion>
               </CardContent>
             </Card>
@@ -480,8 +518,8 @@ export function ClassDetails() {
                 <CardTitle>Subclass Features (Unlocked)</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Accordion type="multiple" className="w-full">
-                  {visibleSubclassFeatures.map(renderFeatureCard)}
+                <Accordion type="multiple" className="w-full" value={openFeatureIds} onValueChange={(values) => handleOpenFeatureIdsChange(values, visibleSubclassFeatureIds)}>
+                  {visibleSubclassFeatures.map((feature) => renderFeatureCard(feature))}
                 </Accordion>
               </CardContent>
             </Card>

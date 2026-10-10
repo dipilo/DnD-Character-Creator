@@ -4,6 +4,7 @@ const { config } = require('../config');
 const db = require('../db');
 const fetch = require('../lib/httpFetch');
 const { upsertMembership } = require('../lib/membership');
+const { joinPermissionsBlob } = require('../lib/permissions');
 const { genToken } = require('../lib/tokens');
 const {
   clearSessionCookie,
@@ -283,7 +284,10 @@ router.post('/auth/signup', async (req, res) => {
     // Create a new passwordless user scoped to this campaign
     const info2 = await db.run('INSERT INTO users(username, password_hash) VALUES (?, ?)', username, null);
     const u2 = await db.get('SELECT id, username, discord_id, created_at FROM users WHERE id = ?', info2.lastInsertRowid);
-    await db.run('INSERT OR IGNORE INTO campaign_members(campaign_id,user_id,role,permissions) VALUES (?, ?, ?, ?)', campaignId, u2.id, 'player', JSON.stringify({ can_edit_self: true, players_self_delete: true }));
+    // The campaign's own defaults, not a second copy of the floor: an owner who widened or
+    // narrowed what arrivals get meant it for this door too.
+    const camp = await db.get('SELECT id, default_member_permissions FROM campaigns WHERE id = ?', campaignId);
+    await db.run('INSERT OR IGNORE INTO campaign_members(campaign_id,user_id,role,permissions) VALUES (?, ?, ?, ?)', campaignId, u2.id, 'player', joinPermissionsBlob(camp));
     await createSession(req, res, u2);
     return res.json({ ok: true, user: publicUser(u2) });
   } catch (e) {

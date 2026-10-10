@@ -238,6 +238,49 @@ check('a clause adding a die is a throw, not a bonus', () => {
 });
 
 /* -------------------------------------------------------------------------- *
+ * A clause the sheet cannot check
+ * -------------------------------------------------------------------------- */
+
+const expertDuplication = {
+  id: 'kenku-expert-duplication',
+  name: 'Expert Duplication',
+  source: 'Mordenkainen Presents: Monsters of the Multiverse',
+  description:
+    'When you copy writing or craftwork produced by yourself or someone else, you have advantage '
+    + 'on any ability checks you make to produce an exact duplicate.',
+};
+
+check('Expert Duplication is offered, not applied, on every check it reaches', () => {
+  const effects = resolveCharacterRollEffects([expertDuplication]);
+  const athletics = applyRollEffects(effects, { kind: 'check', ability: 'strength', skill: 'Athletics' });
+  assert.equal(athletics.advantage, false);
+  assert.equal(athletics.applied.length, 0);
+  assert.equal(athletics.conditional.length, 1);
+  assert.equal(athletics.conditional[0].condition, 'to produce an exact duplicate');
+});
+
+check("a conditional disadvantage is not rolled either", () => {
+  const effects = resolveCharacterRollEffects([{
+    id: 'sunlight',
+    name: 'Sunlight Sensitivity',
+    source: 'Basic Rules (2014)',
+    description:
+      'You have disadvantage on attack rolls and on Wisdom (Perception) checks that rely on sight '
+      + 'when you, the target of your attack, or whatever you are trying to perceive is in direct sunlight.',
+  }]);
+  const perception = applyRollEffects(effects, { kind: 'check', ability: 'wisdom', skill: 'Perception' });
+  assert.equal(perception.disadvantage, false);
+  assert.equal(perception.conditional.length, 1);
+});
+
+check('an unconditional clause still applies, and reports no condition', () => {
+  const effects = resolveCharacterRollEffects([rage]);
+  const strength = applyRollEffects(effects, { kind: 'check', ability: 'strength' });
+  assert.equal(strength.advantage, true);
+  assert.deepEqual(strength.conditional, []);
+});
+
+/* -------------------------------------------------------------------------- *
  * Report
  * -------------------------------------------------------------------------- */
 

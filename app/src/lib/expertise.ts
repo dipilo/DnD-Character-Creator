@@ -35,6 +35,8 @@ export interface ResolvedExpertiseGrant {
   grant: ExpertiseGrant;
   /** The feature that states it, for the selector's heading. */
   featureName: string;
+  /** The feature's id, which is what a builder link needs to unfold the card holding the pick. */
+  featureId: string;
   /** The class, subclass or species the feature came from. */
   sourceName: string;
   /** The id of the class whose page resolves this grant. */
@@ -265,6 +267,7 @@ export function resolveCharacterExpertise(
         resolved.push({
           grant,
           featureName: source.feature.name,
+          featureId: source.feature.id,
           sourceName: source.sourceName,
           sourceClassId: source.sourceClassId,
           selected: grant.fixed,
@@ -288,6 +291,7 @@ export function resolveCharacterExpertise(
       resolved.push({
         grant,
         featureName: source.feature.name,
+        featureId: source.feature.id,
         sourceName: source.sourceName,
         sourceClassId: source.sourceClassId,
         selected,

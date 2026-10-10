@@ -8,11 +8,12 @@
 //
 // The ability *check* is not here: the score boxes above the blocks are the check button, and
 // rendering it twice would put two of the same roll on one sheet.
-import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
+import { Asterisk, ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { effectiveModifier, rollD20 } from '@/lib/d20Rolls';
 import {
   applyRollEffects,
+  describeConditionalRollEffects,
   describeRollEffects,
   type AppliedRollEffects,
   type ResolvedRollEffect,
@@ -51,10 +52,12 @@ function ProficiencyDot({ proficient, expertise = false }: Readonly<{ proficient
  * feature; this is only the sign that the number about to be rolled is not the bare one.
  */
 export function RollEffectMark({ effects }: Readonly<{ effects: AppliedRollEffects }>) {
-  const { advantage, disadvantage, floor, bonus, applied } = effects;
-  if (applied.length === 0) return null;
+  const { advantage, disadvantage, floor, bonus, applied, conditional } = effects;
+  if (applied.length === 0 && conditional.length === 0) return null;
 
-  const title = describeRollEffects(applied);
+  const title = [describeRollEffects(applied), describeConditionalRollEffects(conditional)]
+    .filter(Boolean)
+    .join(' · ');
   const swing = advantage !== disadvantage;
 
   return (
@@ -65,6 +68,9 @@ export function RollEffectMark({ effects }: Readonly<{ effects: AppliedRollEffec
       {/* The row's own number already carries the bonus, so this says a feature is in it, not how
           much — two signed numbers side by side read as one sum. */}
       {bonus ? <Plus className="h-3 w-3" /> : null}
+      {/* Muted, and never an arrow: a clause the sheet cannot check must not look like advantage
+          the character holds. The tooltip carries the words that narrow it. */}
+      {conditional.length > 0 ? <Asterisk className="h-3 w-3 text-muted-foreground" /> : null}
     </span>
   );
 }

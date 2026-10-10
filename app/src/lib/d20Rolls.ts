@@ -12,7 +12,11 @@
  */
 import { create } from 'zustand';
 import { modifierNotation } from '@/lib/diceNotation';
-import { describeRollEffects, type AppliedRollEffects } from '@/lib/rollEffects';
+import {
+  describeConditionalRollEffects,
+  describeRollEffects,
+  type AppliedRollEffects
+} from '@/lib/rollEffects';
 import { rollOnScreen, type DiceKeepRule, type DiceRollOutcome } from '@/store/diceTrayStore';
 
 export type D20Mode = 'normal' | 'advantage' | 'disadvantage';
@@ -80,12 +84,15 @@ export function rollD20({ modifier, label, detail, mode, effects }: D20RollReque
   const dice = activeMode === 'normal' ? 1 : 2;
   const modeLabel = activeMode === 'normal' ? undefined : D20_MODE_LABELS[activeMode];
   // The features that applied are named under the roll, so a number a feature changed says which.
+  // A conditional one is named too, on its own terms: the roll is the bare one and the player
+  // decides whether the clause holds.
   const applied = effects ? describeRollEffects(effects.applied) : undefined;
+  const offered = effects ? describeConditionalRollEffects(effects.conditional) : undefined;
 
   return rollOnScreen({
     notation: modifierNotation(20, modifier + (effects?.bonus ?? 0), dice),
     label: modeLabel ? `${label} (${modeLabel})` : label,
-    detail: [detail, applied].filter(Boolean).join(' · ') || undefined,
+    detail: [detail, applied, offered].filter(Boolean).join(' · ') || undefined,
     keep: keepRuleFor(activeMode),
     floor: effects?.floor
   });

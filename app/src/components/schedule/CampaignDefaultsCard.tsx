@@ -19,6 +19,7 @@ import {
   type CampaignPermissions,
 } from '@/lib/api';
 import { AUTO_CLAIM_MODES } from '@/lib/autoClaim';
+import { DEFAULT_MEMBER_PERMISSIONS } from '@/store/campaignStore';
 
 /** Radix rejects an empty string as an item value, so "no opinion" needs a value of its own. */
 const UNSET = 'unset';
@@ -38,8 +39,13 @@ interface CampaignDefaultsCardProps {
  */
 function DefaultsForm({ campaign, canEdit, onCampaignChange }: Readonly<CampaignDefaultsCardProps & { campaign: Campaign }>) {
   const [systemId, setSystemId] = useState<GameSystemId>(getGameSystem(campaign.system_id).id);
+  // A campaign that has never said reads as the built-in default here, not as nothing: toggles
+  // shown all-off next to a server floor that grants three rights is how an owner "saves" the
+  // defaults and silently revokes them.
   const [memberDefaults, setMemberDefaults] = useState<CampaignPermissions>(
-    () => parsePermissionBlob(campaign.default_member_permissions),
+    () => (campaign.default_member_permissions
+      ? parsePermissionBlob(campaign.default_member_permissions)
+      : { ...DEFAULT_MEMBER_PERMISSIONS }),
   );
   const [inviteDefaults, setInviteDefaults] = useState<CampaignPermissions>(
     () => parsePermissionBlob(campaign.default_invite_permissions),

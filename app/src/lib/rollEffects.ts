@@ -381,18 +381,29 @@ export interface AppliedRollEffects {
   bonus?: number;
   /** Every effect that applied, for the roll's own detail line. */
   applied: readonly ResolvedRollEffect[];
+  /**
+   * Effects whose own words narrow them to a situation nothing on the sheet can check — the
+   * Kenku's "to produce an exact duplicate". They are named beside the roll, never folded into it.
+   */
+  conditional: readonly ResolvedRollEffect[];
 }
 
 /**
  * What a roll carries once its features are read. Advantage and disadvantage are reported as the
  * books state them, both at once where both apply — 5e cancels them, which `rollD20` does, because
  * that is the dice rule rather than a fact about the features.
+ *
+ * A conditional effect changes nothing here. Expert Duplication's clause covers "any ability
+ * checks", so counting it put an advantage arrow on all eighteen skills and rolled two dice for
+ * each of them: a situational grant applied flatly is a wrong number, not a reminder.
  */
 export function applyRollEffects(
   effects: readonly ResolvedRollEffect[],
   target: RollTarget,
 ): AppliedRollEffects {
-  const applied = effectsForRoll(effects, target);
+  const covering = effectsForRoll(effects, target);
+  const applied = covering.filter((effect) => !effect.condition);
+  const conditional = covering.filter((effect) => effect.condition);
   const floors = applied.flatMap((effect) =>
     effect.kind === 'floor' && typeof effect.value === 'number' ? [effect.value] : []);
   const bonus = applied.reduce(
@@ -406,6 +417,7 @@ export function applyRollEffects(
     floor: floors.length > 0 ? Math.max(...floors) : undefined,
     bonus: bonus !== 0 ? bonus : undefined,
     applied,
+    conditional,
   };
 }
 
@@ -415,4 +427,12 @@ export function describeRollEffects(applied: readonly ResolvedRollEffect[]): str
   return applied
     .map((effect) => (effect.condition ? `${effect.featureName} (${effect.condition})` : effect.featureName))
     .join(', ');
+}
+
+/** The same line for the effects the roll did *not* apply, so the player can apply them by hand. */
+export function describeConditionalRollEffects(
+  conditional: readonly ResolvedRollEffect[],
+): string | undefined {
+  const described = describeRollEffects(conditional);
+  return described ? `may apply: ${described}` : undefined;
 }

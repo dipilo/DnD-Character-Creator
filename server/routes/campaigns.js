@@ -8,7 +8,7 @@ const { publicPlayer } = require('../lib/players');
 const { createSession, publicUser } = require('../lib/sessions');
 const { genToken } = require('../lib/tokens');
 const { readMembership, releaseSeat, upsertMembership } = require('../lib/membership');
-const { joinPermissionsBlob, normaliseDefaultPermissions, normalisePermissions } = require('../lib/permissions');
+const { joinPermissionsBlob, normaliseDefaultPermissions, normalisePermissions, SELF_SERVICE_PERMISSIONS } = require('../lib/permissions');
 const { normaliseAutoClaimMode, resolveAutoClaimMode } = require('../lib/seatClaim');
 const { cleanupOrphanedUser, isCampaignOwner, memberHasPermission, optionalAuth, requireAuth, requireCampaignAccess } = require('../middleware/auth');
 
@@ -498,7 +498,7 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
     // Claiming a seat creates a campaign-scoped account whose only reason to exist is that seat, so
     // editing and releasing it are a floor the campaign's defaults are layered on top of — without
     // them the new account can see the roster and change nothing on its own row.
-    const claimPermissions = joinPermissionsBlob(campaign, null, { can_edit_self: true, players_self_delete: true });
+    const claimPermissions = joinPermissionsBlob(campaign, null, SELF_SERVICE_PERMISSIONS);
 
     const user = req.user;
     if (user) {
