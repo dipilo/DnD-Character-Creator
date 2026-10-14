@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source GGR).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T06:27:38.728Z",
+    "importedAt": "2026-10-14T17:54:19.830Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -16,7 +16,7 @@
       {
         "id": "ravnica-centaur",
         "name": "Centaur",
-        "description": "Centaur from Guildmasters' Guide to Ravnica.",
+        "description": "In the sprawling city of Ravnica, where \"open road\" seems like a contradiction and \"open plain\" is sheer nonsense, centaurs nevertheless retain a love of wide spaces and the freedom to travel. As much as they can, centaurs run—in wide plazas, spacious parks, and expanses of rubble and ruin. They race the wind, hooves thundering and tails streaming behind them, until the next wall looms in their path and brings them to a stop.",
         "size": "Medium",
         "speed": 40,
         "abilityScoreIncreases": [
@@ -110,7 +110,7 @@
       {
         "id": "ravnica-goblin",
         "name": "Goblin",
-        "description": "Goblin from Guildmasters' Guide to Ravnica.",
+        "description": "Whether sniveling in fear, cackling with mad laughter, or snarling in a fury, goblins are wretched and inconsequential—at least in the eyes of most of Ravnica's other folk. In their own minds, though, they are content to lurk in the shadows only until they fully come into their own and receive the recognition they believe they deserve. They are entitled to some credit for their tenacity, agility, crafty ingenuity, and dumb luck, all of which has enabled them to survive in a world overrun with creatures larger and more powerful than they are.",
         "size": "Small",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -184,7 +184,7 @@
       {
         "id": "ravnica-loxodon",
         "name": "Loxodon",
-        "description": "Loxodon from Guildmasters' Guide to Ravnica.",
+        "description": "The humanoid elephants called loxodons are often oases of calm in the busy streets of Ravnica. They hum or chant in sonorous tones and move slowly or sit in perfect stillness. If provoked to action, loxodons are true terrors—bellowing with rage, trumpeting and flapping their ears.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -272,7 +272,7 @@
       {
         "id": "ravnica-minotaur",
         "name": "Minotaur",
-        "description": "Minotaur from Guildmasters' Guide to Ravnica.",
+        "description": "The minotaurs of Ravnica are strong in body, dedication, and courage. They are at home on the battlefield, willing to fight for their various causes. They combine a burning fury in battle with keen tactics that make them excellent commanders as well as valuable shock troops.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -359,7 +359,7 @@
       {
         "id": "ravnica-simic-hybrid",
         "name": "Simic Hybrid",
-        "description": "Simic Hybrid from Guildmasters' Guide to Ravnica.",
+        "description": "The Simic Combine uses magic to fuse different life forms together. In recent years, the Simic Combine has extended this research to humanoid subjects, magically transferring the traits of various animals into humans, elves, and vedalken. The goal of the Guardian Project is to build a Simic army of soldiers perfectly adapted to a variety of combat situations.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -433,7 +433,7 @@
       {
         "id": "ravnica-vedalken",
         "name": "Vedalken",
-        "description": "Vedalken from Guildmasters' Guide to Ravnica.",
+        "description": "Nothing is perfect. Vedalken not only believe this fact, they rejoice in it. Every imperfection is a chance for improvement, and progress is an endless march toward a state of perfection that can never be reached.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -522,7 +522,7 @@
       {
         "id": "ravnica-azorius-functionary",
         "name": "Azorius Functionary",
-        "description": "Azorius Functionary background.",
+        "description": "The brutes are at the gate, chaos is looming, and the only thing standing in the way of disaster is the foundation of law and order—as embodied in the Azorius Senate. You're a proud member of the Azorius guild, which both enacts and enforces the laws that make Ravnican society function smoothly and safely.",
         "skillProficiencies": [
           "Insight",
           "Intimidation"
@@ -626,7 +626,7 @@
       {
         "id": "ravnica-boros-legionnaire",
         "name": "Boros Legionnaire",
-        "description": "Boros Legionnaire background.",
+        "description": "As a member of the Boros Legion, your life is devoted to the service of angels and consecrated to the work of establishing justice and peace on the streets of Ravnica. You might be a true believer, inspired by the example of the angels, moved by the plight of the downtrodden, and devoted to the cause of justice. Or you could be a cynic in the ranks, perhaps because you reluctantly followed in the footsteps of a Boros parent, succumbed to the persuasion of a charismatic recruiter's lofty promises, or were drawn in by the prospect of a life of action.",
         "skillProficiencies": [
           "Athletics",
           "Intimidation"
@@ -728,7 +728,7 @@
       {
         "id": "ravnica-dimir-operative",
         "name": "Dimir Operative",
-        "description": "Dimir Operative background.",
+        "description": "You're a spy. Secrets and misinformation are your stock in trade. You skulk in the shadows, infiltrate other guilds, and steal the most precious secrets, whether they're written in locked journals or hidden away in someone's mind.",
         "skillProficiencies": [
           "Deception",
           "Stealth"
@@ -828,7 +828,7 @@
       {
         "id": "ravnica-golgari-agent",
         "name": "Golgari Agent",
-        "description": "Golgari Agent background.",
+        "description": "You are a member of a teeming horde—one small part of a sprawling organism. Just as you are part of the swarm, the swarm is part of a larger ecosystem, a never-ending cycle of life, death, rot, and rebirth. You have spent your life in the slow churn of that ecosystem, in the dark places of the city where the messy parts of existence are on display.",
         "skillProficiencies": [
           "Nature",
           "Survival"
@@ -940,7 +940,7 @@
       {
         "id": "ravnica-gruul-anarch",
         "name": "Gruul Anarch",
-        "description": "Gruul Anarch background.",
+        "description": "The entire world of Ravnica is a sprawling metropolis, but you are a native of the wild areas that still exist—the abandoned districts, the rubblebelts, the overgrown parks, and the crumbling ruins. You are part of a savage society that clings desperately to the Old Ways—attuned to nature, full of primal rage, and given short shrift by a world consumed with continuing civilization's march of progress.",
         "skillProficiencies": [
           "Animal Handling",
           "Athletics"
@@ -1050,7 +1050,7 @@
       {
         "id": "ravnica-izzet-engineer",
         "name": "Izzet Engineer",
-        "description": "Izzet Engineer background.",
+        "description": "Armed with an inventive intellect, a love of magical technology, and an unquenchable energy, you are an enthusiastic participant in the research work of the Izzet League. Though you're likely to begin your career as a mere attendant, you can aspire to become a skilled mage or alchemist, a laboratory supervisor, or even a flamethrower-wielding scorchbringer tasked with defending Izzet laboratories. The Izzet are obsessive, brilliant, inspired, and an unpredictable force of chaos in Ravnica, and you epitomize all of those qualities.",
         "skillProficiencies": [
           "Arcana",
           "Investigation"
@@ -1160,7 +1160,7 @@
       {
         "id": "ravnica-orzhov-representative",
         "name": "Orzhov Representative",
-        "description": "Orzhov Representative background.",
+        "description": "The prospect of immense wealth is the promise of membership in the Orzhov Syndicate. All of the guild's endeavors channel wealth from Ravnican society into the ranks of the Orzhov—and concentrates the spoils at the top of the hierarchy. As a functionary in that system, your best hope is to claim as much as possible of the money that passes through your hands on its way up, so that you can work your way into a more prominent position.",
         "skillProficiencies": [
           "Intimidation",
           "Religion"
@@ -1260,7 +1260,7 @@
       {
         "id": "ravnica-rakdos-cultist",
         "name": "Rakdos Cultist",
-        "description": "Rakdos Cultist background.",
+        "description": "You're an entertainer at heart, a performer with a flair for the dramatic and a love of the spotlight. You've spent years honing your craft, mastering a demanding set of skills so you can perform them with panache and make them look easy. The wild applause, the screams of the crowds, the mayhem and terror spreading into the streets—this is what you live for.",
         "skillProficiencies": [
           "Acrobatics",
           "Performance"
@@ -1383,7 +1383,7 @@
       {
         "id": "ravnica-selesnya-initiate",
         "name": "Selesnya Initiate",
-        "description": "Selesnya Initiate background.",
+        "description": "You are a member of a blessed community, built on the ideals of harmony. Here, nature and civilization coexist peacefully, living and growing in accordance with the will of the Worldsoul, Mat'Selesnya. As a member of the Selesnya Conclave, you are surrounded by people and other creatures who share your worldview and your longing for deeper spiritual communion with the world, and you have a fervent desire to share the joy you have experienced with Ravnica.",
         "skillProficiencies": [
           "Nature",
           "Persuasion"
@@ -1485,7 +1485,7 @@
       {
         "id": "ravnica-simic-scientist",
         "name": "Simic Scientist",
-        "description": "Simic Scientist background.",
+        "description": "Imagine a perfect world: one in which nature and civilization exist in harmony, adapted to each other; one in which life is shaped to match its environment and the environment is shaped to match life. That's the world you have been trying to grow in the laboratories of the Simic Combine. Nature is all about adaptation, evolution, and balance—but for it to keep up with the pace of advancing civilization, nature needs some help from biomancers and terraformers.",
         "skillProficiencies": [
           "Arcana",
           "Medicine"

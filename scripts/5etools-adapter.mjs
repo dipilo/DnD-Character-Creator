@@ -150,6 +150,58 @@ const renderEntries = (entries, depth = 0) => {
 
 const cleanText = (value) => renderEntries(value).replaceAll(/\s+/g, ' ').trim();
 
+// --- fluff ----------------------------------------------------------------------------------
+
+// A book's flavor text lives in a `fluff-*.json` beside the data, never in the entry itself, so
+// without it every species and most gear ship the "<name> from <book>." stub the mappers fall to.
+const FLUFF_SENTENCE_BUDGET = 3;
+
+/** The write-up opens with what the thing is; the rest is regional color the card has no room for. */
+const openingProse = (text) => {
+  const sentences = String(text).match(/[^.!?]+[.!?]+(\s|$)/g);
+  if (!sentences) return String(text).trim();
+  return sentences.slice(0, FLUFF_SENTENCE_BUDGET).join('').trim();
+};
+
+/**
+ * Keyed by name and source, and by name alone: a lineage adopted into another book keeps the
+ * race's write-up, which that book never reprints under its own source. Every printing is kept
+ * under the name key, because a book often contributes the pictures and another the prose.
+ */
+const indexFluff = (entries) => {
+  const index = new Map();
+  const add = (key, entry) => {
+    if (!index.has(key)) index.set(key, []);
+    index.get(key).push(entry);
+  };
+  for (const entry of entries ?? []) {
+    const name = String(entry?.name ?? '').toLowerCase().trim();
+    if (!name) continue;
+    add(`${name}|${String(entry.source ?? '').toLowerCase()}`, entry);
+    add(name, entry);
+  }
+  return index;
+};
+
+/** "Half-Elf (Variant; Drow Descent)" is written up as Half-Elf; the lineage adds no prose. */
+const withoutLineage = (name) => String(name ?? '').replace(/\s*\([^()]*\)\s*$/, '').trim();
+
+const readFluff = (index, name, source) => {
+  const lowered = String(name ?? '').toLowerCase().trim();
+  const candidates = [
+    `${lowered}|${String(source ?? '').toLowerCase()}`,
+    lowered,
+    withoutLineage(lowered)
+  ];
+  for (const key of candidates) {
+    for (const entry of (key && index.get(key)) ?? []) {
+      const text = cleanText(entry.entries);
+      if (text) return openingProse(text);
+    }
+  }
+  return '';
+};
+
 // --- source filtering -----------------------------------------------------------------------
 
 const matchesSource = (entry, sourceAbbr, includeOtherSources = false) => {
@@ -173,7 +225,7 @@ const readJsonSafe = async (filePath) => {
 };
 
 const collectFromDir = async (dir) => {
-  const collected = { spell: [], monster: [], race: [], subrace: [], background: [], feat: [], item: [], baseitem: [], subclass: [], subclassFeature: [], class: [], classFeature: [], classFluff: [], optionalfeature: [], language: [], action: [] };
+  const collected = { spell: [], monster: [], race: [], subrace: [], background: [], feat: [], item: [], baseitem: [], subclass: [], subclassFeature: [], class: [], classFeature: [], classFluff: [], optionalfeature: [], language: [], action: [], raceFluff: [], itemFluff: [], backgroundFluff: [] };
   const walk = async (current) => {
     const entries = await fs.readdir(current, { withFileTypes: true }).catch(() => []);
     for (const entry of entries) {
@@ -489,7 +541,9 @@ const mapRace = (race, subracesByRace, ctx) => {
     return {
       id: variantId,
       name: lineageName(race, subrace, index),
-      description: cleanText(subrace.entries) || `${race.name} lineage option.`,
+      description: cleanText(subrace.entries)
+        || readFluff(ctx.fluff.race, lineageName(race, subrace, index), subrace.source ?? race.source)
+        || `${race.name} lineage option.`,
       abilityScoreIncreases: mapAbilityIncreases(subrace.ability),
       features: mapRaceFeatures(subrace, ctx, ctx.label),
       ...(proficiencies.length > 0 ? { proficiencies } : {}),
@@ -506,7 +560,9 @@ const mapRace = (race, subracesByRace, ctx) => {
   return {
     id: raceId,
     name: race.name,
-    description: cleanText(race.entries?.filter?.((entry) => typeof entry === 'string')) || `${race.name} from ${ctx.label}.`,
+    description: cleanText(race.entries?.filter?.((entry) => typeof entry === 'string'))
+      || readFluff(ctx.fluff.race, race.name, race.source)
+      || `${race.name} from ${ctx.label}.`,
     size: SIZE_MAP[Array.isArray(race.size) ? race.size[0] : race.size] ?? 'Medium',
     ...(sizeOptions ? { sizeOptions } : {}),
     speed: mapSpeed(race.speed),
@@ -634,7 +690,9 @@ const mapBackground = (background, ctx, itemIndex) => {
   return {
     id: toSourcedId(ctx.sourceId, background.name),
     name: background.name,
-    description: cleanText(background.entries?.filter?.((entry) => typeof entry === 'string')) || `${background.name} background.`,
+    description: cleanText(background.entries?.filter?.((entry) => typeof entry === 'string'))
+      || readFluff(ctx.fluff.background, background.name, background.source)
+      || `${background.name} background.`,
     skillProficiencies,
     ...(skillCount > 0 ? { skillChoices, skillChoiceCount: skillCount } : {}),
     ...(toolProficiencies.length > 0 ? { toolProficiencies } : {}),
@@ -767,7 +825,7 @@ const mapItem = (item, ctx) => {
     sourceId: ctx.sourceId,
     cost: mapCost(item.value),
     weight: item.weight ?? 0,
-    description: item.entries ? cleanText(item.entries) : undefined,
+    description: (item.entries ? cleanText(item.entries) : '') || readFluff(ctx.fluff.item, item.name, item.source) || undefined,
     weaponCategory: item.weaponCategory ? item.weaponCategory.toLowerCase() : undefined,
     weaponType: type === 'R' ? 'ranged' : (item.weaponCategory ? 'melee' : undefined),
     damage: item.dmg1,
@@ -1524,7 +1582,7 @@ const mapClass = (cls, context) => {
   const mapped = {
     id: toSourcedId(ctx.sourceId, cls.name),
     name: cls.name,
-    description: (fluff ? cleanText(fluff.entries) : '') || `The ${cls.name} class.`,
+    description: (fluff ? openingProse(cleanText(fluff.entries)) : '') || `The ${cls.name} class.`,
     hitDie,
     primaryAbility: mapPrimaryAbility(cls),
     savingThrows: (cls.proficiency ?? []).map((key) => ABILITY_MAP[key]).filter(Boolean),
@@ -1583,6 +1641,12 @@ const RESOLVED_BUCKETS = {
   baseitem: ['baseitem', 'item'],
   class: ['class'],
   subclass: ['subclass'],
+  // A fluff entry is as likely to be a `_copy` of a shared write-up ("Uncommon Races") as its own
+  // prose, so the fluff buckets resolve against themselves before anything reads a description.
+  raceFluff: ['raceFluff'],
+  itemFluff: ['itemFluff'],
+  backgroundFluff: ['backgroundFluff'],
+  classFluff: ['classFluff'],
   classFeature: ['classFeature'],
   subclassFeature: ['subclassFeature'],
   optionalfeature: ['optionalfeature']
@@ -1613,7 +1677,14 @@ export const buildCanonicalContentFrom5eTools = (rawInput, { sourceId, label, so
   const ctx = {
     sourceId,
     label,
-    spellLevelByName: (name) => spellLevelByName.get(String(name).toLowerCase())
+    spellLevelByName: (name) => spellLevelByName.get(String(name).toLowerCase()),
+    // Read across every book in the directory, like the features and items are: a lineage
+    // adopted from another book is written up under the race's own source, not this one.
+    fluff: {
+      race: indexFluff(raw.raceFluff),
+      item: indexFluff(raw.itemFluff),
+      background: indexFluff(raw.backgroundFluff)
+    }
   };
   const keep = (list) => list.filter((entry) => matchesSource(entry, sourceAbbr, includeOtherSources));
 
@@ -1641,8 +1712,10 @@ export const buildCanonicalContentFrom5eTools = (rawInput, { sourceId, label, so
       console.warn(`subrace "${subrace.name ?? '(unnamed)'}" belongs to ${subrace.raceName} (${subrace.raceSource}), which no book in the directory states; it is left off.`);
       return [];
     }
-    // Merged first, so a version's `_mod` has the race's own traits to operate on.
-    return keep(expandFiveEToolsVersions([mergeSubraceOntoRace(parent, subrace, index)], { bucket: 'race' }));
+    // Merged first, so a version's `_mod` has the race's own traits to operate on. A version
+    // states its own name and never the race's, so each one is renamed against the parent again.
+    const expanded = keep(expandFiveEToolsVersions([mergeSubraceOntoRace(parent, subrace, index)], { bucket: 'race' }));
+    return expanded.map((race) => ({ ...race, name: lineageName(parent, race, index) }));
   });
 
   // Options are matched by `featureType`, so they are read across every book in the directory for

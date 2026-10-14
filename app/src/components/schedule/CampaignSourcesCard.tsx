@@ -61,6 +61,7 @@ export function CampaignSourcesCard({ campaign, canEdit }: Readonly<CampaignSour
               label="Allowed sources"
               selectedSourceIds={selected}
               onChange={(next) => setDraft(next)}
+              defaultActions={false}
             />
             <div className="flex flex-wrap items-center gap-2">
               <Button size="sm" variant="secondary" onClick={handleSave} disabled={!dirty || saving}>

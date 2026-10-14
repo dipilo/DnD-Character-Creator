@@ -21,7 +21,7 @@ npm run import:5etools -- --url https://5e.tools/book.html#scc --id strixhaven \
 
 - `--dir` is searched recursively for `spells/*.json`, `bestiary/*.json`, `races.json`,
   `backgrounds.json`, `feats.json`, `items*.json`, `class/class-*.json`, `optionalfeatures.json`,
-  `languages.json` and `actions.json`.
+  `languages.json`, `actions.json` and the `fluff-*.json` beside them.
 - `--source` keeps only entries whose 5etools `source` matches (e.g. `TCE`, `XGE`, `XPHB`, `MM`,
   `XDMG`, `SCC`, `GGR`). Omit it to keep everything in the folder.
 - `--include-other-sources` also keeps an entry whose `otherSources` names the book. A book
@@ -40,7 +40,8 @@ npm run import:5etools -- --url https://5e.tools/book.html#scc --id strixhaven \
   `github.com/.../tree/...` URL is rewritten to its raw form, and a repo root gets `/data`.
 
 The file list comes from the `index.json` each split directory publishes, so no directory listing
-is needed and any mirror laid out like 5etools works. A cached file is reused; `--refresh`
+is needed and any mirror laid out like 5etools works. A split directory's index names only its data
+files, so `class/fluff-class-*.json` is derived from it. A cached file is reused; `--refresh`
 re-downloads. A body that is not valid JSON never lands in the cache, and a failed download fails
 the import rather than shipping a partial book. The cache is ~27 MB across ~185 files, downloaded
 once and shared by every later import; keeping it out of the repo keeps licensed content out of
@@ -67,10 +68,20 @@ Every `_mod` mode is applied, including the four keyed `_` that reach past a nam
 `addSpells` / `removeSpells` / `replaceSpells`, which change its spellcasting block. A mode this
 repo has never seen is still warned about rather than skipped quietly.
 
+Flavor text is a separate file in the tree (`fluff-races.json`, `fluff-items.json`,
+`fluff-backgrounds.json`, `class/fluff-class-*.json`) and holds the only prose that says what a
+species, book background or class *is* — an entry itself carries only its traits. Species,
+backgrounds, classes and equipment fall back to it for their description, trimmed to the write-up's
+opening three sentences; a book that contributes only the art still files an entry under the name,
+so every printing is read and the first with prose wins. Without these files a pack ships
+"<name> from <book>." for 118 of its 167 species.
+
 A lineage whose race the filtered book did not print (MToF's Eladrin, Eberron's dragonmarks,
 SCAG's Ghostwise Halfling) is adopted: the base race is folded into it by the rules 5etools itself
 renders it with, and it ships as a species of its own named `Race (Lineage)`. Without that, a
-source filter drops every one of them — MToF prints one race and fourteen lineages.
+source filter drops every one of them — MToF prints one race and fourteen lineages. A `_versions`
+choice under such a lineage is renamed against the race too, or SCAG's half-elf descents ship as
+eleven species called "Variant; Wood Elf Descent; Fleet of Foot".
 
 Not covered, and warned about rather than dropped silently: a spell list a subclass or patron
 *expands* (`additionalSpells.expanded`), and spells a background grants in its own right — the

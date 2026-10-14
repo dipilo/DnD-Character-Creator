@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source MTF).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T06:27:37.029Z",
+    "importedAt": "2026-10-14T17:54:18.635Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -16,7 +16,7 @@
       {
         "id": "mtof-gith",
         "name": "Gith",
-        "description": "Gith from Mordenkainen's Tome of Foes.",
+        "description": "The story of the gith is rooted in a cruel twist of cosmic fate. Inspired by the great leader for whom the race is named, the gith rose up to overthrow the mind flayers that held them in servitude. But after they won their freedom, two factions among the gith disagreed on what kind of civilization they would forge.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -189,7 +189,7 @@
       {
         "id": "mtof-dwarf-duergar",
         "name": "Dwarf (Duergar)",
-        "description": "Dwarf (Duergar) from Mordenkainen's Tome of Foes.",
+        "description": "The gray dwarves, or duergar, live deep in the Underdark. After delving deeper than any other dwarves, they were enslaved by mind flayers for eons. Although they eventually won their freedom, these grim, ashen-skinned dwarves now take slaves of their own and are as tyrannical as their former masters.",
         "size": "Medium",
         "speed": 25,
         "abilityScoreIncreases": [
@@ -413,7 +413,7 @@
       {
         "id": "mtof-elf-sea",
         "name": "Elf (Sea)",
-        "description": "Elf (Sea) from Mordenkainen's Tome of Foes.",
+        "description": "Sea elves fell in love with the wild beauty of the ocean in the earliest days of the multiverse. While other elves traveled from realm to realm, the sea elves navigated the deepest currents and explored the waters across a hundred worlds. Today, they live in small, hidden communities in the ocean shallows and on the Elemental Plane of Water.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -538,7 +538,7 @@
       {
         "id": "mtof-elf-shadar-kai",
         "name": "Elf (Shadar-kai)",
-        "description": "Elf (Shadar-kai) from Mordenkainen's Tome of Foes.",
+        "description": "Sworn to the Raven Queen's service, the mysterious shadar-kai venture into the Material Plane from the Shadowfell to advance her will. Once they were fey like the rest of their elven kin, and now they exist in a strange state between life and death. Eladrin and shadar-kai are like reflections of each other: one bursting with emotion, the other nearly devoid of it.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -632,7 +632,7 @@
       {
         "id": "mtof-gnome-deep",
         "name": "Gnome (Deep)",
-        "description": "Gnome (Deep) from Mordenkainen's Tome of Foes.",
+        "description": "A constant hum of busy activity pervades the warrens and neighborhoods where gnomes form their close-knit communities. Louder sounds punctuate the hum: a crunch of grinding gears here, a minor explosion there, a yelp of surprise or triumph, and especially bursts of laughter. Gnomes take delight in life, enjoying every moment of invention, exploration, investigation, creation, and play.",
         "size": "Small",
         "speed": 25,
         "abilityScoreIncreases": [
@@ -707,7 +707,7 @@
       {
         "id": "mtof-tiefling-asmodeus",
         "name": "Tiefling (Asmodeus)",
-        "description": "Tiefling (Asmodeus) from Mordenkainen's Tome of Foes.",
+        "description": "The tieflings connected to Nessus command the power of fire and darkness, guided by a keener than normal intellect, as befits those linked to Asmodeus himself. To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling. And to twist the knife, tieflings know that this is because a pact struck generations ago infused the essence of Asmodeus-overlord of the Nine Hells-into their bloodline.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -790,7 +790,7 @@
       {
         "id": "mtof-tiefling-baalzebul",
         "name": "Tiefling (Baalzebul)",
-        "description": "Tiefling (Baalzebul) from Mordenkainen's Tome of Foes.",
+        "description": "The crumbling realm of Maladomini is ruled by Baalzebul, who excels at corrupting those whose minor sins can be transformed into acts of damnation. Tieflings linked to this archdevil can corrupt others both physically and psychically. To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -873,7 +873,7 @@
       {
         "id": "mtof-tiefling-dispater",
         "name": "Tiefling (Dispater)",
-        "description": "Tiefling (Dispater) from Mordenkainen's Tome of Foes.",
+        "description": "The great city of Dis occupies most of Hell's second layer. It is a place where secrets are uncovered and shared with the highest bidder, making tieflings tied to Dispater excellent spies and infiltrators. To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -956,7 +956,7 @@
       {
         "id": "mtof-tiefling-fierna",
         "name": "Tiefling (Fierna)",
-        "description": "Tiefling (Fierna) from Mordenkainen's Tome of Foes.",
+        "description": "A master manipulator, Fierna grants tieflings tied to her forceful personalities. To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling. And to twist the knife, tieflings know that this is because a pact struck generations ago infused the essence of Asmodeus-overlord of the Nine Hells-into their bloodline.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1039,7 +1039,7 @@
       {
         "id": "mtof-tiefling-glasya",
         "name": "Tiefling (Glasya)",
-        "description": "Tiefling (Glasya) from Mordenkainen's Tome of Foes.",
+        "description": "Glasya, Hell's criminal mastermind, grants her tieflings magic that is useful for committing heists. To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling. And to twist the knife, tieflings know that this is because a pact struck generations ago infused the essence of Asmodeus-overlord of the Nine Hells-into their bloodline.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1122,7 +1122,7 @@
       {
         "id": "mtof-tiefling-levistus",
         "name": "Tiefling (Levistus)",
-        "description": "Tiefling (Levistus) from Mordenkainen's Tome of Foes.",
+        "description": "Frozen Stygia is ruled by Levistus, an archdevil known for offering bargains to those who face an inescapable doom. To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling. And to twist the knife, tieflings know that this is because a pact struck generations ago infused the essence of Asmodeus-overlord of the Nine Hells-into their bloodline.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1205,7 +1205,7 @@
       {
         "id": "mtof-tiefling-mammon",
         "name": "Tiefling (Mammon)",
-        "description": "Tiefling (Mammon) from Mordenkainen's Tome of Foes.",
+        "description": "The great miser Mammon loves coins above all else. Tieflings tied to him excel at gathering and safeguarding wealth. To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1288,7 +1288,7 @@
       {
         "id": "mtof-tiefling-mephistopheles",
         "name": "Tiefling (Mephistopheles)",
-        "description": "Tiefling (Mephistopheles) from Mordenkainen's Tome of Foes.",
+        "description": "In the frozen realm of Cania, Mephistopheles offers arcane power to those who entreat with him. Tieflings linked to him master some arcane magic. To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1371,7 +1371,7 @@
       {
         "id": "mtof-tiefling-zariel",
         "name": "Tiefling (Zariel)",
-        "description": "Tiefling (Zariel) from Mordenkainen's Tome of Foes.",
+        "description": "Tieflings with a blood tie to Zariel are stronger than the typical tiefling and receive magical abilities that aid them in battle. To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling. And to twist the knife, tieflings know that this is because a pact struck generations ago infused the essence of Asmodeus-overlord of the Nine Hells-into their bloodline.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [

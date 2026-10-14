@@ -7,10 +7,15 @@ import path from 'node:path';
 export const DEFAULT_5ETOOLS_DATA_URL = 'https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data';
 
 // The keys `collectFromDir` reads live in these files; everything else in the tree is page data.
+// A `fluff-*.json` holds the flavor text; without it every species ships a "<name> from <book>."
+// stub, since an entry itself carries only its traits.
 const TOP_LEVEL_FILES = [
   'actions.json',
   'backgrounds.json',
   'feats.json',
+  'fluff-backgrounds.json',
+  'fluff-items.json',
+  'fluff-races.json',
   'items.json',
   'items-base.json',
   'languages.json',
@@ -20,6 +25,9 @@ const TOP_LEVEL_FILES = [
 
 // 5etools publishes an index.json per split directory, so the file list needs no directory listing.
 const INDEXED_DIRECTORIES = ['class', 'spells', 'bestiary'];
+
+// A split directory's index names only the data files; its fluff sits beside each one.
+const FLUFF_INDEXED_DIRECTORIES = new Set(['class']);
 
 const SITE_HOST_PATTERN = /(^|\.)5e\.tools$/i;
 
@@ -81,9 +89,9 @@ const mapWithConcurrency = async (items, limit, worker) => {
 
 const readIndexFileList = async (dataUrl, directory) => {
   const index = JSON.parse(await fetchText(`${dataUrl}/${directory}/index.json`));
-  return Object.values(index)
-    .filter((value) => typeof value === 'string' && value.endsWith('.json'))
-    .map((file) => `${directory}/${file}`);
+  const files = Object.values(index).filter((value) => typeof value === 'string' && value.endsWith('.json'));
+  const fluff = FLUFF_INDEXED_DIRECTORIES.has(directory) ? files.map((file) => `fluff-${file}`) : [];
+  return [...files, ...fluff].map((file) => `${directory}/${file}`);
 };
 
 export const listRemote5eToolsFiles = async (dataUrl) => {

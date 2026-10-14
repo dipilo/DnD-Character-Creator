@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source FTD).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T06:27:33.664Z",
+    "importedAt": "2026-10-14T17:54:18.065Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -16,7 +16,7 @@
       {
         "id": "fizbans-dragonborn-chromatic",
         "name": "Dragonborn (Chromatic)",
-        "description": "Dragonborn (Chromatic) from Fizban's Treasury of Dragons.",
+        "description": "Dragonborn with chromatic ancestry claim the raw elemental power of chromatic dragons. The vibrant colors of black, blue, green, red, and white dragons gleam in those dragonborn's scaled skin and in the deadly energy of their breath weapons. Theirs is the raw elemental fury of the volcano, of biting arctic winds, and of raging lightning storms, as well as the subtle whisper of swamp and forest, toxic and corrosive.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -57,7 +57,7 @@
       {
         "id": "fizbans-dragonborn-chromatic-black",
         "name": "Dragonborn (Chromatic; Black)",
-        "description": "Dragonborn (Chromatic; Black) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -91,7 +91,7 @@
       {
         "id": "fizbans-dragonborn-chromatic-blue",
         "name": "Dragonborn (Chromatic; Blue)",
-        "description": "Dragonborn (Chromatic; Blue) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -125,7 +125,7 @@
       {
         "id": "fizbans-dragonborn-chromatic-green",
         "name": "Dragonborn (Chromatic; Green)",
-        "description": "Dragonborn (Chromatic; Green) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -159,7 +159,7 @@
       {
         "id": "fizbans-dragonborn-chromatic-red",
         "name": "Dragonborn (Chromatic; Red)",
-        "description": "Dragonborn (Chromatic; Red) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -193,7 +193,7 @@
       {
         "id": "fizbans-dragonborn-chromatic-white",
         "name": "Dragonborn (Chromatic; White)",
-        "description": "Dragonborn (Chromatic; White) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -227,7 +227,7 @@
       {
         "id": "fizbans-dragonborn-gem",
         "name": "Dragonborn (Gem)",
-        "description": "Dragonborn (Gem) from Fizban's Treasury of Dragons.",
+        "description": "Gem dragonborn partake of the heritage of gem dragons, who claim to be heirs of Sardior, the Ruby Dragon. The colors and mysterious powers of gem dragons—amethyst, crystal, emerald, sapphire, and topaz—gleam in these dragonborn's scaled skin and course through their veins. Theirs are the wonders of the mind, the force of will, the brilliant light of insight, and the resounding echo of discovery—but also the desiccation of despair.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -275,7 +275,7 @@
       {
         "id": "fizbans-dragonborn-gem-amethyst",
         "name": "Dragonborn (Gem; Amethyst)",
-        "description": "Dragonborn (Gem; Amethyst) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -316,7 +316,7 @@
       {
         "id": "fizbans-dragonborn-gem-crystal",
         "name": "Dragonborn (Gem; Crystal)",
-        "description": "Dragonborn (Gem; Crystal) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -357,7 +357,7 @@
       {
         "id": "fizbans-dragonborn-gem-emerald",
         "name": "Dragonborn (Gem; Emerald)",
-        "description": "Dragonborn (Gem; Emerald) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -398,7 +398,7 @@
       {
         "id": "fizbans-dragonborn-gem-sapphire",
         "name": "Dragonborn (Gem; Sapphire)",
-        "description": "Dragonborn (Gem; Sapphire) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -439,7 +439,7 @@
       {
         "id": "fizbans-dragonborn-gem-topaz",
         "name": "Dragonborn (Gem; Topaz)",
-        "description": "Dragonborn (Gem; Topaz) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -480,7 +480,7 @@
       {
         "id": "fizbans-dragonborn-metallic",
         "name": "Dragonborn (Metallic)",
-        "description": "Dragonborn (Metallic) from Fizban's Treasury of Dragons.",
+        "description": "Dragonborn with metallic ancestry lay claim to the tenacity of metallic dragons—brass, bronze, copper, gold, and silver—whose hues glint in their scales. Theirs is the fire of hearth and forge, the cold of high mountain air, the spark of inspiration, and the scouring touch of acid that purifies.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -521,7 +521,7 @@
       {
         "id": "fizbans-dragonborn-metallic-brass",
         "name": "Dragonborn (Metallic; Brass)",
-        "description": "Dragonborn (Metallic; Brass) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -555,7 +555,7 @@
       {
         "id": "fizbans-dragonborn-metallic-bronze",
         "name": "Dragonborn (Metallic; Bronze)",
-        "description": "Dragonborn (Metallic; Bronze) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -589,7 +589,7 @@
       {
         "id": "fizbans-dragonborn-metallic-copper",
         "name": "Dragonborn (Metallic; Copper)",
-        "description": "Dragonborn (Metallic; Copper) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -623,7 +623,7 @@
       {
         "id": "fizbans-dragonborn-metallic-gold",
         "name": "Dragonborn (Metallic; Gold)",
-        "description": "Dragonborn (Metallic; Gold) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -657,7 +657,7 @@
       {
         "id": "fizbans-dragonborn-metallic-silver",
         "name": "Dragonborn (Metallic; Silver)",
-        "description": "Dragonborn (Metallic; Silver) from Fizban's Treasury of Dragons.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],

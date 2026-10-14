@@ -133,6 +133,22 @@ check('a branch is found by the path its own name states', () => {
   assert.equal(findLineageNode(groups[0].lineages, ['Metallic']), undefined);
 });
 
+check("a descent's variant features nest under it rather than standing alone", () => {
+  // SCAG prints the descent once with a "choose 1" inset, and 5etools states each choice as a
+  // `_versions` entry. The importer prefixes all of them, so the picker reads one Half-Elf card.
+  const groups = groupSpeciesByBase([
+    species('Half-Elf'),
+    species('Half-Elf (Variant; Aquatic Elf Descent)'),
+    species('Half-Elf (Variant; Aquatic Elf Descent; Skill Versatility)'),
+    species('Half-Elf (Variant; Aquatic Elf Descent; Swim Speed)')
+  ]);
+  assert.equal(groups.length, 1);
+  const descent = findLineageNode(groups[0].lineages, ['Aquatic Elf Descent']);
+  assert.deepEqual(descent?.children.map((node) => node.name), ['Skill Versatility', 'Swim Speed']);
+  // The base and the two variant features; the descent itself is the heading they sit under.
+  assert.equal(groups[0].selectableCount, 3);
+});
+
 const failed = checks.filter((entry) => !entry.ok);
 checks.forEach((entry) => console.log(`${entry.ok ? 'ok  ' : 'FAIL'} ${entry.name}${entry.detail ? ` — ${entry.detail}` : ''}`));
 console.log(`\n${checks.length - failed.length}/${checks.length} passed`);

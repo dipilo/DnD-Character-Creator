@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source EGW).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T06:27:41.121Z",
+    "importedAt": "2026-10-14T17:54:25.695Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -16,7 +16,7 @@
       {
         "id": "wildemount-orc",
         "name": "Orc",
-        "description": "Orc from Explorer's Guide to Wildemount.",
+        "description": "Orcs trace their creation to the one-eyed god Gruumsh, an unstoppable warrior and powerful leader. The divine qualities of Gruumsh resonate within orcs, granting them a reflection of his toughness and tenacity that can't be matched, and the god equipped his children to be able to live above or below ground. On some worlds, such as Eberron, orcs were among the first defenders of the natural order from the encroachments of Fiends and other extraplanar threats.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -103,7 +103,7 @@
       {
         "id": "wildemount-dragonborn-draconblood",
         "name": "Dragonborn (Draconblood)",
-        "description": "Dragonborn (Draconblood) from Explorer's Guide to Wildemount.",
+        "description": "Draconbloods possess long tails and a knack for social manipulation. They remember the days when they were once mighty conquerors. Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -177,7 +177,7 @@
       {
         "id": "wildemount-dragonborn-draconblood-black",
         "name": "Dragonborn (Draconblood; Black)",
-        "description": "Dragonborn (Draconblood; Black) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -244,7 +244,7 @@
       {
         "id": "wildemount-dragonborn-draconblood-blue",
         "name": "Dragonborn (Draconblood; Blue)",
-        "description": "Dragonborn (Draconblood; Blue) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -311,7 +311,7 @@
       {
         "id": "wildemount-dragonborn-draconblood-brass",
         "name": "Dragonborn (Draconblood; Brass)",
-        "description": "Dragonborn (Draconblood; Brass) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -378,7 +378,7 @@
       {
         "id": "wildemount-dragonborn-draconblood-bronze",
         "name": "Dragonborn (Draconblood; Bronze)",
-        "description": "Dragonborn (Draconblood; Bronze) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -445,7 +445,7 @@
       {
         "id": "wildemount-dragonborn-draconblood-copper",
         "name": "Dragonborn (Draconblood; Copper)",
-        "description": "Dragonborn (Draconblood; Copper) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -512,7 +512,7 @@
       {
         "id": "wildemount-dragonborn-draconblood-gold",
         "name": "Dragonborn (Draconblood; Gold)",
-        "description": "Dragonborn (Draconblood; Gold) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -579,7 +579,7 @@
       {
         "id": "wildemount-dragonborn-draconblood-green",
         "name": "Dragonborn (Draconblood; Green)",
-        "description": "Dragonborn (Draconblood; Green) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -646,7 +646,7 @@
       {
         "id": "wildemount-dragonborn-draconblood-red",
         "name": "Dragonborn (Draconblood; Red)",
-        "description": "Dragonborn (Draconblood; Red) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -713,7 +713,7 @@
       {
         "id": "wildemount-dragonborn-draconblood-silver",
         "name": "Dragonborn (Draconblood; Silver)",
-        "description": "Dragonborn (Draconblood; Silver) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -780,7 +780,7 @@
       {
         "id": "wildemount-dragonborn-draconblood-white",
         "name": "Dragonborn (Draconblood; White)",
-        "description": "Dragonborn (Draconblood; White) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -847,7 +847,7 @@
       {
         "id": "wildemount-dragonborn-ravenite",
         "name": "Dragonborn (Ravenite)",
-        "description": "Dragonborn (Ravenite) from Explorer's Guide to Wildemount.",
+        "description": "Ravenites have no tails and a hearty physique. They remember the days when they were slaves to the draconblood, as well as the day when they overthrew their masters. Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -921,7 +921,7 @@
       {
         "id": "wildemount-dragonborn-ravenite-black",
         "name": "Dragonborn (Ravenite; Black)",
-        "description": "Dragonborn (Ravenite; Black) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -988,7 +988,7 @@
       {
         "id": "wildemount-dragonborn-ravenite-blue",
         "name": "Dragonborn (Ravenite; Blue)",
-        "description": "Dragonborn (Ravenite; Blue) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1055,7 +1055,7 @@
       {
         "id": "wildemount-dragonborn-ravenite-brass",
         "name": "Dragonborn (Ravenite; Brass)",
-        "description": "Dragonborn (Ravenite; Brass) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1122,7 +1122,7 @@
       {
         "id": "wildemount-dragonborn-ravenite-bronze",
         "name": "Dragonborn (Ravenite; Bronze)",
-        "description": "Dragonborn (Ravenite; Bronze) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1189,7 +1189,7 @@
       {
         "id": "wildemount-dragonborn-ravenite-copper",
         "name": "Dragonborn (Ravenite; Copper)",
-        "description": "Dragonborn (Ravenite; Copper) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1256,7 +1256,7 @@
       {
         "id": "wildemount-dragonborn-ravenite-gold",
         "name": "Dragonborn (Ravenite; Gold)",
-        "description": "Dragonborn (Ravenite; Gold) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1323,7 +1323,7 @@
       {
         "id": "wildemount-dragonborn-ravenite-green",
         "name": "Dragonborn (Ravenite; Green)",
-        "description": "Dragonborn (Ravenite; Green) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1390,7 +1390,7 @@
       {
         "id": "wildemount-dragonborn-ravenite-red",
         "name": "Dragonborn (Ravenite; Red)",
-        "description": "Dragonborn (Ravenite; Red) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1457,7 +1457,7 @@
       {
         "id": "wildemount-dragonborn-ravenite-silver",
         "name": "Dragonborn (Ravenite; Silver)",
-        "description": "Dragonborn (Ravenite; Silver) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1524,7 +1524,7 @@
       {
         "id": "wildemount-dragonborn-ravenite-white",
         "name": "Dragonborn (Ravenite; White)",
-        "description": "Dragonborn (Ravenite; White) from Explorer's Guide to Wildemount.",
+        "description": "Born of dragons, as their name proclaims, the dragonborn walk proudly through a world that greets them with fearful incomprehension. Shaped by draconic gods or the dragons themselves, dragonborn originally hatched from dragon eggs as a unique race, combining the best attributes of dragons and humanoids. Some dragonborn are faithful servants to true dragons, others form the ranks of soldiers in great wars, and still others find themselves adrift, with no clear calling in life.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1591,7 +1591,7 @@
       {
         "id": "wildemount-elf-pallid",
         "name": "Elf (Pallid)",
-        "description": "Elf (Pallid) from Explorer's Guide to Wildemount.",
+        "description": "The pallid elves are a mystical and insightful people with skin as pale as the surface of Exandria's largest moon. They emerged from the Pallid Grove this century and wander the world with childlike curiosity. Elves are a magical people of otherworldly grace, living in the world but not entirely part of it.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1701,7 +1701,7 @@
       {
         "id": "wildemount-halfling-lotusden",
         "name": "Halfling (Lotusden)",
-        "description": "Halfling (Lotusden) from Explorer's Guide to Wildemount.",
+        "description": "Long tied to the natural heart of the Lotusden Greenwood, these halflings have adapted to live synergistically with the chaotic laws of the wilds. The comforts of home are the goals of most halflings' lives: a place to settle in peace and quiet, far from marauding monsters and clashing armies; a blazing fire and a generous meal; fine drink and fine conversation. Though some halflings live out their days in remote agricultural communities, others form nomadic bands that travel constantly, lured by the open road and the wide horizon to discover the wonders of new lands and peoples.",
         "size": "Small",
         "speed": 25,
         "abilityScoreIncreases": [
@@ -2195,7 +2195,7 @@
       {
         "id": "wildemount-augen-trust-spy",
         "name": "Augen Trust (Spy)",
-        "description": "Augen Trust (Spy) background.",
+        "description": "Little is known about the Augen Trust, even within the court of the Dwendalian Empire. Only one person knows all the members of this elite network of imperial spies: its leader, Oliver Schreiber, a noble gnome with the ear of King Dwendal. If you were favored with membership in the Augen Trust, your entire life was laid bare before the secret spymaster at one point, and you were found to be a loyal servant of the empire with a particular set of skills.",
         "skillProficiencies": [
           "Deception",
           "Stealth"
@@ -2290,7 +2290,7 @@
       {
         "id": "wildemount-cobalt-scholar-sage",
         "name": "Cobalt Scholar (Sage)",
-        "description": "Cobalt Scholar (Sage) background.",
+        "description": "The Cobalt Soul is an organization of monastic scholars dedicated to preserving knowledge and recorded history, not just across Wildemount but all of Exandria. Its operations are primarily based out of the cities of Zadash and Rexxentrum in the Dwendalian Empire, and you likely studied at one of those sites. As a rank-and-file pupil of the Cobalt Soul, you adventure to help expand your mind.",
         "skillProficiencies": [
           "Arcana",
           "History"
@@ -2394,7 +2394,7 @@
       {
         "id": "wildemount-grinner",
         "name": "Grinner",
-        "description": "Grinner background.",
+        "description": "The Golden Grin began in the far-off land of Tal'Dorei, trading secret messages through a network of bards and minstrels to undermine an iron-fisted king's authoritarian rule. Today, Tal'Dorei is a relatively peaceful republic, and some Grinners have grown restless while waiting for tyranny to raise its ugly head again. A contingent of such Grinners traveled to the Menagerie Coast and set up a network of secret bases in the cities of the Clovis Concord, from which they are presently working their way into the highest echelons of the Dwendalian Empire.",
         "skillProficiencies": [
           "Deception",
           "Performance"
@@ -2497,7 +2497,7 @@
       {
         "id": "wildemount-luxonborn-acolyte",
         "name": "Luxonborn (Acolyte)",
-        "description": "Luxonborn (Acolyte) background.",
+        "description": "Every acolyte is a servant of some god. But you serve the Luxon, a being that you believe transcends godhood and created the cosmos. No mere priest, you are a student of potential, for the Luxon is potentiality incarnate.",
         "skillProficiencies": [
           "Insight",
           "Religion"
@@ -2612,7 +2612,7 @@
       {
         "id": "wildemount-myriad-operative-criminal",
         "name": "Myriad Operative (Criminal)",
-        "description": "Myriad Operative (Criminal) background.",
+        "description": "Most criminals in Wildemount are petty thieves and cutpurses who operate out of desperation. You, however, are a criminal of a higher caliber. You are a member of the Myriad, the greatest crime syndicate to ever grace the face of Exandria.",
         "skillProficiencies": [
           "Deception",
           "Stealth"
@@ -2707,7 +2707,7 @@
       {
         "id": "wildemount-revelry-pirate-sailor",
         "name": "Revelry Pirate (Sailor)",
-        "description": "Revelry Pirate (Sailor) background.",
+        "description": "It seems that just about everyone is a sailor on the Menagerie Coast. Plenty of pirates ply the waters of the coast as well, but none are as infamous or as organized as the mighty Revelry. If you're a pirate of the Revelry, you serve the Plank King and return a cut of all your plunder to him on the island of Darktow.",
         "skillProficiencies": [
           "Athletics",
           "Perception"
@@ -2810,7 +2810,7 @@
       {
         "id": "wildemount-volstrucker-agent",
         "name": "Volstrucker Agent",
-        "description": "Volstrucker Agent background.",
+        "description": "The Volstrucker are a clandestine organization of arcane assassins and enforcers in the service of the Cerberus Assembly. Their operatives bear no official title, but are referred to in hushed tones as \"scourgers\" by residents of large Dwendalian cities such as Zadash and Rexxentrum. You are a Volstrucker agent.",
         "skillProficiencies": [
           "Deception",
           "Stealth"

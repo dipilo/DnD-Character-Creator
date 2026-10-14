@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source SCAG).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T06:27:39.368Z",
+    "importedAt": "2026-10-14T17:54:20.404Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -16,7 +16,7 @@
       {
         "id": "scag-gnome-deep-svirfneblin",
         "name": "Gnome (Deep/Svirfneblin)",
-        "description": "Gnome (Deep/Svirfneblin) from Sword Coast Adventurer's Guide.",
+        "description": "Forest gnomes and rock gnomes are the gnomes most commonly encountered in the lands of the surface world. There is another subrace of gnomes rarely seen by any surface-dweller: deep gnomes, also known as svirfneblin. Guarded, and suspicious of outsiders, svirfneblin are cunning and taciturn, but can be just as kind-hearted, loyal, and compassionate as their surface cousins.",
         "size": "Small",
         "speed": 25,
         "abilityScoreIncreases": [
@@ -91,7 +91,7 @@
       {
         "id": "scag-half-elf-variant-aquatic-elf-descent",
         "name": "Half-Elf (Variant; Aquatic Elf Descent)",
-        "description": "Half-Elf (Variant; Aquatic Elf Descent) from Sword Coast Adventurer's Guide.",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -164,9 +164,9 @@
         "sourceId": "scag"
       },
       {
-        "id": "scag-variant-aquatic-elf-descent-skill-versatility",
-        "name": "Variant; Aquatic Elf Descent; Skill Versatility",
-        "description": "Variant; Aquatic Elf Descent; Skill Versatility from Sword Coast Adventurer's Guide.",
+        "id": "scag-half-elf-variant-aquatic-elf-descent-skill-versatility",
+        "name": "Half-Elf (Variant; Aquatic Elf Descent; Skill Versatility)",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -189,42 +189,42 @@
         ],
         "features": [
           {
-            "id": "scag-variant-aquatic-elf-descent-skill-versatility-age-0",
+            "id": "scag-half-elf-variant-aquatic-elf-descent-skill-versatility-age-0",
             "name": "Age",
             "description": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-aquatic-elf-descent-skill-versatility-size-1",
+            "id": "scag-half-elf-variant-aquatic-elf-descent-skill-versatility-size-1",
             "name": "Size",
             "description": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-aquatic-elf-descent-skill-versatility-darkvision-2",
+            "id": "scag-half-elf-variant-aquatic-elf-descent-skill-versatility-darkvision-2",
             "name": "Darkvision",
             "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-aquatic-elf-descent-skill-versatility-fey-ancestry-3",
+            "id": "scag-half-elf-variant-aquatic-elf-descent-skill-versatility-fey-ancestry-3",
             "name": "Fey Ancestry",
             "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-aquatic-elf-descent-skill-versatility-variant-feature-skill-versatility-4",
+            "id": "scag-half-elf-variant-aquatic-elf-descent-skill-versatility-variant-feature-skill-versatility-4",
             "name": "Variant Feature; Skill Versatility",
             "description": "You gain proficiency in two skills of your choice.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-aquatic-elf-descent-skill-versatility-languages-5",
+            "id": "scag-half-elf-variant-aquatic-elf-descent-skill-versatility-languages-5",
             "name": "Languages",
             "description": "You can speak, read, and write Common, Elvish, and one extra language of your choice.",
             "level": 1,
@@ -246,9 +246,9 @@
         "sourceId": "scag"
       },
       {
-        "id": "scag-variant-aquatic-elf-descent-swim-speed",
-        "name": "Variant; Aquatic Elf Descent; Swim Speed",
-        "description": "Variant; Aquatic Elf Descent; Swim Speed from Sword Coast Adventurer's Guide.",
+        "id": "scag-half-elf-variant-aquatic-elf-descent-swim-speed",
+        "name": "Half-Elf (Variant; Aquatic Elf Descent; Swim Speed)",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -271,42 +271,42 @@
         ],
         "features": [
           {
-            "id": "scag-variant-aquatic-elf-descent-swim-speed-age-0",
+            "id": "scag-half-elf-variant-aquatic-elf-descent-swim-speed-age-0",
             "name": "Age",
             "description": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-aquatic-elf-descent-swim-speed-size-1",
+            "id": "scag-half-elf-variant-aquatic-elf-descent-swim-speed-size-1",
             "name": "Size",
             "description": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-aquatic-elf-descent-swim-speed-darkvision-2",
+            "id": "scag-half-elf-variant-aquatic-elf-descent-swim-speed-darkvision-2",
             "name": "Darkvision",
             "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-aquatic-elf-descent-swim-speed-fey-ancestry-3",
+            "id": "scag-half-elf-variant-aquatic-elf-descent-swim-speed-fey-ancestry-3",
             "name": "Fey Ancestry",
             "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-aquatic-elf-descent-swim-speed-variant-feature-swim-speed-4",
+            "id": "scag-half-elf-variant-aquatic-elf-descent-swim-speed-variant-feature-swim-speed-4",
             "name": "Variant Feature; Swim Speed",
             "description": "You gain a swimming speed of 30 ft.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-aquatic-elf-descent-swim-speed-languages-5",
+            "id": "scag-half-elf-variant-aquatic-elf-descent-swim-speed-languages-5",
             "name": "Languages",
             "description": "You can speak, read, and write Common, Elvish, and one extra language of your choice.",
             "level": 1,
@@ -324,7 +324,7 @@
       {
         "id": "scag-half-elf-variant-drow-descent",
         "name": "Half-Elf (Variant; Drow Descent)",
-        "description": "Half-Elf (Variant; Drow Descent) from Sword Coast Adventurer's Guide.",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -413,9 +413,9 @@
         "sourceId": "scag"
       },
       {
-        "id": "scag-variant-drow-descent-drow-magic",
-        "name": "Variant; Drow Descent; Drow Magic",
-        "description": "Variant; Drow Descent; Drow Magic from Sword Coast Adventurer's Guide.",
+        "id": "scag-half-elf-variant-drow-descent-drow-magic",
+        "name": "Half-Elf (Variant; Drow Descent; Drow Magic)",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -438,42 +438,42 @@
         ],
         "features": [
           {
-            "id": "scag-variant-drow-descent-drow-magic-age-0",
+            "id": "scag-half-elf-variant-drow-descent-drow-magic-age-0",
             "name": "Age",
             "description": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-drow-descent-drow-magic-size-1",
+            "id": "scag-half-elf-variant-drow-descent-drow-magic-size-1",
             "name": "Size",
             "description": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-drow-descent-drow-magic-darkvision-2",
+            "id": "scag-half-elf-variant-drow-descent-drow-magic-darkvision-2",
             "name": "Darkvision",
             "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-drow-descent-drow-magic-fey-ancestry-3",
+            "id": "scag-half-elf-variant-drow-descent-drow-magic-fey-ancestry-3",
             "name": "Fey Ancestry",
             "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-drow-descent-drow-magic-variant-feature-drow-magic-4",
+            "id": "scag-half-elf-variant-drow-descent-drow-magic-variant-feature-drow-magic-4",
             "name": "Variant Feature; Drow Magic",
             "description": "You know the dancing lights cantrip. When you reach 3rd level, you can cast the faerie fire spell once per day; you must finish a long rest in order to cast the spell again using this trait. When you reach 5th level, you can also cast the darkness spell once per day; you must finish a long rest in order to cast the spell again using this trait. Charisma is your spellcasting ability for these spells.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-drow-descent-drow-magic-languages-5",
+            "id": "scag-half-elf-variant-drow-descent-drow-magic-languages-5",
             "name": "Languages",
             "description": "You can speak, read, and write Common, Elvish, and one extra language of your choice.",
             "level": 1,
@@ -505,9 +505,9 @@
         "sourceId": "scag"
       },
       {
-        "id": "scag-variant-drow-descent-skill-versatility",
-        "name": "Variant; Drow Descent; Skill Versatility",
-        "description": "Variant; Drow Descent; Skill Versatility from Sword Coast Adventurer's Guide.",
+        "id": "scag-half-elf-variant-drow-descent-skill-versatility",
+        "name": "Half-Elf (Variant; Drow Descent; Skill Versatility)",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -530,42 +530,42 @@
         ],
         "features": [
           {
-            "id": "scag-variant-drow-descent-skill-versatility-age-0",
+            "id": "scag-half-elf-variant-drow-descent-skill-versatility-age-0",
             "name": "Age",
             "description": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-drow-descent-skill-versatility-size-1",
+            "id": "scag-half-elf-variant-drow-descent-skill-versatility-size-1",
             "name": "Size",
             "description": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-drow-descent-skill-versatility-darkvision-2",
+            "id": "scag-half-elf-variant-drow-descent-skill-versatility-darkvision-2",
             "name": "Darkvision",
             "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-drow-descent-skill-versatility-fey-ancestry-3",
+            "id": "scag-half-elf-variant-drow-descent-skill-versatility-fey-ancestry-3",
             "name": "Fey Ancestry",
             "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-drow-descent-skill-versatility-variant-feature-skill-versatility-4",
+            "id": "scag-half-elf-variant-drow-descent-skill-versatility-variant-feature-skill-versatility-4",
             "name": "Variant Feature; Skill Versatility",
             "description": "You gain proficiency in two skills of your choice.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-drow-descent-skill-versatility-languages-5",
+            "id": "scag-half-elf-variant-drow-descent-skill-versatility-languages-5",
             "name": "Languages",
             "description": "You can speak, read, and write Common, Elvish, and one extra language of your choice.",
             "level": 1,
@@ -589,7 +589,7 @@
       {
         "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent",
         "name": "Half-Elf (Variant; Moon Elf or Sun Elf Descent)",
-        "description": "Half-Elf (Variant; Moon Elf or Sun Elf Descent) from Sword Coast Adventurer's Guide.",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -684,9 +684,9 @@
         "sourceId": "scag"
       },
       {
-        "id": "scag-variant-moon-elf-or-sun-elf-descent-cantrip",
-        "name": "Variant; Moon Elf or Sun Elf Descent; Cantrip",
-        "description": "Variant; Moon Elf or Sun Elf Descent; Cantrip from Sword Coast Adventurer's Guide.",
+        "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-cantrip",
+        "name": "Half-Elf (Variant; Moon Elf or Sun Elf Descent; Cantrip)",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -709,42 +709,42 @@
         ],
         "features": [
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-cantrip-age-0",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-cantrip-age-0",
             "name": "Age",
             "description": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-cantrip-size-1",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-cantrip-size-1",
             "name": "Size",
             "description": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-cantrip-darkvision-2",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-cantrip-darkvision-2",
             "name": "Darkvision",
             "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-cantrip-fey-ancestry-3",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-cantrip-fey-ancestry-3",
             "name": "Fey Ancestry",
             "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-cantrip-variant-feature-cantrip-4",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-cantrip-variant-feature-cantrip-4",
             "name": "Variant Feature; Cantrip",
             "description": "You know one cantrip of your choice from the class=wizard. Intelligence is your spellcasting ability for it.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-cantrip-languages-5",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-cantrip-languages-5",
             "name": "Languages",
             "description": "You can speak, read, and write Common, Elvish, and one extra language of your choice.",
             "level": 1,
@@ -766,9 +766,9 @@
         "sourceId": "scag"
       },
       {
-        "id": "scag-variant-moon-elf-or-sun-elf-descent-elf-weapon-training",
-        "name": "Variant; Moon Elf or Sun Elf Descent; Elf Weapon Training",
-        "description": "Variant; Moon Elf or Sun Elf Descent; Elf Weapon Training from Sword Coast Adventurer's Guide.",
+        "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-elf-weapon-training",
+        "name": "Half-Elf (Variant; Moon Elf or Sun Elf Descent; Elf Weapon Training)",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -791,42 +791,42 @@
         ],
         "features": [
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-elf-weapon-training-age-0",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-elf-weapon-training-age-0",
             "name": "Age",
             "description": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-elf-weapon-training-size-1",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-elf-weapon-training-size-1",
             "name": "Size",
             "description": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-elf-weapon-training-darkvision-2",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-elf-weapon-training-darkvision-2",
             "name": "Darkvision",
             "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-elf-weapon-training-fey-ancestry-3",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-elf-weapon-training-fey-ancestry-3",
             "name": "Fey Ancestry",
             "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-elf-weapon-training-variant-feature-elf-weapon-training-4",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-elf-weapon-training-variant-feature-elf-weapon-training-4",
             "name": "Variant Feature; Elf Weapon Training",
             "description": "You have proficiency with the longsword, shortsword, shortbow, and longbow.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-elf-weapon-training-languages-5",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-elf-weapon-training-languages-5",
             "name": "Languages",
             "description": "You can speak, read, and write Common, Elvish, and one extra language of your choice.",
             "level": 1,
@@ -860,9 +860,9 @@
         "sourceId": "scag"
       },
       {
-        "id": "scag-variant-moon-elf-or-sun-elf-descent-skill-versatility",
-        "name": "Variant; Moon Elf or Sun Elf Descent; Skill Versatility",
-        "description": "Variant; Moon Elf or Sun Elf Descent; Skill Versatility from Sword Coast Adventurer's Guide.",
+        "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-skill-versatility",
+        "name": "Half-Elf (Variant; Moon Elf or Sun Elf Descent; Skill Versatility)",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -885,42 +885,42 @@
         ],
         "features": [
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-skill-versatility-age-0",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-skill-versatility-age-0",
             "name": "Age",
             "description": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-skill-versatility-size-1",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-skill-versatility-size-1",
             "name": "Size",
             "description": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-skill-versatility-darkvision-2",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-skill-versatility-darkvision-2",
             "name": "Darkvision",
             "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-skill-versatility-fey-ancestry-3",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-skill-versatility-fey-ancestry-3",
             "name": "Fey Ancestry",
             "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-skill-versatility-variant-feature-skill-versatility-4",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-skill-versatility-variant-feature-skill-versatility-4",
             "name": "Variant Feature; Skill Versatility",
             "description": "You gain proficiency in two skills of your choice.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-moon-elf-or-sun-elf-descent-skill-versatility-languages-5",
+            "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-skill-versatility-languages-5",
             "name": "Languages",
             "description": "You can speak, read, and write Common, Elvish, and one extra language of your choice.",
             "level": 1,
@@ -944,7 +944,7 @@
       {
         "id": "scag-half-elf-variant-wood-elf-descent",
         "name": "Half-Elf (Variant; Wood Elf Descent)",
-        "description": "Half-Elf (Variant; Wood Elf Descent) from Sword Coast Adventurer's Guide.",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1033,9 +1033,9 @@
         "sourceId": "scag"
       },
       {
-        "id": "scag-variant-wood-elf-descent-elf-weapon-training",
-        "name": "Variant; Wood Elf Descent; Elf Weapon Training",
-        "description": "Variant; Wood Elf Descent; Elf Weapon Training from Sword Coast Adventurer's Guide.",
+        "id": "scag-half-elf-variant-wood-elf-descent-elf-weapon-training",
+        "name": "Half-Elf (Variant; Wood Elf Descent; Elf Weapon Training)",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1058,42 +1058,42 @@
         ],
         "features": [
           {
-            "id": "scag-variant-wood-elf-descent-elf-weapon-training-age-0",
+            "id": "scag-half-elf-variant-wood-elf-descent-elf-weapon-training-age-0",
             "name": "Age",
             "description": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-elf-weapon-training-size-1",
+            "id": "scag-half-elf-variant-wood-elf-descent-elf-weapon-training-size-1",
             "name": "Size",
             "description": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-elf-weapon-training-darkvision-2",
+            "id": "scag-half-elf-variant-wood-elf-descent-elf-weapon-training-darkvision-2",
             "name": "Darkvision",
             "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-elf-weapon-training-fey-ancestry-3",
+            "id": "scag-half-elf-variant-wood-elf-descent-elf-weapon-training-fey-ancestry-3",
             "name": "Fey Ancestry",
             "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-elf-weapon-training-variant-feature-elf-weapon-training-4",
+            "id": "scag-half-elf-variant-wood-elf-descent-elf-weapon-training-variant-feature-elf-weapon-training-4",
             "name": "Variant Feature; Elf Weapon Training",
             "description": "You have proficiency with the longsword, shortsword, shortbow, and longbow.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-elf-weapon-training-languages-5",
+            "id": "scag-half-elf-variant-wood-elf-descent-elf-weapon-training-languages-5",
             "name": "Languages",
             "description": "You can speak, read, and write Common, Elvish, and one extra language of your choice.",
             "level": 1,
@@ -1127,9 +1127,9 @@
         "sourceId": "scag"
       },
       {
-        "id": "scag-variant-wood-elf-descent-fleet-of-foot",
-        "name": "Variant; Wood Elf Descent; Fleet of Foot",
-        "description": "Variant; Wood Elf Descent; Fleet of Foot from Sword Coast Adventurer's Guide.",
+        "id": "scag-half-elf-variant-wood-elf-descent-fleet-of-foot",
+        "name": "Half-Elf (Variant; Wood Elf Descent; Fleet of Foot)",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 35,
         "abilityScoreIncreases": [
@@ -1152,42 +1152,42 @@
         ],
         "features": [
           {
-            "id": "scag-variant-wood-elf-descent-fleet-of-foot-age-0",
+            "id": "scag-half-elf-variant-wood-elf-descent-fleet-of-foot-age-0",
             "name": "Age",
             "description": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-fleet-of-foot-size-1",
+            "id": "scag-half-elf-variant-wood-elf-descent-fleet-of-foot-size-1",
             "name": "Size",
             "description": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-fleet-of-foot-darkvision-2",
+            "id": "scag-half-elf-variant-wood-elf-descent-fleet-of-foot-darkvision-2",
             "name": "Darkvision",
             "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-fleet-of-foot-fey-ancestry-3",
+            "id": "scag-half-elf-variant-wood-elf-descent-fleet-of-foot-fey-ancestry-3",
             "name": "Fey Ancestry",
             "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-fleet-of-foot-variant-feature-fleet-of-foot-4",
+            "id": "scag-half-elf-variant-wood-elf-descent-fleet-of-foot-variant-feature-fleet-of-foot-4",
             "name": "Variant Feature; Fleet of Foot",
             "description": "Your base walking speed increases to 35 feet.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-fleet-of-foot-languages-5",
+            "id": "scag-half-elf-variant-wood-elf-descent-fleet-of-foot-languages-5",
             "name": "Languages",
             "description": "You can speak, read, and write Common, Elvish, and one extra language of your choice.",
             "level": 1,
@@ -1203,9 +1203,9 @@
         "sourceId": "scag"
       },
       {
-        "id": "scag-variant-wood-elf-descent-mask-of-the-wild",
-        "name": "Variant; Wood Elf Descent; Mask of the Wild",
-        "description": "Variant; Wood Elf Descent; Mask of the Wild from Sword Coast Adventurer's Guide.",
+        "id": "scag-half-elf-variant-wood-elf-descent-mask-of-the-wild",
+        "name": "Half-Elf (Variant; Wood Elf Descent; Mask of the Wild)",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1228,42 +1228,42 @@
         ],
         "features": [
           {
-            "id": "scag-variant-wood-elf-descent-mask-of-the-wild-age-0",
+            "id": "scag-half-elf-variant-wood-elf-descent-mask-of-the-wild-age-0",
             "name": "Age",
             "description": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-mask-of-the-wild-size-1",
+            "id": "scag-half-elf-variant-wood-elf-descent-mask-of-the-wild-size-1",
             "name": "Size",
             "description": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-mask-of-the-wild-darkvision-2",
+            "id": "scag-half-elf-variant-wood-elf-descent-mask-of-the-wild-darkvision-2",
             "name": "Darkvision",
             "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-mask-of-the-wild-fey-ancestry-3",
+            "id": "scag-half-elf-variant-wood-elf-descent-mask-of-the-wild-fey-ancestry-3",
             "name": "Fey Ancestry",
             "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-mask-of-the-wild-variant-feature-mask-of-the-wild-4",
+            "id": "scag-half-elf-variant-wood-elf-descent-mask-of-the-wild-variant-feature-mask-of-the-wild-4",
             "name": "Variant Feature; Mask of the Wild",
             "description": "You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-mask-of-the-wild-languages-5",
+            "id": "scag-half-elf-variant-wood-elf-descent-mask-of-the-wild-languages-5",
             "name": "Languages",
             "description": "You can speak, read, and write Common, Elvish, and one extra language of your choice.",
             "level": 1,
@@ -1279,9 +1279,9 @@
         "sourceId": "scag"
       },
       {
-        "id": "scag-variant-wood-elf-descent-skill-versatility",
-        "name": "Variant; Wood Elf Descent; Skill Versatility",
-        "description": "Variant; Wood Elf Descent; Skill Versatility from Sword Coast Adventurer's Guide.",
+        "id": "scag-half-elf-variant-wood-elf-descent-skill-versatility",
+        "name": "Half-Elf (Variant; Wood Elf Descent; Skill Versatility)",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1304,42 +1304,42 @@
         ],
         "features": [
           {
-            "id": "scag-variant-wood-elf-descent-skill-versatility-age-0",
+            "id": "scag-half-elf-variant-wood-elf-descent-skill-versatility-age-0",
             "name": "Age",
             "description": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-skill-versatility-size-1",
+            "id": "scag-half-elf-variant-wood-elf-descent-skill-versatility-size-1",
             "name": "Size",
             "description": "Half-elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-skill-versatility-darkvision-2",
+            "id": "scag-half-elf-variant-wood-elf-descent-skill-versatility-darkvision-2",
             "name": "Darkvision",
             "description": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can't discern color in darkness, only shades of gray.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-skill-versatility-fey-ancestry-3",
+            "id": "scag-half-elf-variant-wood-elf-descent-skill-versatility-fey-ancestry-3",
             "name": "Fey Ancestry",
             "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-skill-versatility-variant-feature-skill-versatility-4",
+            "id": "scag-half-elf-variant-wood-elf-descent-skill-versatility-variant-feature-skill-versatility-4",
             "name": "Variant Feature; Skill Versatility",
             "description": "You gain proficiency in two skills of your choice.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
-            "id": "scag-variant-wood-elf-descent-skill-versatility-languages-5",
+            "id": "scag-half-elf-variant-wood-elf-descent-skill-versatility-languages-5",
             "name": "Languages",
             "description": "You can speak, read, and write Common, Elvish, and one extra language of your choice.",
             "level": 1,
@@ -1363,7 +1363,7 @@
       {
         "id": "scag-halfling-ghostwise",
         "name": "Halfling (Ghostwise)",
-        "description": "Halfling (Ghostwise) from Sword Coast Adventurer's Guide.",
+        "description": "Ghostwise halflings trace their ancestry back to a war among halfling tribes that sent their ancestors into flight from Luiren. Ghostwise halflings are the rarest of the hin, found only in the Chondalwood and a few other isolated forests, clustered in tight-knit clans. Many ghostwise clans select a natural landmark as the center of their territory, and members carry a piece of that landmark with them at all times.",
         "size": "Small",
         "speed": 25,
         "abilityScoreIncreases": [
@@ -1437,7 +1437,7 @@
       {
         "id": "scag-tiefling-variant-devil-s-tongue",
         "name": "Tiefling (Variant; Devil's Tongue)",
-        "description": "Tiefling (Variant; Devil's Tongue) from Sword Coast Adventurer's Guide.",
+        "description": "To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling. And to twist the knife, tieflings know that this is because a pact struck generations ago infused the essence of Asmodeus-overlord of the Nine Hells-into their bloodline. Their appearance and their nature are not their fault but the result of an ancient sin, for which they and their children and their children's children will always be held accountable.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1532,7 +1532,7 @@
       {
         "id": "scag-tiefling-variant-hellfire",
         "name": "Tiefling (Variant; Hellfire)",
-        "description": "Tiefling (Variant; Hellfire) from Sword Coast Adventurer's Guide.",
+        "description": "To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling. And to twist the knife, tieflings know that this is because a pact struck generations ago infused the essence of Asmodeus-overlord of the Nine Hells-into their bloodline. Their appearance and their nature are not their fault but the result of an ancient sin, for which they and their children and their children's children will always be held accountable.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1627,7 +1627,7 @@
       {
         "id": "scag-tiefling-variant-infernal-legacy",
         "name": "Tiefling (Variant; Infernal Legacy)",
-        "description": "Tiefling (Variant; Infernal Legacy) from Sword Coast Adventurer's Guide.",
+        "description": "To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling. And to twist the knife, tieflings know that this is because a pact struck generations ago infused the essence of Asmodeus-overlord of the Nine Hells-into their bloodline. Their appearance and their nature are not their fault but the result of an ancient sin, for which they and their children and their children's children will always be held accountable.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1722,7 +1722,7 @@
       {
         "id": "scag-tiefling-variant-winged",
         "name": "Tiefling (Variant; Winged)",
-        "description": "Tiefling (Variant; Winged) from Sword Coast Adventurer's Guide.",
+        "description": "To be greeted with stares and whispers, to suffer violence and insult on the street, to see mistrust and fear in every eye: this is the lot of the tiefling. And to twist the knife, tieflings know that this is because a pact struck generations ago infused the essence of Asmodeus-overlord of the Nine Hells-into their bloodline. Their appearance and their nature are not their fault but the result of an ancient sin, for which they and their children and their children's children will always be held accountable.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -2241,7 +2241,7 @@
       {
         "id": "scag-city-watch",
         "name": "City Watch",
-        "description": "City Watch background.",
+        "description": "You have served the community where you grew up, standing as its first line of defense against crime. You aren't a soldier, directing your gaze outward at possible enemies. Instead, your service to your hometown was to help police its populace, protecting the citizenry from lawbreakers and malefactors of every stripe.",
         "skillProficiencies": [
           "Athletics",
           "Insight"
@@ -2279,7 +2279,7 @@
       {
         "id": "scag-clan-crafter",
         "name": "Clan Crafter",
-        "description": "Clan Crafter background.",
+        "description": "The Stout Folk are well known for their artisanship and the worth of their handiworks, and you have been trained in that ancient tradition. For years you labored under a dwarf master of the craft, enduring long hours and dismissive, sour-tempered treatment in order to gain the fine skills you possess today. You are most likely a dwarf, but not necessarily—particularly in the North, the shield dwarf clans learned long ago that only proud fools who are more concerned for their egos than their craft turn away promising apprentices, even those of other races.",
         "skillProficiencies": [
           "History",
           "Insight"
@@ -2320,7 +2320,7 @@
       {
         "id": "scag-cloistered-scholar",
         "name": "Cloistered Scholar",
-        "description": "Cloistered Scholar background.",
+        "description": "As a child, you were inquisitive when your playmates were possessive or raucous. In your formative years, you found your way to one of Faerûn's great institutes of learning, where you were apprenticed and taught that knowledge is a more valuable treasure than gold or gems. Now you are ready to leave your home—not to abandon it, but to quest for new lore to add to its storehouse of knowledge.",
         "skillProficiencies": [
           "History"
         ],
@@ -2379,7 +2379,7 @@
       {
         "id": "scag-courtier",
         "name": "Courtier",
-        "description": "Courtier background.",
+        "description": "In your earlier days, you were a personage of some significance in a noble court or a bureaucratic organization. You might or might not come from an upper-class family; your talents, rather than the circumstances of your birth, could have secured you this position. You might have been one of the many functionaries, attendants, and other hangers-on in the Court of Silverymoon, or perhaps you traveled in Waterdeep's baroque and sometimes cutthroat conglomeration of guilds, nobles, adventurers, and secret societies.",
         "skillProficiencies": [
           "Insight",
           "Persuasion"
@@ -2409,7 +2409,7 @@
       {
         "id": "scag-faction-agent",
         "name": "Faction Agent",
-        "description": "Faction Agent background.",
+        "description": "Many organizations active in the North and across the face of Faerûn aren't bound by strictures of geography. These factions pursue their agendas without regard for political boundaries, and their members operate anywhere the organization deems necessary. These groups employ listeners, rumormongers, smugglers, sellswords, cache-holders (people who guard caches of wealth or magic for use by the faction's operatives), haven keepers, and message drop minders, to name a few.",
         "skillProficiencies": [
           "Insight"
         ],
@@ -2462,7 +2462,7 @@
       {
         "id": "scag-far-traveler",
         "name": "Far Traveler",
-        "description": "Far Traveler background.",
+        "description": "Almost all of the common people and other folk that one might encounter along the Sword Coast or in the North have one thing in common: they live out their lives without ever traveling more than a few miles from where they were born. You aren't one of those folk. You are from a distant place, one so remote that few of the common folk in the North realize that it exists, and chances are good that even if some people you meet have heard of your homeland, they know merely the name and perhaps a few outrageous stories.",
         "skillProficiencies": [
           "Insight",
           "Perception"
@@ -2571,7 +2571,7 @@
       {
         "id": "scag-inheritor",
         "name": "Inheritor",
-        "description": "Inheritor background.",
+        "description": "You are the heir to something of great value—not mere coin or wealth, but an object that has been entrusted to you and you alone. Your inheritance might have come directly to you from a member of your family, by right of birth, or it could have been left to you by a friend, a mentor, a teacher, or someone else important in your life. The revelation of your inheritance changed your life, and might have set you on the path to adventure, but it could also come with many dangers, including those who covet your gift and want to take it from you—by force, if need be.",
         "skillProficiencies": [
           "Survival"
         ],
@@ -2627,7 +2627,7 @@
       {
         "id": "scag-knight-of-the-order",
         "name": "Knight of the Order",
-        "description": "Knight of the Order background.",
+        "description": "You belong to an order of knights who have sworn oaths to achieve a certain goal. The nature of this goal depends on the order you serve, but in your eyes it is without question a vital and honorable endeavor. Faerûn has a wide variety of knightly orders, all of which have a similar outlook concerning their actions and responsibilities.",
         "skillProficiencies": [
           "Persuasion"
         ],
@@ -2670,7 +2670,7 @@
       {
         "id": "scag-mercenary-veteran",
         "name": "Mercenary Veteran",
-        "description": "Mercenary Veteran background.",
+        "description": "As a sell-sword who fought battles for coin, you're well acquainted with risking life and limb for a chance at a share of treasure. Now, you look forward to fighting foes and reaping even greater rewards as an adventurer. Your experience makes you familiar with the ins and outs of mercenary life, and you likely have harrowing stories of events on the battlefield.",
         "skillProficiencies": [
           "Athletics",
           "Persuasion"
@@ -2711,7 +2711,7 @@
       {
         "id": "scag-urban-bounty-hunter",
         "name": "Urban Bounty Hunter",
-        "description": "Urban Bounty Hunter background.",
+        "description": "Before you became an adventurer, your life was already full of conflict and excitement, because you made a living tracking down people for pay. Unlike some people who collect bounties, though, you aren't a savage who follows quarry into or through the wilderness. You're involved in a lucrative trade, in the place where you live, that routinely tests your skills and survival instincts.",
         "skillProficiencies": [],
         "skillChoices": [
           "Deception",
@@ -2743,7 +2743,7 @@
       {
         "id": "scag-uthgardt-tribe-member",
         "name": "Uthgardt Tribe Member",
-        "description": "Uthgardt Tribe Member background.",
+        "description": "Though you might have only recently arrived in civilized lands, you are no stranger to the values of cooperation and group effort when striving for supremacy. You learned these principles, and much more, as a member of an Uthgardt tribe. Your people have always tried to hold to the old ways.",
         "skillProficiencies": [
           "Athletics",
           "Survival"
@@ -2794,7 +2794,7 @@
       {
         "id": "scag-variant-city-watch-investigator",
         "name": "Variant City Watch (Investigator)",
-        "description": "Variant City Watch (Investigator) background.",
+        "description": "Rarer than watch or patrol members are a community's investigators, who are responsible for solving crimes after the fact. Though such folk are seldom found in rural areas, nearly every settlement of decent size has at least one or two watch members who have the skill to investigate crime scenes and track down criminals. If your prior experience is as an investigator, you have proficiency in Investigation rather than Athletics.",
         "skillProficiencies": [
           "Insight",
           "Investigation"
@@ -2832,7 +2832,7 @@
       {
         "id": "scag-waterdhavian-noble",
         "name": "Waterdhavian Noble",
-        "description": "Waterdhavian Noble background.",
+        "description": "You are a scion of one of the great noble families of Waterdeep. Human families who jealously guard their privilege and place in the City of Splendors, Waterdhavian nobles have a reputation across Faerûn for being eccentric, spoiled, venal, and, above all else, rich. Whether you are a shining example of the reason for this reputation or one who proves the rule by being an exception, people expect things of you when they know your surname and what it means.",
         "skillProficiencies": [
           "History",
           "Persuasion"

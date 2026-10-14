@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source VRGR).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T06:27:37.905Z",
+    "importedAt": "2026-10-14T17:54:19.183Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -16,7 +16,7 @@
       {
         "id": "ravenloft-dhampir",
         "name": "Dhampir",
-        "description": "Dhampir from Van Richten's Guide to Ravenloft.",
+        "description": "Poised between the worlds of the living and the dead, dhampirs retain their grip on life yet are endlessly tested by vicious hungers. Their ties to the undead grant dhampirs a taste of a vampire's deathless prowess in the form of increased speed, darkvision, and a life-draining bite. With unique insights into the nature of the undead, many dhampirs become adventurers and monster hunters.",
         "size": "Small",
         "sizeOptions": [
           "Small",
@@ -75,7 +75,7 @@
       {
         "id": "ravenloft-hexblood",
         "name": "Hexblood",
-        "description": "Hexblood from Van Richten's Guide to Ravenloft.",
+        "description": "Where wishing fails, ancient magic can offer a heart's desire—at least, for a time. Hexbloods are individuals infused with eldritch magic, fey energy, or mysterious witchcraft. Some who enter into bargains with hags gain their deepest wishes but eventually find themselves transformed.",
         "size": "Small",
         "sizeOptions": [
           "Small",
@@ -150,7 +150,7 @@
       {
         "id": "ravenloft-reborn",
         "name": "Reborn",
-        "description": "Reborn from Van Richten's Guide to Ravenloft.",
+        "description": "Death isn't always the end. The reborn exemplify this, being individuals who have died yet, somehow, still live. Some reborn exhibit the scars of fatal ends, their ashen flesh or bloodless veins making it clear that they've been touched by death.",
         "size": "Small",
         "sizeOptions": [
           "Small",
@@ -363,7 +363,7 @@
       {
         "id": "ravenloft-haunted-one",
         "name": "Haunted One",
-        "description": "Haunted One background.",
+        "description": "You are haunted by something so terrible that you dare not speak of it. You've tried to bury it and run away from it, to no avail. Whatever this thing is that haunts you can't be slain with a sword or banished with a spell.",
         "skillProficiencies": [],
         "skillChoices": [
           "Arcana",
@@ -503,7 +503,7 @@
       {
         "id": "ravenloft-investigator",
         "name": "Investigator",
-        "description": "Investigator background.",
+        "description": "You relentlessly seek the truth. Perhaps you're motivated by belief in the law and a sense of universal justice, or maybe that very law has failed you and you seek to make things right. You could have witnessed something remarkable or terrible, and now you must know more about this hidden truth.",
         "skillProficiencies": [],
         "skillChoices": [
           "Insight",

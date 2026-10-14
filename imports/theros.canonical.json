@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source MOT).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T06:27:40.572Z",
+    "importedAt": "2026-10-14T17:54:23.915Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -16,7 +16,7 @@
       {
         "id": "theros-centaur",
         "name": "Centaur",
-        "description": "Centaur from Mythic Odysseys of Theros.",
+        "description": "Powerful and curious, quick to act and knowledgeable of the wider world, centaurs seek to experience life's boundless bounty. The centaurs of Theros are divided into two groups: members of the far-traveling Lagonna band and the proud raiders of the Pheres band. These bands occupy territories situated between the three major human poleis, making them common sights to those who travel human lands.",
         "size": "Medium",
         "speed": 40,
         "abilityScoreIncreases": [
@@ -110,7 +110,7 @@
       {
         "id": "theros-leonin",
         "name": "Leonin",
-        "description": "Leonin from Mythic Odysseys of Theros.",
+        "description": "The leonin guard the shining lands of Oreskos, a golden plain where even the gods rarely trespass. Prides of these nomadic, lion-like humanoids rarely interact with other peoples, having all they need in their shimmering homeland and knowing the treachery of strangers. Still, some leonin wonder what lies beyond Oreskos's border mountains and seek to test themselves in a wider world.",
         "size": "Medium",
         "speed": 35,
         "abilityScoreIncreases": [
@@ -197,7 +197,7 @@
       {
         "id": "theros-minotaur",
         "name": "Minotaur",
-        "description": "Minotaur from Mythic Odysseys of Theros.",
+        "description": "The minotaurs who dwell in the badlands of Phoberos and the remote polis of Skophos are caught between two worlds. Some follow the dark god Mogis, who has tyrannized them for ages untold and shown them a trail of slaughter that is all many minotaurs have ever known. Others, though, have emerged from this bloody path and found a world that welcomes those who pursue their own destinies and heroic callings.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -284,7 +284,7 @@
       {
         "id": "theros-satyr",
         "name": "Satyr",
-        "description": "Satyr from Mythic Odysseys of Theros.",
+        "description": "Satyrs have a well-earned reputation for their good spirits, gregarious personalities, and love of revels. Most satyrs are driven by simple desires, to see the world and to sample its every pleasure. While their spontaneity and whimsy sometimes put them at odds with more stoic peoples, satyrs rarely let the moodiness of others hinder their own happiness.",
         "size": "Medium",
         "speed": 35,
         "abilityScoreIncreases": [
@@ -386,7 +386,7 @@
       {
         "id": "theros-triton",
         "name": "Triton",
-        "description": "Triton from Mythic Odysseys of Theros.",
+        "description": "Tritons dwell throughout the Siren Sea, exploring a world of coral forests and secret mountains the \"dryfolk\" of the surface world will never know. While most live their entire lives beneath the sea, they're not bound to the deep. Following their inherent curiosity, some tritons venture beyond the waves, seeking to explore a whole world of wonders beyond their own.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -506,7 +506,7 @@
       {
         "id": "theros-athlete",
         "name": "Athlete",
-        "description": "Athlete background.",
+        "description": "You strive to perfect yourself physically and in execution of everything you do. The thrill of competition lights fire in your blood, and the roar of the crowd drives you forward. Tales of your exploits precede you and might open doors or loosen tongues.",
         "skillProficiencies": [
           "Acrobatics",
           "Athletics"

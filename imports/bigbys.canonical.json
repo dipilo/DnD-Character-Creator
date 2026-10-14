@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source BGG).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T06:27:25.008Z",
+    "importedAt": "2026-10-14T17:54:11.964Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -72,7 +72,7 @@
       {
         "id": "bigbys-giant-foundling",
         "name": "Giant Foundling",
-        "description": "Giant Foundling background.",
+        "description": "Though you aren't a Giant, you grew up among giants. Maybe you were an orphan taken in by a sympathetic family of stone giants who raised you as one of their own. Or perhaps you lived in a lost prehistoric pocket of the world, surrounded by giants and fearsome behemoths or hulking dinosaurs.",
         "skillProficiencies": [
           "Intimidation",
           "Survival"
@@ -138,7 +138,7 @@
       {
         "id": "bigbys-rune-carver",
         "name": "Rune Carver",
-        "description": "Rune Carver background.",
+        "description": "What we call rune magic is the palest imitation of Annam's creative work. He shaped worlds from the primal elements; we struggle to bind the merest scraps of elemental power into the mystic shapes of our runes. You've dedicated your life to studying runecraft.",
         "skillProficiencies": [
           "History",
           "Perception"

@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source ERLW).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T06:27:32.521Z",
+    "importedAt": "2026-10-14T17:54:15.426Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -16,7 +16,7 @@
       {
         "id": "erlw-bugbear",
         "name": "Bugbear",
-        "description": "Bugbear from Eberron: Rising from the Last War.",
+        "description": "Neither bugs nor bears, bugbears are the hulking cousins of goblins and hobgoblins. With roots in the Feywild, early bugbears resided in hidden places, in hard-to-reach and shadowed spaces. Long ago and from out of the corner of your eye, they came to the Material Plane, urged to spread throughout the multiverse by the conquering god Maglubiyet.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -110,7 +110,7 @@
       {
         "id": "erlw-changeling",
         "name": "Changeling",
-        "description": "Changeling from Eberron: Rising from the Last War.",
+        "description": "Long ago there was a woman named Jes, and she had one hundred children. Her rivals conspired against her and swore to kill her children. Jes begged the Sovereigns for help, but their only answer was the wind and rain.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -192,7 +192,7 @@
       {
         "id": "erlw-goblin",
         "name": "Goblin",
-        "description": "Goblin from Eberron: Rising from the Last War.",
+        "description": "Whether sniveling in fear, cackling with mad laughter, or snarling in a fury, goblins are wretched and inconsequential—at least in the eyes of most of Ravnica's other folk. In their own minds, though, they are content to lurk in the shadows only until they fully come into their own and receive the recognition they believe they deserve. They are entitled to some credit for their tenacity, agility, crafty ingenuity, and dumb luck, all of which has enabled them to survive in a world overrun with creatures larger and more powerful than they are.",
         "size": "Small",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -266,7 +266,7 @@
       {
         "id": "erlw-hobgoblin",
         "name": "Hobgoblin",
-        "description": "Hobgoblin from Eberron: Rising from the Last War.",
+        "description": "Hobgoblins trace their origins to the ancient courts of the Feywild, where they first appeared with their goblin and bugbear kin. Many of them were driven from the Feywild by the conquering god Maglubiyet, who marshaled them as soldiers, but the fey realm left its mark; wherever they are in the multiverse, they continue to channel an aspect of the Feywild's rule of reciprocity, which creates a mystical bond between the giver and the receiver of a gift. On some worlds, such bonds lead hobgoblins to form communities with deep ties to one another.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -346,7 +346,7 @@
       {
         "id": "erlw-kalashtar",
         "name": "Kalashtar",
-        "description": "Kalashtar from Eberron: Rising from the Last War.",
+        "description": "I am kalashtar, born of two worlds. Over a thousand years ago, my ancestor bound her bloodline to the spirit Kashtai, and I am a child of that union. Kashtai moves within me.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -428,7 +428,7 @@
       {
         "id": "erlw-orc",
         "name": "Orc",
-        "description": "Orc from Eberron: Rising from the Last War.",
+        "description": "Orcs trace their creation to the one-eyed god Gruumsh, an unstoppable warrior and powerful leader. The divine qualities of Gruumsh resonate within orcs, granting them a reflection of his toughness and tenacity that can't be matched, and the god equipped his children to be able to live above or below ground. On some worlds, such as Eberron, orcs were among the first defenders of the natural order from the encroachments of Fiends and other extraplanar threats.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -515,7 +515,7 @@
       {
         "id": "erlw-shifter",
         "name": "Shifter",
-        "description": "Shifter from Eberron: Rising from the Last War.",
+        "description": "Geth's ancient heritage rose up from deep within him, spreading out from the core of his being. Some shifters manifested terrible claws, others massive fangs, still others astounding speed or heightened senses. Geth's gift from his lycanthrope ancestors was sheer toughness.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [],
@@ -729,7 +729,7 @@
       {
         "id": "erlw-warforged",
         "name": "Warforged",
-        "description": "Warforged from Eberron: Rising from the Last War.",
+        "description": "\"Pierce was built by design, while you were built by accident,\" Lakashtai said. \" The warforged were built to fight in the Last War. While the first warforged were mindless automatons, House Cannith devoted vast resources to improving these steel soldiers.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -828,7 +828,7 @@
       {
         "id": "erlw-dwarf-mark-of-warding",
         "name": "Dwarf (Mark of Warding)",
-        "description": "Dwarf (Mark of Warding) from Eberron: Rising from the Last War.",
+        "description": "Kingdoms rich in ancient grandeur, halls carved into the roots of mountains, the echoing of picks and hammers in deep mines and blazing forges, a commitment to clan and tradition, and a burning hatred of goblins and orcs-these common threads unite all dwarves. Short and Stout. Bold and hardy, dwarves are known as skilled warriors, miners, and workers of stone and metal.",
         "size": "Medium",
         "speed": 25,
         "abilityScoreIncreases": [
@@ -969,7 +969,7 @@
       {
         "id": "erlw-elf-mark-of-shadow",
         "name": "Elf (Mark of Shadow)",
-        "description": "Elf (Mark of Shadow) from Eberron: Rising from the Last War.",
+        "description": "Elves in the realm of Lorwyn-Shadowmoor possess black, pupilless eyes; curved horns; legs that end in cloven hooves; and pointed ears. The elves of Lorwyn exhibit stark differences physically as well as culturally from their Shadowmoor counterparts. In Lorwyn.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1081,7 +1081,7 @@
       {
         "id": "erlw-gnome-mark-of-scribing",
         "name": "Gnome (Mark of Scribing)",
-        "description": "Gnome (Mark of Scribing) from Eberron: Rising from the Last War.",
+        "description": "A constant hum of busy activity pervades the warrens and neighborhoods where gnomes form their close-knit communities. Louder sounds punctuate the hum: a crunch of grinding gears here, a minor explosion there, a yelp of surprise or triumph, and especially bursts of laughter. Gnomes take delight in life, enjoying every moment of invention, exploration, investigation, creation, and play.",
         "size": "Small",
         "speed": 25,
         "abilityScoreIncreases": [
@@ -1178,7 +1178,7 @@
       {
         "id": "erlw-half-elf-variant-mark-of-detection",
         "name": "Half-Elf (Variant; Mark of Detection)",
-        "description": "Half-Elf (Variant; Mark of Detection) from Eberron: Rising from the Last War.",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1283,7 +1283,7 @@
       {
         "id": "erlw-half-elf-variant-mark-of-storm",
         "name": "Half-Elf (Variant; Mark of Storm)",
-        "description": "Half-Elf (Variant; Mark of Storm) from Eberron: Rising from the Last War.",
+        "description": "Walking in two worlds but truly belonging to neither, half-elves combine what some say are the best qualities of their elf and human parents: human curiosity, inventiveness, and ambition tempered by the refined senses, love of nature, and artistic tastes of the elves. Some half-elves live among humans, set apart by their emotional and physical differences, watching friends and loved ones age while time barely touches them. Others live with the elves, growing to adulthood while their peers continue to live as children, growing restless in the timeless elven realms.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1378,7 +1378,7 @@
       {
         "id": "erlw-half-orc-variant-mark-of-finding",
         "name": "Half-Orc (Variant; Mark of Finding)",
-        "description": "Half-Orc (Variant; Mark of Finding) from Eberron: Rising from the Last War.",
+        "description": "Whether united under the leadership of a mighty warlock or having fought to a standstill after years of conflict, orc and human tribes sometimes form alliances, joining forces into a larger horde to the terror of civilized lands nearby. When these alliances are sealed by marriages, half-orcs are born. Some half-orcs rise to become proud chiefs of orc tribes, their human blood giving them an edge over their full-blooded orc rivals.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1464,7 +1464,7 @@
       {
         "id": "erlw-halfling-mark-of-healing",
         "name": "Halfling (Mark of Healing)",
-        "description": "Halfling (Mark of Healing) from Eberron: Rising from the Last War.",
+        "description": "The comforts of home are the goals of most halflings' lives: a place to settle in peace and quiet, far from marauding monsters and clashing armies; a blazing fire and a generous meal; fine drink and fine conversation. Though some halflings live out their days in remote agricultural communities, others form nomadic bands that travel constantly, lured by the open road and the wide horizon to discover the wonders of new lands and peoples. But even these wanderers love peace, food, hearth, and home, though home might be a wagon jostling along a dirt road or a raft floating downriver.",
         "size": "Small",
         "speed": 25,
         "abilityScoreIncreases": [
@@ -1563,7 +1563,7 @@
       {
         "id": "erlw-halfling-mark-of-hospitality",
         "name": "Halfling (Mark of Hospitality)",
-        "description": "Halfling (Mark of Hospitality) from Eberron: Rising from the Last War.",
+        "description": "The comforts of home are the goals of most halflings' lives: a place to settle in peace and quiet, far from marauding monsters and clashing armies; a blazing fire and a generous meal; fine drink and fine conversation. Though some halflings live out their days in remote agricultural communities, others form nomadic bands that travel constantly, lured by the open road and the wide horizon to discover the wonders of new lands and peoples. But even these wanderers love peace, food, hearth, and home, though home might be a wagon jostling along a dirt road or a raft floating downriver.",
         "size": "Small",
         "speed": 25,
         "abilityScoreIncreases": [
@@ -1665,7 +1665,7 @@
       {
         "id": "erlw-human-mark-of-handling",
         "name": "Human (Mark of Handling)",
-        "description": "Human (Mark of Handling) from Eberron: Rising from the Last War.",
+        "description": "In the reckonings of most worlds, humans are the youngest of the common races, late to arrive on the world scene and short-lived in comparison to dwarves, elves, and dragons. Perhaps it is because of their shorter lives that they strive to achieve as much as they can in the years they are given. Or maybe they feel they have something to prove to the elder races, and that's why they build their mighty empires on the foundation of conquest and trade.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1759,7 +1759,7 @@
       {
         "id": "erlw-human-mark-of-making",
         "name": "Human (Mark of Making)",
-        "description": "Human (Mark of Making) from Eberron: Rising from the Last War.",
+        "description": "In the reckonings of most worlds, humans are the youngest of the common races, late to arrive on the world scene and short-lived in comparison to dwarves, elves, and dragons. Perhaps it is because of their shorter lives that they strive to achieve as much as they can in the years they are given. Or maybe they feel they have something to prove to the elder races, and that's why they build their mighty empires on the foundation of conquest and trade.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -1857,7 +1857,7 @@
       {
         "id": "erlw-human-mark-of-passage",
         "name": "Human (Mark of Passage)",
-        "description": "Human (Mark of Passage) from Eberron: Rising from the Last War.",
+        "description": "In the reckonings of most worlds, humans are the youngest of the common races, late to arrive on the world scene and short-lived in comparison to dwarves, elves, and dragons. Perhaps it is because of their shorter lives that they strive to achieve as much as they can in the years they are given. Or maybe they feel they have something to prove to the elder races, and that's why they build their mighty empires on the foundation of conquest and trade.",
         "size": "Medium",
         "speed": 35,
         "abilityScoreIncreases": [
@@ -1945,7 +1945,7 @@
       {
         "id": "erlw-human-mark-of-sentinel",
         "name": "Human (Mark of Sentinel)",
-        "description": "Human (Mark of Sentinel) from Eberron: Rising from the Last War.",
+        "description": "In the reckonings of most worlds, humans are the youngest of the common races, late to arrive on the world scene and short-lived in comparison to dwarves, elves, and dragons. Perhaps it is because of their shorter lives that they strive to achieve as much as they can in the years they are given. Or maybe they feel they have something to prove to the elder races, and that's why they build their mighty empires on the foundation of conquest and trade.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -2025,7 +2025,7 @@
       {
         "id": "erlw-human-variant-mark-of-finding",
         "name": "Human (Variant; Mark of Finding)",
-        "description": "Human (Variant; Mark of Finding) from Eberron: Rising from the Last War.",
+        "description": "In the reckonings of most worlds, humans are the youngest of the common races, late to arrive on the world scene and short-lived in comparison to dwarves, elves, and dragons. Perhaps it is because of their shorter lives that they strive to achieve as much as they can in the years they are given. Or maybe they feel they have something to prove to the elder races, and that's why they build their mighty empires on the foundation of conquest and trade.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -2114,7 +2114,7 @@
       {
         "id": "erlw-house-agent",
         "name": "House Agent",
-        "description": "House Agent background.",
+        "description": "You have sworn fealty to a dragonmarked house. If you have a dragonmark, you're likely a member of one of the house's influential families; otherwise you're an outsider who hopes to make your fortune through the house. Your main task is to serve as the eyes of your house, but you could be called on at any time to act as its hand.",
         "skillProficiencies": [
           "Investigation",
           "Persuasion"

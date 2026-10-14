@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source BMT).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T06:27:29.083Z",
+    "importedAt": "2026-10-14T17:54:12.792Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -19,7 +19,7 @@
       {
         "id": "book-of-many-things-rewarded",
         "name": "Rewarded",
-        "description": "Rewarded background.",
+        "description": "You were living a difficult life before your destiny suddenly changed through a miraculous turn of good fortune. Perhaps a benevolent deity gave you precisely what you most desired. You might have stumbled across a Deck of Many Things and drawn a card with a potent, positive effect.",
         "skillProficiencies": [
           "Insight",
           "Persuasion"
@@ -93,7 +93,7 @@
       {
         "id": "book-of-many-things-ruined",
         "name": "Ruined",
-        "description": "Ruined background.",
+        "description": "Everything was going so well! You had a life of luxury, love, and comfort when you suddenly lost it all. Perhaps you were framed for crimes you didn't commit and lost your reputation, fortune, and career.",
         "skillProficiencies": [
           "Stealth",
           "Survival"

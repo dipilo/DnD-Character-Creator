@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source EEPC).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T06:27:31.238Z",
+    "importedAt": "2026-10-14T17:54:14.102Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -16,7 +16,7 @@
       {
         "id": "elemental-evil-aarakocra",
         "name": "Aarakocra",
-        "description": "Aarakocra from Elemental Evil Player's Companion.",
+        "description": "Sequestered in high mountains atop tall trees, the aarakocra, sometimes called birdfolk, evoke fear and wonder. Many aarakocra aren't even native to the Material Plane. They hail from a world beyond-from the boundless vistas of the Elemental Plane of Air.",
         "size": "Medium",
         "speed": 25,
         "abilityScoreIncreases": [
@@ -84,7 +84,7 @@
       {
         "id": "elemental-evil-genasi",
         "name": "Genasi",
-        "description": "Genasi from Elemental Evil Player's Companion.",
+        "description": "Genasi. Those who think of other planes at all consider them remote, distant realms, but planar influence can be felt throughout the world. It sometimes manifests in beings who, through an accident of birth, carry the power of the planes in their blood.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -298,7 +298,7 @@
       {
         "id": "elemental-evil-goliath",
         "name": "Goliath",
-        "description": "Goliath from Elemental Evil Player's Companion.",
+        "description": "At the highest mountain peaks-far above the slopes where trees grow and where the air is thin and the frigid winds howl-dwell the reclusive goliaths. Few folk can claim to have seen a goliath, and fewer still can claim friendship with them. Goliaths wander a bleak realm of rock, wind, and cold.",
         "size": "Medium",
         "speed": 30,
         "abilityScoreIncreases": [
@@ -378,7 +378,7 @@
       {
         "id": "elemental-evil-gnome-deep-svirfneblin",
         "name": "Gnome (Deep/Svirfneblin)",
-        "description": "Gnome (Deep/Svirfneblin) from Elemental Evil Player's Companion.",
+        "description": "Forest gnomes and rock gnomes are the gnomes most commonly encountered in the lands of the surface world. There is another subrace of gnomes rarely seen by any surface-dweller: deep gnomes, also known as svirfneblin. Guarded, and suspicious of outsiders, svirfneblin are cunning and taciturn, but can be just as kind-hearted, loyal, and compassionate as their surface cousins.",
         "size": "Small",
         "speed": 25,
         "abilityScoreIncreases": [

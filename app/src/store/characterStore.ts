@@ -16,6 +16,7 @@ import { dndContent } from '@/data/contentResolvers';
 import { restorableBuilderState } from '@/lib/builderDraft';
 import { createDebouncedLocalStorage } from '@/lib/debouncedStorage';
 import type { CharacterSyncMeta, PendingSeat } from '@/store/syncTypes';
+import { getDefaultSourceIds } from '@/store/sourcePreferencesStore';
 
 /** localStorage is a cache now; this is the bookkeeping that makes it one. */
 export type { CharacterSyncMeta };
@@ -100,6 +101,9 @@ const initialBuilderState: BuilderState = {
   rolledScoreAssignments: {}
 };
 
+/** A new draft opens on the player's own book list; once open, the draft's own list rules. */
+const newBuilderState = (): BuilderState => ({ ...initialBuilderState, selectedSourceIds: getDefaultSourceIds() });
+
 /** The builder state that opens a saved character on its Review step, wherever it came from. */
 function buildEditorState(character: Character): BuilderState {
   const species = character.speciesId ? dndContent().getRuntimeSpeciesById(character.speciesId) : undefined;
@@ -143,7 +147,7 @@ export const useCharacterStore = create<CharacterState>()(
     (set, get) => ({
       characters: [],
       currentCharacter: null,
-      builderState: initialBuilderState,
+      builderState: newBuilderState(),
       syncMeta: {},
       pendingDeletes: [],
       pendingSeats: {},
@@ -327,7 +331,7 @@ export const useCharacterStore = create<CharacterState>()(
       },
 
       resetBuilder: () => {
-        set({ builderState: initialBuilderState });
+        set({ builderState: newBuilderState() });
       }
     }),
     {
@@ -348,7 +352,7 @@ export const useCharacterStore = create<CharacterState>()(
         return {
           ...current,
           ...stored,
-          builderState: restorableBuilderState(stored.builderState, initialBuilderState)
+          builderState: restorableBuilderState(stored.builderState, newBuilderState())
         };
       }
     }

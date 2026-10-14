@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source SCC).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T06:27:39.948Z",
+    "importedAt": "2026-10-14T17:54:20.944Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -16,7 +16,7 @@
       {
         "id": "strixhaven-owlin",
         "name": "Owlin",
-        "description": "Owlin from Strixhaven: A Curriculum of Chaos.",
+        "description": "Distant kin of giant owls from the Feywild, owlin come in many shapes and sizes, from petite and fluffy to wide-winged and majestic. Owlin have arms and legs like other Humanoids, as well as wings that extend from their back and shoulders. Like owls, owlin are graced with feathers that make no sound when they move or fly, making it easy for them to sneak up on you in the library.",
         "size": "Small",
         "sizeOptions": [
           "Small",
@@ -71,7 +71,7 @@
       {
         "id": "strixhaven-lorehold-student",
         "name": "Lorehold Student",
-        "description": "Lorehold Student background.",
+        "description": "You have spent your youth preparing to be a student of Lorehold College, reading every book on the college's recommended reading list for prospective students. Your academic passions are in the broad field of history. You might dream of using magic to contact great historical figures or your own ancestors or of recreating the mighty magic of a distant age.",
         "skillProficiencies": [
           "History",
           "Religion"
@@ -143,7 +143,7 @@
       {
         "id": "strixhaven-prismari-student",
         "name": "Prismari Student",
-        "description": "Prismari Student background.",
+        "description": "You are an artist, and you have been preparing to hone your craft according to the traditions of Prismari College. Whatever your medium—sculpture, dance, paint, music, drama, architecture, or any other field—you have grand visions of bringing your art to life in a fusion of magic and creativity.",
         "skillProficiencies": [
           "Acrobatics",
           "Performance"
@@ -216,7 +216,7 @@
       {
         "id": "strixhaven-quandrix-student",
         "name": "Quandrix Student",
-        "description": "Quandrix Student background.",
+        "description": "In preparation to become a student of Quandrix College, you have spent years working through the college's math problems for prospective students. Your interests concentrate on the mathematical principles and patterns found in the natural world. You might lean more toward mathematics or physics, or you delve into more abstract studies of metaphysics, arcana, or logic.",
         "skillProficiencies": [
           "Arcana",
           "Nature"
@@ -283,7 +283,7 @@
       {
         "id": "strixhaven-silverquill-student",
         "name": "Silverquill Student",
-        "description": "Silverquill Student background.",
+        "description": "You have spent years practicing your writing and oration in the hope of becoming a student of Silverquill College. Your studies focus on language, literature, and the power of words, both magical and otherwise. The metaphorical power of words to illuminate or conceal is joined with the literal ability of magic to do the same in your academic pursuits.",
         "skillProficiencies": [
           "Intimidation",
           "Persuasion"
@@ -343,7 +343,7 @@
       {
         "id": "strixhaven-witherbloom-student",
         "name": "Witherbloom Student",
-        "description": "Witherbloom Student background.",
+        "description": "You filled your childhood with rudimentary alchemical experiments, all in the hope of becoming a student of Witherbloom College. The life sciences are the focus of your reading, which include biology and necromancy. Brewing strange concoctions with medicinal properties, exploring the anatomies of monsters, and cataloging swamp flora are the kinds of studies you might pursue at Witherbloom College.",
         "skillProficiencies": [
           "Nature",
           "Survival"
