@@ -48,11 +48,12 @@ const matchesTarget = (entry, target) => {
   return false;
 };
 
-const walkStrings = (value, replace) => {
+const walkStrings = (value, replace, skipKeys) => {
   if (typeof value === 'string') return replace(value);
-  if (Array.isArray(value)) return value.map((entry) => walkStrings(entry, replace));
+  if (Array.isArray(value)) return value.map((entry) => walkStrings(entry, replace, skipKeys));
   if (value && typeof value === 'object') {
-    return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, walkStrings(entry, replace)]));
+    return Object.fromEntries(Object.entries(value)
+      .map(([key, entry]) => [key, skipKeys?.has(key) ? entry : walkStrings(entry, replace, skipKeys)]));
   }
   return value;
 };
@@ -77,6 +78,66 @@ const setByPath = (target, path, value) => {
 };
 
 const asList = (value) => (Array.isArray(value) ? [...value] : []);
+
+const REPLACE_TXT_PROTECTED_KEYS = new Set(['name']);
+
+const SKILL_ABILITY = {
+  athletics: 'str',
+  acrobatics: 'dex', 'sleight of hand': 'dex', stealth: 'dex',
+  arcana: 'int', history: 'int', investigation: 'int', nature: 'int', religion: 'int',
+  'animal handling': 'wis', insight: 'wis', medicine: 'wis', perception: 'wis', survival: 'wis',
+  deception: 'cha', intimidation: 'cha', performance: 'cha', persuasion: 'cha'
+};
+
+const abilityModifier = (score) => Math.floor((Number(score ?? 10) - 10) / 2);
+
+const challengeProficiencyBonus = (cr) => {
+  const stated = typeof cr === 'object' && cr !== null ? cr.cr : cr;
+  const text = String(stated ?? '0');
+  const rating = text.includes('/') ? 0 : Number(text);
+  return 2 + Math.floor((Math.max(Number.isFinite(rating) ? rating : 0, 1) - 1) / 4);
+};
+
+// A spell is a tagged reference, sometimes with a parenthetical; the tag is not part of its name.
+const spellKey = (value) => lower(String(value ?? '')
+  .replaceAll(/\{@spell\s+([^}|]+)(?:\|[^}]*)?\}/g, '$1')).trim();
+
+// The spell modes name the creature's spellcasting block rather than a property of it, so they
+// arrive keyed "_" and all three walk the same three shapes: `will` is one list, a frequency group
+// holds lists keyed by how many uses it states, and `spells` holds one per spell level.
+const applyToSpellLists = (target, operation, label, visit) => {
+  const block = Array.isArray(target.spellcasting) ? target.spellcasting[0] : null;
+  if (!block) {
+    warnOnce(`${label}: _mod ${operation.mode} changes spells, but this entry states no spellcasting block.`);
+    return;
+  }
+
+  for (const [group, value] of Object.entries(operation)) {
+    if (group === 'mode') continue;
+
+    if (group === 'will') {
+      block.will = visit(asList(block.will), asArray(value));
+      continue;
+    }
+
+    if (group === 'spells') {
+      block.spells = { ...block.spells };
+      for (const [level, spec] of Object.entries(value ?? {})) {
+        const current = block.spells[level] ?? {};
+        // replaceSpells states a bare list of swaps per level; the other two state a slot record.
+        const incoming = Array.isArray(spec) ? spec : asList(spec?.spells);
+        const slots = Array.isArray(spec) ? {} : Object.fromEntries(Object.entries(spec ?? {}).filter(([key]) => key !== 'spells'));
+        block.spells[level] = { ...current, ...slots, spells: visit(asList(current.spells), incoming) };
+      }
+      continue;
+    }
+
+    block[group] = { ...block[group] };
+    for (const [uses, spells] of Object.entries(value ?? {})) {
+      block[group][uses] = visit(asList(block[group][uses]), asArray(spells));
+    }
+  }
+};
 
 const insertItems = (current, operation) => {
   const items = asArray(operation.items);
@@ -121,9 +182,59 @@ const MOD_HANDLERS = {
     target[key] = [...target[key].slice(0, index), ...items, ...target[key].slice(index + 1)];
   },
 
-  replaceTxt: (target, key, operation) => {
-    const pattern = new RegExp(operation.replace, operation.flags ?? 'g');
-    target[key] = walkStrings(target[key], (text) => text.replace(pattern, operation.with ?? ''));
+  // A text sweep rewrites prose, never a name: a copy that means to rename says `props: ["name"]`,
+  // so rewriting names anyway left "Longsword" as "Longknife" for the next operation to miss.
+  replaceTxt: (target, key, operation, label, { explicitProps } = {}) => {
+    if (!explicitProps && REPLACE_TXT_PROTECTED_KEYS.has(key)) return;
+    // 5etools adds the global flag to whatever the operation states; without it `flags: "i"`
+    // rewrote only the first match in each string.
+    const flags = [...new Set([...(operation.flags ?? ''), 'g'])].join('');
+    const pattern = new RegExp(operation.replace, flags);
+    const rewrite = (text) => text.replace(pattern, operation.with ?? '');
+    target[key] = walkStrings(target[key], rewrite, REPLACE_TXT_PROTECTED_KEYS);
+  },
+
+  renameArr: (target, key, operation, label) => {
+    if (!Array.isArray(target[key])) return;
+    for (const rename of asArray(operation.renames)) {
+      const entry = target[key].find((candidate) => matchesTarget(candidate, rename?.rename));
+      if (!entry || typeof entry !== 'object') {
+        warnOnce(`${label}: _mod renameArr found no "${rename?.rename}" in ${key}; nothing was renamed.`);
+        continue;
+      }
+      entry.name = rename.with;
+    }
+  },
+
+  addSkills: (target, key, operation, label) => {
+    target.skill = { ...target.skill };
+    for (const [skill, multiplier] of Object.entries(operation.skills ?? {})) {
+      const ability = SKILL_ABILITY[lower(skill)];
+      if (!ability) {
+        warnOnce(`${label}: _mod addSkills names "${skill}", which is not a skill; it is left off.`);
+        continue;
+      }
+      const total = abilityModifier(target[ability]) + (Number(multiplier) * challengeProficiencyBonus(target.cr));
+      target.skill[skill] = total < 0 ? String(total) : `+${total}`;
+    }
+  },
+
+  addSpells: (target, key, operation, label) => {
+    applyToSpellLists(target, operation, label, (current, incoming) => [...current, ...incoming]);
+  },
+
+  removeSpells: (target, key, operation, label) => {
+    applyToSpellLists(target, operation, label, (current, incoming) => {
+      const unwanted = new Set(incoming.map(spellKey));
+      return current.filter((spell) => !unwanted.has(spellKey(spell)));
+    });
+  },
+
+  replaceSpells: (target, key, operation, label) => {
+    applyToSpellLists(target, operation, label, (current, incoming) => current.map((spell) => {
+      const swap = incoming.find((entry) => spellKey(entry?.replace) === spellKey(spell));
+      return swap ? swap.with : spell;
+    }));
   },
 
   scalarAdd: (target, key, operation) => applyScalar(target, key, operation),
@@ -155,9 +266,11 @@ const applyOperation = (target, prop, operation, label) => {
     return;
   }
 
-  // "*" is how a copy restates every property it holds, which replaceTxt is written for.
-  for (const key of prop === '*' ? Object.keys(target) : [prop]) {
-    handler(target, key, operation, label);
+  // "*" is how a copy restates every property it holds, which replaceTxt is written for; `props`
+  // overrides it with the properties the operation names, and is how a name gets rewritten.
+  const named = Array.isArray(operation?.props) ? operation.props : null;
+  for (const key of named ?? (prop === '*' ? Object.keys(target) : [prop])) {
+    handler(target, key, operation, label, { explicitProps: Boolean(named) });
   }
 };
 

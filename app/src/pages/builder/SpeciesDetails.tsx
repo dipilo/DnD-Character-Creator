@@ -1,6 +1,7 @@
+import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacterStore } from '@/store/characterStore';
-import { getRuntimeLanguageNames, getRuntimeSpeciesById, getRuntimeSpeciesVariant } from '@/data';
+import { getRuntimeLanguageNames, getRuntimeSpeciesById, getRuntimeSpeciesVariant, useContentLibrary } from '@/data';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +14,8 @@ import { ArrowLeft, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { getRulesEditionLabel, isChoicePlaceholderLabel } from '@/lib/builderRules';
 import { getPoolBlockedOptionIds, getSelectedFeatureOptionIds, updateFeatureOptionSelections } from '@/lib/featureOptions';
+import { SpeciesLineageList } from '@/components/builder/SpeciesLineageList';
+import { findLineageNode, findSpeciesGroup, groupSpeciesByBase, lineagesBesideVariantsOf, parseSpeciesLineage, type SpeciesLineageNode } from '@/lib/speciesGroups';
 
 const getAsiKey = (prefix: string, ability: string, amount: number, chooseFrom?: string[]) => {
   return `${prefix}-${ability}-${amount}-${chooseFrom?.join('-') || 'fixed'}`;
@@ -23,7 +26,15 @@ export function SpeciesDetails() {
   const navigate = useNavigate();
   const { builderState, updateBuilderCharacter } = useCharacterStore();
 
+  const { species: librarySpecies } = useContentLibrary();
+
   const species = speciesId ? getRuntimeSpeciesById(speciesId) : undefined;
+  // Every printing of this species' lineages, whether each arrived nested in `variants` or as a
+  // species of its own, so one list covers both and a sibling is one click away.
+  const group = useMemo(
+    () => (species ? findSpeciesGroup(groupSpeciesByBase(librarySpecies), species) : undefined),
+    [librarySpecies, species]
+  );
 
   if (!species) {
     return (
@@ -64,6 +75,10 @@ export function SpeciesDetails() {
     { length: languageChoiceCount },
     (_, slotNumber) => `${species.id}-language-slot-${slotNumber + 1}`
   );
+  const siblingLineages = group ? lineagesBesideVariantsOf(group.lineages, species.id) : [];
+  // Fizban's "Dragonborn (Chromatic)" states "choose one kind of dragon" and prints no list, so the
+  // entry itself is never a complete species: its own lineages are the choice.
+  const unresolvedBranch = (findLineageNode(group?.lineages ?? [], parseSpeciesLineage(species.name).path)?.children.length ?? 0) > 0;
   const featureSelectionContext = {
     selectedFeatureChoices,
     selectedSpellIds: (builderState.character?.spells ?? []).map((entry) => entry.spellId)
@@ -93,6 +108,21 @@ export function SpeciesDetails() {
       speciesLanguageSelections: []
     });
     toast.success(`${variant?.name} selected`);
+  };
+
+  const selectLineage = (node: SpeciesLineageNode) => {
+    if (node.variant) {
+      handleSelectVariant(node.variant.id);
+      return;
+    }
+    if (!node.species) {
+      return;
+    }
+    if (node.species.id === species.id) {
+      handleSelectSpecies();
+      return;
+    }
+    navigate(`/builder/species/${node.species.id}`);
   };
 
   const updateFeatureOptionSelection = (featureId: string, slotIndex: number, optionId: string, chooseCount = 1) => {
@@ -323,6 +353,38 @@ export function SpeciesDetails() {
               )}
             </CardContent>
           </Card>
+
+          {siblingLineages.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>{group?.name ?? species.name} Lineages</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {unresolvedBranch && (
+                  <p className="text-xs text-muted-foreground">
+                    This printing is the heading its lineages sit under: {species.name} leaves the choice its
+                    features name open, so pick one below instead.
+                  </p>
+                )}
+                <SpeciesLineageList
+                  nodes={siblingLineages}
+                  selectedSpeciesId={builderState.character?.speciesId}
+                  selectedVariantId={selectedVariant}
+                  onSelect={selectLineage}
+                />
+                {group?.base && group.base.id !== species.id && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => navigate(`/builder/species/${group.base?.id}`)}
+                  >
+                    Back to {group.base.name}
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {species.variants && species.variants.length > 0 && (
             <Card>

@@ -54,13 +54,18 @@ Covers species (+lineages as variants, their structured proficiencies, size opti
 slots and granted spells), classes with their level tables, subclasses, backgrounds (skills,
 tool families, language slots, equipment, suggested characteristics and the feat they grant),
 spells, equipment (tool families, foci, versatile dice, Strength requirements), feats (benefits,
-granted and open spells, structured prerequisites), monsters (saves, skills, resistances, senses),
-languages and combat actions.
+granted and open spells, structured prerequisites), monsters (saves, skills, resistances, senses,
+spellcasting), languages and combat actions.
 
 Pointers are resolved before anything is mapped: `_copy` is filled in from the entry it copies —
 across every book in the folder, since a reprint copies the book it reprints — with its `_mod`
 operations applied, and each `_versions` variant becomes an entry of its own. A pointer that
 cannot be resolved is warned about and the entry ships with only what it states itself.
+
+Every `_mod` mode is applied, including the four keyed `_` that reach past a named property —
+`addSkills`, which derives the bonus from the creature's own ability and challenge rating, and
+`addSpells` / `removeSpells` / `replaceSpells`, which change its spellcasting block. A mode this
+repo has never seen is still warned about rather than skipped quietly.
 
 A lineage whose race the filtered book did not print (MToF's Eladrin, Eberron's dragonmarks,
 SCAG's Ghostwise Halfling) is adopted: the base race is folded into it by the rules 5etools itself
@@ -70,6 +75,10 @@ source filter drops every one of them — MToF prints one race and fourteen line
 Not covered, and warned about rather than dropped silently: a spell list a subclass or patron
 *expands* (`additionalSpells.expanded`), and spells a background grants in its own right — the
 app has no field for either, and a background's spells normally arrive through the feat it grants.
+
+A monster's spellcasting is rendered to the same shape the free-core packs print it in — a header
+paragraph, then one line per frequency group ("At will:", "3/day each:", "1st level (4 slots):") —
+and joins the trait, action, bonus action, reaction or legendary list its `displayAs` names.
 
 Choice pools — Eldritch Invocations, Metamagic, Fighting Styles, Infusions, Pact Boons, Maneuvers —
 come from `optionalfeatures.json`, matched to the feature that offers them by the
@@ -88,6 +97,12 @@ npm run import:source -- --document ./XantharsGuideToEverything.txt --id xanatha
 
 Extraction quality depends on the page structure; the 5etools path is more complete and is
 preferred when the data is available there.
+
+A feature whose options the book prints as sub-headings gets them from
+`documentChoicePoolConfigs` (`scripts/structured-feature-choices.mjs`): Metamagic, Eldritch
+Invocations, Pact Boons, Battle Master maneuvers and each class's Fighting Style list. A config
+names the section by its anchor where the title is shared — the Fighter, Paladin and Ranger each
+print one called "Fighting Style" with a different list under it.
 
 ### 3. Free core (SRD) data
 

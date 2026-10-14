@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source BMT).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T04:14:06.312Z",
+    "importedAt": "2026-10-14T06:27:29.083Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -325,7 +325,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "As an action, you can brandish this card at one creature you can see within 30 feet of yourself and drain its life force. The target must succeed on a 17 Constitution saving throw or take 4d8 necrotic damage. You then regain a number of hit points equal to the necrotic damage the target takes. Once this property is used, it can't be used again until the next dawn.\"",
+        "description": "As an action, you can brandish this card at one creature you can see within 30 feet of yourself and drain its life force. The target must succeed on a DC 17 Constitution saving throw or take 4d8 necrotic damage. You then regain a number of hit points equal to the necrotic damage the target takes. Once this property is used, it can't be used again until the next dawn.\"",
         "properties": []
       },
       {
@@ -339,7 +339,7 @@
           "unit": "gp"
         },
         "weight": 1,
-        "description": "You gain a +1 bonus to attack and damage rolls made with this hooked, obsidian dagger. When you hit a creature with this magic weapon and roll a 19 or 20 on the attack roll, the creature must make a 15 Constitution saving throw as the dagger flares with sickly light. The creature takes 6d6 necrotic damage on a failed save, or half as much on a successful one. If this damage reduces the creature to 0 hit points, the creature disintegrates into dust.",
+        "description": "You gain a +1 bonus to attack and damage rolls made with this hooked, obsidian dagger. When you hit a creature with this magic weapon and roll a 19 or 20 on the attack roll, the creature must make a DC 15 Constitution saving throw as the dagger flares with sickly light. The creature takes 6d6 necrotic damage on a failed save, or half as much on a successful one. If this damage reduces the creature to 0 hit points, the creature disintegrates into dust.",
         "weaponCategory": "simple",
         "weaponType": "melee",
         "damage": "1d4",
@@ -365,7 +365,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "These tinker's goggles have 3 charges. As an action, you can expend 1 charge to shoot a beam of fiery light from the goggles at a creature you can see within 120 feet of yourself. The target must succeed on a 15 Dexterity saving throw or take 3d6 fire damage. The goggles regain 1d3 expended charges daily at dawn. Cursed. The goggles are cursed, and becoming attuned to them extends the curse to you. You can't remove the goggles or end your attunement to them until you are targeted by a Remove Curse spell or similar magic. Whenever you use the goggles' fiery beam and the target rolls a 20 on the d20 for the saving throw, the goggles expose you to a flash of violent 2. As a result, you have the blinded condition for 24 hours.",
+        "description": "These tinker's goggles have 3 charges. As an action, you can expend 1 charge to shoot a beam of fiery light from the goggles at a creature you can see within 120 feet of yourself. The target must succeed on a DC 15 Dexterity saving throw or take 3d6 fire damage. The goggles regain 1d3 expended charges daily at dawn. Cursed. The goggles are cursed, and becoming attuned to them extends the curse to you. You can't remove the goggles or end your attunement to them until you are targeted by a Remove Curse spell or similar magic. Whenever you use the goggles' fiery beam and the target rolls a 20 on the d20 for the saving throw, the goggles expose you to a flash of violent 2. As a result, you have the blinded condition for 24 hours.",
         "properties": []
       },
       {
@@ -432,7 +432,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "The cards of this deck shimmer around the edges. While holding this deck, you can use the following properties: Deadly Deal: As an action, you can use this deck to make a ranged spell attack by throwing a spectral card and using Dexterity for the attack roll. The card has a range of 120 feet and deals 1d8 force damage on a hit. Spray of Cards: As an action, you can shuffle the deck and cast the Spray of Cards spell at 3rd level from the deck (spell save 15). Once the deck has cast the spell, it can't cast the spell again until the next dawn.",
+        "description": "The cards of this deck shimmer around the edges. While holding this deck, you can use the following properties: Deadly Deal: As an action, you can use this deck to make a ranged spell attack by throwing a spectral card and using Dexterity for the attack roll. The card has a range of 120 feet and deals 1d8 force damage on a hit. Spray of Cards: As an action, you can shuffle the deck and cast the Spray of Cards spell at 3rd level from the deck (spell save DC 15). Once the deck has cast the spell, it can't cast the spell again until the next dawn.",
         "properties": []
       },
       {
@@ -446,7 +446,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "As an action, you can hold this card aloft and call down a fiery meteor to a point you can see within 120 feet of yourself. Each creature within a 20-foot-radius sphere centered on that point must make a 17 Dexterity saving throw. On a failed save, a creature takes 6d6 bludgeoning damage and 6d6 fire damage, or half as much damage on a successful save. Once this property is used, it can't be used again until the next dawn.",
+        "description": "As an action, you can hold this card aloft and call down a fiery meteor to a point you can see within 120 feet of yourself. Each creature within a 20-foot-radius sphere centered on that point must make a DC 17 Dexterity saving throw. On a failed save, a creature takes 6d6 bludgeoning damage and 6d6 fire damage, or half as much damage on a successful save. Once this property is used, it can't be used again until the next dawn.",
         "properties": []
       },
       {
@@ -460,7 +460,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "This delicate silver tiara is decorated with stellar iconography. While you wear the crown, the gems on the tiara's points detach and closely orbit your head. The crown has 6 charges for the following properties, which you can use while wearing the crown: Star Flight: As a bonus action, you can spend 1 charge to gain the power of flight for 10 minutes. For the duration, you gain a flying speed equal to your walking speed, and you can hover. While flying, you glow faintly with starlight. Starlight Strike: As an action, you can spend any number of charges to launch bolts of frigid starlight. You launch a number of bolts equal to the number of charges spent, and you can direct the bolts to target one creature or several, so long as all creatures are within 120 feet of you and you can see them. The bolts automatically strike their targets, and each bolt deals 2d4 cold damage. Whirling Hail: As an action, you can spend 3 charges and cast the Ice Storm spell (save 16). The crown regains 1d6 expended charges daily at dawn.",
+        "description": "This delicate silver tiara is decorated with stellar iconography. While you wear the crown, the gems on the tiara's points detach and closely orbit your head. The crown has 6 charges for the following properties, which you can use while wearing the crown: Star Flight: As a bonus action, you can spend 1 charge to gain the power of flight for 10 minutes. For the duration, you gain a flying speed equal to your walking speed, and you can hover. While flying, you glow faintly with starlight. Starlight Strike: As an action, you can spend any number of charges to launch bolts of frigid starlight. You launch a number of bolts equal to the number of charges spent, and you can direct the bolts to target one creature or several, so long as all creatures are within 120 feet of you and you can see them. The bolts automatically strike their targets, and each bolt deals 2d4 cold damage. Whirling Hail: As an action, you can spend 3 charges and cast the Ice Storm spell (save DC 16). The crown regains 1d6 expended charges daily at dawn.",
         "properties": []
       },
       {
@@ -488,7 +488,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "Over the centuries since the first Deck of Many Things was created, many have sought and failed to replicate it. But some have created new cards. These forty-four additional cards are known collectively as the Deck of Many More Things. (More information on creating new cards for this deck appears in chapter 2.) Like the Deck of Many Things, the Deck of Many More Things manifests differently on various worlds. While it can include fewer or different cards, it frequently appears with a Deck of Many Things as part of a combined deck of sixty-six illuminated cards. The combined deck is usually protected by a box or pouch. The forty-four cards of the Deck of Many More Things bear similar imagery to those in the Deck of Many Things and have potent magical effects, which are detailed later in this description. Notably, cards from the Deck of Many More Things are more likely to be beneficial, though about a third of them are still dangerous. Before you draw a card, you must declare how many cards you intend to draw and then draw them randomly. Unless a card allows you to draw additional cards, any cards drawn exceeding this number have no effect. As soon as you draw a card, its magic takes effect. You must draw each card you declared no more than 1 hour after the previous draw. Unless a card states otherwise, if you fail to draw the chosen number, the remaining number of cards fly from the deck and take effect simultaneously. Unless it is the Fool or the Jester card, a drawn card immediately takes effect, fades from existence, and reappears in the deck, making it possible to draw the same card multiple times. The DM can use the physical cards provided in The Deck of Many Things card set to build a combined Deck of Many Things and Deck of Many More Things, including whichever cards they desire. Alternatively, roll on the Deck of Many More Things table below to randomly determine what cards are drawn. Deck of Many More Things: 01 — BMT; 02 — BMT*; 03 — BMT; 04 — BMT; 05 — BMT; 06 — BMT; 07 — BMT; 08 — BMT; 09 — BMT*; 10 — BMT; 11 — BMT; 12 — BMT; 13 — BMT*; 14 — BMT; 15 — BMT; 16 — BMT; 17 — BMT*; 18 — BMT; 19 — BMT*; 20 — BMT; 21 — BMT; 22 — BMT*; 23 — BMT*; 24 — BMT*; 25 — BMT; 26 — BMT; 27 — BMT*; 28 — BMT*; 29 — BMT*; 30 — BMT; 31 — BMT; 32 — BMT; 33 — BMT; 34 — BMT; 35 — BMT; 36 — BMT*; 37 — BMT; 38 — BMT; 39 — BMT; 40 — BMT; 41 — BMT; 42 — BMT; 43 — BMT*; 44 — BMT; 45 — BMT*; 46 — BMT*; 47 — BMT*; 48 — BMT; 49 — BMT; 50 — BMT*; 51 — BMT; 52 — BMT; 53 — BMT*; 54 — BMT; 55 — BMT*; 56 — BMT*; 57 — BMT; 58 — BMT; 59 — BMT*; 60 — BMT; 61 — BMT; 62 — BMT; 63 — BMT; 64 — BMT*; 65 — BMT; 66 — BMT; 67–00 — Roll again Aberration. You gain telepathy within a range of 90 feet. Beast. You immediately transform into a source=. Your game statistics—including your ability scores, hit points, and possible actions—are replaced by the Beast's game statistics, and any nonmagical equipment you're wearing or carrying melds into your new form and can't be used. Any magic items you're carrying drop in an unoccupied space within 5 feet of your new form. You remain transformed in this way for 2d12 days; nothing can alter your form while you're under the effects of this card, but the Wish spell can end the transformation early. When you revert to your normal form, you return to the same state you were in when you initially transformed. Book. You gain the ability to speak, read, and write 1d6 + 2 languages of your choice. Bridge. You gain the ability to cast the Time Stop spell 1d3 times. Use your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). Campfire. You immediately gain the benefits of finishing a long rest. Cavern. You gain a climbing speed equal to your walking speed. You also gain the ability to move up, down, across vertical surfaces, and along ceilings, while leaving your hands free. Celestial. You sprout a pair of softly luminescent, feathered wings from your back and gain a flying speed of 30 feet. Construct. A homunculus appears in an unoccupied space within 5 feet of you. The appearance of the homunculus is determined by the DM, and the homunculus treats you as its creator. Corpse. You immediately drop to 0 hit points, have the unconscious condition, and must begin making death saving throws. Spells and other magical effects that restore hit points have no effect on you until you are stabilized. If you fail three death saving throws, you die and can be resurrected only by the Wish spell. Crossroads. Roll a d20. If the roll is even, you age 1d10 years. If the roll is odd, you become younger by 1d10 years, to a minimum of 1 year. This effect can be undone only by the Wish spell, divine intervention, or similar magic. Door. You gain the ability to cast the Gate spell 1d4 times, requiring no material components. Use your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). Dragon. A dragon egg appears at your feet and immediately hatches into a dragon wyrmling. The type of dragon is chosen by the DM. The wyrmling views you as its parent and is staunchly loyal to you and your allies. Elemental. You become immune to one of the following damage types (choose immediately upon drawing this card): acid, cold, fire, lightning, or thunder. Expert. Your Dexterity score increases by 2, to a maximum of 22. Fey. A fey crossing opens into the Feywild, and you're immediately pulled through it, disappearing in a flash of rainbow-colored light. You draw no more cards. The fey crossing appears as a shimmering fractal of light above the deck, and it remains open for 1 minute after the card is drawn. The precise location in the Feywild to which the fey crossing leads is determined by the DM. Fiend. A powerful Fiend appears in a nearby unoccupied space and offers you a deal. The precise nature of this deal is up to the DM, but usually the Fiend offers some material reward in exchange for you and your allies completing a task for the Fiend. The Fiend is indifferent to you and can be bargained with; it keeps its side of any bargain it makes, though it might twist the wording of any agreement to suit its purposes. If attacked, or if negotiations fail and you refuse the Fiend's offer, it returns to its home plane. Giant. You immediately grow 2d10 inches in height, and your hit point maximum and current hit points both increase by 20. Humanoid. You can immediately choose to stop drawing from the deck, regardless of how many cards you initially declared. Lance. All your ability scores increase by 1, to a maximum of 20. Mage. Your Intelligence score increases by 2, to a maximum of 22. Map. At any time you choose within 1 year of drawing this card, you can mentally name or describe an object or individual that is familiar to you. You immediately know the location of the object or individual, as well as the distance between you and the object or individual, even if the object or individual is on a different plane of existence. If you named an individual, you know if they are alive and any conditions they have. If you named an object, you know if it is broken or not. If you named a magic item that has charges, you know how many charges it has remaining. Maze. You gain 1d3 levels of exhaustion. Mine. A pile of 2d6 gems (each worth 5,000 gp) and 1d10 chunks of precious ore (each worth 2,500 gp) appears at your feet. Monstrosity. A source= (chosen by the DM) appears in an unoccupied space within 15 feet of you. The creature is hostile toward you and attacks immediately. The creature disappears when it is killed or when you are reduced to 0 hit points. If there isn't enough space for a Large or larger creature to appear, this card has no effect. Ooze. A gelatinous cube immediately appears in your space and engulfs you. The gelatinous cube is hostile and remains until it is destroyed. If there isn't enough space for the gelatinous cube to appear, this card has no effect. Path. Your walking speed increases by 10 feet. Pit. A pit opens beneath you. You plummet 3d6 × 10 feet, take damage from the fall, and have the prone condition. Plant. You gain the ability to cast Speak with Plants without using a spell slot; you must finish a long rest before you can cast it this way again. If you have spell slots of 3rd level or higher, you can cast this spell using them. Use your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). Priest. Your Wisdom score increases by 2, to a maximum of 22. Prisoner. Glowing chains made of magical force appear and wrap around you. You have the restrained condition until the chains are destroyed or you are freed. While you have this condition, you can't cast spells, and any magic items you're wearing or carrying have their properties suppressed. You draw no more cards. The chains are immune to damage and can't be dispelled using the Dispel Magic spell or similar magic. However, a Disintegrate spell destroys the chains instantly, freeing you. Another creature can also free you by succeeding on a 30 Dexterity check using thieves' tools. Ring. A source= appears on your finger. If you have the attunement slots available, you're automatically attuned to the ring when it appears. The DM chooses the ring. Shield. A source= that you are proficient with appears in your hands. The DM chooses the armor. If you lack proficiency with any armor, your base AC instead now equals 12 + your Dexterity modifier while you aren't wearing armor. Ship. You gain proficiency in three skills chosen by the DM. Staff. A source= appears in your hands. The DM chooses the item. Stairway. You can choose to either decrease your number of declared draws by two or receive a source=, which appears in your hands. The DM chooses the item. Statue. You immediately have the petrified condition as your body is transformed into marble. The petrification lasts until you are freed with the Greater Restoration spell or similar magic. Tavern. Your Charisma score increases by 2 to a maximum of 22. Temple. A deity or entity of similar power becomes bound to aid you. At any point in time between drawing the card and when you die, you can use your action to call on this entity for divine intervention, and the entity is bound to answer. The parameters and nature of this intervention are chosen by the DM. If you die without having used this intervention, the deity fulfills its obligation by casting the Resurrection spell on you. Once the entity has answered your call for divine intervention or resurrected you, the entity is no longer bound to aid you. Tomb. At any time you choose within 1 year of drawing this card, you can cast the True Resurrection spell once without expending a spell slot or requiring material components. Use your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). Tower. Draw two additional cards beyond your declared number of draws. The magic of these cards doesn't immediately take effect; instead, choose one of the two additional cards to keep, returning the other to the deck. The magic of the card you keep takes effect immediately thereafter. Tree. Your skin immediately becomes rough, like tree bark. Your base AC now equals 15 + your Dexterity modifier while you aren't wearing armor, but you have vulnerability to fire damage. This transformation can be undone only by the Wish spell, divine intervention, or similar magic. Undead. Somewhere on the Material Plane, a revenant rises. This revenant blames you for its existence and relentlessly hunts you to exact its revenge. The revenant exists until either 1 year passes, the revenant kills you, or you use a Wish spell to banish it permanently to the afterlife. Warrior. Your Strength score increases by 2 to a maximum of 22. Well. You learn three cantrips of your choice from any spell list.",
+        "description": "Over the centuries since the first Deck of Many Things was created, many have sought and failed to replicate it. But some have created new cards. These forty-four additional cards are known collectively as the Deck of Many More Things. (More information on creating new cards for this deck appears in chapter 2.) Like the Deck of Many Things, the Deck of Many More Things manifests differently on various worlds. While it can include fewer or different cards, it frequently appears with a Deck of Many Things as part of a combined deck of sixty-six illuminated cards. The combined deck is usually protected by a box or pouch. The forty-four cards of the Deck of Many More Things bear similar imagery to those in the Deck of Many Things and have potent magical effects, which are detailed later in this description. Notably, cards from the Deck of Many More Things are more likely to be beneficial, though about a third of them are still dangerous. Before you draw a card, you must declare how many cards you intend to draw and then draw them randomly. Unless a card allows you to draw additional cards, any cards drawn exceeding this number have no effect. As soon as you draw a card, its magic takes effect. You must draw each card you declared no more than 1 hour after the previous draw. Unless a card states otherwise, if you fail to draw the chosen number, the remaining number of cards fly from the deck and take effect simultaneously. Unless it is the Fool or the Jester card, a drawn card immediately takes effect, fades from existence, and reappears in the deck, making it possible to draw the same card multiple times. The DM can use the physical cards provided in The Deck of Many Things card set to build a combined Deck of Many Things and Deck of Many More Things, including whichever cards they desire. Alternatively, roll on the Deck of Many More Things table below to randomly determine what cards are drawn. Deck of Many More Things: 01 — Aberration; 02 — Balance*; 03 — Beast; 04 — Book; 05 — Bridge; 06 — Campfire; 07 — Cavern; 08 — Celestial; 09 — Comet*; 10 — Construct; 11 — Corpse; 12 — Crossroads; 13 — Donjon*; 14 — Door; 15 — Dragon; 16 — Elemental; 17 — Euryale*; 18 — Expert; 19 — Fates*; 20 — Fey; 21 — Fiend; 22 — Flames*; 23 — Fool*; 24 — Gem*; 25 — Giant; 26 — Humanoid; 27 — Jester*; 28 — Key*; 29 — Knight*; 30 — Lance; 31 — Mage; 32 — Map; 33 — Maze; 34 — Mine; 35 — Monstrosity; 36 — Moon*; 37 — Ooze; 38 — Path; 39 — Pit; 40 — Plant; 41 — Priest; 42 — Prisoner; 43 — Puzzle*; 44 — Ring; 45 — Rogue*; 46 — Ruin*; 47 — Sage*; 48 — Shield; 49 — Ship; 50 — Skull*; 51 — Staff; 52 — Stairway; 53 — Star*; 54 — Statue; 55 — Sun*; 56 — Talons*; 57 — Tavern; 58 — Temple; 59 — Throne*; 60 — Tomb; 61 — Tower; 62 — Tree; 63 — Undead; 64 — Void*; 65 — Warrior; 66 — Well; 67–00 — Roll again Aberration. You gain telepathy within a range of 90 feet. Beast. You immediately transform into a source=. Your game statistics—including your ability scores, hit points, and possible actions—are replaced by the Beast's game statistics, and any nonmagical equipment you're wearing or carrying melds into your new form and can't be used. Any magic items you're carrying drop in an unoccupied space within 5 feet of your new form. You remain transformed in this way for 2d12 days; nothing can alter your form while you're under the effects of this card, but the Wish spell can end the transformation early. When you revert to your normal form, you return to the same state you were in when you initially transformed. Book. You gain the ability to speak, read, and write 1d6 + 2 languages of your choice. Bridge. You gain the ability to cast the Time Stop spell 1d3 times. Use your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). Campfire. You immediately gain the benefits of finishing a long rest. Cavern. You gain a climbing speed equal to your walking speed. You also gain the ability to move up, down, across vertical surfaces, and along ceilings, while leaving your hands free. Celestial. You sprout a pair of softly luminescent, feathered wings from your back and gain a flying speed of 30 feet. Construct. A homunculus appears in an unoccupied space within 5 feet of you. The appearance of the homunculus is determined by the DM, and the homunculus treats you as its creator. Corpse. You immediately drop to 0 hit points, have the unconscious condition, and must begin making death saving throws. Spells and other magical effects that restore hit points have no effect on you until you are stabilized. If you fail three death saving throws, you die and can be resurrected only by the Wish spell. Crossroads. Roll a d20. If the roll is even, you age 1d10 years. If the roll is odd, you become younger by 1d10 years, to a minimum of 1 year. This effect can be undone only by the Wish spell, divine intervention, or similar magic. Door. You gain the ability to cast the Gate spell 1d4 times, requiring no material components. Use your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). Dragon. A dragon egg appears at your feet and immediately hatches into a dragon wyrmling. The type of dragon is chosen by the DM. The wyrmling views you as its parent and is staunchly loyal to you and your allies. Elemental. You become immune to one of the following damage types (choose immediately upon drawing this card): acid, cold, fire, lightning, or thunder. Expert. Your Dexterity score increases by 2, to a maximum of 22. Fey. A fey crossing opens into the Feywild, and you're immediately pulled through it, disappearing in a flash of rainbow-colored light. You draw no more cards. The fey crossing appears as a shimmering fractal of light above the deck, and it remains open for 1 minute after the card is drawn. The precise location in the Feywild to which the fey crossing leads is determined by the DM. Fiend. A powerful Fiend appears in a nearby unoccupied space and offers you a deal. The precise nature of this deal is up to the DM, but usually the Fiend offers some material reward in exchange for you and your allies completing a task for the Fiend. The Fiend is indifferent to you and can be bargained with; it keeps its side of any bargain it makes, though it might twist the wording of any agreement to suit its purposes. If attacked, or if negotiations fail and you refuse the Fiend's offer, it returns to its home plane. Giant. You immediately grow 2d10 inches in height, and your hit point maximum and current hit points both increase by 20. Humanoid. You can immediately choose to stop drawing from the deck, regardless of how many cards you initially declared. Lance. All your ability scores increase by 1, to a maximum of 20. Mage. Your Intelligence score increases by 2, to a maximum of 22. Map. At any time you choose within 1 year of drawing this card, you can mentally name or describe an object or individual that is familiar to you. You immediately know the location of the object or individual, as well as the distance between you and the object or individual, even if the object or individual is on a different plane of existence. If you named an individual, you know if they are alive and any conditions they have. If you named an object, you know if it is broken or not. If you named a magic item that has charges, you know how many charges it has remaining. Maze. You gain 1d3 levels of exhaustion. Mine. A pile of 2d6 gems (each worth 5,000 gp) and 1d10 chunks of precious ore (each worth 2,500 gp) appears at your feet. Monstrosity. A source= (chosen by the DM) appears in an unoccupied space within 15 feet of you. The creature is hostile toward you and attacks immediately. The creature disappears when it is killed or when you are reduced to 0 hit points. If there isn't enough space for a Large or larger creature to appear, this card has no effect. Ooze. A gelatinous cube immediately appears in your space and engulfs you. The gelatinous cube is hostile and remains until it is destroyed. If there isn't enough space for the gelatinous cube to appear, this card has no effect. Path. Your walking speed increases by 10 feet. Pit. A pit opens beneath you. You plummet 3d6 × 10 feet, take damage from the fall, and have the prone condition. Plant. You gain the ability to cast Speak with Plants without using a spell slot; you must finish a long rest before you can cast it this way again. If you have spell slots of 3rd level or higher, you can cast this spell using them. Use your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). Priest. Your Wisdom score increases by 2, to a maximum of 22. Prisoner. Glowing chains made of magical force appear and wrap around you. You have the restrained condition until the chains are destroyed or you are freed. While you have this condition, you can't cast spells, and any magic items you're wearing or carrying have their properties suppressed. You draw no more cards. The chains are immune to damage and can't be dispelled using the Dispel Magic spell or similar magic. However, a Disintegrate spell destroys the chains instantly, freeing you. Another creature can also free you by succeeding on a DC 30 Dexterity check using thieves' tools. Ring. A source= appears on your finger. If you have the attunement slots available, you're automatically attuned to the ring when it appears. The DM chooses the ring. Shield. A source= that you are proficient with appears in your hands. The DM chooses the armor. If you lack proficiency with any armor, your base AC instead now equals 12 + your Dexterity modifier while you aren't wearing armor. Ship. You gain proficiency in three skills chosen by the DM. Staff. A source= appears in your hands. The DM chooses the item. Stairway. You can choose to either decrease your number of declared draws by two or receive a source=, which appears in your hands. The DM chooses the item. Statue. You immediately have the petrified condition as your body is transformed into marble. The petrification lasts until you are freed with the Greater Restoration spell or similar magic. Tavern. Your Charisma score increases by 2 to a maximum of 22. Temple. A deity or entity of similar power becomes bound to aid you. At any point in time between drawing the card and when you die, you can use your action to call on this entity for divine intervention, and the entity is bound to answer. The parameters and nature of this intervention are chosen by the DM. If you die without having used this intervention, the deity fulfills its obligation by casting the Resurrection spell on you. Once the entity has answered your call for divine intervention or resurrected you, the entity is no longer bound to aid you. Tomb. At any time you choose within 1 year of drawing this card, you can cast the True Resurrection spell once without expending a spell slot or requiring material components. Use your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). Tower. Draw two additional cards beyond your declared number of draws. The magic of these cards doesn't immediately take effect; instead, choose one of the two additional cards to keep, returning the other to the deck. The magic of the card you keep takes effect immediately thereafter. Tree. Your skin immediately becomes rough, like tree bark. Your base AC now equals 15 + your Dexterity modifier while you aren't wearing armor, but you have vulnerability to fire damage. This transformation can be undone only by the Wish spell, divine intervention, or similar magic. Undead. Somewhere on the Material Plane, a revenant rises. This revenant blames you for its existence and relentlessly hunts you to exact its revenge. The revenant exists until either 1 year passes, the revenant kills you, or you use a Wish spell to banish it permanently to the afterlife. Warrior. Your Strength score increases by 2 to a maximum of 22. Well. You learn three cantrips of your choice from any spell list.",
         "properties": []
       },
       {
@@ -544,7 +544,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "This deck of heavy vellum cards hums with the magic of the Elemental Chaos. The magic of the deck functions only if cards are drawn at random (a deck of real-world playing cards can simulate the deck). As an action, you can draw a random card from this deck and throw it to make a ranged spell attack, using Dexterity for the attack roll. The card has a range of 30 feet. On a hit, it deals 1d4 slashing damage and imposes a magical effect determined by its suit, as detailed in the Deck of Wild Cards table. The card immediately returns to the deck after it hits or misses a target. Deck of Wild Cards: 1 — ♣ (Rods) — The card explodes in a burst of fire. The target and each creature within 5 feet of it must succeed on a 15 Dexterity saving throw or take 2d8 fire damage.; 2 — ♦ (Coins) — The card shoots streaks of lightning. The target must make a 15 Dexterity saving throw. On a failed save, the target has the blinded condition until the end of your next turn, and each creature within 10 feet of the target takes 1d6 lightning damage.; 3 — ♥ (Cups) — The card covers the target in a thick layer of ice. The target takes 1d10 cold damage and must succeed on a 15 Constitution saving throw or have the restrained condition until the end of your next turn.; 4 — ♠ (Swords) — The card unleashes a sharp, concussive blast. The target and each creature within 5 feet of it take 1d6 force damage and must succeed on a 15 Strength saving throw or have the prone condition.",
+        "description": "This deck of heavy vellum cards hums with the magic of the Elemental Chaos. The magic of the deck functions only if cards are drawn at random (a deck of real-world playing cards can simulate the deck). As an action, you can draw a random card from this deck and throw it to make a ranged spell attack, using Dexterity for the attack roll. The card has a range of 30 feet. On a hit, it deals 1d4 slashing damage and imposes a magical effect determined by its suit, as detailed in the Deck of Wild Cards table. The card immediately returns to the deck after it hits or misses a target. Deck of Wild Cards: 1 — ♣ (Rods) — The card explodes in a burst of fire. The target and each creature within 5 feet of it must succeed on a DC 15 Dexterity saving throw or take 2d8 fire damage.; 2 — ♦ (Coins) — The card shoots streaks of lightning. The target must make a DC 15 Dexterity saving throw. On a failed save, the target has the blinded condition until the end of your next turn, and each creature within 10 feet of the target takes 1d6 lightning damage.; 3 — ♥ (Cups) — The card covers the target in a thick layer of ice. The target takes 1d10 cold damage and must succeed on a DC 15 Constitution saving throw or have the restrained condition until the end of your next turn.; 4 — ♠ (Swords) — The card unleashes a sharp, concussive blast. The target and each creature within 5 feet of it take 1d6 force damage and must succeed on a DC 15 Strength saving throw or have the prone condition.",
         "properties": []
       },
       {
@@ -558,7 +558,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "Created in the image of the Deck of Many Things, this deck of ivory or vellum cards bestows an assortment of minor benefits and penalties on those who draw from it. Most (75 percent) of these decks have only thirteen cards, but the rest have twenty-two. Before you draw a card, you must declare how many cards you intend to draw, then draw them randomly. Any additional cards drawn have no effect. Unless a card states otherwise, as soon as you draw a card from the deck, its magic takes effect. You must draw each card you declared no more than 1 hour after the previous draw. If you fail to draw the chosen number, the remaining number of cards fly from the deck and take effect simultaneously. Unless it is the Mystery card, a drawn card immediately takes effect, fades from existence, and reappears in the deck, making it possible to draw the same card multiple times. You can use an altered deck of playing cards to simulate the deck, as shown in the Deck of Wonder table. Deck of Wonder: A ♦ — BMT*; K ♦ — BMT; Q ♦ — BMT; J ♦ — BMT; 2 ♦ — BMT*; A ♥ — BMT*; K ♥ — BMT; Q ♥ — BMT; J ♥ — BMT; 2 ♥ — BMT*; A ♣ — BMT*; K ♣ — BMT; Q ♣ — BMT; J ♣ — BMT; 2 ♣ — BMT*; A ♠ — BMT*; K ♠ — BMT; Q ♠ — BMT; J ♠ — BMT; 2 ♠ — BMT*; Joker (with ™) — BMT*; Joker (without ™) — BMT Beginning. Your hit point maximum and current hit points increase by 2d10. Your hit point maximum remains increased in this way for the next 8 hours. Champion. You gain a +1 bonus to weapon attack and damage rolls. This bonus lasts for 8 hours. Chancellor. Within 8 hours of drawing this card, you can cast Augury once as an action, requiring no material components. Use your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). Chaos. You gain resistance to one of the following damage types (chosen by the DM): acid, cold, fire, lightning, or thunder. This resistance lasts for 1d12 days. Coin. Five pieces of jewelry, each worth 100 gp, or ten gemstones, each worth 50 gp, appear at your feet. Crown. You learn the Friends cantrip. Use your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). If you already know this cantrip, the card has no effect. Dawn. This card invigorates you. For the next 8 hours, you can add your proficiency bonus to your initiative rolls. Day. You gain a +1 bonus to saving throws. This benefit lasts until you finish a long rest. Destiny. This card protects you against an untimely demise. The first time after drawing this card that you would drop to 0 hit points from taking damage, you instead drop to 1 hit point. Dusk. This card supernaturally saps your energy. You have disadvantage on initiative rolls. This effect lasts until you finish a long rest, but it can be ended early by a Remove Curse spell or similar magic. End. This card is an omen of death. You take 2d10 necrotic damage, and your hit point maximum is reduced by an amount equal to the damage taken. This effect can't reduce your hit point maximum below 10 hit points. This reduction lasts until you finish a long rest, but it can be ended early by a Remove Curse spell or similar magic. Isolation. You disappear, along with anything you are wearing or carrying, and become trapped in a harmless extradimensional space for 1d4 minutes. You draw no more cards. You then reappear in the space you left or the nearest unoccupied space. When you reappear, you must succeed on a 11 Constitution saving throw or have the poisoned condition for 1 hour as your body reels from the extradimensional travel. Justice. You momentarily gain the ability to balance the scales of fate. For the next 8 hours, whenever you or a creature within 60 feet of you is about to roll a d20 with advantage or disadvantage, you can use your reaction to prevent the roll from being affected by advantage or disadvantage. Knife. An uncommon magic weapon you're proficient with appears in your hands. The DM chooses the weapon. Lock. You gain the ability to cast Knock 1d3 times. Use your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). Mischief. You receive an uncommon wondrous item (chosen by the DM), or you can draw two additional cards beyond your declared draws. Monster. This card's monstrous visage curses you. While cursed in this way, whenever you make a saving throw, you must roll 1d4 and subtract the number rolled from the total. The curse lasts until you finish a long rest, but it can be ended early with a Remove Curse spell or similar magic. Mystery. You have disadvantage on Intelligence saving throws for 1 hour. Discard this card and draw from the deck again; together, the two draws count as one of your declared draws. Night. You gain darkvision within a range of 300 feet. This darkvision lasts for 8 hours. Order. You gain resistance to one of the following damage types (chosen by the DM): force, necrotic, poison, psychic, or radiant. This resistance lasts for 1d12 days. Student. You gain proficiency in Wisdom saving throws. If you already have this proficiency, you instead gain proficiency in Intelligence or Charisma saving throws (your choice). Vulture. One nonmagical item or piece of equipment in your possession (chosen by the DM) disappears. The item remains nearby but concealed for a short time, so it can be found with a successful 15 Wisdom (Perception) check. If the item isn't recovered within 1 hour, it disappears forever.",
+        "description": "Created in the image of the Deck of Many Things, this deck of ivory or vellum cards bestows an assortment of minor benefits and penalties on those who draw from it. Most (75 percent) of these decks have only thirteen cards, but the rest have twenty-two. Before you draw a card, you must declare how many cards you intend to draw, then draw them randomly. Any additional cards drawn have no effect. Unless a card states otherwise, as soon as you draw a card from the deck, its magic takes effect. You must draw each card you declared no more than 1 hour after the previous draw. If you fail to draw the chosen number, the remaining number of cards fly from the deck and take effect simultaneously. Unless it is the Mystery card, a drawn card immediately takes effect, fades from existence, and reappears in the deck, making it possible to draw the same card multiple times. You can use an altered deck of playing cards to simulate the deck, as shown in the Deck of Wonder table. Deck of Wonder: A ♦ — Chancellor*; K ♦ — Day; Q ♦ — Night; J ♦ — Dawn; 2 ♦ — Dusk*; A ♥ — Destiny*; K ♥ — Crown; Q ♥ — Lock; J ♥ — Champion; 2 ♥ — Coin*; A ♣ — Vulture*; K ♣ — Chaos; Q ♣ — Order; J ♣ — Beginning; 2 ♣ — Mystery*; A ♠ — Isolation*; K ♠ — End; Q ♠ — Monster; J ♠ — Knife; 2 ♠ — Justice*; Joker (with ™) — Student*; Joker (without ™) — Mischief Beginning. Your hit point maximum and current hit points increase by 2d10. Your hit point maximum remains increased in this way for the next 8 hours. Champion. You gain a +1 bonus to weapon attack and damage rolls. This bonus lasts for 8 hours. Chancellor. Within 8 hours of drawing this card, you can cast Augury once as an action, requiring no material components. Use your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). Chaos. You gain resistance to one of the following damage types (chosen by the DM): acid, cold, fire, lightning, or thunder. This resistance lasts for 1d12 days. Coin. Five pieces of jewelry, each worth 100 gp, or ten gemstones, each worth 50 gp, appear at your feet. Crown. You learn the Friends cantrip. Use your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). If you already know this cantrip, the card has no effect. Dawn. This card invigorates you. For the next 8 hours, you can add your proficiency bonus to your initiative rolls. Day. You gain a +1 bonus to saving throws. This benefit lasts until you finish a long rest. Destiny. This card protects you against an untimely demise. The first time after drawing this card that you would drop to 0 hit points from taking damage, you instead drop to 1 hit point. Dusk. This card supernaturally saps your energy. You have disadvantage on initiative rolls. This effect lasts until you finish a long rest, but it can be ended early by a Remove Curse spell or similar magic. End. This card is an omen of death. You take 2d10 necrotic damage, and your hit point maximum is reduced by an amount equal to the damage taken. This effect can't reduce your hit point maximum below 10 hit points. This reduction lasts until you finish a long rest, but it can be ended early by a Remove Curse spell or similar magic. Isolation. You disappear, along with anything you are wearing or carrying, and become trapped in a harmless extradimensional space for 1d4 minutes. You draw no more cards. You then reappear in the space you left or the nearest unoccupied space. When you reappear, you must succeed on a DC 11 Constitution saving throw or have the poisoned condition for 1 hour as your body reels from the extradimensional travel. Justice. You momentarily gain the ability to balance the scales of fate. For the next 8 hours, whenever you or a creature within 60 feet of you is about to roll a d20 with advantage or disadvantage, you can use your reaction to prevent the roll from being affected by advantage or disadvantage. Knife. An uncommon magic weapon you're proficient with appears in your hands. The DM chooses the weapon. Lock. You gain the ability to cast Knock 1d3 times. Use your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). Mischief. You receive an uncommon wondrous item (chosen by the DM), or you can draw two additional cards beyond your declared draws. Monster. This card's monstrous visage curses you. While cursed in this way, whenever you make a saving throw, you must roll 1d4 and subtract the number rolled from the total. The curse lasts until you finish a long rest, but it can be ended early with a Remove Curse spell or similar magic. Mystery. You have disadvantage on Intelligence saving throws for 1 hour. Discard this card and draw from the deck again; together, the two draws count as one of your declared draws. Night. You gain darkvision within a range of 300 feet. This darkvision lasts for 8 hours. Order. You gain resistance to one of the following damage types (chosen by the DM): force, necrotic, poison, psychic, or radiant. This resistance lasts for 1d12 days. Student. You gain proficiency in Wisdom saving throws. If you already have this proficiency, you instead gain proficiency in Intelligence or Charisma saving throws (your choice). Vulture. One nonmagical item or piece of equipment in your possession (chosen by the DM) disappears. The item remains nearby but concealed for a short time, so it can be found with a successful DC 15 Wisdom (Perception) check. If the item isn't recovered within 1 hour, it disappears forever.",
         "properties": []
       },
       {
@@ -572,7 +572,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "As an action, you can brandish this card at one creature you can see within 30 feet of yourself. The target must succeed on a 17 Charisma saving throw, or it vanishes, transported to a prison on another plane of existence. After 1 minute, the target reappears in the space it left or in the nearest unoccupied space if that space is occupied. Once this property is used, it can't be used again until the next dawn.",
+        "description": "As an action, you can brandish this card at one creature you can see within 30 feet of yourself. The target must succeed on a DC 17 Charisma saving throw, or it vanishes, transported to a prison on another plane of existence. After 1 minute, the target reappears in the space it left or in the nearest unoccupied space if that space is occupied. Once this property is used, it can't be used again until the next dawn.",
         "properties": []
       },
       {
@@ -586,7 +586,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "This marble-size crystal sphere glows with extraplanar energy. As part of attuning to this item, you press the crystal sphere to the hilt of a nonmagical melee weapon of your choice, magically attaching the sphere to the weapon. The weapon becomes a magic weapon with a +1 bonus to attack and damage rolls. While wielding this weapon, you gain the following benefits: Dimensional Anchor: You have advantage on saving throws against spells or effects that would send you to an extradimensional space, a demiplane, or another plane of existence against your will. Isolating Smite: When you hit a creature with this weapon, you can force the creature to make a 16 Charisma saving throw. On a failed save, the creature is banished to a harmless demiplane until the end of its next turn. When the banished creature returns, it reappears in the space it left or the nearest unoccupied space if that space is occupied. Once this property is used, it can't be used again until the next dawn. When you end your attunement to the sphere, the sphere harmlessly detaches from the weapon, and the weapon reverts to a nonmagical piece of equipment.",
+        "description": "This marble-size crystal sphere glows with extraplanar energy. As part of attuning to this item, you press the crystal sphere to the hilt of a nonmagical melee weapon of your choice, magically attaching the sphere to the weapon. The weapon becomes a magic weapon with a +1 bonus to attack and damage rolls. While wielding this weapon, you gain the following benefits: Dimensional Anchor: You have advantage on saving throws against spells or effects that would send you to an extradimensional space, a demiplane, or another plane of existence against your will. Isolating Smite: When you hit a creature with this weapon, you can force the creature to make a DC 16 Charisma saving throw. On a failed save, the creature is banished to a harmless demiplane until the end of its next turn. When the banished creature returns, it reappears in the space it left or the nearest unoccupied space if that space is occupied. Once this property is used, it can't be used again until the next dawn. When you end your attunement to the sphere, the sphere harmlessly detaches from the weapon, and the weapon reverts to a nonmagical piece of equipment.",
         "properties": []
       },
       {
@@ -600,7 +600,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "As an action, you can brandish this card at one creature you can see within 30 feet of yourself and attempt to turn it to stone. The target must succeed on a 17 Constitution saving throw, or it begins to turn to stone and has the restrained condition. The affected target must repeat the saving throw at the end of its next turn. On a successful save, the effect ends on the target. On a failed save, the target has the petrified condition (instead of the restrained condition) until it is removed by the Greater Restoration spell or similar magic. Once this property is used, it can't be used again until the next dawn.",
+        "description": "As an action, you can brandish this card at one creature you can see within 30 feet of yourself and attempt to turn it to stone. The target must succeed on a DC 17 Constitution saving throw, or it begins to turn to stone and has the restrained condition. The affected target must repeat the saving throw at the end of its next turn. On a successful save, the effect ends on the target. On a failed save, the target has the petrified condition (instead of the restrained condition) until it is removed by the Greater Restoration spell or similar magic. Once this property is used, it can't be used again until the next dawn.",
         "properties": []
       },
       {
@@ -614,7 +614,7 @@
           "unit": "gp"
         },
         "weight": 6,
-        "description": "This gleaming brass shield bears a relief of the legendary medusa druid Euryale. While wielding this shield, you gain the following benefits: Blessing of Euryale: You have resistance to poison damage and are immune to the petrified condition. Petrifying Heraldry: As a bonus action, you can make the front of the shield flare with a medusa's petrifying magic, causing the relief's eyes to glow brightly. Choose one creature you can see within 30 feet of you. The creature must succeed on a 20 Constitution saving throw, or it has the restrained condition as its body turns to stone. The restrained creature must make another 20 Constitution saving throw at the start of its next turn. On a failed save, the creature has the petrified condition for 24 hours. On a successful save, the restrained condition ends. Once this bonus action is used, it can't be used again until the next dawn. Spellcasting: While wielding the shield, you can use an action to cast one of the following spells from it: Lesser Restoration, Locate Creature, Transport via Plants. Once you use the shield to cast a spell, the shield can't cast that spell again until the next dawn.",
+        "description": "This gleaming brass shield bears a relief of the legendary medusa druid Euryale. While wielding this shield, you gain the following benefits: Blessing of Euryale: You have resistance to poison damage and are immune to the petrified condition. Petrifying Heraldry: As a bonus action, you can make the front of the shield flare with a medusa's petrifying magic, causing the relief's eyes to glow brightly. Choose one creature you can see within 30 feet of you. The creature must succeed on a DC 20 Constitution saving throw, or it has the restrained condition as its body turns to stone. The restrained creature must make another DC 20 Constitution saving throw at the start of its next turn. On a failed save, the creature has the petrified condition for 24 hours. On a successful save, the restrained condition ends. Once this bonus action is used, it can't be used again until the next dawn. Spellcasting: While wielding the shield, you can use an action to cast one of the following spells from it: Lesser Restoration, Locate Creature, Transport via Plants. Once you use the shield to cast a spell, the shield can't cast that spell again until the next dawn.",
         "properties": [],
         "armorCategory": "shield",
         "ac": 2
@@ -698,7 +698,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "As an action, you can brandish this card at one creature you can see within 30 feet of yourself. The target must succeed on a 17 Wisdom saving throw, or for the next minute, the target can't cast spells or activate magic items, it has disadvantage on all saving throws, and other creatures have resistance to all damage it deals. Once this property is used, it can't be used again until the next dawn.",
+        "description": "As an action, you can brandish this card at one creature you can see within 30 feet of yourself. The target must succeed on a DC 17 Wisdom saving throw, or for the next minute, the target can't cast spells or activate magic items, it has disadvantage on all saving throws, and other creatures have resistance to all damage it deals. Once this property is used, it can't be used again until the next dawn.",
         "properties": []
       },
       {
@@ -712,7 +712,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "This card holds one 6th-level spell (chosen by the DM). As an action, you can brandish this card and use it to cast the spell stored inside (spell attack bonus +9, save 17). Once this property is used, it can't be used again until the next dawn.",
+        "description": "This card holds one 6th-level spell (chosen by the DM). As an action, you can brandish this card and use it to cast the spell stored inside (spell attack bonus +9, save DC 17). Once this property is used, it can't be used again until the next dawn.",
         "properties": []
       },
       {
@@ -782,7 +782,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "As an action, you can brandish this card and use it to cast the Otto's Irresistible Dance spell (save 17), and you have advantage on Constitution saving throws to maintain concentration on it. Once this property is used, it can't be used again until the next dawn.",
+        "description": "As an action, you can brandish this card and use it to cast the Otto's Irresistible Dance spell (save DC 17), and you have advantage on Constitution saving throws to maintain concentration on it. Once this property is used, it can't be used again until the next dawn.",
         "properties": []
       },
       {
@@ -824,7 +824,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "As an action, you can throw this card to an unoccupied space on the ground within 60 feet of yourself while speaking a command word, whereupon the card magically transforms into a deck defender (see 8 for its stat block) for up to 1 minute or until you use an action to speak the command word again, whereupon it transforms back into a card. The deck defender obeys your spoken commands. If you issue no commands, it takes the Dodge action and moves to avoid danger. The deck defender reverts to a card early if it drops to 0 hit points. Once this property is used, it can't be used again until the next dawn.",
+        "description": "As an action, you can throw this card to an unoccupied space on the ground within 60 feet of yourself while speaking a command word, whereupon the card magically transforms into a deck defender (see chapter 9 for its stat block) for up to 1 minute or until you use an action to speak the command word again, whereupon it transforms back into a card. The deck defender obeys your spoken commands. If you issue no commands, it takes the Dodge action and moves to avoid danger. The deck defender reverts to a card early if it drops to 0 hit points. Once this property is used, it can't be used again until the next dawn.",
         "properties": []
       },
       {
@@ -898,7 +898,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "Glowing cinders orbit the flanged head of this black iron rod. This rod can be used as an arcane focus. While holding this rod, you gain the following benefits: Hellish Resistance: You have resistance to fire and necrotic damage. Searing Rebuke: You can cast the Hellish Rebuke spell as a 4th-level spell (save 16) from the rod. Once you use the rod to cast the spell, the rod can't cast the spell again until the next dawn. Surge of Brimstone: Whenever you cast a spell that deals fire or necrotic damage, you can use the rod to deal the maximum damage instead of rolling. Once this property is used, it can't be used again until the next dawn.",
+        "description": "Glowing cinders orbit the flanged head of this black iron rod. This rod can be used as an arcane focus. While holding this rod, you gain the following benefits: Hellish Resistance: You have resistance to fire and necrotic damage. Searing Rebuke: You can cast the Hellish Rebuke spell as a 4th-level spell (save DC 16) from the rod. Once you use the rod to cast the spell, the rod can't cast the spell again until the next dawn. Surge of Brimstone: Whenever you cast a spell that deals fire or necrotic damage, you can use the rod to deal the maximum damage instead of rolling. Once this property is used, it can't be used again until the next dawn.",
         "properties": []
       },
       {
@@ -926,7 +926,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "This dark, hooded mantle of thick cloth is infused with secretive and deceptive magic. While wearing it, you gain the following benefits: Darkvision: You gain darkvision within a range of 60 feet. If you already have darkvision, the mantle increases your darkvision's range by 60 feet instead. Move in Shadows: While you are in 2 or darkness, you can use a bonus action to teleport, along with anything you are wearing or carrying, up to 30 feet to an unoccupied space you can see that is also in 2 or darkness. You then have advantage on the first melee attack you make before the end of the turn. Willful Enmity: You can cast the Antagonize spell (save 15) from the mantle. Once the mantle has cast the spell, it can't cast the spell again until the next dawn.",
+        "description": "This dark, hooded mantle of thick cloth is infused with secretive and deceptive magic. While wearing it, you gain the following benefits: Darkvision: You gain darkvision within a range of 60 feet. If you already have darkvision, the mantle increases your darkvision's range by 60 feet instead. Move in Shadows: While you are in 2 or darkness, you can use a bonus action to teleport, along with anything you are wearing or carrying, up to 30 feet to an unoccupied space you can see that is also in 2 or darkness. You then have advantage on the first melee attack you make before the end of the turn. Willful Enmity: You can cast the Antagonize spell (save DC 15) from the mantle. Once the mantle has cast the spell, it can't cast the spell again until the next dawn.",
         "properties": []
       },
       {
@@ -940,7 +940,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "As an action, you can brandish this card and use it to cast the Disintegrate spell (save 17). Once this property is used, it can't be used again until the next dawn.",
+        "description": "As an action, you can brandish this card and use it to cast the Disintegrate spell (save DC 17). Once this property is used, it can't be used again until the next dawn.",
         "properties": []
       },
       {
@@ -954,7 +954,7 @@
           "unit": "gp"
         },
         "weight": 2,
-        "description": "This ash-gray flail is cold to the touch. You gain a +1 bonus to attack and damage rolls made with this magic weapon, and it deals double damage to objects and structures. Additionally, when you hit a creature with this weapon, you can force the creature to make a 15 Constitution saving throw. On a failed save, the creature has the poisoned condition for 1 minute. The poisoned creature takes 2d4 necrotic damage at the start of each of its turns. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. Once this property is used in this way, it can't be used again until the next dawn.",
+        "description": "This ash-gray flail is cold to the touch. You gain a +1 bonus to attack and damage rolls made with this magic weapon, and it deals double damage to objects and structures. Additionally, when you hit a creature with this weapon, you can force the creature to make a DC 15 Constitution saving throw. On a failed save, the creature has the poisoned condition for 1 minute. The poisoned creature takes 2d4 necrotic damage at the start of each of its turns. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. Once this property is used in this way, it can't be used again until the next dawn.",
         "weaponCategory": "martial",
         "weaponType": "melee",
         "damage": "1d8",
@@ -1100,7 +1100,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "Each of these black leg guards is decorated with a motif of monstrous skulls screaming in terror. The greaves have 3 charges. While wearing these greaves, you can use a bonus action to expend 1 charge to increase your walking speed by 30 feet, and you have advantage on Dexterity saving throws. These effects last for 1 minute. The greaves regain 1d3 expended charges daily at dawn. Curse. The greaves are cursed, and becoming attuned to them extends the curse to you. You can't remove the greaves or end your attunement to them until you are targeted by a Remove Curse spell or similar magic. You have disadvantage on saving throws against the frightened condition. Whenever you start your turn frightened, the greaves release an ear-piercing scream. You and each creature within 10 feet of you must make a 15 Constitution saving throw, taking 9 (2d8) thunder damage on a failed save, or half as much damage on a successful one.",
+        "description": "Each of these black leg guards is decorated with a motif of monstrous skulls screaming in terror. The greaves have 3 charges. While wearing these greaves, you can use a bonus action to expend 1 charge to increase your walking speed by 30 feet, and you have advantage on Dexterity saving throws. These effects last for 1 minute. The greaves regain 1d3 expended charges daily at dawn. Curse. The greaves are cursed, and becoming attuned to them extends the curse to you. You can't remove the greaves or end your attunement to them until you are targeted by a Remove Curse spell or similar magic. You have disadvantage on saving throws against the frightened condition. Whenever you start your turn frightened, the greaves release an ear-piercing scream. You and each creature within 10 feet of you must make a DC 15 Constitution saving throw, taking 9 (2d8) thunder damage on a failed save, or half as much damage on a successful one.",
         "properties": []
       },
       {
@@ -1114,7 +1114,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "As an action, you can brandish this card and use it to cast Spirit of Death as a 6th-level spell (spell attack bonus 9, save 17). Once this property is used, it can't be used again until the next dawn.",
+        "description": "As an action, you can brandish this card and use it to cast Spirit of Death as a 6th-level spell (spell attack bonus +9, save DC 17). Once this property is used, it can't be used again until the next dawn.",
         "properties": []
       },
       {
@@ -1142,7 +1142,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "When you hit a Giant creature with a ranged attack roll using this magic sling, the creature must succeed on a 18 Constitution saving throw or have the prone condition.",
+        "description": "When you hit a Giant creature with a ranged attack roll using this magic sling, the creature must succeed on a DC 18 Constitution saving throw or have the prone condition.",
         "weaponCategory": "simple",
         "weaponType": "ranged",
         "damage": "1d4",
@@ -1194,7 +1194,7 @@
           "unit": "gp"
         },
         "weight": 2,
-        "description": "You gain a +1 bonus to attack and damage rolls made with this magic war pick. It has the following special properties: Meld into Stone: You can cast the Meld into Stone spell from this war pick. Once this property is used, it can't be used again until the next dawn. Petrification: The war pick has 1d6 + 1 charges. If you score a critical hit against a creature that has fewer than 100 hit points, you can expend 1 charge from the war pick to have that creature make a 15 Constitution saving throw. On a failed save, the creature has the petrified condition for 8 hours. When the war pick has no charges remaining, it loses this property.",
+        "description": "You gain a +1 bonus to attack and damage rolls made with this magic war pick. It has the following special properties: Meld into Stone: You can cast the Meld into Stone spell from this war pick. Once this property is used, it can't be used again until the next dawn. Petrification: The war pick has 1d6 + 1 charges. If you score a critical hit against a creature that has fewer than 100 hit points, you can expend 1 charge from the war pick to have that creature make a DC 15 Constitution saving throw. On a failed save, the creature has the petrified condition for 8 hours. When the war pick has no charges remaining, it loses this property.",
         "weaponCategory": "martial",
         "weaponType": "melee",
         "damage": "1d8",
@@ -1212,7 +1212,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "As an action, you can brandish this card and use it to cast the Sunbeam spell (save 17), projecting the light from the card's face. Once this property is used, it can't be used again until the next dawn.",
+        "description": "As an action, you can brandish this card and use it to cast the Sunbeam spell (save DC 17), projecting the light from the card's face. Once this property is used, it can't be used again until the next dawn.",
         "properties": []
       },
       {
@@ -1261,7 +1261,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "This enormous telescope allows you to view distant celestial objects, including stars, Wildspace systems, and Astral Sea phenomena like the cities of deities or the petrified husks of dead gods. After spending 1 hour calibrating the telescope, you can attempt to travel to the planet or celestial body at which the telescope is currently pointed. At the end of the hour, make a 17 Intelligence (Arcana) check. On a successful check, you and eight other willing creatures touching the telescope, along with everything all travelers are wearing and carrying, safely teleport to unoccupied spaces at the intended destination. On a failed check, a mishap occurs instead. The DM rolls on the Telescope Travel Mishaps table to determine the mishap or chooses a mishap that's good for the campaign. Telescope Travel Mishaps: 1 — The travelers appear adrift in the Astral Sea.; 2 — The travelers appear on a different plane of existence, determined randomly or chosen by the DM.; 3 — Excess cosmic energy overloads the telescope, causing it to explode. Each creature within 60 feet of the telescope takes 8d6 necrotic damage. Any Humanoid who survives this damage is transformed into a different kind of creature, as if it had been subject to the Reincarnate spell.; 4 — A creature from the Astral Sea (such as a githyanki knight) appears within 60 feet of the telescope. The DM decides its attitude.; 5 — The travelers appear on a different planet or celestial body in the Wildspace system nearest to their target destination.; 6 — The travelers arrive at their intended destination, but they each appear coated in harmless slime.",
+        "description": "This enormous telescope allows you to view distant celestial objects, including stars, Wildspace systems, and Astral Sea phenomena like the cities of deities or the petrified husks of dead gods. After spending 1 hour calibrating the telescope, you can attempt to travel to the planet or celestial body at which the telescope is currently pointed. At the end of the hour, make a DC 17 Intelligence (Arcana) check. On a successful check, you and eight other willing creatures touching the telescope, along with everything all travelers are wearing and carrying, safely teleport to unoccupied spaces at the intended destination. On a failed check, a mishap occurs instead. The DM rolls on the Telescope Travel Mishaps table to determine the mishap or chooses a mishap that's good for the campaign. Telescope Travel Mishaps: 1 — The travelers appear adrift in the Astral Sea.; 2 — The travelers appear on a different plane of existence, determined randomly or chosen by the DM.; 3 — Excess cosmic energy overloads the telescope, causing it to explode. Each creature within 60 feet of the telescope takes 8d6 necrotic damage. Any Humanoid who survives this damage is transformed into a different kind of creature, as if it had been subject to the Reincarnate spell.; 4 — A creature from the Astral Sea (such as a githyanki knight) appears within 60 feet of the telescope. The DM decides its attitude.; 5 — The travelers appear on a different planet or celestial body in the Wildspace system nearest to their target destination.; 6 — The travelers arrive at their intended destination, but they each appear coated in harmless slime.",
         "properties": []
       },
       {
@@ -1275,7 +1275,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "As an action, you can speak a command word while holding this card to gain advantage on Charisma (Intimidation or Persuasion) checks for 1 minute. In addition, for that duration, you can use this card to cast the Command spell (save 17) as an action. Once this property is used, it can't be used again until the next dawn.",
+        "description": "As an action, you can speak a command word while holding this card to gain advantage on Charisma (Intimidation or Persuasion) checks for 1 minute. In addition, for that duration, you can use this card to cast the Command spell (save DC 17) as an action. Once this property is used, it can't be used again until the next dawn.",
         "properties": []
       },
       {
@@ -1290,7 +1290,7 @@
           "unit": "gp"
         },
         "weight": 4,
-        "description": "You gain a +2 bonus to attack and damage rolls made with this magic trident. You also have advantage on attack rolls made with this weapon while underwater. This trident has 3 charges. You can expend 1 charge to cast Control Water (save 15) from the trident or 3 charges to cast Tsunami (save 15) from it instead. The trident regains 1d3 expended charges daily at dawn.",
+        "description": "You gain a +2 bonus to attack and damage rolls made with this magic trident. You also have advantage on attack rolls made with this weapon while underwater. This trident has 3 charges. You can expend 1 charge to cast Control Water (save DC 15) from the trident or 3 charges to cast Tsunami (save DC 15) from it instead. The trident regains 1d3 expended charges daily at dawn.",
         "weaponCategory": "martial",
         "weaponType": "melee",
         "damage": "1d6",
@@ -1315,7 +1315,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "As an action, you can brandish this card and attempt to banish up to three creatures you can see within 120 feet of yourself. If the target is from a different plane of existence than the plane you're on, the target must succeed on a 17 Charisma saving throw or be banished, returning to that other plane. Once this property is used, it can't be used again until the next dawn.",
+        "description": "As an action, you can brandish this card and attempt to banish up to three creatures you can see within 120 feet of yourself. If the target is from a different plane of existence than the plane you're on, the target must succeed on a DC 17 Charisma saving throw or be banished, returning to that other plane. Once this property is used, it can't be used again until the next dawn.",
         "properties": []
       },
       {
@@ -1329,7 +1329,7 @@
           "unit": "gp"
         },
         "weight": 13,
-        "description": "This black studded leather armor bears a red sheen. While wearing this armor, you can use a bonus action to summon a projection of yourself in an unoccupied space within 30 feet of yourself. The projection is a translucent copy of you that has immunity to all damage and conditions, and you can make attacks and cast spells with a range other than self as if standing in the projection's space. The projection disappears at the end of your turn. Once you use this bonus action, it can't be used again until the next dawn. Curse. This armor is cursed, and attuning to it extends the curse to you. As long as you remain cursed, you're unwilling to part with the armor. Taking it off fails to end the curse. While cursed in this way, you feel disconnected from your body, continuously hearing whispers that call for you to join them. Whenever you finish a long rest while cursed, you must make a 11 Charisma saving throw. On a failed save, your soul is drawn from your body and trapped in an object on a different plane of existence. The object and location of this object are chosen by the DM (but might be the House of Cards; see chapter 18). While your soul is trapped in this way, your body is inert and doesn't age or require sustenance. Destroying the object frees your soul; otherwise, only a Wish spell can restore your soul to your body.",
+        "description": "This black studded leather armor bears a red sheen. While wearing this armor, you can use a bonus action to summon a projection of yourself in an unoccupied space within 30 feet of yourself. The projection is a translucent copy of you that has immunity to all damage and conditions, and you can make attacks and cast spells with a range other than self as if standing in the projection's space. The projection disappears at the end of your turn. Once you use this bonus action, it can't be used again until the next dawn. Curse. This armor is cursed, and attuning to it extends the curse to you. As long as you remain cursed, you're unwilling to part with the armor. Taking it off fails to end the curse. While cursed in this way, you feel disconnected from your body, continuously hearing whispers that call for you to join them. Whenever you finish a long rest while cursed, you must make a DC 11 Charisma saving throw. On a failed save, your soul is drawn from your body and trapped in an object on a different plane of existence. The object and location of this object are chosen by the DM (but might be the House of Cards; see chapter 18). While your soul is trapped in this way, your body is inert and doesn't age or require sustenance. Destroying the object frees your soul; otherwise, only a Wish spell can restore your soul to your body.",
         "properties": [],
         "armorCategory": "light",
         "ac": 12
@@ -1431,12 +1431,12 @@
           {
             "id": "book-of-many-things-advanced-detention-drone-action-1",
             "name": "Fist",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}11 (2d6 + 4) bludgeoning damage."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 11 (2d6 + 4) bludgeoning damage."
           },
           {
             "id": "book-of-many-things-advanced-detention-drone-action-2",
             "name": "Detention Orb",
-            "description": "The drone launches a tiny orb of magical force at a creature it can see within 30 feet of itself. The creature must succeed on a 15 Constitution saving throw or be encased in the orb, which expands to a size just large enough to contain the creature. While encased, the creature doesn't need to breathe, eat, or drink, and it doesn't age. Nothing can pass through the orb, nor can any creature teleport or use planar travel to enter or exit the orb. As a bonus action, the drone can move the orb and its contents up to 30 feet in any direction. A successful casting of the Dispel Magic spell on the orb (15) destroys it. The orb otherwise remains intact until the drone spends an action to end the effect or the drone is destroyed. A drone can have only one detention orb active at a time; if the drone creates a detention orb when it already has one active, the first orb disappears, freeing the creature inside."
+            "description": "The drone launches a tiny orb of magical force at a creature it can see within 30 feet of itself. The creature must succeed on a DC 15 Constitution saving throw or be encased in the orb, which expands to a size just large enough to contain the creature. While encased, the creature doesn't need to breathe, eat, or drink, and it doesn't age. Nothing can pass through the orb, nor can any creature teleport or use planar travel to enter or exit the orb. As a bonus action, the drone can move the orb and its contents up to 30 feet in any direction. A successful casting of the Dispel Magic spell on the orb (DC 15) destroys it. The orb otherwise remains intact until the drone spends an action to end the effect or the drone is destroyed. A drone can have only one detention orb active at a time; if the drone creates a detention orb when it already has one active, the first orb disappears, freeing the creature inside."
           }
         ],
         "bonusActions": [],
@@ -1508,7 +1508,7 @@
           {
             "id": "book-of-many-things-ambitious-assassin-action-1",
             "name": "Poison Blade",
-            "description": "mw,rw 7 to hit, reach 5 ft. or range 60 ft., one target. {@h}6 (1d4 + 4) piercing damage plus 5 (1d10) poison damage."
+            "description": "Melee or Ranged Weapon Attack: +7 to hit, reach 5 ft. or range 60 ft., one target. Hit: 6 (1d4 + 4) piercing damage plus 5 (1d10) poison damage."
           }
         ],
         "bonusActions": [],
@@ -1604,12 +1604,12 @@
           {
             "id": "book-of-many-things-animated-armor-detention-drone-action-1",
             "name": "Slam",
-            "description": "mw 4 to hit, reach 5 ft., one target. {@h}5 (1d6 + 2) bludgeoning damage."
+            "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) bludgeoning damage."
           },
           {
             "id": "book-of-many-things-animated-armor-detention-drone-action-2",
             "name": "Detention Orb",
-            "description": "The drone launches a tiny orb of magical force at a creature it can see within 30 feet of itself. The creature must succeed on a 15 Constitution saving throw or be encased in the orb, which expands to a size just large enough to contain the creature. While encased, the creature doesn't need to breathe, eat, or drink, and it doesn't age. Nothing can pass through the orb, nor can any creature teleport or use planar travel to enter or exit the orb. As a bonus action, the drone can move the orb and its contents up to 30 feet in any direction. A successful casting of the Dispel Magic spell on the orb (15) destroys it. The orb otherwise remains intact until the drone spends an action to end the effect or the drone is destroyed. A drone can have only one detention orb active at a time; if the drone creates a detention orb when it already has one active, the first orb disappears, freeing the creature inside."
+            "description": "The drone launches a tiny orb of magical force at a creature it can see within 30 feet of itself. The creature must succeed on a DC 15 Constitution saving throw or be encased in the orb, which expands to a size just large enough to contain the creature. While encased, the creature doesn't need to breathe, eat, or drink, and it doesn't age. Nothing can pass through the orb, nor can any creature teleport or use planar travel to enter or exit the orb. As a bonus action, the drone can move the orb and its contents up to 30 feet in any direction. A successful casting of the Dispel Magic spell on the orb (DC 15) destroys it. The orb otherwise remains intact until the drone spends an action to end the effect or the drone is destroyed. A drone can have only one detention orb active at a time; if the drone creates a detention orb when it already has one active, the first orb disappears, freeing the creature inside."
           }
         ],
         "bonusActions": [],
@@ -1647,7 +1647,7 @@
           {
             "id": "book-of-many-things-aspirant-of-the-comet-trait-0",
             "name": "Hunger of the Void",
-            "description": "When the aspirant is reduced to 0 hit points, its body and everything it is wearing or carrying, except for magic items, are sucked into a void and destroyed. Creatures in a 15-foot-radius sphere centered on the aspirant must make a 11 Strength saving throw. On a failed save, a creature takes 10 (3d6) necrotic damage and is pulled 10 feet straight toward the aspirant's space. On a successful save, a creature takes half as much damage only."
+            "description": "When the aspirant is reduced to 0 hit points, its body and everything it is wearing or carrying, except for magic items, are sucked into a void and destroyed. Creatures in a 15-foot-radius sphere centered on the aspirant must make a DC 11 Strength saving throw. On a failed save, a creature takes 10 (3d6) necrotic damage and is pulled 10 feet straight toward the aspirant's space. On a successful save, a creature takes half as much damage only."
           },
           {
             "id": "book-of-many-things-aspirant-of-the-comet-trait-1",
@@ -1659,7 +1659,7 @@
           {
             "id": "book-of-many-things-aspirant-of-the-comet-action-0",
             "name": "Spear",
-            "description": "mw,rw 3 to hit, reach 5 ft. or range 20/60 ft., one target. {@h}4 (1d6 + 1) piercing damage, or 5 (1d8 + 1) piercing damage if used with two hands to make a melee attack."
+            "description": "Melee or Ranged Weapon Attack: +3 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d6 + 1) piercing damage, or 5 (1d8 + 1) piercing damage if used with two hands to make a melee attack."
           }
         ],
         "bonusActions": [],
@@ -1745,18 +1745,23 @@
           {
             "id": "book-of-many-things-asteria-action-1",
             "name": "Radiant Blade",
-            "description": "mw 11 to hit, reach 5 ft., one target. {@h}9 (1d8 + 5) slashing damage plus 13 (3d8) radiant damage."
+            "description": "Melee Weapon Attack: +11 to hit, reach 5 ft., one target. Hit: 9 (1d8 + 5) slashing damage plus 13 (3d8) radiant damage."
           },
           {
             "id": "book-of-many-things-asteria-action-2",
             "name": "Bursting Benediction",
-            "description": "Asteria causes a burst of magical energy to envelop one creature she can see within 60 feet of herself. The target must make a 19 Dexterity saving throw, taking 40 (9d8) force damage on a failed save, or half as much damage on a successful one. Asteria or another creature that she can see within 60 feet of herself then regains 10 hit points."
+            "description": "Asteria causes a burst of magical energy to envelop one creature she can see within 60 feet of herself. The target must make a DC 19 Dexterity saving throw, taking 40 (9d8) force damage on a failed save, or half as much damage on a successful one. Asteria or another creature that she can see within 60 feet of herself then regains 10 hit points."
+          },
+          {
+            "id": "book-of-many-things-asteria-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "Asteria casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 19):\n\n- At will: Guidance, Light, Thaumaturgy\n- 2/day each: Bless, Freedom of Movement, Greater Restoration, Plane Shift (self only), Protection from Evil and Good, Revivify"
           }
         ],
         "bonusActions": [
           {
             "id": "book-of-many-things-asteria-bonus-0",
-            "name": "Empowering Aegis 4",
+            "name": "Empowering Aegis (Recharge 4-6)",
             "description": "Asteria summons a spectral version of her shield, which orbits and bolsters one creature of Asteria's choice that she can see within 60 feet of herself. The spectral shield lasts until the start of Asteria's next turn. While the shield is orbiting the creature, the creature has 3, is immune to the frightened condition, and makes weapon attack rolls with advantage."
           }
         ],
@@ -1859,17 +1864,22 @@
           {
             "id": "book-of-many-things-aurnozci-action-1",
             "name": "Bite",
-            "description": "mw 15 to hit, reach 10 ft., one target. {@h}21 (2d12 + 8) slashing damage plus 9 (2d8) fire damage."
+            "description": "Melee Weapon Attack: +15 to hit, reach 10 ft., one target. Hit: 21 (2d12 + 8) slashing damage plus 9 (2d8) fire damage."
           },
           {
             "id": "book-of-many-things-aurnozci-action-2",
             "name": "Tail",
-            "description": "mw 15 to hit, reach 10 ft., one target. {@h}17 (2d8 + 8) bludgeoning damage."
+            "description": "Melee Weapon Attack: +15 to hit, reach 10 ft., one target. Hit: 17 (2d8 + 8) bludgeoning damage."
           },
           {
             "id": "book-of-many-things-aurnozci-action-3",
-            "name": "Mucus Spray 5",
-            "description": "Aurnozci sprays mucus in a 60-foot cone. Each creature in that cone must make a 20 Dexterity saving throw, taking 42 (12d6) acid damage on a failed save, or half as much damage on a successful one."
+            "name": "Mucus Spray (Recharge 5-6)",
+            "description": "Aurnozci sprays mucus in a 60-foot cone. Each creature in that cone must make a DC 20 Dexterity saving throw, taking 42 (12d6) acid damage on a failed save, or half as much damage on a successful one."
+          },
+          {
+            "id": "book-of-many-things-aurnozci-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "Aurnozci casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability (spell save DC 20):\n\n- At will: Detect Magic, Heat Metal (7th-level version)\n- 2/day each: Darkness, Dispel Magic, Hold Person"
           }
         ],
         "bonusActions": [],
@@ -1893,7 +1903,7 @@
           {
             "id": "book-of-many-things-aurnozci-legendary-3",
             "name": "Conflagration (Costs 2 Actions)",
-            "description": "Flames momentarily surround Aurnozci. Each creature within 15 feet of Aurnozci must make a 20 Dexterity saving throw, taking 18 (4d8) fire damage on a failed save, or half as much damage on a successful one."
+            "description": "Flames momentarily surround Aurnozci. Each creature within 15 feet of Aurnozci must make a DC 20 Dexterity saving throw, taking 18 (4d8) fire damage on a failed save, or half as much damage on a successful one."
           }
         ],
         "languages": [
@@ -1958,17 +1968,17 @@
           {
             "id": "book-of-many-things-boss-augustus-action-1",
             "name": "Bite (Wolf or Hybrid Form Only)",
-            "description": "mw 8 to hit, reach 5 ft., one target. {@h}26 (5d8 + 4) piercing damage. If the target is a Humanoid, it must succeed on a 15 Constitution saving throw or be cursed with lycanthropy. While cursed in this way, the target retains its alignment, languages, and equipment but otherwise uses the werewolf stat block, excluding actions that require equipment the target doesn't have. During any night when there's a full moon in the sky, the target becomes an NPC under the DM's control and remains so until the night ends. A Remove Curse spell or similar magic ends this curse."
+            "description": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit: 26 (5d8 + 4) piercing damage. If the target is a Humanoid, it must succeed on a DC 15 Constitution saving throw or be cursed with lycanthropy. While cursed in this way, the target retains its alignment, languages, and equipment but otherwise uses the werewolf stat block, excluding actions that require equipment the target doesn't have. During any night when there's a full moon in the sky, the target becomes an NPC under the DM's control and remains so until the night ends. A Remove Curse spell or similar magic ends this curse."
           },
           {
             "id": "book-of-many-things-boss-augustus-action-2",
             "name": "Claw (Wolf or Hybrid Form Only)",
-            "description": "mw 8 to hit, reach 5 ft., one target. {@h}21 (5d6 + 4) piercing damage. If the target is a creature, it must succeed on a 16 Strength saving throw or have the prone condition."
+            "description": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit: 21 (5d6 + 4) piercing damage. If the target is a creature, it must succeed on a DC 16 Strength saving throw or have the prone condition."
           },
           {
             "id": "book-of-many-things-boss-augustus-action-3",
             "name": "Magic Longsword (Humanoid or Hybrid Form Only)",
-            "description": "mw 10 to hit, reach 5 ft., one target. {@h}28 (4d10 + 6) slashing damage."
+            "description": "Melee Weapon Attack: +10 to hit, reach 5 ft., one target. Hit: 28 (4d10 + 6) slashing damage."
           }
         ],
         "bonusActions": [
@@ -2053,17 +2063,17 @@
           {
             "id": "book-of-many-things-boss-delour-action-1",
             "name": "Bite (Rat or Hybrid Form Only)",
-            "description": "mw 8 to hit, reach 5 ft., one target. {@h}26 (5d8 + 4) piercing damage. If the target is a Humanoid, it must succeed on a 14 Constitution saving throw or be cursed with lycanthropy. While cursed in this way, the target retains its alignment, languages, and equipment but otherwise uses the wererat stat block, excluding actions that require equipment the target doesn't have. During any night when there's a full moon in the sky, the target becomes an NPC under the DM's control and remains so until the night ends. A Remove Curse spell or similar magic ends this curse."
+            "description": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit: 26 (5d8 + 4) piercing damage. If the target is a Humanoid, it must succeed on a DC 14 Constitution saving throw or be cursed with lycanthropy. While cursed in this way, the target retains its alignment, languages, and equipment but otherwise uses the wererat stat block, excluding actions that require equipment the target doesn't have. During any night when there's a full moon in the sky, the target becomes an NPC under the DM's control and remains so until the night ends. A Remove Curse spell or similar magic ends this curse."
           },
           {
             "id": "book-of-many-things-boss-delour-action-2",
             "name": "Shortsword (Humanoid or Hybrid Form Only)",
-            "description": "mw 8 to hit, reach 5 ft., one target. {@h}11 (2d6 + 4) piercing damage plus 10 (3d6) poison damage."
+            "description": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit: 11 (2d6 + 4) piercing damage plus 10 (3d6) poison damage."
           },
           {
             "id": "book-of-many-things-boss-delour-action-3",
             "name": "Hand Crossbow (Humanoid or Hybrid Form Only)",
-            "description": "rw 8 to hit, range 30/120 ft., one target. {@h}11 (2d6 + 4) piercing damage plus 10 (3d6) poison damage."
+            "description": "Ranged Weapon Attack: +8 to hit, range 30/120 ft., one target. Hit: 11 (2d6 + 4) piercing damage plus 10 (3d6) poison damage."
           }
         ],
         "bonusActions": [
@@ -2168,12 +2178,12 @@
           {
             "id": "book-of-many-things-breath-drinker-action-1",
             "name": "Enervating Claw",
-            "description": "mw 10 to hit, reach 5 ft., one creature. {@h}12 (2d6 + 5) necrotic damage, and if the target is Large or smaller, it has the grappled condition (escape 18). The target must succeed on a 18 Constitution saving throw or its hit point maximum is reduced by an amount equal to the damage taken. This reduction lasts until the target finishes a long rest. The target dies if this effect reduces its hit point maximum to 0."
+            "description": "Melee Weapon Attack: +10 to hit, reach 5 ft., one creature. Hit: 12 (2d6 + 5) necrotic damage, and if the target is Large or smaller, it has the grappled condition (escape DC 18). The target must succeed on a DC 18 Constitution saving throw or its hit point maximum is reduced by an amount equal to the damage taken. This reduction lasts until the target finishes a long rest. The target dies if this effect reduces its hit point maximum to 0."
           },
           {
             "id": "book-of-many-things-breath-drinker-action-2",
             "name": "Drink Breath",
-            "description": "The breath drinker targets a creature that has the incapacitated condition or that the breath drinker is grappling and that isn't a Construct or an Undead. The target must make a 18 Charisma saving throw. On a failed save, the target takes 36 (8d8) necrotic damage, and its Charisma score is reduced by 1d6. This reduction lasts until the target finishes a short or long rest. If this reduces the target's Charisma to 0, the target dies. Until the breath drinker dies, the dead target can't be returned to life by any means short of divine intervention. On a successful save, the target takes half as much necrotic damage only. On a successful or failed save, the breath drinker regains a number of hit points equal to the necrotic damage dealt."
+            "description": "The breath drinker targets a creature that has the incapacitated condition or that the breath drinker is grappling and that isn't a Construct or an Undead. The target must make a DC 18 Charisma saving throw. On a failed save, the target takes 36 (8d8) necrotic damage, and its Charisma score is reduced by 1d6. This reduction lasts until the target finishes a short or long rest. If this reduces the target's Charisma to 0, the target dies. Until the breath drinker dies, the dead target can't be returned to life by any means short of divine intervention. On a successful save, the target takes half as much necrotic damage only. On a successful or failed save, the breath drinker regains a number of hit points equal to the necrotic damage dealt."
           },
           {
             "id": "book-of-many-things-breath-drinker-action-3",
@@ -2246,17 +2256,22 @@
           {
             "id": "book-of-many-things-brusipha-action-1",
             "name": "Eldritch Blast",
-            "description": "rs 5 to hit, range 120 ft., one target. {@h}8 (1d10 + 3) force damage."
+            "description": "Ranged Spell Attack: +5 to hit, range 120 ft., one target. Hit: 8 (1d10 + 3) force damage."
           },
           {
             "id": "book-of-many-things-brusipha-action-2",
             "name": "Gore",
-            "description": "mw 6 to hit, reach 5 ft., one target. {@h}8 (1d8 + 4) piercing damage plus 4 (1d8) necrotic damage. If Brusipha moved at least 10 feet straight toward the target immediately before she hit, the target takes an extra 4 (1d8) piercing damage, and if the target is a creature, it must succeed on a 15 Strength saving throw or be pushed up to 10 feet from Brusipha and have the prone condition."
+            "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) piercing damage plus 4 (1d8) necrotic damage. If Brusipha moved at least 10 feet straight toward the target immediately before she hit, the target takes an extra 4 (1d8) piercing damage, and if the target is a creature, it must succeed on a DC 15 Strength saving throw or be pushed up to 10 feet from Brusipha and have the prone condition."
           },
           {
             "id": "book-of-many-things-brusipha-action-3",
             "name": "Incite the Hunters (Recharges after a Short or Long Rest)",
             "description": "Brusipha allows each ally within 30 feet of herself that has the Unerring Tracker trait to make one weapon attack as a reaction against the target of that ally's Unerring Tracker."
+          },
+          {
+            "id": "book-of-many-things-brusipha-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "Brusipha casts one of the following spells, using Charisma as the spellcasting ability (spell save DC 13):\n\n- At will: Prestidigitation, Speak with Animals\n- 1/day each: Bestow Curse, Command, Crown of Madness"
           }
         ],
         "bonusActions": [
@@ -2345,12 +2360,12 @@
           {
             "id": "book-of-many-things-deck-defender-action-1",
             "name": "Paper Cut",
-            "description": "mw PB + 3 to hit, reach 5 ft., one target. {@h}7 (1d8 + 3) slashing damage."
+            "description": "Melee Weapon Attack: PB + +3 to hit, reach 5 ft., one target. Hit: 7 (1d8 + 3) slashing damage."
           },
           {
             "id": "book-of-many-things-deck-defender-action-2",
             "name": "Reckless Strike (Berserker Form Only)",
-            "description": "mw PB + 3 to hit (with advantage), reach 5 ft., one target. {@h}10 (2d6 + 3) slashing damage, and attacks made against the deck defender until the start of its next turn have advantage."
+            "description": "Melee Weapon Attack: PB + +3 to hit (with advantage), reach 5 ft., one target. Hit: 10 (2d6 + 3) slashing damage, and attacks made against the deck defender until the start of its next turn have advantage."
           }
         ],
         "bonusActions": [
@@ -2433,12 +2448,12 @@
           {
             "id": "book-of-many-things-enchanting-infiltrator-action-1",
             "name": "Poison Blade",
-            "description": "mw,rw 9 to hit, reach 5 ft. or range 60 ft., one target. {@h}7 (1d4 + 5) piercing damage plus 11 (2d10) poison damage."
+            "description": "Melee or Ranged Weapon Attack: +9 to hit, reach 5 ft. or range 60 ft., one target. Hit: 7 (1d4 + 5) piercing damage plus 11 (2d10) poison damage."
           },
           {
             "id": "book-of-many-things-enchanting-infiltrator-action-2",
             "name": "Beguiling Whisper",
-            "description": "The infiltrator magically whispers to a creature it can see within 30 feet of itself. The target must succeed on a 17 Wisdom saving throw or have the stunned condition due to fear or delight (the infiltrator's choice) until the end of the target's next turn, after which the target is immune to this Beguiling Whisper for 24 hours."
+            "description": "The infiltrator magically whispers to a creature it can see within 30 feet of itself. The target must succeed on a DC 17 Wisdom saving throw or have the stunned condition due to fear or delight (the infiltrator's choice) until the end of the target's next turn, after which the target is immune to this Beguiling Whisper for 24 hours."
           }
         ],
         "bonusActions": [],
@@ -2463,7 +2478,7 @@
           {
             "id": "book-of-many-things-enchanting-infiltrator-legendary-2",
             "name": "Misdirecting Escape (Costs 3 Actions)",
-            "description": "The infiltrator magically has the invisible condition and creates an illusory duplicate of itself in its space, then teleports, along with any equipment it is wearing or carrying, to an unoccupied space within 15 feet of itself. The image flings illusory blades at two creatures of the infiltrator's choice within 20 feet of the image. Each target must make a 17 Wisdom saving throw, taking 13 (3d8) psychic damage on a failed save, or half as much damage on a successful one. The invisibility lasts until the end of the infiltrator's next turn."
+            "description": "The infiltrator magically has the invisible condition and creates an illusory duplicate of itself in its space, then teleports, along with any equipment it is wearing or carrying, to an unoccupied space within 15 feet of itself. The image flings illusory blades at two creatures of the infiltrator's choice within 20 feet of the image. Each target must make a DC 17 Wisdom saving throw, taking 13 (3d8) psychic damage on a failed save, or half as much damage on a successful one. The invisibility lasts until the end of the infiltrator's next turn."
           }
         ],
         "languages": [
@@ -2548,17 +2563,22 @@
           {
             "id": "book-of-many-things-euryale-action-1",
             "name": "Constrict (Serpent Form Only)",
-            "description": "mw 11 to hit, reach 15 ft., one Large or smaller creature. {@h}16 (2d10 + 5) bludgeoning damage, and the target has the grappled condition (escape 19). Until this grapple ends, the target takes 11 (2d10) bludgeoning damage at the start of each of its turns, and Euryale can't constrict another target."
+            "description": "Melee Weapon Attack: +11 to hit, reach 15 ft., one Large or smaller creature. Hit: 16 (2d10 + 5) bludgeoning damage, and the target has the grappled condition (escape DC 19). Until this grapple ends, the target takes 11 (2d10) bludgeoning damage at the start of each of its turns, and Euryale can't constrict another target."
           },
           {
             "id": "book-of-many-things-euryale-action-2",
             "name": "Snake Bite",
-            "description": "mw 11 to hit, reach 10 ft., one target. {@h}12 (2d6 + 5) piercing damage, and the target must succeed on a 18 Constitution saving throw or have the poisoned condition until the start of Euryale's next turn."
+            "description": "Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit: 12 (2d6 + 5) piercing damage, and the target must succeed on a DC 18 Constitution saving throw or have the poisoned condition until the start of Euryale's next turn."
           },
           {
             "id": "book-of-many-things-euryale-action-3",
             "name": "Verdant Bolt (Medusa Form Only)",
-            "description": "rs 11 to hit, range 120 ft., one target. {@h}18 (4d8) acid damage."
+            "description": "Ranged Spell Attack: +11 to hit, range 120 ft., one target. Hit: 18 (4d8) acid damage."
+          },
+          {
+            "id": "book-of-many-things-euryale-spellcasting-0",
+            "name": "Spellcasting (Medusa Form Only)",
+            "description": "Euryale casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability (spell save DC 19):\n\n- At will: Druidcraft, Pass without Trace\n- 2/day each: Goodberry, Lesser Restoration, Locate Creature, Move Earth, Transport via Plants"
           }
         ],
         "bonusActions": [
@@ -2569,8 +2589,8 @@
           },
           {
             "id": "book-of-many-things-euryale-bonus-1",
-            "name": "Petrifying Gaze 4",
-            "description": "Euryale unleashes petrifying magic from her eyes in a 30-foot cone. Each creature in that area must make a 18 Constitution saving throw if it doesn't have the blinded condition. If the saving throw fails by 5 or more, the creature has the petrified condition. Otherwise, on a failed save, the creature takes 14 (4d6) force damage, begins to turn to stone, and has the restrained condition. The restrained creature must repeat the saving throw at the end of its next turn. On a failed save, it has the petrified condition, and on a successful save, the effect ends on it, The petrification lasts until the creature is freed by the Greater Restoration spell or other magic A creature can use its reaction, if available, to shut its eyes to avoid the saving throw. If the creature does so, it has the blinded condition until the end of its next turn."
+            "name": "Petrifying Gaze (Recharge 4-6)",
+            "description": "Euryale unleashes petrifying magic from her eyes in a 30-foot cone. Each creature in that area must make a DC 18 Constitution saving throw if it doesn't have the blinded condition. If the saving throw fails by 5 or more, the creature has the petrified condition. Otherwise, on a failed save, the creature takes 14 (4d6) force damage, begins to turn to stone, and has the restrained condition. The restrained creature must repeat the saving throw at the end of its next turn. On a failed save, it has the petrified condition, and on a successful save, the effect ends on it, The petrification lasts until the creature is freed by the Greater Restoration spell or other magic A creature can use its reaction, if available, to shut its eyes to avoid the saving throw. If the creature does so, it has the blinded condition until the end of its next turn."
           }
         ],
         "reactions": [],
@@ -2652,7 +2672,12 @@
           {
             "id": "book-of-many-things-fate-hag-action-1",
             "name": "Shears",
-            "description": "mw 6 to hit, reach 5 ft., one target. {@h}8 (1d8 + 4) force damage. If the target is a creature, it has disadvantage on attack rolls until the end of the hag's next turn."
+            "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) force damage. If the target is a creature, it has disadvantage on attack rolls until the end of the hag's next turn."
+          },
+          {
+            "id": "book-of-many-things-fate-hag-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "While holding its shears, the hag casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability (spell save DC 14):\n\n- At will: Bless, Guidance, Silent Image\n- 1/day each: Bane, Bestow Curse, Divination, Scrying (as an action)"
           }
         ],
         "bonusActions": [],
@@ -2666,12 +2691,12 @@
           {
             "id": "book-of-many-things-fate-hag-legendary-1",
             "name": "Tangle Threads",
-            "description": "The hag magically tangles a creature it can see within 60 feet of itself in spectral silver threads. The creature must succeed on a 14 Strength saving throw, or its speed is reduced to 0 until the end of its next turn."
+            "description": "The hag magically tangles a creature it can see within 60 feet of itself in spectral silver threads. The creature must succeed on a DC 14 Strength saving throw, or its speed is reduced to 0 until the end of its next turn."
           },
           {
             "id": "book-of-many-things-fate-hag-legendary-2",
             "name": "Destiny Curse (Costs 2 Actions)",
-            "description": "The hag magically curses a creature it can see within 60 feet of itself. The creature must make a 14 Wisdom saving throw, and the creature has disadvantage on this save if it has damaged the hag within the last minute. On a failed save, the creature has disadvantage on ability checks, attack rolls, and saving throws until the curse ends. Once per turn, when the cursed creature fails one of those d20 rolls, it takes 7 (2d6) force damage. The curse ends after 1 minute; when the creature succeeds on a total of three ability checks, attack rolls, or saving throws in any combination; or when the hag uses this action again."
+            "description": "The hag magically curses a creature it can see within 60 feet of itself. The creature must make a DC 14 Wisdom saving throw, and the creature has disadvantage on this save if it has damaged the hag within the last minute. On a failed save, the creature has disadvantage on ability checks, attack rolls, and saving throws until the curse ends. Once per turn, when the cursed creature fails one of those d20 rolls, it takes 7 (2d6) force damage. The curse ends after 1 minute; when the creature succeeds on a total of three ability checks, attack rolls, or saving throws in any combination; or when the hag uses this action again."
           }
         ],
         "languages": [
@@ -2765,23 +2790,28 @@
           {
             "id": "book-of-many-things-gremorly-s-ghost-action-1",
             "name": "Withering Strike",
-            "description": "ms 8 to hit, reach 5 ft., one target. {@h}19 (3d12) necrotic damage."
+            "description": "Melee Spell Attack: +8 to hit, reach 5 ft., one target. Hit: 19 (3d12) necrotic damage."
           },
           {
             "id": "book-of-many-things-gremorly-s-ghost-action-2",
             "name": "Fell Necromancy",
-            "description": "Gremorly targets one creature he can see within 60 feet of himself. The target must make a 16 Constitution saving throw, taking 61 (7d8 + 30) necrotic damage on a failed save, or half as much damage on a successful one. In addition, Gremorly regains 9 (2d8) hit points."
+            "description": "Gremorly targets one creature he can see within 60 feet of himself. The target must make a DC 16 Constitution saving throw, taking 61 (7d8 + 30) necrotic damage on a failed save, or half as much damage on a successful one. In addition, Gremorly regains 9 (2d8) hit points."
           },
           {
             "id": "book-of-many-things-gremorly-s-ghost-action-3",
-            "name": "Possession {@recharge}",
-            "description": "One Humanoid Gremorly can see within 5 feet of himself must succeed on a 15 Charisma saving throw or be possessed by him; Gremorly disappears, and the target has the incapacitated condition and loses control of its body. Gremorly can't be targeted by any attack, spell, or other effect, except ones that turn Undead, and he retains his alignment, Intelligence, Wisdom, Charisma, and immunity to the charmed and frightened conditions. He otherwise uses the target's game statistics, but Gremorly doesn't gain access to the target's knowledge, class features, or proficiencies. The possession lasts until the target drops to 0 hit points, Gremorly ends it as a bonus action, or Gremorly is turned or forced out by an effect like the Dispel Evil and Good spell. When the possession ends, Gremorly reappears in an unoccupied space within 5 feet of the target. The target is immune to this Possession for 24 hours after succeeding on the saving throw or after the possession ends."
+            "name": "Possession (Recharge 6)",
+            "description": "One Humanoid Gremorly can see within 5 feet of himself must succeed on a DC 15 Charisma saving throw or be possessed by him; Gremorly disappears, and the target has the incapacitated condition and loses control of its body. Gremorly can't be targeted by any attack, spell, or other effect, except ones that turn Undead, and he retains his alignment, Intelligence, Wisdom, Charisma, and immunity to the charmed and frightened conditions. He otherwise uses the target's game statistics, but Gremorly doesn't gain access to the target's knowledge, class features, or proficiencies. The possession lasts until the target drops to 0 hit points, Gremorly ends it as a bonus action, or Gremorly is turned or forced out by an effect like the Dispel Evil and Good spell. When the possession ends, Gremorly reappears in an unoccupied space within 5 feet of the target. The target is immune to this Possession for 24 hours after succeeding on the saving throw or after the possession ends."
+          },
+          {
+            "id": "book-of-many-things-gremorly-s-ghost-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "Gremorly casts one of the following spells, using Intelligence as the spellcasting ability (spell save DC 16):\n\n- At will: Dancing Lights, Mage Hand, Prestidigitation\n- 1/day: Slow\n- 2/day each: Bestow Curse, Dispel Magic"
           }
         ],
         "bonusActions": [
           {
             "id": "book-of-many-things-gremorly-s-ghost-bonus-0",
-            "name": "Ethereal Step 4",
+            "name": "Ethereal Step (Recharge 4-6)",
             "description": "Gremorly teleports up to 30 feet to an unoccupied space he can see."
           }
         ],
@@ -2868,12 +2898,12 @@
           {
             "id": "book-of-many-things-grim-champion-of-bloodshed-action-1",
             "name": "Blazing Morningstar",
-            "description": "mw 12 to hit, reach 5 ft., one target. {@h}10 (1d8 + 6) piercing damage plus 14 (4d6) fire damage."
+            "description": "Melee Weapon Attack: +12 to hit, reach 5 ft., one target. Hit: 10 (1d8 + 6) piercing damage plus 14 (4d6) fire damage."
           },
           {
             "id": "book-of-many-things-grim-champion-of-bloodshed-action-2",
-            "name": "Blade Storm 5",
-            "description": "The champion conjures a churning storm of spectral blades that fills a 20-foot cube centered on a point it can see within 120 feet of itself. The storm lasts until the start of the champion's next turn. While the storm is active, the area of the storm is difficult terrain. Whenever a creature enters the storm for the first time on a turn or starts its turn there, it must make a 19 Dexterity saving throw, taking 27 (6d8) slashing damage on a failed saving throw, or half as much damage on a successful one."
+            "name": "Blade Storm (Recharge 5-6)",
+            "description": "The champion conjures a churning storm of spectral blades that fills a 20-foot cube centered on a point it can see within 120 feet of itself. The storm lasts until the start of the champion's next turn. While the storm is active, the area of the storm is difficult terrain. Whenever a creature enters the storm for the first time on a turn or starts its turn there, it must make a DC 19 Dexterity saving throw, taking 27 (6d8) slashing damage on a failed saving throw, or half as much damage on a successful one."
           }
         ],
         "bonusActions": [],
@@ -2887,12 +2917,12 @@
           {
             "id": "book-of-many-things-grim-champion-of-bloodshed-legendary-1",
             "name": "Induce Violence",
-            "description": "The champion targets one creature it can see within 60 feet of itself. The target must succeed on a 19 Wisdom saving throw or immediately make one melee weapon attack against another creature of the champion's choice that is within the target's reach. If no creature is within the target's reach or if the target has the incapacitated condition, the target instead takes 11 (2d10) psychic damage."
+            "description": "The champion targets one creature it can see within 60 feet of itself. The target must succeed on a DC 19 Wisdom saving throw or immediately make one melee weapon attack against another creature of the champion's choice that is within the target's reach. If no creature is within the target's reach or if the target has the incapacitated condition, the target instead takes 11 (2d10) psychic damage."
           },
           {
             "id": "book-of-many-things-grim-champion-of-bloodshed-legendary-2",
             "name": "Menace (Costs 2 Actions)",
-            "description": "The champion chooses any number of creatures it can see within 30 feet of itself. Each target must succeed on a 19 Wisdom saving throw or have the frightened condition until the end of its next turn."
+            "description": "The champion chooses any number of creatures it can see within 30 feet of itself. Each target must succeed on a DC 19 Wisdom saving throw or have the frightened condition until the end of its next turn."
           }
         ],
         "languages": [
@@ -2974,18 +3004,18 @@
           {
             "id": "book-of-many-things-grim-champion-of-desolation-action-1",
             "name": "Leeching Blade",
-            "description": "mw 14 to hit, reach 5 ft., one target. {@h}13 (2d6 + 6) slashing damage plus 33 (6d10) cold damage, and the champion regains 10 hit points."
+            "description": "Melee Weapon Attack: +14 to hit, reach 5 ft., one target. Hit: 13 (2d6 + 6) slashing damage plus 33 (6d10) cold damage, and the champion regains 10 hit points."
           },
           {
             "id": "book-of-many-things-grim-champion-of-desolation-action-2",
             "name": "Hollow Void",
-            "description": "The champion summons a hungering rift around a creature it can see within 120 feet of itself. The creature must make a 22 Constitution saving throw. On a failed save, the creature takes 49 (11d8) force damage and has the stunned condition until the start of the champion's next turn. On a successful save, the creature takes half as much damage only. If a creature is reduced to 0 hit points by this effect, the creature dies, and its body crumbles to dust."
+            "description": "The champion summons a hungering rift around a creature it can see within 120 feet of itself. The creature must make a DC 22 Constitution saving throw. On a failed save, the creature takes 49 (11d8) force damage and has the stunned condition until the start of the champion's next turn. On a successful save, the creature takes half as much damage only. If a creature is reduced to 0 hit points by this effect, the creature dies, and its body crumbles to dust."
           }
         ],
         "bonusActions": [
           {
             "id": "book-of-many-things-grim-champion-of-desolation-bonus-0",
-            "name": "Step into Nothing 4",
+            "name": "Step into Nothing (Recharge 4-6)",
             "description": "The champion, along with any equipment it is wearing or carrying, has the invisible condition and teleports to an unoccupied space it can see within 30 feet of itself. The champion remains invisible until the start of its next turn or immediately after it deals damage."
           }
         ],
@@ -2994,7 +3024,7 @@
           {
             "id": "book-of-many-things-grim-champion-of-desolation-legendary-0",
             "name": "Crush",
-            "description": "The champion unleashes a burst of crushing force on a creature it can see within 30 feet of itself. The creature must succeed on a 22 Strength saving throw or take 14 (4d6) force damage and have the prone condition."
+            "description": "The champion unleashes a burst of crushing force on a creature it can see within 30 feet of itself. The creature must succeed on a DC 22 Strength saving throw or take 14 (4d6) force damage and have the prone condition."
           },
           {
             "id": "book-of-many-things-grim-champion-of-desolation-legendary-1",
@@ -3073,7 +3103,7 @@
           {
             "id": "book-of-many-things-grim-champion-of-pestilence-trait-0",
             "name": "Halo of Pestilence",
-            "description": "The champion is surrounded by an aura of deadly magic that takes the form of a host of glowing white insects. Each creature that starts its turn within 10 feet of the champion must succeed on a 18 Constitution saving throw or have the incapacitated condition until the start of its next turn, as the insects ravage its body."
+            "description": "The champion is surrounded by an aura of deadly magic that takes the form of a host of glowing white insects. Each creature that starts its turn within 10 feet of the champion must succeed on a DC 18 Constitution saving throw or have the incapacitated condition until the start of its next turn, as the insects ravage its body."
           },
           {
             "id": "book-of-many-things-grim-champion-of-pestilence-trait-1",
@@ -3090,12 +3120,17 @@
           {
             "id": "book-of-many-things-grim-champion-of-pestilence-action-1",
             "name": "Blight Staff",
-            "description": "mw 9 to hit, reach 5 ft., one target. {@h}8 (1d8 + 4) bludgeoning damage plus 21 (6d6) necrotic damage."
+            "description": "Melee Weapon Attack: +9 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) bludgeoning damage plus 21 (6d6) necrotic damage."
           },
           {
             "id": "book-of-many-things-grim-champion-of-pestilence-action-2",
             "name": "Plague Bolt",
-            "description": "rs 10 to hit, range 120 ft., one target. {@h}23 (4d8 + 5) poison damage, and the target has the poisoned condition until the start of the champion's next turn."
+            "description": "Ranged Spell Attack: +10 to hit, range 120 ft., one target. Hit: 23 (4d8 + 5) poison damage, and the target has the poisoned condition until the start of the champion's next turn."
+          },
+          {
+            "id": "book-of-many-things-grim-champion-of-pestilence-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The champion casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 18):\n\n- At will: Detect Magic, Mage Armor (self only)\n- 2/day each: Blight, Blindness/Deafness\n- 1/day each: Cloudkill, Contagion"
           }
         ],
         "bonusActions": [],
@@ -3165,7 +3200,7 @@
           {
             "id": "book-of-many-things-harrow-hawk-action-0",
             "name": "Talons",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}8 (2d4 + 3) slashing damage plus 3 (1d6) necrotic damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 8 (2d4 + 3) slashing damage plus 3 (1d6) necrotic damage."
           },
           {
             "id": "book-of-many-things-harrow-hawk-action-1",
@@ -3245,13 +3280,13 @@
           {
             "id": "book-of-many-things-harrow-hound-action-0",
             "name": "Bite",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}10 (2d6 + 3) piercing damage plus 3 (1d6) necrotic damage. If the target is a creature, it must succeed on a 13 Strength saving throw or have the prone condition."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 10 (2d6 + 3) piercing damage plus 3 (1d6) necrotic damage. If the target is a creature, it must succeed on a DC 13 Strength saving throw or have the prone condition."
           }
         ],
         "bonusActions": [
           {
             "id": "book-of-many-things-harrow-hound-bonus-0",
-            "name": "Shadow Step 4",
+            "name": "Shadow Step (Recharge 4-6)",
             "description": "The hound magically teleports, along with any equipment it is wearing or carrying, up to 40 feet to an unoccupied space it can see."
           }
         ],
@@ -3334,12 +3369,12 @@
           {
             "id": "book-of-many-things-helmed-horror-detention-drone-action-1",
             "name": "Longsword",
-            "description": "mw 6 to hit, reach 5 ft., one target. {@h}8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) slashing damage if used with two hands."
+            "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) slashing damage if used with two hands."
           },
           {
             "id": "book-of-many-things-helmed-horror-detention-drone-action-2",
             "name": "Detention Orb",
-            "description": "The drone launches a tiny orb of magical force at a creature it can see within 30 feet of itself. The creature must succeed on a 15 Constitution saving throw or be encased in the orb, which expands to a size just large enough to contain the creature. While encased, the creature doesn't need to breathe, eat, or drink, and it doesn't age. Nothing can pass through the orb, nor can any creature teleport or use planar travel to enter or exit the orb. As a bonus action, the drone can move the orb and its contents up to 30 feet in any direction. A successful casting of the Dispel Magic spell on the orb (15) destroys it. The orb otherwise remains intact until the drone spends an action to end the effect or the drone is destroyed. A drone can have only one detention orb active at a time; if the drone creates a detention orb when it already has one active, the first orb disappears, freeing the creature inside."
+            "description": "The drone launches a tiny orb of magical force at a creature it can see within 30 feet of itself. The creature must succeed on a DC 15 Constitution saving throw or be encased in the orb, which expands to a size just large enough to contain the creature. While encased, the creature doesn't need to breathe, eat, or drink, and it doesn't age. Nothing can pass through the orb, nor can any creature teleport or use planar travel to enter or exit the orb. As a bonus action, the drone can move the orb and its contents up to 30 feet in any direction. A successful casting of the Dispel Magic spell on the orb (DC 15) destroys it. The orb otherwise remains intact until the drone spends an action to end the effect or the drone is destroyed. A drone can have only one detention orb active at a time; if the drone creates a detention orb when it already has one active, the first orb disappears, freeing the creature inside."
           }
         ],
         "bonusActions": [],
@@ -3417,29 +3452,34 @@
           {
             "id": "book-of-many-things-hierophant-medusa-action-1",
             "name": "Constrict",
-            "description": "mw 12 to hit, reach 10 ft., one target. {@h}16 (3d6 + 6) bludgeoning damage, and if the target is a Medium or smaller creature, it has the grappled condition (escape 20). Until this grapple ends, the target has the restrained condition, and the medusa can't constrict another creature."
+            "description": "Melee Weapon Attack: +12 to hit, reach 10 ft., one target. Hit: 16 (3d6 + 6) bludgeoning damage, and if the target is a Medium or smaller creature, it has the grappled condition (escape DC 20). Until this grapple ends, the target has the restrained condition, and the medusa can't constrict another creature."
           },
           {
             "id": "book-of-many-things-hierophant-medusa-action-2",
             "name": "Final Blade",
-            "description": "mw 12 to hit, reach 5 ft., one target. {@h}13 (2d6 + 6) slashing damage plus 21 (6d6) force damage. If the target has at least one head and the medusa rolled a 20 on the attack roll, the target is decapitated and dies if it fails a 20 Constitution saving throw and can't survive without that head. A target is immune to this effect if it takes none of the damage, has legendary actions, or is Huge or larger. Such a creature takes an extra 28 (8d6) force damage from the hit."
+            "description": "Melee Weapon Attack: +12 to hit, reach 5 ft., one target. Hit: 13 (2d6 + 6) slashing damage plus 21 (6d6) force damage. If the target has at least one head and the medusa rolled a 20 on the attack roll, the target is decapitated and dies if it fails a DC 20 Constitution saving throw and can't survive without that head. A target is immune to this effect if it takes none of the damage, has legendary actions, or is Huge or larger. Such a creature takes an extra 28 (8d6) force damage from the hit."
           },
           {
             "id": "book-of-many-things-hierophant-medusa-action-3",
             "name": "Snake Hair",
-            "description": "mw 12 to hit, reach 5 ft., one target. {@h}11 (1d10 + 6) piercing damage plus 5 (1d10) poison damage."
+            "description": "Melee Weapon Attack: +12 to hit, reach 5 ft., one target. Hit: 11 (1d10 + 6) piercing damage plus 5 (1d10) poison damage."
           },
           {
             "id": "book-of-many-things-hierophant-medusa-action-4",
             "name": "Wrathful Strike",
-            "description": "rs 12 to hit, range 120 ft., one creature. {@h}22 (3d10 + 6) radiant damage, and the target has the blinded condition until the end of its next turn."
+            "description": "Ranged Spell Attack: +12 to hit, range 120 ft., one creature. Hit: 22 (3d10 + 6) radiant damage, and the target has the blinded condition until the end of its next turn."
+          },
+          {
+            "id": "book-of-many-things-hierophant-medusa-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The medusa casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability (spell save DC 20):\n\n- At will: Light, Spare the Dying, Thaumaturgy\n- 2/day: Mass Cure Wounds (cast at 8th level)\n- 1/day each: Blade Barrier, Divination, Greater Restoration"
           }
         ],
         "bonusActions": [
           {
             "id": "book-of-many-things-hierophant-medusa-bonus-0",
-            "name": "Petrifying Gaze 4",
-            "description": "The medusa unleashes petrifying magic from its eyes in a 30-foot cone. Each creature in that area must make a 18 Constitution saving throw if it doesn't have the blinded condition. If the saving throw fails by 5 or more, the creature has the petrified condition. Otherwise, on a failed save, the creature takes 10 (3d6) force damage, begins to turn to stone, and has the restrained condition. The restrained creature must repeat the saving throw at the end of its next turn. On a failed save, it has the petrified condition, and on a successful save, the effect ends on it. The petrification lasts until the creature is freed by the Greater Restoration spell or other magic. A creature can use its reaction, if available, to shut its eyes to avoid the saving throw. If the creature does so, it has the blinded condition until the end of its next turn."
+            "name": "Petrifying Gaze (Recharge 4-6)",
+            "description": "The medusa unleashes petrifying magic from its eyes in a 30-foot cone. Each creature in that area must make a DC 18 Constitution saving throw if it doesn't have the blinded condition. If the saving throw fails by 5 or more, the creature has the petrified condition. Otherwise, on a failed save, the creature takes 10 (3d6) force damage, begins to turn to stone, and has the restrained condition. The restrained creature must repeat the saving throw at the end of its next turn. On a failed save, it has the petrified condition, and on a successful save, the effect ends on it. The petrification lasts until the creature is freed by the Greater Restoration spell or other magic. A creature can use its reaction, if available, to shut its eyes to avoid the saving throw. If the creature does so, it has the blinded condition until the end of its next turn."
           }
         ],
         "reactions": [],
@@ -3530,24 +3570,29 @@
           {
             "id": "book-of-many-things-hierophant-of-the-comet-action-1",
             "name": "Herald's Axe",
-            "description": "mw 9 to hit, reach 5 ft., one target. {@h}11 (1d12 + 5) slashing damage plus 10 (3d6) necrotic damage."
+            "description": "Melee Weapon Attack: +9 to hit, reach 5 ft., one target. Hit: 11 (1d12 + 5) slashing damage plus 10 (3d6) necrotic damage."
           },
           {
             "id": "book-of-many-things-hierophant-of-the-comet-action-2",
             "name": "Comet Blast",
-            "description": "rs 9 to hit, range 120 ft., one target. {@h}16 (2d10 + 5) force damage."
+            "description": "Ranged Spell Attack: +9 to hit, range 120 ft., one target. Hit: 16 (2d10 + 5) force damage."
           },
           {
             "id": "book-of-many-things-hierophant-of-the-comet-action-3",
-            "name": "All-Consuming Star {@recharge}",
-            "description": "The hierophant conjures a manifestation of the All-Consuming Star: brilliant light and haunting screams that fill a 20-foot-radius sphere centered on a point the hierophant can see within 60 feet of itself. Each creature within the sphere has the blinded and deafened conditions. Each creature that enters the sphere for the first time on a turn or starts its turn there must make a 17 Wisdom saving throw. On a failed save, a creature takes 27 (6d8) psychic damage and has the incapacitated condition until the start of its next turn. On a successful save, a creature takes half as much damage only. The manifestation persists until the hierophant dies, has the incapacitated condition, uses a bonus action to end the effect, or uses this action again."
+            "name": "All-Consuming Star (Recharge 6)",
+            "description": "The hierophant conjures a manifestation of the All-Consuming Star: brilliant light and haunting screams that fill a 20-foot-radius sphere centered on a point the hierophant can see within 60 feet of itself. Each creature within the sphere has the blinded and deafened conditions. Each creature that enters the sphere for the first time on a turn or starts its turn there must make a DC 17 Wisdom saving throw. On a failed save, a creature takes 27 (6d8) psychic damage and has the incapacitated condition until the start of its next turn. On a successful save, a creature takes half as much damage only. The manifestation persists until the hierophant dies, has the incapacitated condition, uses a bonus action to end the effect, or uses this action again."
+          },
+          {
+            "id": "book-of-many-things-hierophant-of-the-comet-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The hierophant casts one of the following spells, using Charisma as the spellcasting ability (spell save DC 17):\n\n- At will: Detect Thoughts, Mage Hand, Thaumaturgy\n- 1/day each: Dimension Door, Mass Suggestion"
           }
         ],
         "bonusActions": [
           {
             "id": "book-of-many-things-hierophant-of-the-comet-bonus-0",
             "name": "Star's Hunger",
-            "description": "The hierophant targets one creature within 30 feet of the center of its All-Consuming Star. The target must succeed on a 17 Strength saving throw or be pulled up to 30 feet toward the center of the All-Consuming Star."
+            "description": "The hierophant targets one creature within 30 feet of the center of its All-Consuming Star. The target must succeed on a DC 17 Strength saving throw or be pulled up to 30 feet toward the center of the All-Consuming Star."
           }
         ],
         "reactions": [],
@@ -3631,17 +3676,22 @@
           {
             "id": "book-of-many-things-hulgaz-action-1",
             "name": "Claw",
-            "description": "mw 8 to hit, reach 5 ft., one target. {@h}12 (2d8 + 3) slashing damage."
+            "description": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit: 12 (2d8 + 3) slashing damage."
           },
           {
             "id": "book-of-many-things-hulgaz-action-2",
             "name": "Intoxicating Sting",
-            "description": "mw 8 to hit, reach 10 ft., one creature. {@h}8 (1d10 + 3) piercing damage plus 10 (3d6) poison damage, and the target must succeed on a 17 Wisdom saving throw or have the charmed condition until the start of Hulgaz's next turn."
+            "description": "Melee Weapon Attack: +8 to hit, reach 10 ft., one creature. Hit: 8 (1d10 + 3) piercing damage plus 10 (3d6) poison damage, and the target must succeed on a DC 17 Wisdom saving throw or have the charmed condition until the start of Hulgaz's next turn."
           },
           {
             "id": "book-of-many-things-hulgaz-action-3",
-            "name": "Brimstone Vapor 5",
-            "description": "Hulgaz exhales a 30-foot cone of noxious, scorching-hot vapor. Each creature in that area must succeed on a 17 Constitution saving throw or have the poisoned condition for 1 minute. While poisoned in this way, a creature takes 31 (7d8) fire damage at the start of each of its turns and has disadvantage on Wisdom saving throws. A target can repeat the Constitution saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "name": "Brimstone Vapor (Recharge 5-6)",
+            "description": "Hulgaz exhales a 30-foot cone of noxious, scorching-hot vapor. Each creature in that area must succeed on a DC 17 Constitution saving throw or have the poisoned condition for 1 minute. While poisoned in this way, a creature takes 31 (7d8) fire damage at the start of each of its turns and has disadvantage on Wisdom saving throws. A target can repeat the Constitution saving throw at the end of each of its turns, ending the effect on itself on a success."
+          },
+          {
+            "id": "book-of-many-things-hulgaz-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "Hulgaz casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 18):\n\n- At will: Charm Person\n- 1/day: Teleport\n- 2/day each: Dispel Magic, Fog Cloud"
           }
         ],
         "bonusActions": [],
@@ -3719,7 +3769,12 @@
           {
             "id": "book-of-many-things-initiate-of-the-comet-action-1",
             "name": "Comet Strike",
-            "description": "ms,rs 5 to hit, reach 5 ft. or range 120 ft., one target. {@h}14 (2d10 + 3) force damage."
+            "description": "Melee or Ranged Spell Attack: +5 to hit, reach 5 ft. or range 120 ft., one target. Hit: 14 (2d10 + 3) force damage."
+          },
+          {
+            "id": "book-of-many-things-initiate-of-the-comet-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The initiate casts one of the following spells, using Charisma as the spellcasting ability (spell save DC 13):\n\n- At will: Mage Hand, Thaumaturgy\n- 1/day each: Dimension Door, Divination, Enthrall"
           }
         ],
         "bonusActions": [],
@@ -3794,12 +3849,17 @@
           {
             "id": "book-of-many-things-living-portent-action-1",
             "name": "Radiant Strike",
-            "description": "ms,rs 5 to hit, reach 5 ft. or range 120 ft., one target. {@h}9 (1d12 + 3) radiant damage."
+            "description": "Melee or Ranged Spell Attack: +5 to hit, reach 5 ft. or range 120 ft., one target. Hit: 9 (1d12 + 3) radiant damage."
           },
           {
             "id": "book-of-many-things-living-portent-action-2",
             "name": "Prophetic Blessing",
             "description": "The living portent magically infuses the power of its prophecy into another willing creature the living portent can see within 30 feet of itself. The target's hit point maximum and current hit points increase by 7 (1d8 + 3), and it gains a prophecy die, a d8. Once during each of the creature's turns, when it fails an ability check or saving throw or misses an attack roll, it can roll the prophecy die and add the number rolled to the total, potentially changing the outcome. The blessing ends after 1 hour or when the living portent ends the blessing (no action required) or uses this action again."
+          },
+          {
+            "id": "book-of-many-things-living-portent-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The living portent casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability:\n\n- 2/day: Cure Wounds\n- 1/day each: Divination, Greater Restoration"
           }
         ],
         "bonusActions": [
@@ -3813,7 +3873,7 @@
           {
             "id": "book-of-many-things-living-portent-reaction-0",
             "name": "Price of Defiance",
-            "description": "When the living portent is damaged by a creature that it can see within 120 feet of itself, radiant power sears the creature. The creature must make a 13 Constitution saving throw, taking 10 (3d6) radiant damage on a failed save, or half as much damage on a successful one."
+            "description": "When the living portent is damaged by a creature that it can see within 120 feet of itself, radiant power sears the creature. The creature must make a DC 13 Constitution saving throw, taking 10 (3d6) radiant damage on a failed save, or half as much damage on a successful one."
           }
         ],
         "legendaryActions": [],
@@ -3880,12 +3940,17 @@
           {
             "id": "book-of-many-things-living-star-necrotic-action-1",
             "name": "Radiant Strike",
-            "description": "ms,rs 5 to hit, reach 5 ft. or range 120 ft., one target. {@h}9 (1d12 + 3) necrotic damage."
+            "description": "Melee or Ranged Spell Attack: +5 to hit, reach 5 ft. or range 120 ft., one target. Hit: 9 (1d12 + 3) necrotic damage."
           },
           {
             "id": "book-of-many-things-living-star-necrotic-action-2",
             "name": "Prophetic Blessing",
             "description": "The living portent magically infuses the power of its prophecy into another willing creature the living portent can see within 30 feet of itself. The target's hit point maximum and current hit points increase by 7 (1d8 + 3), and it gains a prophecy die, a d8. Once during each of the creature's turns, when it fails an ability check or saving throw or misses an attack roll, it can roll the prophecy die and add the number rolled to the total, potentially changing the outcome. The blessing ends after 1 hour or when the living portent ends the blessing (no action required) or uses this action again."
+          },
+          {
+            "id": "book-of-many-things-living-star-necrotic-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The living portent casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability:\n\n- 2/day: Cure Wounds\n- 1/day each: Divination, Greater Restoration"
           }
         ],
         "bonusActions": [
@@ -3899,7 +3964,7 @@
           {
             "id": "book-of-many-things-living-star-necrotic-reaction-0",
             "name": "Price of Defiance",
-            "description": "When the living portent is damaged by a creature that it can see within 120 feet of itself, necrotic power sears the creature. The creature must make a 13 Constitution saving throw, taking 10 (3d6) necrotic damage on a failed save, or half as much damage on a successful one."
+            "description": "When the living portent is damaged by a creature that it can see within 120 feet of itself, necrotic power sears the creature. The creature must make a DC 13 Constitution saving throw, taking 10 (3d6) necrotic damage on a failed save, or half as much damage on a successful one."
           }
         ],
         "legendaryActions": [],
@@ -3966,12 +4031,17 @@
           {
             "id": "book-of-many-things-living-star-psychic-action-1",
             "name": "Radiant Strike",
-            "description": "ms,rs 5 to hit, reach 5 ft. or range 120 ft., one target. {@h}9 (1d12 + 3) psychic damage."
+            "description": "Melee or Ranged Spell Attack: +5 to hit, reach 5 ft. or range 120 ft., one target. Hit: 9 (1d12 + 3) psychic damage."
           },
           {
             "id": "book-of-many-things-living-star-psychic-action-2",
             "name": "Prophetic Blessing",
             "description": "The living portent magically infuses the power of its prophecy into another willing creature the living portent can see within 30 feet of itself. The target's hit point maximum and current hit points increase by 7 (1d8 + 3), and it gains a prophecy die, a d8. Once during each of the creature's turns, when it fails an ability check or saving throw or misses an attack roll, it can roll the prophecy die and add the number rolled to the total, potentially changing the outcome. The blessing ends after 1 hour or when the living portent ends the blessing (no action required) or uses this action again."
+          },
+          {
+            "id": "book-of-many-things-living-star-psychic-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The living portent casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability:\n\n- 2/day: Cure Wounds\n- 1/day each: Divination, Greater Restoration"
           }
         ],
         "bonusActions": [
@@ -3985,7 +4055,7 @@
           {
             "id": "book-of-many-things-living-star-psychic-reaction-0",
             "name": "Price of Defiance",
-            "description": "When the living portent is damaged by a creature that it can see within 120 feet of itself, psychic power sears the creature. The creature must make a 13 Constitution saving throw, taking 10 (3d6) psychic damage on a failed save, or half as much damage on a successful one."
+            "description": "When the living portent is damaged by a creature that it can see within 120 feet of itself, psychic power sears the creature. The creature must make a DC 13 Constitution saving throw, taking 10 (3d6) psychic damage on a failed save, or half as much damage on a successful one."
           }
         ],
         "legendaryActions": [],
@@ -4069,17 +4139,17 @@
           {
             "id": "book-of-many-things-malaxxix-action-1",
             "name": "Forge Hammer",
-            "description": "mw,rw 12 to hit, reach 10 ft. or range 60/180 ft., one target. {@h}28 (4d10 + 6) bludgeoning damage, and the target can't take reactions until the end of Malaxxix's next turn. {@hom}The hammer then magically returns to Malaxxix's hand."
+            "description": "Melee or Ranged Weapon Attack: +12 to hit, reach 10 ft. or range 60/180 ft., one target. Hit: 28 (4d10 + 6) bludgeoning damage, and the target can't take reactions until the end of Malaxxix's next turn. Hit or Miss: The hammer then magically returns to Malaxxix's hand."
           },
           {
             "id": "book-of-many-things-malaxxix-action-2",
             "name": "Whip",
-            "description": "mw 12 to hit, reach 30 ft., one creature. {@h}15 (2d8 + 6) slashing damage, and the target has the restrained condition for 1 minute. The restrained target can make a 20 Strength saving throw at the end of each of its turns, ending the effect on itself on a success. Only one creature can be restrained by the whip at a time."
+            "description": "Melee Weapon Attack: +12 to hit, reach 30 ft., one creature. Hit: 15 (2d8 + 6) slashing damage, and the target has the restrained condition for 1 minute. The restrained target can make a DC 20 Strength saving throw at the end of each of its turns, ending the effect on itself on a success. Only one creature can be restrained by the whip at a time."
           },
           {
             "id": "book-of-many-things-malaxxix-action-3",
-            "name": "Mezzoloth Vortex 5",
-            "description": "Malaxxix summons a vortex of whirling mezzoloths at a point it can see within 90 feet of itself. The vortex is a 30-foot-radius, 100-foot-high cylinder centered on that point. Each creature other than Malaxxix in that area must make a 20 Dexterity saving throw. On a failed save, a creature takes 35 (10d6) force damage and has the restrained condition while within the cylinder. On a successful save, a creature takes half as much damage and is pushed to the nearest unoccupied space outside the cylinder. The vortex lasts until the start of Malaxxix's next turn."
+            "name": "Mezzoloth Vortex (Recharge 5-6)",
+            "description": "Malaxxix summons a vortex of whirling mezzoloths at a point it can see within 90 feet of itself. The vortex is a 30-foot-radius, 100-foot-high cylinder centered on that point. Each creature other than Malaxxix in that area must make a DC 20 Dexterity saving throw. On a failed save, a creature takes 35 (10d6) force damage and has the restrained condition while within the cylinder. On a successful save, a creature takes half as much damage and is pushed to the nearest unoccupied space outside the cylinder. The vortex lasts until the start of Malaxxix's next turn."
           }
         ],
         "bonusActions": [],
@@ -4146,7 +4216,7 @@
           {
             "id": "book-of-many-things-minotaur-archaeologist-action-0",
             "name": "Gore",
-            "description": "mw 3 to hit, reach 5 ft., one target. {@h}4 (1d6 + 1) piercing damage. If the minotaur moved at least 10 feet straight toward the target immediately before it hit, the target takes an extra 3 (1d6) piercing damage, and if the target is a Large or smaller creature, it must succeed on a 11 Strength saving throw or be pushed up to 10 feet from the minotaur and have the prone condition."
+            "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 4 (1d6 + 1) piercing damage. If the minotaur moved at least 10 feet straight toward the target immediately before it hit, the target takes an extra 3 (1d6) piercing damage, and if the target is a Large or smaller creature, it must succeed on a DC 11 Strength saving throw or be pushed up to 10 feet from the minotaur and have the prone condition."
           }
         ],
         "bonusActions": [],
@@ -4199,12 +4269,12 @@
           {
             "id": "book-of-many-things-minotaur-infiltrator-action-0",
             "name": "Gore",
-            "description": "mw 6 to hit, reach 5 ft., one target. {@h}8 (1d8 + 4) piercing damage, or 13 (2d8 + 4) piercing damage while enlarged. If the minotaur moved at least 10 feet straight toward the target immediately before it hit, the target takes an extra 4 (1d8) piercing damage, or 9 (2d8) piercing damage if the minotaur is enlarged. If the target is a creature, it must succeed on a 14 Strength saving throw or be pushed up to 10 feet from the minotaur and have the prone condition."
+            "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) piercing damage, or 13 (2d8 + 4) piercing damage while enlarged. If the minotaur moved at least 10 feet straight toward the target immediately before it hit, the target takes an extra 4 (1d8) piercing damage, or 9 (2d8) piercing damage if the minotaur is enlarged. If the target is a creature, it must succeed on a DC 14 Strength saving throw or be pushed up to 10 feet from the minotaur and have the prone condition."
           },
           {
             "id": "book-of-many-things-minotaur-infiltrator-action-1",
             "name": "Mattock",
-            "description": "mw 6 to hit, reach 10 ft., one target. {@h}10 (1d12 + 4) bludgeoning damage, or 17 (2d12 + 4) bludgeoning damage while enlarged. If the target is a creature and the minotaur is enlarged, the target must succeed on a 14 Strength saving throw or have the prone condition."
+            "description": "Melee Weapon Attack: +6 to hit, reach 10 ft., one target. Hit: 10 (1d12 + 4) bludgeoning damage, or 17 (2d12 + 4) bludgeoning damage while enlarged. If the target is a creature and the minotaur is enlarged, the target must succeed on a DC 14 Strength saving throw or have the prone condition."
           },
           {
             "id": "book-of-many-things-minotaur-infiltrator-action-2",
@@ -4269,19 +4339,24 @@
           {
             "id": "book-of-many-things-oddlewin-trait-1",
             "name": "Nilbogism",
-            "description": "Any creature that attempts to damage Oddlewin must first succeed on a 12 Charisma saving throw or have the charmed condition until the end of the creature's next turn. The creature must use its action praising Oddlewin. Oddlewin can't regain hit points, including through magical healing, except through his Reversal of Fortune reaction."
+            "description": "Any creature that attempts to damage Oddlewin must first succeed on a DC 12 Charisma saving throw or have the charmed condition until the end of the creature's next turn. The creature must use its action praising Oddlewin. Oddlewin can't regain hit points, including through magical healing, except through his Reversal of Fortune reaction."
           }
         ],
         "actions": [
           {
             "id": "book-of-many-things-oddlewin-action-0",
             "name": "Fool's Scepter",
-            "description": "mw 4 to hit, reach 5 ft., one target. {@h}5 (1d6 + 2) bludgeoning damage."
+            "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) bludgeoning damage."
           },
           {
             "id": "book-of-many-things-oddlewin-action-1",
             "name": "Cloud of Cards",
             "description": "Oddlewin conjures magical cards that slash at the air in a 5-foot cube within 60 feet of Oddlewin until the start of Oddlewin's next turn. A creature that starts its turn in the cube or that enters that area for the first time on a turn takes 10 (4d4) slashing damage."
+          },
+          {
+            "id": "book-of-many-things-oddlewin-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "Oddlewin casts one of the following spells, using Charisma as the spellcasting ability (spell save DC 12):\n\n- At will: Mage Hand, Tasha's Hideous Laughter"
           }
         ],
         "bonusActions": [
@@ -4351,7 +4426,7 @@
           {
             "id": "book-of-many-things-otherworldly-corrupter-trait-0",
             "name": "Alien Mind",
-            "description": "Magic and other features can't determine the corrupter's creature type. If a creature tries to read the corrupter's thoughts, that creature must succeed on a 20 Intelligence saving throw or have the stunned condition for 1 minute. The stunned creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "description": "Magic and other features can't determine the corrupter's creature type. If a creature tries to read the corrupter's thoughts, that creature must succeed on a DC 20 Intelligence saving throw or have the stunned condition for 1 minute. The stunned creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           },
           {
             "id": "book-of-many-things-otherworldly-corrupter-trait-1",
@@ -4373,12 +4448,12 @@
           {
             "id": "book-of-many-things-otherworldly-corrupter-action-1",
             "name": "Whispering Blade",
-            "description": "mw,rw 12 to hit, reach 5 ft. or range 60 ft., one target. {@h}10 (1d8 + 6) piercing damage plus 14 (4d6) psychic damage. If the target is a creature, it must succeed on a 20 Wisdom saving throw or be unable to speak until the start of the corrupter's next turn."
+            "description": "Melee or Ranged Weapon Attack: +12 to hit, reach 5 ft. or range 60 ft., one target. Hit: 10 (1d8 + 6) piercing damage plus 14 (4d6) psychic damage. If the target is a creature, it must succeed on a DC 20 Wisdom saving throw or be unable to speak until the start of the corrupter's next turn."
           },
           {
             "id": "book-of-many-things-otherworldly-corrupter-action-2",
             "name": "Debilitating Touch",
-            "description": "The corrupter's squirming tentacle lashes out at a creature the corrupter can see within 30 feet of itself. The target must succeed on a 20 Constitution saving throw or have the paralyzed condition until the end of its next turn, after which the target is immune to this Debilitating Touch for 24 hours."
+            "description": "The corrupter's squirming tentacle lashes out at a creature the corrupter can see within 30 feet of itself. The target must succeed on a DC 20 Constitution saving throw or have the paralyzed condition until the end of its next turn, after which the target is immune to this Debilitating Touch for 24 hours."
           }
         ],
         "bonusActions": [
@@ -4409,7 +4484,7 @@
           {
             "id": "book-of-many-things-otherworldly-corrupter-legendary-2",
             "name": "Amorphous Escape (Costs 3 Actions)",
-            "description": "The corrupter dissolves into a shifting mass of flesh, tentacles, eyes, claws, and mouths. Up to two creatures the corrupter can see within 20 feet of itself must make a 20 Intelligence saving throw, taking 18 (4d8) psychic damage on a failed save, or half as much damage on a successful one. This transformation lasts until the end of the corrupter's next turn. While transformed, the corrupter has advantage on attack rolls, attack rolls made against it have disadvantage, and it can move through spaces at least 1 inch wide without squeezing."
+            "description": "The corrupter dissolves into a shifting mass of flesh, tentacles, eyes, claws, and mouths. Up to two creatures the corrupter can see within 20 feet of itself must make a DC 20 Intelligence saving throw, taking 18 (4d8) psychic damage on a failed save, or half as much damage on a successful one. This transformation lasts until the end of the corrupter's next turn. While transformed, the corrupter has advantage on attack rolls, attack rolls made against it have disadvantage, and it can move through spaces at least 1 inch wide without squeezing."
           }
         ],
         "languages": [
@@ -4479,22 +4554,27 @@
           {
             "id": "book-of-many-things-pazrodine-action-1",
             "name": "Bite",
-            "description": "mw 13 to hit, reach 15 ft., one target. {@h}17 (2d10 + 6) piercing damage plus 11 (2d10) radiant damage."
+            "description": "Melee Weapon Attack: +13 to hit, reach 15 ft., one target. Hit: 17 (2d10 + 6) piercing damage plus 11 (2d10) radiant damage."
           },
           {
             "id": "book-of-many-things-pazrodine-action-2",
             "name": "Claw",
-            "description": "mw 13 to hit, reach 10 ft., one target. {@h}13 (2d6 + 6) slashing damage."
+            "description": "Melee Weapon Attack: +13 to hit, reach 10 ft., one target. Hit: 13 (2d6 + 6) slashing damage."
           },
           {
             "id": "book-of-many-things-pazrodine-action-3",
             "name": "Tail",
-            "description": "mw 13 to hit, reach 20 ft., one target. {@h}10 (1d8 + 6) bludgeoning damage. If the target is a creature, it must succeed on a 21 Strength saving throw or have the prone condition."
+            "description": "Melee Weapon Attack: +13 to hit, reach 20 ft., one target. Hit: 10 (1d8 + 6) bludgeoning damage. If the target is a creature, it must succeed on a DC 21 Strength saving throw or have the prone condition."
           },
           {
             "id": "book-of-many-things-pazrodine-action-4",
-            "name": "Breath Weapon 5",
-            "description": "Pazrodine uses one of the following breath weapons: Dream Breath: Pazrodine exhales mist in a 90-foot cone. Each creature in that area must succeed on a 21 Constitution saving throw or have the unconscious condition for 10 minutes. This effect ends for a creature if the creature takes damage or someone uses an action to wake it. Moonlight Breath: Pazrodine exhales a beam of moonlight in a 120-foot line that is 10 feet wide. Each creature in that area must make a 21 Dexterity saving throw, taking 60 (11d10) radiant damage on a failed save, or half as much damage on a successful one."
+            "name": "Breath Weapon (Recharge 5-6)",
+            "description": "Pazrodine uses one of the following breath weapons: Dream Breath: Pazrodine exhales mist in a 90-foot cone. Each creature in that area must succeed on a DC 21 Constitution saving throw or have the unconscious condition for 10 minutes. This effect ends for a creature if the creature takes damage or someone uses an action to wake it. Moonlight Breath: Pazrodine exhales a beam of moonlight in a 120-foot line that is 10 feet wide. Each creature in that area must make a DC 21 Dexterity saving throw, taking 60 (11d10) radiant damage on a failed save, or half as much damage on a successful one."
+          },
+          {
+            "id": "book-of-many-things-pazrodine-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "Pazrodine casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 23):\n\n- At will: Faerie Fire\n- 2/day each: Calm Emotions, Dispel Magic, Invisibility\n- 1/day each: Mass Cure Wounds, Revivify"
           }
         ],
         "bonusActions": [],
@@ -4567,17 +4647,17 @@
           {
             "id": "book-of-many-things-quadrone-detention-drone-action-1",
             "name": "Fist",
-            "description": "mw 3 to hit, reach 5 ft., one target. {@h}3 (1d4 + 1) bludgeoning damage."
+            "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 3 (1d4 + 1) bludgeoning damage."
           },
           {
             "id": "book-of-many-things-quadrone-detention-drone-action-2",
             "name": "Shortbow",
-            "description": "rw 4 to hit, range 80/320 ft., one target. {@h}5 (1d6 + 2) piercing damage."
+            "description": "Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6 + 2) piercing damage."
           },
           {
             "id": "book-of-many-things-quadrone-detention-drone-action-3",
             "name": "Detention Orb",
-            "description": "The drone launches a tiny orb of magical force at a creature it can see within 30 feet of itself. The creature must succeed on a 15 Constitution saving throw or be encased in the orb, which expands to a size just large enough to contain the creature. While encased, the creature doesn't need to breathe, eat, or drink, and it doesn't age. Nothing can pass through the orb, nor can any creature teleport or use planar travel to enter or exit the orb. As a bonus action, the drone can move the orb and its contents up to 30 feet in any direction. A successful casting of the Dispel Magic spell on the orb (15) destroys it. The orb otherwise remains intact until the drone spends an action to end the effect or the drone is destroyed. A drone can have only one detention orb active at a time; if the drone creates a detention orb when it already has one active, the first orb disappears, freeing the creature inside."
+            "description": "The drone launches a tiny orb of magical force at a creature it can see within 30 feet of itself. The creature must succeed on a DC 15 Constitution saving throw or be encased in the orb, which expands to a size just large enough to contain the creature. While encased, the creature doesn't need to breathe, eat, or drink, and it doesn't age. Nothing can pass through the orb, nor can any creature teleport or use planar travel to enter or exit the orb. As a bonus action, the drone can move the orb and its contents up to 30 feet in any direction. A successful casting of the Dispel Magic spell on the orb (DC 15) destroys it. The orb otherwise remains intact until the drone spends an action to end the effect or the drone is destroyed. A drone can have only one detention orb active at a time; if the drone creates a detention orb when it already has one active, the first orb disappears, freeing the creature inside."
           }
         ],
         "bonusActions": [],
@@ -4641,7 +4721,7 @@
           {
             "id": "book-of-many-things-reaper-spirit-action-1",
             "name": "Reaping Scythe",
-            "description": "mw your spell attack modifier to hit (with advantage), reach 5 ft., the creature haunted by Haunt Creature. {@h}1d8 + 3 + summonSpellLevel necrotic damage."
+            "description": "Melee Weapon Attack: your spell attack modifier to hit (with advantage), reach 5 ft., the creature haunted by Haunt Creature. Hit: 1d8 + 3 + summonSpellLevel necrotic damage."
           }
         ],
         "bonusActions": [
@@ -4719,12 +4799,12 @@
           {
             "id": "book-of-many-things-riffler-action-1",
             "name": "Spectral Card",
-            "description": "ms,rs 6 to hit, reach 5 ft. or range 60 ft., one target. {@h}8 (1d10 + 3) force damage plus 5 (1d10) damage that is radiant if the d10 roll is an even number and necrotic if it's odd."
+            "description": "Melee or Ranged Spell Attack: +6 to hit, reach 5 ft. or range 60 ft., one target. Hit: 8 (1d10 + 3) force damage plus 5 (1d10) damage that is radiant if the d10 roll is an even number and necrotic if it's odd."
           },
           {
             "id": "book-of-many-things-riffler-action-2",
-            "name": "Card Spray 5",
-            "description": "The riffler magically unleashes a spray of spectral cards in a 30-foot cone. Each creature in that area must make a 14 Dexterity saving throw. On a failed save, a creature takes 27 (5d10) force damage and has the restrained condition for 1 minute as cards bind it. On a successful save, a creature takes half as much damage only. A restrained creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "name": "Card Spray (Recharge 5-6)",
+            "description": "The riffler magically unleashes a spray of spectral cards in a 30-foot cone. Each creature in that area must make a DC 14 Dexterity saving throw. On a failed save, a creature takes 27 (5d10) force damage and has the restrained condition for 1 minute as cards bind it. On a successful save, a creature takes half as much damage only. A restrained creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           },
           {
             "id": "book-of-many-things-riffler-action-3",
@@ -4810,12 +4890,12 @@
           {
             "id": "book-of-many-things-ruin-spider-action-1",
             "name": "Ruinous Bite",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}8 (1d8 + 4) piercing damage and 9 (2d8) acid damage. In addition, if the target is a creature wearing nonmagical armor, the armor takes a permanent and cumulative -1 penalty to the AC it offers. Armor reduced to an Armor Class of 10 is destroyed."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) piercing damage and 9 (2d8) acid damage. In addition, if the target is a creature wearing nonmagical armor, the armor takes a permanent and cumulative -1 penalty to the AC it offers. Armor reduced to an Armor Class of 10 is destroyed."
           },
           {
             "id": "book-of-many-things-ruin-spider-action-2",
-            "name": "Web 5",
-            "description": "rw 7 to hit, range 30/60 ft., one creature. {@h}The target has the restrained condition. As an action, a restrained target can make a 13 Strength check, bursting the webbing on a successful check. The webbing can also be destroyed (AC 10; 5 hit points; vulnerability to fire damage; immunity to acid, bludgeoning, poison, and psychic damage)."
+            "name": "Web (Recharge 5-6)",
+            "description": "Ranged Weapon Attack: +7 to hit, range 30/60 ft., one creature. Hit: The target has the restrained condition. As an action, a restrained target can make a DC 13 Strength check, bursting the webbing on a successful check. The webbing can also be destroyed (AC 10; 5 hit points; vulnerability to fire damage; immunity to acid, bludgeoning, poison, and psychic damage)."
           }
         ],
         "bonusActions": [],
@@ -4874,7 +4954,7 @@
           {
             "id": "book-of-many-things-sir-jared-action-1",
             "name": "Longsword",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}8 (1d8 + 4) slashing damage plus 4 (1d8) radiant damage. On a roll of 19 or 20, Jared scores a critical hit."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) slashing damage plus 4 (1d8) radiant damage. On a roll of 19 or 20, Jared scores a critical hit."
           }
         ],
         "bonusActions": [],
@@ -4947,12 +5027,17 @@
           {
             "id": "book-of-many-things-solar-bastion-knight-action-1",
             "name": "Sunspear",
-            "description": "ms,rs 8 to hit, reach 5 ft. or range 120 ft., one target. {@h}14 (3d6 + 4) radiant damage, or 21 (5d6 + 4) radiant damage if the target is a Fiend or an Undead."
+            "description": "Melee or Ranged Spell Attack: +8 to hit, reach 5 ft. or range 120 ft., one target. Hit: 14 (3d6 + 4) radiant damage, or 21 (5d6 + 4) radiant damage if the target is a Fiend or an Undead."
           },
           {
             "id": "book-of-many-things-solar-bastion-knight-action-2",
-            "name": "Solar Flare 5",
-            "description": "The knight unleashes a blaze of brilliant energy that fills a 30-foot-radius sphere centered on the knight. Each creature of the knight's choice in that area must make a 15 Dexterity saving throw. On a failed save, a creature takes 22 (4d10) radiant damage and has the blinded condition until the end of its next turn. On a successful save, a creature takes half as much damage only. For the next minute, the affected area is filled with bright light that is sunlight."
+            "name": "Solar Flare (Recharge 5-6)",
+            "description": "The knight unleashes a blaze of brilliant energy that fills a 30-foot-radius sphere centered on the knight. Each creature of the knight's choice in that area must make a DC 15 Dexterity saving throw. On a failed save, a creature takes 22 (4d10) radiant damage and has the blinded condition until the end of its next turn. On a successful save, a creature takes half as much damage only. For the next minute, the affected area is filled with bright light that is sunlight."
+          },
+          {
+            "id": "book-of-many-things-solar-bastion-knight-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The knight casts one of the following spells, using Charisma as the spellcasting ability (spell save DC 15):\n\n- 1/day each: Greater Restoration, Sending, Word of Recall (the prepared sanctuary is the Solar Bastion)"
           }
         ],
         "bonusActions": [],
@@ -5016,12 +5101,12 @@
           {
             "id": "book-of-many-things-talon-beast-action-1",
             "name": "Beak",
-            "description": "mw 9 to hit, reach 5 ft., one target. {@h}17 (2d10 + 6) piercing damage, and if the target has any spell effects on itself or any magic items in its possession, the target must make a 15 Charisma saving throw. On a failed save, a random spell effect on the target ends. If the target has no spell effects on it, one random magic item in its possession has its magical properties suppressed for 1 minute. If the item is a potion or scroll, it becomes nonmagical instead."
+            "description": "Melee Weapon Attack: +9 to hit, reach 5 ft., one target. Hit: 17 (2d10 + 6) piercing damage, and if the target has any spell effects on itself or any magic items in its possession, the target must make a DC 15 Charisma saving throw. On a failed save, a random spell effect on the target ends. If the target has no spell effects on it, one random magic item in its possession has its magical properties suppressed for 1 minute. If the item is a potion or scroll, it becomes nonmagical instead."
           },
           {
             "id": "book-of-many-things-talon-beast-action-2",
             "name": "Talon",
-            "description": "mw 9 to hit, reach 10 ft., one target. {@h}15 (2d8 + 6) slashing damage, and the target has the grappled condition (escape 17). Until the grapple ends, the target has the restrained condition, and the talon beast can't use Talon on another target."
+            "description": "Melee Weapon Attack: +9 to hit, reach 10 ft., one target. Hit: 15 (2d8 + 6) slashing damage, and the target has the grappled condition (escape DC 17). Until the grapple ends, the target has the restrained condition, and the talon beast can't use Talon on another target."
           }
         ],
         "bonusActions": [],
@@ -5092,12 +5177,12 @@
           {
             "id": "book-of-many-things-veiled-presence-action-1",
             "name": "Blade of Judgment",
-            "description": "mw,rw 14 to hit, reach 5 ft. or range 60 ft., one target. {@h}10 (1d6 + 7) piercing damage plus 27 (6d8) radiant damage. If the target is a creature, it must succeed on a 22 Charisma saving throw, or on its next turn, it can either move or take an action, but not both."
+            "description": "Melee or Ranged Weapon Attack: +14 to hit, reach 5 ft. or range 60 ft., one target. Hit: 10 (1d6 + 7) piercing damage plus 27 (6d8) radiant damage. If the target is a creature, it must succeed on a DC 22 Charisma saving throw, or on its next turn, it can either move or take an action, but not both."
           },
           {
             "id": "book-of-many-things-veiled-presence-action-2",
             "name": "Revelation",
-            "description": "The veiled presence reveals a glimpse of its otherworldly nature to a creature it can see within 30 feet of itself. The target must succeed on a 22 Wisdom saving throw or have the paralyzed condition until the end of its next turn, after which the target is immune to this Revelation for 24 hours."
+            "description": "The veiled presence reveals a glimpse of its otherworldly nature to a creature it can see within 30 feet of itself. The target must succeed on a DC 22 Wisdom saving throw or have the paralyzed condition until the end of its next turn, after which the target is immune to this Revelation for 24 hours."
           }
         ],
         "bonusActions": [],
@@ -5122,7 +5207,7 @@
           {
             "id": "book-of-many-things-veiled-presence-legendary-2",
             "name": "Searing Radiance (Costs 3 Actions)",
-            "description": "The veiled presence magically emanates dazzling light in a 10-foot-radius sphere centered on itself until the end of its next turn, during which time attack rolls against it have disadvantage and it has advantage on attack rolls. The sphere moves with the veiled presence. When another creature starts its turn in the light or enters the light for the first time on its turn, that creature must make a 22 Constitution saving throw, taking 18 (4d8) radiant damage on a failed save, or half as much damage on a successful one."
+            "description": "The veiled presence magically emanates dazzling light in a 10-foot-radius sphere centered on itself until the end of its next turn, during which time attack rolls against it have disadvantage and it has advantage on attack rolls. The sphere moves with the veiled presence. When another creature starts its turn in the light or enters the light for the first time on its turn, that creature must make a DC 22 Constitution saving throw, taking 18 (4d8) radiant damage on a failed save, or half as much damage on a successful one."
           }
         ],
         "languages": [
@@ -5175,17 +5260,17 @@
           {
             "id": "book-of-many-things-werevulture-action-1",
             "name": "Beak (Vulture or Hybrid Form Only)",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}10 (2d6 + 3) piercing damage. If the target is a Humanoid, it must succeed on a 13 Constitution saving throw or be cursed until targeted by the Remove Curse spell or a similar effect. If the cursed target drops to 0 hit points, it becomes a werevulture under the DM's control and regains 10 hit points."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 10 (2d6 + 3) piercing damage. If the target is a Humanoid, it must succeed on a DC 13 Constitution saving throw or be cursed until targeted by the Remove Curse spell or a similar effect. If the cursed target drops to 0 hit points, it becomes a werevulture under the DM's control and regains 10 hit points."
           },
           {
             "id": "book-of-many-things-werevulture-action-2",
             "name": "Talon",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}13 (4d4 + 3) slashing damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 13 (4d4 + 3) slashing damage."
           },
           {
             "id": "book-of-many-things-werevulture-action-3",
             "name": "Longbow (Humanoid or Hybrid Form Only)",
-            "description": "rw 4 to hit, range 150/600 ft., one target. {@h}11 (2d8 + 2) piercing damage."
+            "description": "Ranged Weapon Attack: +4 to hit, range 150/600 ft., one target. Hit: 11 (2d8 + 2) piercing damage."
           }
         ],
         "bonusActions": [
@@ -5209,6 +5294,6 @@
   "sections": [],
   "documents": [],
   "notes": [
-    "Converted from 5etools JSON filtered to source \"BMT\" downloaded from https://5e.tools/book.html#BMT."
+    "Converted from 5etools JSON filtered to source \"BMT\"."
   ]
 }

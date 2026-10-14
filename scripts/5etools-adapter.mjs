@@ -23,21 +23,80 @@ const toSourcedId = (sourceId, ...parts) => `${sourceId}-${slugify(parts.filter(
 
 // --- 5etools "entries" markup -> plain text -------------------------------------------------
 
+// An attack code is a kind and a medium; "mw,rw" is one printed line, "Melee or Ranged Weapon".
+const ATTACK_KINDS = { m: 'Melee', r: 'Ranged' };
+const ATTACK_MEDIA = { w: 'Weapon', s: 'Spell', p: 'Power' };
+
+const attackLabel = (body, suffix) => {
+  const codes = String(body ?? '').split(',').map((code) => code.trim()).filter(Boolean);
+  const kinds = [...new Set(codes.map((code) => ATTACK_KINDS[code[0]]).filter(Boolean))];
+  if (kinds.length === 0) return '';
+  const media = [...new Set(codes.map((code) => ATTACK_MEDIA[code[1]]).filter(Boolean))];
+  return `${kinds.join(' or ')} ${[...media, suffix].join(' ')}:`;
+};
+
+const signed = (body) => (Number(body) < 0 ? String(body).trim() : `+${String(body).trim()}`);
+
+// A statblock shorthand prints something its body does not state: "{@atk mw}" is the whole phrase
+// "Melee Weapon Attack:" and "{@h}" is "Hit:", so the first field is the wrong text for these.
+const INLINE_TAG_TEXT = {
+  h: () => 'Hit: ',
+  m: () => 'Miss: ',
+  hom: () => 'Hit or Miss: ',
+  hit: signed,
+  d20: signed,
+  dc: (body) => `DC ${String(body).trim()}`,
+  dcYourSpellSave: () => 'your spell save DC',
+  // {@chance 40|40 percent|…}: the second field is the printed text when the entry states one.
+  chance: (body) => {
+    const [odds, printed] = String(body).split('|');
+    return printed || `${odds} percent`;
+  },
+  atk: (body) => attackLabel(body, 'Attack'),
+  atkr: (body) => attackLabel(body, 'Attack Roll'),
+  recharge: (body) => {
+    const low = Number(String(body).split('|')[0]);
+    return low >= 1 && low < 6 ? `(Recharge ${low}-6)` : '(Recharge 6)';
+  },
+  actSave: (body) => `${titleCaseWords(ABILITY_MAP[String(body).trim()] ?? String(body).trim())} Saving Throw:`,
+  actSaveFail: () => 'Failure:',
+  actSaveSuccess: () => 'Success:',
+  actSaveSuccessOrFail: () => 'Failure or Success:',
+  actSaveFailBy: (body) => `Failure by ${String(body).trim()} or More:`,
+  actTrigger: () => 'Trigger:',
+  actResponse: () => 'Response:',
+  skillCheck: (body) => {
+    const [skill, bonus] = String(body).trim().split(/\s+/);
+    return `${titleCaseWords(String(skill).replaceAll('_', ' '))} ${signed(bonus)}`;
+  },
+  link: (body) => String(body).split('|')[0],
+  '5etools': (body) => String(body).split('|')[0],
+  dice: (body) => String(body).split('|')[0],
+  damage: (body) => String(body).split('|')[0],
+  scaledice: (body) => String(body).split('|')[0],
+  scaledamage: (body) => String(body).split('|')[0],
+  // These carry a chapter, a page or an owner where another tag carries its display text.
+  book: (body) => String(body).split('|')[0],
+  adventure: (body) => String(body).split('|')[0],
+  card: (body) => String(body).split('|')[0],
+  classFeature: (body) => String(body).split('|')[0],
+  subclass: (body) => String(body).split('|')[0]
+};
+
 // Inline tags look like {@tag display|extra|...}; we keep the human-facing portion. For most
-// tags that's the first pipe-delimited field, but a few (@link, @5etools) put the label last.
+// tags that's the first pipe-delimited field, a few put the label last, and the statblock
+// shorthands above print a phrase of their own. A shorthand may carry no body at all.
 const stripInlineTags = (text) => {
   let previous;
   let current = String(text);
   do {
     previous = current;
-    current = current.replace(/\{@(\w+)\s+([^{}]*)\}/g, (_match, tag, body) => {
-      const parts = body.split('|');
-      if (tag === 'link' || tag === '5etools') {
-        return parts[0];
+    current = current.replace(/\{@(\w+)(?:\s+([^{}]*))?\}/g, (_match, tag, body) => {
+      const printed = INLINE_TAG_TEXT[tag];
+      if (printed) {
+        return printed(body ?? '');
       }
-      if (tag === 'dice' || tag === 'damage' || tag === 'scaledice' || tag === 'scaledamage') {
-        return parts[0];
-      }
+      const parts = String(body ?? '').split('|');
       // {@tag name|source|displayText} -> displayText if present, else name.
       return parts.length >= 3 && parts[2] ? parts[2] : parts[0];
     });
@@ -736,6 +795,81 @@ const mapMonsterSenses = (monster) => {
   return line ? [line] : undefined;
 };
 
+// A spellcasting block is stored beside the traits rather than among them, and the free-core packs
+// already print it as one, so it is rendered to the same "header, then a line per group" shape.
+const SPELLCASTING_PERIODS = { rest: 'rest', restLong: 'long rest', daily: 'day', weekly: 'week', monthly: 'month', yearly: 'year' };
+const SPELLCASTING_PRINTED_KEYS = new Set(['constant', 'will', 'charges', 'ritual', 'spells', ...Object.keys(SPELLCASTING_PERIODS)]);
+const SPELLCASTING_METADATA_KEYS = new Set(['name', 'type', 'headerEntries', 'footerEntries', 'ability', 'displayAs', 'hidden', 'chargesItem']);
+
+const ordinalNumber = (value) => {
+  const tens = value % 100;
+  if (tens >= 11 && tens <= 13) return `${value}th`;
+  const ones = value % 10;
+  return `${value}${ones === 1 ? 'st' : ones === 2 ? 'nd' : ones === 3 ? 'rd' : 'th'}`;
+};
+
+// "1st level (4 slots)", and the band a block states when one level's slots cover several.
+const spellLevelLabel = (level, record) => {
+  const numeric = Number(level);
+  if (numeric === 0) return 'Cantrips (at will)';
+  const lower = Number(record?.lower);
+  const band = lower > 0 && lower < numeric
+    ? `${ordinalNumber(lower)}-${ordinalNumber(numeric)} level`
+    : `${ordinalNumber(numeric)} level`;
+  const slots = Number(record?.slots);
+  return slots > 0 ? `${band} (${slots} slot${slots === 1 ? '' : 's'})` : band;
+};
+
+const mapMonsterSpellcastingBlock = (block, monsterName) => {
+  const hidden = new Set(block.hidden ?? []);
+  const lines = [];
+  const push = (prefix, value) => {
+    const spells = (Array.isArray(value) ? value : [value]).map((entry) => cleanText(entry)).filter(Boolean);
+    if (spells.length > 0) lines.push(`- ${prefix}: ${spells.join(', ')}`);
+  };
+
+  if (block.constant && !hidden.has('constant')) push('Constant', block.constant);
+  if (block.will && !hidden.has('will')) push('At will', block.will);
+  for (const [group, period] of Object.entries(SPELLCASTING_PERIODS)) {
+    if (!block[group] || hidden.has(group)) continue;
+    // A trailing "e" on the key is the book's "each" — three of these spells, not three in total.
+    for (const [uses, spells] of Object.entries(block[group])) {
+      push(`${Number.parseInt(uses, 10)}/${period}${uses.endsWith('e') ? ' each' : ''}`, spells);
+    }
+  }
+  if (block.charges && !hidden.has('charges')) {
+    for (const [uses, spells] of Object.entries(block.charges)) {
+      const count = Number.parseInt(uses, 10);
+      push(`${count} charge${count === 1 ? '' : 's'}${uses.endsWith('e') ? ' each' : ''}`, spells);
+    }
+  }
+  if (block.ritual && !hidden.has('ritual')) push('Rituals', block.ritual);
+  if (block.spells && !hidden.has('spells')) {
+    for (const [level, record] of Object.entries(block.spells).sort(([a], [b]) => Number(a) - Number(b))) {
+      push(spellLevelLabel(level, record), record?.spells ?? []);
+    }
+  }
+
+  for (const key of Object.keys(block)) {
+    if (SPELLCASTING_PRINTED_KEYS.has(key) || SPELLCASTING_METADATA_KEYS.has(key)) continue;
+    console.warn(`monster "${monsterName}": spellcasting group "${key}" has no printed line; the spells it states are left off.`);
+  }
+
+  return [cleanText(block.headerEntries), lines.join('\n'), cleanText(block.footerEntries)]
+    .filter(Boolean)
+    .join('\n\n');
+};
+
+// `displayAs` is where the book prints the block; without it, it is a trait.
+const mapMonsterSpellcasting = (monster, ctx) => (monster.spellcasting ?? []).map((block, index) => ({
+  displayAs: block.displayAs ?? 'trait',
+  entry: {
+    id: toSourcedId(ctx.sourceId, monster.name, 'spellcasting', String(index)),
+    name: stripInlineTags(block.name ?? 'Spellcasting'),
+    description: mapMonsterSpellcastingBlock(block, monster.name)
+  }
+}));
+
 const mapMonster = (monster, ctx) => {
   const abilityScores = Object.fromEntries(abilityKeys.map((key) => [ABILITY_MAP[key], monster[key] ?? 10]));
   const senses = mapMonsterSenses(monster);
@@ -746,6 +880,11 @@ const mapMonster = (monster, ctx) => {
     name: stripInlineTags(entry.name ?? `${prefix} ${index + 1}`),
     description: cleanText(entry.entries)
   }));
+  const spellcasting = mapMonsterSpellcasting(monster, ctx);
+  const withSpellcasting = (list, prefix, displayAs) => [
+    ...mapActions(list, prefix),
+    ...spellcasting.filter((block) => block.displayAs === displayAs).map((block) => block.entry)
+  ];
 
   const speedText = typeof monster.speed === 'number'
     ? `${monster.speed} ft.`
@@ -770,11 +909,11 @@ const mapMonster = (monster, ctx) => {
     ...(monster.immune ? { damageImmunities: flattenDamageList(monster.immune, 'immune') } : {}),
     ...(monster.conditionImmune ? { conditionImmunities: flattenDamageList(monster.conditionImmune, 'conditionImmune') } : {}),
     ...(senses ? { senses } : {}),
-    traits: mapActions(monster.trait, 'trait'),
-    actions: mapActions(monster.action, 'action'),
-    bonusActions: mapActions(monster.bonus, 'bonus'),
-    reactions: mapActions(monster.reaction, 'reaction'),
-    legendaryActions: mapActions(monster.legendary, 'legendary'),
+    traits: withSpellcasting(monster.trait, 'trait', 'trait'),
+    actions: withSpellcasting(monster.action, 'action', 'action'),
+    bonusActions: withSpellcasting(monster.bonus, 'bonus', 'bonus'),
+    reactions: withSpellcasting(monster.reaction, 'reaction', 'reaction'),
+    legendaryActions: withSpellcasting(monster.legendary, 'legendary', 'legendary'),
     languages: monster.languages ?? undefined,
     source: ctx.label,
     sourceId: ctx.sourceId

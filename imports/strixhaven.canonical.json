@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source SCC).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T04:13:30.064Z",
+    "importedAt": "2026-10-14T06:27:39.948Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -523,7 +523,7 @@
           "unit": "gp"
         },
         "weight": 1,
-        "description": "This sticky, adhesive fluid ignites when exposed to air. As an action, you can throw this flask up to 20 feet, shattering it on impact. Make a ranged attack against a creature or object, treating the alchemist's doom as an improvised weapon. On a hit, the target takes 7 (2d6) fire damage at the start of each of its turns. A creature can end this damage by using its action to make a 10 Dexterity check to extinguish the flames.",
+        "description": "This sticky, adhesive fluid ignites when exposed to air. As an action, you can throw this flask up to 20 feet, shattering it on impact. Make a ranged attack against a creature or object, treating the alchemist's doom as an improvised weapon. On a hit, the target takes 7 (2d6) fire damage at the start of each of its turns. A creature can end this damage by using its action to make a DC 10 Dexterity check to extinguish the flames.",
         "properties": []
       },
       {
@@ -551,7 +551,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "A catapult munition roughly the size and weight of a cannonball. The munition can be thrown up to 30 feet and explodes on impact. Any creature within a 15-foot-radius sphere centered on the point of impact must make a 14 Dexterity saving throw, taking 35 (10d6) fire damage on a failed save, or half as much damage on a successful one. In addition, each object in that area that isn't being worn or carried takes 35 (10d6) fire damage.",
+        "description": "A catapult munition roughly the size and weight of a cannonball. The munition can be thrown up to 30 feet and explodes on impact. Any creature within a 15-foot-radius sphere centered on the point of impact must make a DC 14 Dexterity saving throw, taking 35 (10d6) fire damage on a failed save, or half as much damage on a successful one. In addition, each object in that area that isn't being worn or carried takes 35 (10d6) fire damage.",
         "properties": []
       },
       {
@@ -607,7 +607,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "A masque charm is a small silver pin. While wearing this charm, you can use an action to cast the disguise self spell (13 to discern the disguise). Once the spell is cast, it can't be cast from the charm again until the next sunset. When casting the spell, you can have the spell last for its normal 1 hour duration or for 6 hours. If you choose the 6-hour duration, the charm becomes nonmagical when the spell ends. In either case, the spell ends if the charm is removed from you.",
+        "description": "A masque charm is a small silver pin. While wearing this charm, you can use an action to cast the disguise self spell (DC 13 to discern the disguise). Once the spell is cast, it can't be cast from the charm again until the next sunset. When casting the spell, you can have the spell last for its normal 1 hour duration or for 6 hours. If you choose the 6-hour duration, the charm becomes nonmagical when the spell ends. In either case, the spell ends if the charm is removed from you.",
         "properties": []
       },
       {
@@ -635,7 +635,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "Roiling green mist fills this glass orb, which the exiled Strixhaven mage Murgaxor once used in foul magical experiments. Murgaxor's spirit has infused the orb, which he uses to spread a terrible curse among Strixhaven's students. Sentience. Murgaxor's orb is a sentient, chaotic evil magic item with the following properties: The orb has an Intelligence of 20, a Wisdom of 16, and a Charisma of 16, as well as hearing and darkvision out to a range of 30 feet. The orb can speak, read, and understand Common, and it can communicate telepathically with any creature touching it. At any time during your turn, the orb can cast the suggestion spell (save 17), targeting you or one other creature that touched the orb within the last 24 hours. This isn't a power of the orb that you control. Curse. Any Humanoid you touch while holding the orb must succeed on a 10 Wisdom saving throw or become cursed. Each creature cursed by the orb bears an echo of Murgaxor's hateful thoughts, and that creature suffers from headaches that are persistent but not debilitating until the curse ends. On your turn, the orb can use an action to produce one of the following effects, targeting one or more creatures it has cursed: Unconsciousness. The cursed creature falls unconscious for 1 hour. The creature is roused if it takes damage or someone uses an action to shake or slap it awake. Visions of Terror. The cursed creature sees terrifying visions, causing it to view all creatures that aren't also cursed as dangerous monsters for 10 minutes. The cursed creature must use its action each round to make one attack against the nearest non-cursed creature. If the cursed creature has multiple possible targets, it attacks one at random. This effect ends if the cursed creature is incapacitated. After either of these effects ends, the affected creature is no longer cursed. The curse can also be removed from a creature with a remove curse spell or similar magic. All cases of the curse end if Murgaxor's orb is destroyed. Magical Signature. As a side effect of the orb's curse, the spell detect magic reveals an aura of enchantment surrounding creatures bearing the curse. This aura is distinctive, but in a way detect magic offers no further details about. Destroying the Orb. Murgaxor's orb has AC 18; 20 hit points; immunity to necrotic, poison, and psychic damage; and resistance to all other types of damage. If reduced to 0 hit points, the orb shatters.",
+        "description": "Roiling green mist fills this glass orb, which the exiled Strixhaven mage Murgaxor once used in foul magical experiments. Murgaxor's spirit has infused the orb, which he uses to spread a terrible curse among Strixhaven's students. Sentience. Murgaxor's orb is a sentient, chaotic evil magic item with the following properties: The orb has an Intelligence of 20, a Wisdom of 16, and a Charisma of 16, as well as hearing and darkvision out to a range of 30 feet. The orb can speak, read, and understand Common, and it can communicate telepathically with any creature touching it. At any time during your turn, the orb can cast the suggestion spell (save DC 17), targeting you or one other creature that touched the orb within the last 24 hours. This isn't a power of the orb that you control. Curse. Any Humanoid you touch while holding the orb must succeed on a DC 10 Wisdom saving throw or become cursed. Each creature cursed by the orb bears an echo of Murgaxor's hateful thoughts, and that creature suffers from headaches that are persistent but not debilitating until the curse ends. On your turn, the orb can use an action to produce one of the following effects, targeting one or more creatures it has cursed: Unconsciousness. The cursed creature falls unconscious for 1 hour. The creature is roused if it takes damage or someone uses an action to shake or slap it awake. Visions of Terror. The cursed creature sees terrifying visions, causing it to view all creatures that aren't also cursed as dangerous monsters for 10 minutes. The cursed creature must use its action each round to make one attack against the nearest non-cursed creature. If the cursed creature has multiple possible targets, it attacks one at random. This effect ends if the cursed creature is incapacitated. After either of these effects ends, the affected creature is no longer cursed. The curse can also be removed from a creature with a remove curse spell or similar magic. All cases of the curse end if Murgaxor's orb is destroyed. Magical Signature. As a side effect of the orb's curse, the spell detect magic reveals an aura of enchantment surrounding creatures bearing the curse. This aura is distinctive, but in a way detect magic offers no further details about. Destroying the Orb. Murgaxor's orb has AC 18; 20 hit points; immunity to necrotic, poison, and psychic damage; and resistance to all other types of damage. If reduced to 0 hit points, the orb shatters.",
         "properties": []
       },
       {
@@ -1036,17 +1036,22 @@
           {
             "id": "strixhaven-archaic-action-1",
             "name": "Force Strike",
-            "description": "ms,rs 14 to hit, reach 15 ft. or range 120 ft., one target. {@h}19 (2d10 + 8) force damage, and the target is pulled up to 10 feet toward the archaic or pushed 10 feet away from it, as the archaic chooses."
+            "description": "Melee or Ranged Spell Attack: +14 to hit, reach 15 ft. or range 120 ft., one target. Hit: 19 (2d10 + 8) force damage, and the target is pulled up to 10 feet toward the archaic or pushed 10 feet away from it, as the archaic chooses."
           },
           {
             "id": "strixhaven-archaic-action-2",
-            "name": "Gravity Shift 5",
-            "description": "The archaic reverses gravity for one creature it can see within 100 feet of itself. The creature must succeed on a 22 Wisdom saving throw or fall 100 feet upward. If the falling creature encounters a solid object (such as a ceiling) in this fall, it strikes the object just as it would during a downward fall. If the creature reaches the top of the area without striking anything, it hovers there until the start of the archaic's next turn, at which time gravity returns to normal and the creature falls."
+            "name": "Gravity Shift (Recharge 5-6)",
+            "description": "The archaic reverses gravity for one creature it can see within 100 feet of itself. The creature must succeed on a DC 22 Wisdom saving throw or fall 100 feet upward. If the falling creature encounters a solid object (such as a ceiling) in this fall, it strikes the object just as it would during a downward fall. If the creature reaches the top of the area without striking anything, it hovers there until the start of the archaic's next turn, at which time gravity returns to normal and the creature falls."
           },
           {
             "id": "strixhaven-archaic-action-3",
             "name": "Teleport",
             "description": "The archaic teleports to an unoccupied space that it can see within 120 feet of itself."
+          },
+          {
+            "id": "strixhaven-archaic-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The archaic casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save DC 22):\n\n- At will: detect magic, divination, sending\n- 1/day each: banishment, forcecage"
           }
         ],
         "bonusActions": [],
@@ -1054,7 +1059,7 @@
           {
             "id": "strixhaven-archaic-reaction-0",
             "name": "Spell Mimicry (1/Day)",
-            "description": "Immediately after a creature the archaic can see casts a spell of 5th level or lower, that creature must succeed on a 22 Charisma saving throw, or the archaic immediately casts the same spell at the same level (14 to hit with spell attacks, spell save 22), requiring no material components and choosing the spell's targets."
+            "description": "Immediately after a creature the archaic can see casts a spell of 5th level or lower, that creature must succeed on a DC 22 Charisma saving throw, or the archaic immediately casts the same spell at the same level (+14 to hit with spell attacks, spell save DC 22), requiring no material components and choosing the spell's targets."
           }
         ],
         "legendaryActions": [
@@ -1071,7 +1076,7 @@
           {
             "id": "strixhaven-archaic-legendary-2",
             "name": "Unravel Magic (Costs 2 Actions)",
-            "description": "The archaic targets one creature it can see within 120 feet of itself. The target must succeed on a 22 Constitution saving throw or take 35 (10d6) force damage, and each spell of 5th level or lower on the target ends."
+            "description": "The archaic targets one creature it can see within 120 feet of itself. The target must succeed on a DC 22 Constitution saving throw or take 35 (10d6) force damage, and each spell of 5th level or lower on the target ends."
           }
         ],
         "languages": [
@@ -1122,24 +1127,24 @@
           {
             "id": "strixhaven-art-elemental-mascot-trait-0",
             "name": "Death Burst",
-            "description": "When the elemental dies, it explodes in a burst of colored light. Each creature within 5 feet of the elemental must succeed on a 11 Constitution saving throw or be blinded for 1 minute. A blinded creature can repeat the save at the end of each of its turns, ending the effect on itself on a success."
+            "description": "When the elemental dies, it explodes in a burst of colored light. Each creature within 5 feet of the elemental must succeed on a DC 11 Constitution saving throw or be blinded for 1 minute. A blinded creature can repeat the save at the end of each of its turns, ending the effect on itself on a success."
           }
         ],
         "actions": [
           {
             "id": "strixhaven-art-elemental-mascot-action-0",
             "name": "Joyful Flare",
-            "description": "mw 3 to hit, reach 5 ft., one target. {@h}6 (2d4 + 1) fire damage."
+            "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 6 (2d4 + 1) fire damage."
           },
           {
             "id": "strixhaven-art-elemental-mascot-action-1",
             "name": "Melancholic Bolt",
-            "description": "rw 3 to hit, range 30 ft., one target. {@h}6 (2d4 + 1) cold damage."
+            "description": "Ranged Weapon Attack: +3 to hit, range 30 ft., one target. Hit: 6 (2d4 + 1) cold damage."
           },
           {
             "id": "strixhaven-art-elemental-mascot-action-2",
             "name": "Captivating Artistry (1/Day)",
-            "description": "The elemental targets one creature it can see within 30 feet of itself. The target must succeed on a 12 Charisma saving throw or be charmed for 1 minute. The charmed target can repeat the save at the end of each of its turns, ending the effect on itself on a success."
+            "description": "The elemental targets one creature it can see within 30 feet of itself. The target must succeed on a DC 12 Charisma saving throw or be charmed for 1 minute. The charmed target can repeat the save at the end of each of its turns, ending the effect on itself on a success."
           }
         ],
         "bonusActions": [],
@@ -1216,22 +1221,27 @@
           {
             "id": "strixhaven-beledros-witherbloom-action-1",
             "name": "Bite",
-            "description": "mw 16 to hit, reach 15 ft., one target. {@h}14 (1d10 + 9) piercing damage plus 6 (1d12) necrotic damage."
+            "description": "Melee Weapon Attack: +16 to hit, reach 15 ft., one target. Hit: 14 (1d10 + 9) piercing damage plus 6 (1d12) necrotic damage."
           },
           {
             "id": "strixhaven-beledros-witherbloom-action-2",
             "name": "Claw",
-            "description": "mw 16 to hit, reach 10 ft., one target. {@h}12 (1d6 + 9) slashing damage. If the target is a Huge or smaller creature, it is knocked prone."
+            "description": "Melee Weapon Attack: +16 to hit, reach 10 ft., one target. Hit: 12 (1d6 + 9) slashing damage. If the target is a Huge or smaller creature, it is knocked prone."
           },
           {
             "id": "strixhaven-beledros-witherbloom-action-3",
-            "name": "Decaying Breath 5",
-            "description": "Beledros exhales decaying energy in a 90-foot cone. Each creature in that area must make a 23 Constitution saving throw, taking 39 (6d12) necrotic damage and 39 (6d12) poison damage on a failed save, or half as much damage on a successful one. A creature that takes damage from the breath can't regain hit points until the start of Beledros's next turn."
+            "name": "Decaying Breath (Recharge 5-6)",
+            "description": "Beledros exhales decaying energy in a 90-foot cone. Each creature in that area must make a DC 23 Constitution saving throw, taking 39 (6d12) necrotic damage and 39 (6d12) poison damage on a failed save, or half as much damage on a successful one. A creature that takes damage from the breath can't regain hit points until the start of Beledros's next turn."
           },
           {
             "id": "strixhaven-beledros-witherbloom-action-4",
             "name": "Miasmal Flow",
-            "description": "Beledros becomes a swirling cloud of green mist and can move up to half her flying speed without provoking opportunity attacks, then resumes her true form. During this movement, she can move through creatures and objects as if they were 3. If she moves through a creature, it must succeed on a 23 Constitution saving throw or become poisoned until the end of its next turn. If Beledros ends this move inside an object, she takes 5 (1d10) force damage and is shunted to the nearest unoccupied space."
+            "description": "Beledros becomes a swirling cloud of green mist and can move up to half her flying speed without provoking opportunity attacks, then resumes her true form. During this movement, she can move through creatures and objects as if they were 3. If she moves through a creature, it must succeed on a DC 23 Constitution saving throw or become poisoned until the end of its next turn. If Beledros ends this move inside an object, she takes 5 (1d10) force damage and is shunted to the nearest unoccupied space."
+          },
+          {
+            "id": "strixhaven-beledros-witherbloom-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "Beledros casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability:\n\n- 1/day each: greater restoration, mass cure wounds, plant growth, revivify, speak with dead"
           }
         ],
         "bonusActions": [],
@@ -1304,7 +1314,7 @@
           {
             "id": "strixhaven-brackish-trudge-action-0",
             "name": "Tusk",
-            "description": "mw 7 to hit, reach 10 ft., one target. {@h}16 (2d10 + 5) piercing damage plus 3 (1d6) poison damage. If the target is a creature, it must succeed on a 15 Strength saving throw or be knocked prone."
+            "description": "Melee Weapon Attack: +7 to hit, reach 10 ft., one target. Hit: 16 (2d10 + 5) piercing damage plus 3 (1d6) poison damage. If the target is a creature, it must succeed on a DC 15 Strength saving throw or be knocked prone."
           }
         ],
         "bonusActions": [],
@@ -1371,7 +1381,12 @@
           {
             "id": "strixhaven-cogwork-archivist-action-1",
             "name": "Grasping Limb",
-            "description": "mw 6 to hit, reach 15 ft., one target. {@h}13 (2d8 + 4) bludgeoning damage, and the target is grappled (escape 14). The archivist can have no more than two targets grappled at a time."
+            "description": "Melee Weapon Attack: +6 to hit, reach 15 ft., one target. Hit: 13 (2d8 + 4) bludgeoning damage, and the target is grappled (escape DC 14). The archivist can have no more than two targets grappled at a time."
+          },
+          {
+            "id": "strixhaven-cogwork-archivist-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The archivist casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability:\n\n- At will: dancing lights, prestidigitation\n- 2/day: silence"
           }
         ],
         "bonusActions": [],
@@ -1441,12 +1456,12 @@
           {
             "id": "strixhaven-daemogoth-action-1",
             "name": "Agonizing Burst",
-            "description": "ms,rs 9 to hit, reach 10 ft. or range 120 ft., one target. {@h}11 (2d10) force damage. If the target is a creature, the daemogoth regains 5 hit points."
+            "description": "Melee or Ranged Spell Attack: +9 to hit, reach 10 ft. or range 120 ft., one target. Hit: 11 (2d10) force damage. If the target is a creature, the daemogoth regains 5 hit points."
           },
           {
             "id": "strixhaven-daemogoth-action-2",
-            "name": "Terrify 4",
-            "description": "The daemogoth targets one creature it can see within 120 feet of itself. The target must make a 17 Wisdom saving throw. On a failed save, the target takes 33 (6d10) psychic damage and is frightened of the daemogoth until the end of the daemogoth's next turn, and the daemogoth regains 5 hit points. On a successful save, the target takes half as much damage and isn't frightened, and the daemogoth doesn't heal."
+            "name": "Terrify (Recharge 4-6)",
+            "description": "The daemogoth targets one creature it can see within 120 feet of itself. The target must make a DC 17 Wisdom saving throw. On a failed save, the target takes 33 (6d10) psychic damage and is frightened of the daemogoth until the end of the daemogoth's next turn, and the daemogoth regains 5 hit points. On a successful save, the target takes half as much damage and isn't frightened, and the daemogoth doesn't heal."
           }
         ],
         "bonusActions": [],
@@ -1524,7 +1539,7 @@
           {
             "id": "strixhaven-daemogoth-titan-action-1",
             "name": "Agonizing Burst",
-            "description": "ms,rs 12 to hit, reach 15 ft. or range 120 ft., one target. {@h}17 (3d6 + 7) force damage. If the target is a creature, the titan regains 5 hit points."
+            "description": "Melee or Ranged Spell Attack: +12 to hit, reach 15 ft. or range 120 ft., one target. Hit: 17 (3d6 + 7) force damage. If the target is a creature, the titan regains 5 hit points."
           },
           {
             "id": "strixhaven-daemogoth-titan-action-2",
@@ -1543,12 +1558,12 @@
           {
             "id": "strixhaven-daemogoth-titan-legendary-1",
             "name": "Stalking Nightmare (Costs 2 Actions)",
-            "description": "The titan uses Teleport, after which it can target one creature within 20 feet of itself that it can see. The target must make a 20 Constitution saving throw. On a failed save, the target takes 22 (4d10) necrotic damage, and the titan regains 10 hit points. On a successful save, the target takes half as much damage, and the titan doesn't heal."
+            "description": "The titan uses Teleport, after which it can target one creature within 20 feet of itself that it can see. The target must make a DC 20 Constitution saving throw. On a failed save, the target takes 22 (4d10) necrotic damage, and the titan regains 10 hit points. On a successful save, the target takes half as much damage, and the titan doesn't heal."
           },
           {
             "id": "strixhaven-daemogoth-titan-legendary-2",
             "name": "Terrorize (Costs 3 Actions)",
-            "description": "The titan targets one creature it can see within 120 feet of itself. The target must make a 20 Wisdom saving throw. On a failed save, the target takes 38 (7d10) psychic damage and is frightened of the titan until the end of the target's next turn, and the titan regains 15 hit points. On a successful save, the target takes half as much damage and isn't frightened, and the titan doesn't heal."
+            "description": "The titan targets one creature it can see within 120 feet of itself. The target must make a DC 20 Wisdom saving throw. On a failed save, the target takes 38 (7d10) psychic damage and is frightened of the titan until the end of the target's next turn, and the titan regains 15 hit points. On a successful save, the target takes half as much damage and isn't frightened, and the titan doesn't heal."
           }
         ],
         "languages": [
@@ -1595,7 +1610,12 @@
           {
             "id": "strixhaven-first-year-student-action-0",
             "name": "Magic Flare",
-            "description": "ms,rs 3 to hit, reach 5 ft. or range 60 ft., one target. {@h}7 (1d12 + 1) force damage."
+            "description": "Melee or Ranged Spell Attack: +3 to hit, reach 5 ft. or range 60 ft., one target. Hit: 7 (1d12 + 1) force damage."
+          },
+          {
+            "id": "strixhaven-first-year-student-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The student casts one of the following spells, using Intelligence as the spellcasting ability (spell save DC 11):\n\n- At will: mage hand, prestidigitation\n- 1/day: detect magic"
           }
         ],
         "bonusActions": [],
@@ -1655,7 +1675,7 @@
           {
             "id": "strixhaven-fractal-mascot-action-0",
             "name": "Quantum Strike",
-            "description": "mw 3 to hit, reach 5 ft., one target. {@h}3 (1d4 + 1) force damage, or 6 (2d4 + 1) force damage if the fractal is Medium or bigger."
+            "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 3 (1d4 + 1) force damage, or 6 (2d4 + 1) force damage if the fractal is Medium or bigger."
           }
         ],
         "bonusActions": [
@@ -1738,17 +1758,22 @@
           {
             "id": "strixhaven-galazeth-prismari-action-1",
             "name": "Bite",
-            "description": "mw 15 to hit, reach 15 ft., one target. {@h}13 (1d10 + 8) piercing damage plus 5 (1d10) lightning damage."
+            "description": "Melee Weapon Attack: +15 to hit, reach 15 ft., one target. Hit: 13 (1d10 + 8) piercing damage plus 5 (1d10) lightning damage."
           },
           {
             "id": "strixhaven-galazeth-prismari-action-2",
             "name": "Claw",
-            "description": "mw 15 to hit, reach 10 ft., one target. {@h}11 (1d6 + 8) slashing damage. If the target is a Large or smaller creature, it is knocked prone."
+            "description": "Melee Weapon Attack: +15 to hit, reach 10 ft., one target. Hit: 11 (1d6 + 8) slashing damage. If the target is a Large or smaller creature, it is knocked prone."
           },
           {
             "id": "strixhaven-galazeth-prismari-action-3",
-            "name": "Dancing Elements Breath 5",
-            "description": "Galazeth exhales a blast of flames and ice in a 90-foot cone. Each creature in that area must make a 22 Dexterity saving throw, gaining no benefit from cover (other than 3) and taking 38 (7d10) fire damage and 38 (7d10) cold damage on a failed save, or half as much damage on a successful one."
+            "name": "Dancing Elements Breath (Recharge 5-6)",
+            "description": "Galazeth exhales a blast of flames and ice in a 90-foot cone. Each creature in that area must make a DC 22 Dexterity saving throw, gaining no benefit from cover (other than 3) and taking 38 (7d10) fire damage and 38 (7d10) cold damage on a failed save, or half as much damage on a successful one."
+          },
+          {
+            "id": "strixhaven-galazeth-prismari-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "Galazeth casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 23):\n\n- 1/day each: control water, gust of wind, wall of stone"
           }
         ],
         "bonusActions": [],
@@ -1762,7 +1787,7 @@
           {
             "id": "strixhaven-galazeth-prismari-legendary-1",
             "name": "Lightning Flash (Costs 2 Actions)",
-            "description": "Galazeth moves up to half his flying speed without provoking opportunity attacks. When he passes within 15 feet of a creature during this move, that creature must succeed on a 22 Dexterity saving throw or take 11 (2d10) lightning damage. A creature can take this damage no more than once during the move."
+            "description": "Galazeth moves up to half his flying speed without provoking opportunity attacks. When he passes within 15 feet of a creature during this move, that creature must succeed on a DC 22 Dexterity saving throw or take 11 (2d10) lightning damage. A creature can take this damage no more than once during the move."
           },
           {
             "id": "strixhaven-galazeth-prismari-legendary-2",
@@ -1810,7 +1835,7 @@
           {
             "id": "strixhaven-groff-trait-0",
             "name": "False Appearance",
-            "description": "If the groff is motionless at the start of combat, it has advantage on its initiative roll. Moreover, if a creature hasn't observed the groff move or act, that creature must succeed on a 18 Intelligence (Investigation) check to discern that the groff isn't an ordinary moss-covered bog patch."
+            "description": "If the groff is motionless at the start of combat, it has advantage on its initiative roll. Moreover, if a creature hasn't observed the groff move or act, that creature must succeed on a DC 18 Intelligence (Investigation) check to discern that the groff isn't an ordinary moss-covered bog patch."
           },
           {
             "id": "strixhaven-groff-trait-1",
@@ -1827,12 +1852,12 @@
           {
             "id": "strixhaven-groff-action-1",
             "name": "Bite",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}9 (1d8 + 5) piercing damage."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 9 (1d8 + 5) piercing damage."
           },
           {
             "id": "strixhaven-groff-action-2",
             "name": "Swamp Claw",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}8 (1d6 + 5) slashing damage. If the target is a Medium or smaller creature, it must succeed on a 15 Strength saving throw or become engulfed by the groff. While engulfed, the target can't breathe, is restrained, and takes 10 (3d6) poison damage at the start of each of its turns. When the groff moves, the engulfed target moves with it. The groff can have only one target engulfed at a time. An engulfed target can repeat the saving throw at the end of its turns. On a success, the target escapes and enters the nearest unoccupied space."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 8 (1d6 + 5) slashing damage. If the target is a Medium or smaller creature, it must succeed on a DC 15 Strength saving throw or become engulfed by the groff. While engulfed, the target can't breathe, is restrained, and takes 10 (3d6) poison damage at the start of each of its turns. When the groff moves, the engulfed target moves with it. The groff can have only one target engulfed at a time. An engulfed target can repeat the saving throw at the end of its turns. On a success, the target escapes and enters the nearest unoccupied space."
           }
         ],
         "bonusActions": [],
@@ -1890,12 +1915,12 @@
           {
             "id": "strixhaven-inkling-mascot-action-0",
             "name": "Blot",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}5 (1d4 + 3) psychic damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 5 (1d4 + 3) psychic damage."
           },
           {
             "id": "strixhaven-inkling-mascot-action-1",
             "name": "Ink Spray (1/Day)",
-            "description": "The inkling sprays viscous ink at one creature within 15 feet of itself. The target must succeed on a 12 Constitution saving throw or be blinded until the end of the inkling's next turn."
+            "description": "The inkling sprays viscous ink at one creature within 15 feet of itself. The target must succeed on a DC 12 Constitution saving throw or be blinded until the end of the inkling's next turn."
           }
         ],
         "bonusActions": [
@@ -1952,12 +1977,17 @@
           {
             "id": "strixhaven-lorehold-apprentice-action-0",
             "name": "Scroll Bash",
-            "description": "ms 4 to hit, reach 30 ft., one target. {@h}7 (1d10 + 2) bludgeoning damage plus 9 (2d8) thunder damage."
+            "description": "Melee Spell Attack: +4 to hit, reach 30 ft., one target. Hit: 7 (1d10 + 2) bludgeoning damage plus 9 (2d8) thunder damage."
           },
           {
             "id": "strixhaven-lorehold-apprentice-action-1",
-            "name": "Reduce to Memory {@recharge}",
-            "description": "Thundering golden energy erupts around a creature the apprentice can see within 90 feet of it. The creature must make a 12 Constitution saving throw, taking 33 (6d10) thunder damage on a failed save, or half as much damage on a successful one. A Construct has disadvantage on the saving throw."
+            "name": "Reduce to Memory (Recharge 6)",
+            "description": "Thundering golden energy erupts around a creature the apprentice can see within 90 feet of it. The creature must make a DC 12 Constitution saving throw, taking 33 (6d10) thunder damage on a failed save, or half as much damage on a successful one. A Construct has disadvantage on the saving throw."
+          },
+          {
+            "id": "strixhaven-lorehold-apprentice-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The apprentice casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save DC 12):\n\n- At will: guidance, light\n- 1/day each: comprehend languages, locate object, mage armor"
           }
         ],
         "bonusActions": [],
@@ -2019,19 +2049,24 @@
           {
             "id": "strixhaven-lorehold-pledgemage-action-1",
             "name": "Scroll Bash",
-            "description": "ms 5 to hit, reach 30 ft., one target. {@h}8 (1d10 + 3) bludgeoning damage plus 9 (2d8) thunder damage."
+            "description": "Melee Spell Attack: +5 to hit, reach 30 ft., one target. Hit: 8 (1d10 + 3) bludgeoning damage plus 9 (2d8) thunder damage."
           },
           {
             "id": "strixhaven-lorehold-pledgemage-action-2",
-            "name": "Reduce to Memory 5",
-            "description": "Thundering golden energy erupts around a creature the pledgemage can see within 90 feet of it. The creature must make a 13 Constitution saving throw, taking 44 (8d10) thunder damage on a failed save, or half as much damage on a successful one. A Construct has disadvantage on the saving throw."
+            "name": "Reduce to Memory (Recharge 5-6)",
+            "description": "Thundering golden energy erupts around a creature the pledgemage can see within 90 feet of it. The creature must make a DC 13 Constitution saving throw, taking 44 (8d10) thunder damage on a failed save, or half as much damage on a successful one. A Construct has disadvantage on the saving throw."
+          },
+          {
+            "id": "strixhaven-lorehold-pledgemage-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The pledgemage casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save DC 13):\n\n- At will: guidance, light\n- 2/day each: comprehend languages, locate object\n- 1/day each: mage armor, speak with dead, stone shape"
           }
         ],
         "bonusActions": [
           {
             "id": "strixhaven-lorehold-pledgemage-bonus-0",
             "name": "Chronal Break (1/Day)",
-            "description": "The pledgemage chooses a point within 30 feet of itself, shunting the minds of nearby creatures out of this moment in time. Each creature in a 10-foot-radius sphere centered on that point must succeed on a 13 Wisdom saving throw or be incapacitated until the end of the pledgemage's next turn."
+            "description": "The pledgemage chooses a point within 30 feet of itself, shunting the minds of nearby creatures out of this moment in time. Each creature in a 10-foot-radius sphere centered on that point must succeed on a DC 13 Wisdom saving throw or be incapacitated until the end of the pledgemage's next turn."
           }
         ],
         "reactions": [
@@ -2100,12 +2135,17 @@
           {
             "id": "strixhaven-lorehold-professor-of-chaos-action-1",
             "name": "Spectral Scroll",
-            "description": "ms 7 to hit, reach 30 ft., one target. {@h}15 (2d10 + 4) force damage. If the target is a creature, it must succeed on a 15 Strength saving throw or be knocked prone."
+            "description": "Melee Spell Attack: +7 to hit, reach 30 ft., one target. Hit: 15 (2d10 + 4) force damage. If the target is a creature, it must succeed on a DC 15 Strength saving throw or be knocked prone."
           },
           {
             "id": "strixhaven-lorehold-professor-of-chaos-action-2",
-            "name": "Weight of History 5",
-            "description": "The professor magically compresses time around up to six creatures of its choice that it can see within 30 feet of itself. Each target must succeed on a 15 Wisdom saving throw or be restrained for 1 minute, but the restrained target's speed is halved instead of being reduced to 0. At the start of each of its turns, the restrained target takes 4 (1d8) force damage. A restrained target can repeat the save at the end of each of its turns, ending the effect on itself on a success."
+            "name": "Weight of History (Recharge 5-6)",
+            "description": "The professor magically compresses time around up to six creatures of its choice that it can see within 30 feet of itself. Each target must succeed on a DC 15 Wisdom saving throw or be restrained for 1 minute, but the restrained target's speed is halved instead of being reduced to 0. At the start of each of its turns, the restrained target takes 4 (1d8) force damage. A restrained target can repeat the save at the end of each of its turns, ending the effect on itself on a success."
+          },
+          {
+            "id": "strixhaven-lorehold-professor-of-chaos-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The professor casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability:\n\n- At will: comprehend languages, dancing lights, guidance\n- 2/day each: locate object, mage armor, passwall"
           }
         ],
         "bonusActions": [],
@@ -2172,12 +2212,17 @@
           {
             "id": "strixhaven-lorehold-professor-of-order-action-1",
             "name": "Repelling Burst",
-            "description": "ms 7 to hit, reach 30 ft., one target. {@h}13 (2d8 + 4) force damage. If the target is a Large or smaller creature, it must succeed on a 15 Strength saving throw or be pushed up to 10 feet directly away from the professor and become restrained until the start of professor's next turn."
+            "description": "Melee Spell Attack: +7 to hit, reach 30 ft., one target. Hit: 13 (2d8 + 4) force damage. If the target is a Large or smaller creature, it must succeed on a DC 15 Strength saving throw or be pushed up to 10 feet directly away from the professor and become restrained until the start of professor's next turn."
           },
           {
             "id": "strixhaven-lorehold-professor-of-order-action-2",
-            "name": "Force Barrier 5",
+            "name": "Force Barrier (Recharge 5-6)",
             "description": "The professor magically creates a wall of translucent, golden force within 90 feet of itself. The wall lasts for 1 minute or until the professor uses this action again. The barrier can be a vertical or horizontal plane up to 30 feet on a side or a 10-foot-radius hemispherical dome with a floor. The wall provides 3. It has AC 17, 30 hit points, and immunity to poison and psychic damage."
+          },
+          {
+            "id": "strixhaven-lorehold-professor-of-order-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The professor casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save DC 15):\n\n- At will: comprehend languages, guidance, light\n- 2/day each: dimension door, locate object, mage armor, stone shape"
           }
         ],
         "bonusActions": [],
@@ -2185,7 +2230,7 @@
           {
             "id": "strixhaven-lorehold-professor-of-order-reaction-0",
             "name": "Arcane Stasis (2/Day)",
-            "description": "When a creature the professor can see within 60 feet of it casts a spell, the professor can magically lock the casting in the moment before completion. The spellcaster must succeed on a 15 saving throw using the spell's spellcasting ability, or the spell fails and is wasted."
+            "description": "When a creature the professor can see within 60 feet of it casts a spell, the professor can magically lock the casting in the moment before completion. The spellcaster must succeed on a DC 15 saving throw using the spell's spellcasting ability, or the spell fails and is wasted."
           }
         ],
         "legendaryActions": [],
@@ -2257,17 +2302,17 @@
           {
             "id": "strixhaven-mage-hunter-action-1",
             "name": "Claw (Hunter Form Only)",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}15 (2d10 + 4) slashing damage."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 15 (2d10 + 4) slashing damage."
           },
           {
             "id": "strixhaven-mage-hunter-action-2",
             "name": "Tail",
-            "description": "mw 7 to hit, reach 10 ft., one target. {@h}22 (4d8 + 4) piercing damage, and the target is grappled (escape 15). Until this grapple ends, the target is restrained, and the hunter can't make a Tail attack against another target."
+            "description": "Melee Weapon Attack: +7 to hit, reach 10 ft., one target. Hit: 22 (4d8 + 4) piercing damage, and the target is grappled (escape DC 15). Until this grapple ends, the target is restrained, and the hunter can't make a Tail attack against another target."
           },
           {
             "id": "strixhaven-mage-hunter-action-3",
             "name": "Mage Tracker (Sentry Form Only)",
-            "description": "The hunter emits a pulse of energy that helps it better locate its magical quarry. Each creature within 120 feet of the hunter that has the ability to cast spells must succeed on a 14 Wisdom saving throw or be mystically marked by the hunter for 1 hour. While marked, a creature can't become hidden from the hunter and gains no benefit from the invisible condition against the hunter. Additionally, while a marked creature is on the same plane of existence as the hunter, the hunter always knows the distance and direction to the creature."
+            "description": "The hunter emits a pulse of energy that helps it better locate its magical quarry. Each creature within 120 feet of the hunter that has the ability to cast spells must succeed on a DC 14 Wisdom saving throw or be mystically marked by the hunter for 1 hour. While marked, a creature can't become hidden from the hunter and gains no benefit from the invisible condition against the hunter. Additionally, while a marked creature is on the same plane of existence as the hunter, the hunter always knows the distance and direction to the creature."
           }
         ],
         "bonusActions": [
@@ -2281,7 +2326,7 @@
           {
             "id": "strixhaven-mage-hunter-reaction-0",
             "name": "Consume and Destroy",
-            "description": "When the hunter takes damage from a spell, it takes only half the triggering damage (rounded down). If the creature that cast the spell is within 60 feet of the hunter, that creature must succeed on a 14 Dexterity saving throw or take the other half of the damage."
+            "description": "When the hunter takes damage from a spell, it takes only half the triggering damage (rounded down). If the creature that cast the spell is within 60 feet of the hunter, that creature must succeed on a DC 14 Dexterity saving throw or take the other half of the damage."
           }
         ],
         "legendaryActions": [],
@@ -2359,12 +2404,12 @@
           {
             "id": "strixhaven-murgaxor-action-1",
             "name": "Blood Lash",
-            "description": "ms 9 to hit, reach 10 ft., one target. {@h}21 (3d10 + 5) necrotic damage. If the target is a creature, it can't regain hit points until the start of Murgaxor's next turn."
+            "description": "Melee Spell Attack: +9 to hit, reach 10 ft., one target. Hit: 21 (3d10 + 5) necrotic damage. If the target is a creature, it can't regain hit points until the start of Murgaxor's next turn."
           },
           {
             "id": "strixhaven-murgaxor-action-2",
-            "name": "Blood Boil 4",
-            "description": "Murgaxor chooses a point within 150 feet of himself, and a 20-foot radius sphere centered on that point fills with a burst of searing, blood-red mist. Each creature of Murgaxor's choice that he can see in that area must make a 17 Constitution saving throw. On a failed save, a creature takes 38 (7d10) necrotic damage and is incapacitated until the end of its next turn. On a success, a creature takes half as much damage and isn't incapacitated. A creature dies if reduced to 0 hit points by this necrotic damage."
+            "name": "Blood Boil (Recharge 4-6)",
+            "description": "Murgaxor chooses a point within 150 feet of himself, and a 20-foot radius sphere centered on that point fills with a burst of searing, blood-red mist. Each creature of Murgaxor's choice that he can see in that area must make a DC 17 Constitution saving throw. On a failed save, a creature takes 38 (7d10) necrotic damage and is incapacitated until the end of its next turn. On a success, a creature takes half as much damage and isn't incapacitated. A creature dies if reduced to 0 hit points by this necrotic damage."
           }
         ],
         "bonusActions": [],
@@ -2434,17 +2479,22 @@
           {
             "id": "strixhaven-oracle-of-strixhaven-action-1",
             "name": "Magic Flare",
-            "description": "ms,rs 10 to hit, reach 5 ft. or range 60 ft., one target. {@h}24 (3d12 + 5) force damage."
+            "description": "Melee or Ranged Spell Attack: +10 to hit, reach 5 ft. or range 60 ft., one target. Hit: 24 (3d12 + 5) force damage."
           },
           {
             "id": "strixhaven-oracle-of-strixhaven-action-2",
-            "name": "Paradoxy 4",
-            "description": "Momentary warps in reality appear at three different points the Oracle can see within 120 feet of her. Each creature in a 20-foot-radius sphere centered on each point must make a 18 Strength saving throw. On a failed save, a creature takes 33 (6d10) force damage and is pulled up to 15 feet in a straight line toward the center of the sphere. On a successful save, the creature takes half as much damage and isn't pulled. A creature caught in the area of multiple warps is affected by only one, which the Oracle chooses."
+            "name": "Paradoxy (Recharge 4-6)",
+            "description": "Momentary warps in reality appear at three different points the Oracle can see within 120 feet of her. Each creature in a 20-foot-radius sphere centered on each point must make a DC 18 Strength saving throw. On a failed save, a creature takes 33 (6d10) force damage and is pulled up to 15 feet in a straight line toward the center of the sphere. On a successful save, the creature takes half as much damage and isn't pulled. A creature caught in the area of multiple warps is affected by only one, which the Oracle chooses."
           },
           {
             "id": "strixhaven-oracle-of-strixhaven-action-3",
             "name": "Teleport",
             "description": "The Oracle teleports, along with any equipment she is wearing or carrying, to an unoccupied space she can see within 60 feet of herself."
+          },
+          {
+            "id": "strixhaven-oracle-of-strixhaven-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The Oracle casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save DC 18):\n\n- At will: detect magic\n- 2/day each: dispel magic, mage armor, remove curse, sending\n- 1/day each: power word stun, scrying (as an action), wall of force"
           }
         ],
         "bonusActions": [],
@@ -2453,7 +2503,7 @@
           {
             "id": "strixhaven-oracle-of-strixhaven-legendary-0",
             "name": "Vector Shift",
-            "description": "The Oracle teleports one creature she can see within 60 feet of herself, along with any equipment it is wearing or carrying, to an unoccupied space within 30 feet of herself. An unwilling target must succeed on a 18 Charisma saving throw to avoid the effect."
+            "description": "The Oracle teleports one creature she can see within 60 feet of herself, along with any equipment it is wearing or carrying, to an unoccupied space within 30 feet of herself. An unwilling target must succeed on a DC 18 Charisma saving throw to avoid the effect."
           },
           {
             "id": "strixhaven-oracle-of-strixhaven-legendary-1",
@@ -2463,7 +2513,7 @@
           {
             "id": "strixhaven-oracle-of-strixhaven-legendary-2",
             "name": "Vortex Jaunt (Costs 2 Actions)",
-            "description": "The Oracle uses Teleport, and immediately after she disappears, each creature within 30 feet of the space she left must succeed on a 18 Constitution saving throw or take 16 (3d10) force damage."
+            "description": "The Oracle uses Teleport, and immediately after she disappears, each creature within 30 feet of the space she left must succeed on a DC 18 Constitution saving throw or take 16 (3d10) force damage."
           }
         ],
         "languages": [
@@ -2540,12 +2590,12 @@
           {
             "id": "strixhaven-oriq-blood-mage-action-1",
             "name": "Blood Lash",
-            "description": "ms 9 to hit, reach 10 ft., one target. {@h}21 (3d10 + 5) necrotic damage. If the target is a creature, it can't regain hit points until the start of the blood mage's next turn."
+            "description": "Melee Spell Attack: +9 to hit, reach 10 ft., one target. Hit: 21 (3d10 + 5) necrotic damage. If the target is a creature, it can't regain hit points until the start of the blood mage's next turn."
           },
           {
             "id": "strixhaven-oriq-blood-mage-action-2",
-            "name": "Blood Boil 4",
-            "description": "The blood mage chooses a point within 150 feet of itself, and a 20-foot radius sphere centered on that point fills with a burst of searing, blood-red mist. Each creature of the blood mage's choice that it can see in that area must make a 17 Constitution saving throw. On a failed save, a creature takes 38 (7d10) necrotic damage and is incapacitated until the end of its next turn. On a success, a creature takes half as much damage and isn't incapacitated. A creature dies if reduced to 0 hit points by this necrotic damage."
+            "name": "Blood Boil (Recharge 4-6)",
+            "description": "The blood mage chooses a point within 150 feet of itself, and a 20-foot radius sphere centered on that point fills with a burst of searing, blood-red mist. Each creature of the blood mage's choice that it can see in that area must make a DC 17 Constitution saving throw. On a failed save, a creature takes 38 (7d10) necrotic damage and is incapacitated until the end of its next turn. On a success, a creature takes half as much damage and isn't incapacitated. A creature dies if reduced to 0 hit points by this necrotic damage."
           }
         ],
         "bonusActions": [],
@@ -2621,7 +2671,12 @@
           {
             "id": "strixhaven-oriq-recruiter-action-1",
             "name": "Psychic Knife",
-            "description": "ms,rs 6 to hit, reach 5 ft. or range 30 ft., one creature. {@h}21 (5d6 + 4) psychic damage."
+            "description": "Melee or Ranged Spell Attack: +6 to hit, reach 5 ft. or range 30 ft., one creature. Hit: 21 (5d6 + 4) psychic damage."
+          },
+          {
+            "id": "strixhaven-oriq-recruiter-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The recruiter casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 14):\n\n- At will: disguise self, silent image\n- 1/day: suggestion\n- 2/day: charm person"
           }
         ],
         "bonusActions": [],
@@ -2677,7 +2732,7 @@
           {
             "id": "strixhaven-pest-mascot-action-0",
             "name": "Bite",
-            "description": "mw 4 to hit, reach 5 ft., one target. {@h}4 (1d4 + 2) piercing damage."
+            "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 4 (1d4 + 2) piercing damage."
           }
         ],
         "bonusActions": [],
@@ -2725,14 +2780,19 @@
           {
             "id": "strixhaven-prismari-apprentice-action-0",
             "name": "Elemental Strike",
-            "description": "ms,rs 4 to hit, reach 5 ft. or range 60 ft., one target. {@h}10 (3d6) fire or cold damage (the apprentice's choice)."
+            "description": "Melee or Ranged Spell Attack: +4 to hit, reach 5 ft. or range 60 ft., one target. Hit: 10 (3d6) fire or cold damage (the apprentice's choice)."
+          },
+          {
+            "id": "strixhaven-prismari-apprentice-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The apprentice casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 12):\n\n- At will: minor illusion\n- 1/day each: gust of wind, mage armor, silent image"
           }
         ],
         "bonusActions": [
           {
             "id": "strixhaven-prismari-apprentice-bonus-0",
-            "name": "Surge of Artistry 4",
-            "description": "The apprentice moves up to its speed, surrounding itself with elemental magic as it moves. Until the end of its turn, the apprentice can move through the space of other creatures. The first time the apprentice enters a creature's space on a turn, that creature must succeed on a 12 Dexterity saving throw or be knocked prone. If the apprentice ends its turn in another creature's space, the apprentice takes 5 (1d10) force damage and is pushed into the nearest unoccupied space."
+            "name": "Surge of Artistry (Recharge 4-6)",
+            "description": "The apprentice moves up to its speed, surrounding itself with elemental magic as it moves. Until the end of its turn, the apprentice can move through the space of other creatures. The first time the apprentice enters a creature's space on a turn, that creature must succeed on a DC 12 Dexterity saving throw or be knocked prone. If the apprentice ends its turn in another creature's space, the apprentice takes 5 (1d10) force damage and is pushed into the nearest unoccupied space."
           }
         ],
         "reactions": [],
@@ -2793,19 +2853,24 @@
           {
             "id": "strixhaven-prismari-pledgemage-action-1",
             "name": "Elemental Strike",
-            "description": "ms,rs 5 to hit, reach 5 ft. or range 60 ft., one target. {@h}12 (3d6 + 2) fire or cold damage (the pledgemage's choice)."
+            "description": "Melee or Ranged Spell Attack: +5 to hit, reach 5 ft. or range 60 ft., one target. Hit: 12 (3d6 + 2) fire or cold damage (the pledgemage's choice)."
           },
           {
             "id": "strixhaven-prismari-pledgemage-action-2",
             "name": "Showstopper (1/Day)",
-            "description": "The pledgemage shines with elemental magic, targeting one creature it can see within 60 feet of itself. The target must make a 13 Wisdom saving throw. On a failed save, the target takes 28 (8d6) fire or cold damage (the pledgemage's choice) and is stunned until the start of the pledgemage's next turn. On a successful save, the target takes half as much damage and isn't stunned."
+            "description": "The pledgemage shines with elemental magic, targeting one creature it can see within 60 feet of itself. The target must make a DC 13 Wisdom saving throw. On a failed save, the target takes 28 (8d6) fire or cold damage (the pledgemage's choice) and is stunned until the start of the pledgemage's next turn. On a successful save, the target takes half as much damage and isn't stunned."
+          },
+          {
+            "id": "strixhaven-prismari-pledgemage-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The pledgemage casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 13):\n\n- At will: minor illusion\n- 2/day each: gust of wind, silent image\n- 1/day each: mage armor, water walk"
           }
         ],
         "bonusActions": [
           {
             "id": "strixhaven-prismari-pledgemage-bonus-0",
-            "name": "Surge of Artistry 4",
-            "description": "The pledgemage moves up to its speed, surrounding itself with elemental magic as it moves. Until the end of its turn, the pledgemage can move through the space of other creatures. The first time the pledgemage enters a creature's space on a turn, that creature must succeed on a 13 Dexterity saving throw or be knocked prone. If the pledgemage ends its turn in another creature's space, the pledgemage takes 5 (1d10) force damage and is pushed into the nearest unoccupied space."
+            "name": "Surge of Artistry (Recharge 4-6)",
+            "description": "The pledgemage moves up to its speed, surrounding itself with elemental magic as it moves. Until the end of its turn, the pledgemage can move through the space of other creatures. The first time the pledgemage enters a creature's space on a turn, that creature must succeed on a DC 13 Dexterity saving throw or be knocked prone. If the pledgemage ends its turn in another creature's space, the pledgemage takes 5 (1d10) force damage and is pushed into the nearest unoccupied space."
           }
         ],
         "reactions": [],
@@ -2868,19 +2933,24 @@
           {
             "id": "strixhaven-prismari-professor-of-expression-action-1",
             "name": "Cinder Strike",
-            "description": "ms 7 to hit, reach 15 ft., one target. {@h}13 (2d8 + 4) fire damage."
+            "description": "Melee Spell Attack: +7 to hit, reach 15 ft., one target. Hit: 13 (2d8 + 4) fire damage."
           },
           {
             "id": "strixhaven-prismari-professor-of-expression-action-2",
-            "name": "Lightning Flourish {@recharge}",
-            "description": "The professor unleashes arcs of magical lightning at up to two creatures it can see within 60 feet of itself. Each target must make a 15 Dexterity saving throw, taking 35 (10d6) lightning damage on a failed save, or half as much damage on a successful one."
+            "name": "Lightning Flourish (Recharge 6)",
+            "description": "The professor unleashes arcs of magical lightning at up to two creatures it can see within 60 feet of itself. Each target must make a DC 15 Dexterity saving throw, taking 35 (10d6) lightning damage on a failed save, or half as much damage on a successful one."
+          },
+          {
+            "id": "strixhaven-prismari-professor-of-expression-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The professor casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 15):\n\n- At will: minor illusion\n- 2/day each: fog cloud, gust of wind, mage armor"
           }
         ],
         "bonusActions": [
           {
             "id": "strixhaven-prismari-professor-of-expression-bonus-0",
             "name": "Flaming Leap",
-            "description": "The professor is wreathed in flames and jumps up to 30 feet in any direction. When the professor lands, the flames erupt in a 10-foot radius around the professor and then vanish. Each creature of the professor's choice in that area must succeed on a 15 Dexterity saving throw or take 7 (2d6) fire damage."
+            "description": "The professor is wreathed in flames and jumps up to 30 feet in any direction. When the professor lands, the flames erupt in a 10-foot radius around the professor and then vanish. Each creature of the professor's choice in that area must succeed on a DC 15 Dexterity saving throw or take 7 (2d6) fire damage."
           }
         ],
         "reactions": [],
@@ -2948,14 +3018,19 @@
           {
             "id": "strixhaven-prismari-professor-of-perfection-action-1",
             "name": "Tidal Strike",
-            "description": "ms,rs 7 to hit, reach 5 ft. or range 60 ft., one target. {@h}13 (2d8 + 4) cold damage."
+            "description": "Melee or Ranged Spell Attack: +7 to hit, reach 5 ft. or range 60 ft., one target. Hit: 13 (2d8 + 4) cold damage."
+          },
+          {
+            "id": "strixhaven-prismari-professor-of-perfection-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The professor casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 15):\n\n- At will: minor illusion\n- 1/day: wall of ice\n- 2/day each: control water, create or destroy water, mage armor, stone shape"
           }
         ],
         "bonusActions": [
           {
             "id": "strixhaven-prismari-professor-of-perfection-bonus-0",
             "name": "Rushing Wave",
-            "description": "The professor is momentarily surrounded by a swirling wave of water and moves up to 30 feet. When the professor moves within 5 feet of any other creature during this bonus action, that creature must succeed on a 15 Strength saving throw, or the creature is knocked prone and it can't take reactions until the start of its next turn. A creature can suffer this effect only once during a turn."
+            "description": "The professor is momentarily surrounded by a swirling wave of water and moves up to 30 feet. When the professor moves within 5 feet of any other creature during this bonus action, that creature must succeed on a DC 15 Strength saving throw, or the creature is knocked prone and it can't take reactions until the start of its next turn. A creature can suffer this effect only once during a turn."
           }
         ],
         "reactions": [],
@@ -3010,7 +3085,12 @@
           {
             "id": "strixhaven-quandrix-apprentice-action-1",
             "name": "Exponential Lash",
-            "description": "ms,rs 4 to hit, reach 5 ft. or range 60 ft., one target. {@h}5 (1d6 + 2) force damage, and the apprentice can cause one creature it can see within 30 feet of the target to take 9 (2d6 + 2) force damage."
+            "description": "Melee or Ranged Spell Attack: +4 to hit, reach 5 ft. or range 60 ft., one target. Hit: 5 (1d6 + 2) force damage, and the apprentice can cause one creature it can see within 30 feet of the target to take 9 (2d6 + 2) force damage."
+          },
+          {
+            "id": "strixhaven-quandrix-apprentice-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The apprentice casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save DC 12):\n\n- At will: guidance, mage hand\n- 1/day each: enlarge/reduce, mage armor"
           }
         ],
         "bonusActions": [],
@@ -3066,14 +3146,19 @@
           {
             "id": "strixhaven-quandrix-pledgemage-action-1",
             "name": "Exponential Lash",
-            "description": "ms,rs 5 to hit, reach 5 ft. or range 60 ft., one target. {@h}6 (1d6 + 3) force damage, and the pledgemage can cause one creature it can see within 30 feet of the target to take 10 (2d6 + 3) force damage."
+            "description": "Melee or Ranged Spell Attack: +5 to hit, reach 5 ft. or range 60 ft., one target. Hit: 6 (1d6 + 3) force damage, and the pledgemage can cause one creature it can see within 30 feet of the target to take 10 (2d6 + 3) force damage."
+          },
+          {
+            "id": "strixhaven-quandrix-pledgemage-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The pledgemage casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save DC 13):\n\n- At will: guidance, mage hand\n- 1/day each: dimension door, enlarge/reduce, mage armor, plant growth"
           }
         ],
         "bonusActions": [
           {
             "id": "strixhaven-quandrix-pledgemage-bonus-0",
-            "name": "Vortex Calculus 4",
-            "description": "The pledgemage teleports, along with any equipment it is wearing or carrying, to an unoccupied space it can see within 60 feet of itself. Immediately after it teleports, each creature within 20 feet of the space it left must make a 13 Constitution saving throw. On a failed save, a creature takes 7 (2d6) force damage and is moved 10 feet in a random horizontal direction. On a successful save, a creature takes half as much damage and isn't moved."
+            "name": "Vortex Calculus (Recharge 4-6)",
+            "description": "The pledgemage teleports, along with any equipment it is wearing or carrying, to an unoccupied space it can see within 60 feet of itself. Immediately after it teleports, each creature within 20 feet of the space it left must make a DC 13 Constitution saving throw. On a failed save, a creature takes 7 (2d6) force damage and is moved 10 feet in a random horizontal direction. On a successful save, a creature takes half as much damage and isn't moved."
           }
         ],
         "reactions": [],
@@ -3134,13 +3219,18 @@
           {
             "id": "strixhaven-quandrix-professor-of-substance-action-1",
             "name": "Spatial Blade",
-            "description": "ms,rs 7 to hit (the target can't benefit from cover less than 3), reach 5 ft. or range 120 ft., one target. {@h}13 (2d8 + 4) force damage, or 22 (4d8 + 4) force damage if the professor is Large or larger, and the professor can push the target horizontally up to 10 feet away."
+            "description": "Melee or Ranged Spell Attack: +7 to hit (the target can't benefit from cover less than 3), reach 5 ft. or range 120 ft., one target. Hit: 13 (2d8 + 4) force damage, or 22 (4d8 + 4) force damage if the professor is Large or larger, and the professor can push the target horizontally up to 10 feet away."
+          },
+          {
+            "id": "strixhaven-quandrix-professor-of-substance-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The professor casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save DC 15):\n\n- At will: guidance, mage hand, mending (as an action)\n- 1/day each: creation (as an action), dimension door, mage armor, plant growth, polymorph"
           }
         ],
         "bonusActions": [
           {
             "id": "strixhaven-quandrix-professor-of-substance-bonus-0",
-            "name": "Dilation 5",
+            "name": "Dilation (Recharge 5-6)",
             "description": "The professor magically alters its physical form until it uses this bonus action again, until it is incapacitated or dies, or until it dismisses the effect (no action required). Choose one of the following options:"
           },
           {
@@ -3222,12 +3312,17 @@
           {
             "id": "strixhaven-quandrix-professor-of-theory-action-1",
             "name": "Heuristic Lance",
-            "description": "ms,rs 7 to hit, reach 5 ft. or range 60 ft., one creature. {@h}13 (2d8 + 4) psychic damage, and the target is poisoned until the end of its next turn."
+            "description": "Melee or Ranged Spell Attack: +7 to hit, reach 5 ft. or range 60 ft., one creature. Hit: 13 (2d8 + 4) psychic damage, and the target is poisoned until the end of its next turn."
           },
           {
             "id": "strixhaven-quandrix-professor-of-theory-action-2",
-            "name": "Overriding Theorem 4",
-            "description": "The professor magically influences the mind of up to two creatures it can see within 60 feet of itself. Each target must succeed on a 15 Intelligence saving throw or become charmed by the professor until the start of the professor's next turn. The charmed creature must immediately use its reaction, if available, to move up its speed toward another creature of the professor's choice and make one melee attack against that other creature."
+            "name": "Overriding Theorem (Recharge 4-6)",
+            "description": "The professor magically influences the mind of up to two creatures it can see within 60 feet of itself. Each target must succeed on a DC 15 Intelligence saving throw or become charmed by the professor until the start of the professor's next turn. The charmed creature must immediately use its reaction, if available, to move up its speed toward another creature of the professor's choice and make one melee attack against that other creature."
+          },
+          {
+            "id": "strixhaven-quandrix-professor-of-theory-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The professor casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save DC 15):\n\n- At will: guidance, mage hand, minor illusion\n- 1/day each: mage armor, major image, mirage arcane (as an action), Rary's telepathic bond"
           }
         ],
         "bonusActions": [],
@@ -3235,7 +3330,7 @@
           {
             "id": "strixhaven-quandrix-professor-of-theory-reaction-0",
             "name": "Divide by Zero (2/Day)",
-            "description": "When the professor sees another creature within 60 feet of itself casting a spell, the professor can try to nullify the spell's formation. The creature must succeed on a 15 saving throw using the spell's spellcasting ability, or the spell fails and is wasted."
+            "description": "When the professor sees another creature within 60 feet of itself casting a spell, the professor can try to nullify the spell's formation. The creature must succeed on a DC 15 saving throw using the spell's spellcasting ability, or the spell fails and is wasted."
           }
         ],
         "legendaryActions": [],
@@ -3278,7 +3373,7 @@
           {
             "id": "strixhaven-relic-sloth-action-0",
             "name": "Claws",
-            "description": "mw 7 to hit, reach 10 ft., one target. {@h}14 (2d8 + 5) slashing damage, and the target is grappled (escape 15). The relic sloth can grapple no more than two targets at a time."
+            "description": "Melee Weapon Attack: +7 to hit, reach 10 ft., one target. Hit: 14 (2d8 + 5) slashing damage, and the target is grappled (escape DC 15). The relic sloth can grapple no more than two targets at a time."
           }
         ],
         "bonusActions": [],
@@ -3355,7 +3450,7 @@
           {
             "id": "strixhaven-ruin-grinder-action-1",
             "name": "Excavator",
-            "description": "mw 9 to hit, reach 5 ft., one target. {@h}13 (2d6 + 6) force damage. If the target is a Huge or smaller creature, it must succeed on a 17 Strength saving throw or be pushed up to 10 feet away and knocked prone."
+            "description": "Melee Weapon Attack: +9 to hit, reach 5 ft., one target. Hit: 13 (2d6 + 6) force damage. If the target is a Huge or smaller creature, it must succeed on a DC 17 Strength saving throw or be pushed up to 10 feet away and knocked prone."
           }
         ],
         "bonusActions": [],
@@ -3405,7 +3500,7 @@
           {
             "id": "strixhaven-scufflecup-teacup-action-0",
             "name": "Slam",
-            "description": "mw 4 to hit, reach 5 ft., one target. {@h}3 (1d3 + 2) bludgeoning damage."
+            "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 3 (1d3 + 2) bludgeoning damage."
           }
         ],
         "bonusActions": [],
@@ -3471,17 +3566,22 @@
           {
             "id": "strixhaven-shadrix-silverquill-action-1",
             "name": "Bite",
-            "description": "mw 14 to hit, reach 15 ft., one target. {@h}12 (1d10 + 7) piercing damage plus 4 (1d8) radiant damage."
+            "description": "Melee Weapon Attack: +14 to hit, reach 15 ft., one target. Hit: 12 (1d10 + 7) piercing damage plus 4 (1d8) radiant damage."
           },
           {
             "id": "strixhaven-shadrix-silverquill-action-2",
             "name": "Claw",
-            "description": "mw 14 to hit, reach 10 ft., one target. {@h}10 (1d6 + 7) slashing damage. If the target is a creature, it is wracked with despair and has disadvantage on attack rolls until the end of its next turn."
+            "description": "Melee Weapon Attack: +14 to hit, reach 10 ft., one target. Hit: 10 (1d6 + 7) slashing damage. If the target is a creature, it is wracked with despair and has disadvantage on attack rolls until the end of its next turn."
           },
           {
             "id": "strixhaven-shadrix-silverquill-action-3",
-            "name": "Illuminating Shadow Breath 5",
-            "description": "Shadrix exhales an entwined burst of blinding radiance and unnerving shadow in a 90-foot cone. Each creature in that area must make a 21 Constitution saving throw. On a failed save, a creature takes 31 (7d8) radiant damage and 31 (7d8) psychic damage and is blinded until the start of Shadrix's next turn. On a successful save, a creature takes half as much damage and isn't blinded."
+            "name": "Illuminating Shadow Breath (Recharge 5-6)",
+            "description": "Shadrix exhales an entwined burst of blinding radiance and unnerving shadow in a 90-foot cone. Each creature in that area must make a DC 21 Constitution saving throw. On a failed save, a creature takes 31 (7d8) radiant damage and 31 (7d8) psychic damage and is blinded until the start of Shadrix's next turn. On a successful save, a creature takes half as much damage and isn't blinded."
+          },
+          {
+            "id": "strixhaven-shadrix-silverquill-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "Shadrix casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 23):\n\n- 1/day each: darkness, daylight, hypnotic pattern, sending, suggestion"
           }
         ],
         "bonusActions": [],
@@ -3495,7 +3595,7 @@
           {
             "id": "strixhaven-shadrix-silverquill-legendary-1",
             "name": "Shadow Slip (Costs 2 Actions)",
-            "description": "Shadrix becomes an inky cloud of shadow and can move up to half his flying speed without provoking opportunity attacks, then resumes his true form. During this movement, he can move through creatures and objects as if they were 3. If he moves through a creature, it must succeed on a 21 Constitution saving throw or become blinded until the end of its next turn. If Shadrix ends this move inside an object, he takes 5 (1d10) force damage and is shunted to the nearest unoccupied space."
+            "description": "Shadrix becomes an inky cloud of shadow and can move up to half his flying speed without provoking opportunity attacks, then resumes his true form. During this movement, he can move through creatures and objects as if they were 3. If he moves through a creature, it must succeed on a DC 21 Constitution saving throw or become blinded until the end of its next turn. If Shadrix ends this move inside an object, he takes 5 (1d10) force damage and is shunted to the nearest unoccupied space."
           },
           {
             "id": "strixhaven-shadrix-silverquill-legendary-2",
@@ -3548,7 +3648,12 @@
           {
             "id": "strixhaven-silverquill-apprentice-action-0",
             "name": "Ink Blade",
-            "description": "ms,rs 4 to hit, reach 5 ft. or range 60 ft., one target. {@h}5 (1d6 + 2) piercing damage plus 9 (2d8) psychic damage."
+            "description": "Melee or Ranged Spell Attack: +4 to hit, reach 5 ft. or range 60 ft., one target. Hit: 5 (1d6 + 2) piercing damage plus 9 (2d8) psychic damage."
+          },
+          {
+            "id": "strixhaven-silverquill-apprentice-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The apprentice casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 12):\n\n- At will: dancing lights, friends\n- 1/day each: command, mage armor"
           }
         ],
         "bonusActions": [],
@@ -3606,14 +3711,19 @@
           {
             "id": "strixhaven-silverquill-pledgemage-action-0",
             "name": "Ink Blade",
-            "description": "ms,rs 5 to hit, reach 5 ft. or range 60 ft., one target. {@h}5 (1d8 + 3) piercing damage plus 10 (3d6) psychic damage."
+            "description": "Melee or Ranged Spell Attack: +5 to hit, reach 5 ft. or range 60 ft., one target. Hit: 5 (1d8 + 3) piercing damage plus 10 (3d6) psychic damage."
+          },
+          {
+            "id": "strixhaven-silverquill-pledgemage-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The pledgemage casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 13):\n\n- At will: dancing lights, friends\n- 1/day each: command, confusion, mage armor, tongues"
           }
         ],
         "bonusActions": [
           {
             "id": "strixhaven-silverquill-pledgemage-bonus-0",
             "name": "Demotivate (2/Day)",
-            "description": "The pledgemage hurls magical insults at one creature it can see within 30 feet of itself. The target must succeed on a 13 Wisdom saving throw or become frightened of the pledgemage for 1 minute. While frightened in this way, the target can't take reactions, its speed is halved, and any hit the pledgemage scores against the creature is a critical hit. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "description": "The pledgemage hurls magical insults at one creature it can see within 30 feet of itself. The target must succeed on a DC 13 Wisdom saving throw or become frightened of the pledgemage for 1 minute. While frightened in this way, the target can't take reactions, its speed is halved, and any hit the pledgemage scores against the creature is a critical hit. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           }
         ],
         "reactions": [
@@ -3680,7 +3790,12 @@
           {
             "id": "strixhaven-silverquill-professor-of-radiance-action-1",
             "name": "Radiant Strike",
-            "description": "ms,rs 7 to hit, reach 5 ft. or range 120 ft., one target. {@h}17 (3d8 + 4) radiant damage. If the target is a creature, it must succeed on a 15 Constitution saving throw be blinded until the end of its next turn."
+            "description": "Melee or Ranged Spell Attack: +7 to hit, reach 5 ft. or range 120 ft., one target. Hit: 17 (3d8 + 4) radiant damage. If the target is a creature, it must succeed on a DC 15 Constitution saving throw be blinded until the end of its next turn."
+          },
+          {
+            "id": "strixhaven-silverquill-professor-of-radiance-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The professor casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 15):\n\n- At will: dancing lights, friends\n- 2/day each: bless, command, cure wounds, daylight, mage armor\n- 1/day each: hypnotic pattern, tongues"
           }
         ],
         "bonusActions": [],
@@ -3748,7 +3863,12 @@
           {
             "id": "strixhaven-silverquill-professor-of-shadow-action-1",
             "name": "Ink Lance",
-            "description": "ms,rs 7 to hit, reach 5 ft. or range 120 ft., one target. {@h}17 (3d8 + 4) necrotic damage. If the target is a creature, it must succeed on a 15 Constitution saving throw be blinded until the end of its next turn."
+            "description": "Melee or Ranged Spell Attack: +7 to hit, reach 5 ft. or range 120 ft., one target. Hit: 17 (3d8 + 4) necrotic damage. If the target is a creature, it must succeed on a DC 15 Constitution saving throw be blinded until the end of its next turn."
+          },
+          {
+            "id": "strixhaven-silverquill-professor-of-shadow-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The professor casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save DC 15):\n\n- At will: dancing lights, friends\n- 2/day each: bane, command, darkness, mage armor\n- 1/day each: tongues"
           }
         ],
         "bonusActions": [],
@@ -3794,14 +3914,14 @@
           {
             "id": "strixhaven-spirit-statue-mascot-trait-0",
             "name": "Death Burst",
-            "description": "When the spirit statue is reduced to 0 hit points, the statue crumbles, and the spirit returns to the afterlife in a burst of ghostly white flame. Each creature within 5 feet of it must succeed on a 12 Constitution saving throw or take 3 (1d6) radiant damage."
+            "description": "When the spirit statue is reduced to 0 hit points, the statue crumbles, and the spirit returns to the afterlife in a burst of ghostly white flame. Each creature within 5 feet of it must succeed on a DC 12 Constitution saving throw or take 3 (1d6) radiant damage."
           }
         ],
         "actions": [
           {
             "id": "strixhaven-spirit-statue-mascot-action-0",
             "name": "Slam",
-            "description": "mw 4 to hit, reach 5 ft., one target. {@h}5 (1d6 + 2) bludgeoning damage."
+            "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) bludgeoning damage."
           },
           {
             "id": "strixhaven-spirit-statue-mascot-action-1",
@@ -3887,12 +4007,12 @@
           {
             "id": "strixhaven-strixhaven-campus-guide-action-1",
             "name": "Slam",
-            "description": "mw 4 to hit, reach 5 ft., one target. {@h}6 (1d8 + 2) bludgeoning damage."
+            "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 6 (1d8 + 2) bludgeoning damage."
           },
           {
             "id": "strixhaven-strixhaven-campus-guide-action-2",
             "name": "Smile and Wave",
-            "description": "Each creature of the guide's choice that is within 30 feet of the guide must succeed on a 11 Wisdom saving throw or be magically charmed by the guide for 1 hour. A charmed target must move on its turn toward the guide, trying to get within 5 feet of the guide. The target doesn't move into obviously dangerous ground, such as a fire or a pit. Whenever the charmed target takes damage, it can repeat the saving throw, ending the effect on itself on a success. A target that successfully saves is immune to any guide's Smile and Wave ability for the next 24 hours."
+            "description": "Each creature of the guide's choice that is within 30 feet of the guide must succeed on a DC 11 Wisdom saving throw or be magically charmed by the guide for 1 hour. A charmed target must move on its turn toward the guide, trying to get within 5 feet of the guide. The target doesn't move into obviously dangerous ground, such as a fire or a pit. Whenever the charmed target takes damage, it can repeat the saving throw, ending the effect on itself on a success. A target that successfully saves is immune to any guide's Smile and Wave ability for the next 24 hours."
           }
         ],
         "bonusActions": [
@@ -3967,22 +4087,27 @@
           {
             "id": "strixhaven-tanazir-quandrix-action-1",
             "name": "Bite",
-            "description": "mw 16 to hit, reach 15 ft., one target. {@h}14 (1d10 + 9) piercing damage plus 7 (2d6) force damage."
+            "description": "Melee Weapon Attack: +16 to hit, reach 15 ft., one target. Hit: 14 (1d10 + 9) piercing damage plus 7 (2d6) force damage."
           },
           {
             "id": "strixhaven-tanazir-quandrix-action-2",
             "name": "Claw",
-            "description": "mw 16 to hit, reach 10 ft., one target. {@h}16 (2d6 + 9) slashing damage. If the target is a creature, it is addled by recursive thoughts, reducing its speed to 0 until the start of Tanazir's next turn."
+            "description": "Melee Weapon Attack: +16 to hit, reach 10 ft., one target. Hit: 16 (2d6 + 9) slashing damage. If the target is a creature, it is addled by recursive thoughts, reducing its speed to 0 until the start of Tanazir's next turn."
           },
           {
             "id": "strixhaven-tanazir-quandrix-action-3",
-            "name": "Diminution Breath 5",
-            "description": "Tanazir exhales a weakening equation in a 90-foot cone. Each creature in that area must make a 23 Constitution saving throw. On a failed save, a creature takes 45 (13d6) force damage and 45 (13d6) psychic damage and is weakened until the start of Tanazir's next turn. While weakened, it has disadvantage on the following rolls that rely on Strength: attack rolls, ability checks, and saving throws. On a successful save, a creature takes half as much damage and isn't weakened."
+            "name": "Diminution Breath (Recharge 5-6)",
+            "description": "Tanazir exhales a weakening equation in a 90-foot cone. Each creature in that area must make a DC 23 Constitution saving throw. On a failed save, a creature takes 45 (13d6) force damage and 45 (13d6) psychic damage and is weakened until the start of Tanazir's next turn. While weakened, it has disadvantage on the following rolls that rely on Strength: attack rolls, ability checks, and saving throws. On a successful save, a creature takes half as much damage and isn't weakened."
           },
           {
             "id": "strixhaven-tanazir-quandrix-action-4",
             "name": "Teleport",
             "description": "Tanazir teleports to an unoccupied space she can see within 100 feet of herself."
+          },
+          {
+            "id": "strixhaven-tanazir-quandrix-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "Tanazir casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save DC 24):\n\n- 1/day each: divination, enlarge/reduce, mirage arcane (as an action), polymorph, scrying (as an action), seeming"
           }
         ],
         "bonusActions": [],
@@ -3996,7 +4121,7 @@
           {
             "id": "strixhaven-tanazir-quandrix-legendary-1",
             "name": "Fold Space (Costs 2 Actions)",
-            "description": "Tanazir uses Teleport, and each other creature within 20 feet of the space she left must succeed on a 24 Strength saving throw or be pulled up to 30 feet closer to the center of that space and take 16 (3d10) force damage."
+            "description": "Tanazir uses Teleport, and each other creature within 20 feet of the space she left must succeed on a DC 24 Strength saving throw or be pulled up to 30 feet closer to the center of that space and take 16 (3d10) force damage."
           },
           {
             "id": "strixhaven-tanazir-quandrix-legendary-2",
@@ -4068,17 +4193,22 @@
           {
             "id": "strixhaven-velomachus-lorehold-action-1",
             "name": "Bite",
-            "description": "mw 18 to hit, reach 15 ft., one target. {@h}15 (1d10 + 10) piercing damage plus 6 (1d12) thunder damage."
+            "description": "Melee Weapon Attack: +18 to hit, reach 15 ft., one target. Hit: 15 (1d10 + 10) piercing damage plus 6 (1d12) thunder damage."
           },
           {
             "id": "strixhaven-velomachus-lorehold-action-2",
             "name": "Claw",
-            "description": "mw 18 to hit, reach 10 ft., one target. {@h}13 (1d6 + 10) slashing damage. If the target is a Huge or smaller creature, it is knocked prone."
+            "description": "Melee Weapon Attack: +18 to hit, reach 10 ft., one target. Hit: 13 (1d6 + 10) slashing damage. If the target is a Huge or smaller creature, it is knocked prone."
           },
           {
             "id": "strixhaven-velomachus-lorehold-action-3",
-            "name": "Battle Tide Breath 5",
-            "description": "Velomachus exhales thunderous sound in a 90-foot cone. Each creature in that area must make a 25 Constitution saving throw. On a failure, a creature takes 45 (7d12) force damage and 45 (7d12) thunder damage and is pushed up to 20 feet in a horizontal direction of Velomachus' choice. On a success, the creature takes half as much damage and isn't pushed. Objects that aren't being worn or carried take the damage and are pushed as if they were creatures that failed the saving throw."
+            "name": "Battle Tide Breath (Recharge 5-6)",
+            "description": "Velomachus exhales thunderous sound in a 90-foot cone. Each creature in that area must make a DC 25 Constitution saving throw. On a failure, a creature takes 45 (7d12) force damage and 45 (7d12) thunder damage and is pushed up to 20 feet in a horizontal direction of Velomachus' choice. On a success, the creature takes half as much damage and isn't pushed. Objects that aren't being worn or carried take the damage and are pushed as if they were creatures that failed the saving throw."
+          },
+          {
+            "id": "strixhaven-velomachus-lorehold-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "Velomachus casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability:\n\n- 1/day each: contact other plane (as an action, contacting a long-dead spirit), divination, move earth, wall of force"
           }
         ],
         "bonusActions": [],
@@ -4156,7 +4286,12 @@
           {
             "id": "strixhaven-witherbloom-apprentice-action-0",
             "name": "Briar Vine",
-            "description": "ms 4 to hit, reach 15 ft., one target. {@h}7 (1d10 + 2) piercing damage plus 9 (2d8) poison damage. If the target is a Large or smaller creature, the apprentice can pull it up to 10 feet closer to itself."
+            "description": "Melee Spell Attack: +4 to hit, reach 15 ft., one target. Hit: 7 (1d10 + 2) piercing damage plus 9 (2d8) poison damage. If the target is a Large or smaller creature, the apprentice can pull it up to 10 feet closer to itself."
+          },
+          {
+            "id": "strixhaven-witherbloom-apprentice-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The apprentice casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability:\n\n- At will: druidcraft, spare the dying\n- 1/day each: pass without trace"
           }
         ],
         "bonusActions": [],
@@ -4164,7 +4299,7 @@
           {
             "id": "strixhaven-witherbloom-apprentice-reaction-0",
             "name": "Wither Burst",
-            "description": "When the apprentice sees a creature within 30 feet of itself drop to 0 hit points, the apprentice channels the expended life essence and targets another creature it can see within 30 feet of itself. The target must succeed on a 12 Constitution saving throw or become poisoned for 1 minute. While poisoned in this way, the target takes 3 (1d6) poison damage at the start of each of its turns. The target can repeat the save at the end of each of its turns, ending the effect on itself on a success."
+            "description": "When the apprentice sees a creature within 30 feet of itself drop to 0 hit points, the apprentice channels the expended life essence and targets another creature it can see within 30 feet of itself. The target must succeed on a DC 12 Constitution saving throw or become poisoned for 1 minute. While poisoned in this way, the target takes 3 (1d6) poison damage at the start of each of its turns. The target can repeat the save at the end of each of its turns, ending the effect on itself on a success."
           }
         ],
         "legendaryActions": [],
@@ -4230,7 +4365,12 @@
           {
             "id": "strixhaven-witherbloom-pledgemage-action-0",
             "name": "Briar Vine",
-            "description": "ms 5 to hit, reach 15 ft., one target. {@h}8 (1d10 + 3) piercing damage plus 18 (4d8) poison damage. If the target is a Large or smaller creature, the apprentice can pull it up to 10 feet closer to itself."
+            "description": "Melee Spell Attack: +5 to hit, reach 15 ft., one target. Hit: 8 (1d10 + 3) piercing damage plus 18 (4d8) poison damage. If the target is a Large or smaller creature, the apprentice can pull it up to 10 feet closer to itself."
+          },
+          {
+            "id": "strixhaven-witherbloom-pledgemage-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The apprentice casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability:\n\n- At will: druidcraft, spare the dying\n- 1/day each: death ward, pass without trace, speak with plants"
           }
         ],
         "bonusActions": [
@@ -4244,7 +4384,7 @@
           {
             "id": "strixhaven-witherbloom-pledgemage-reaction-0",
             "name": "Wither Burst",
-            "description": "When the pledgemage sees a creature within 30 feet of itself drop to 0 hit points, the pledgemage channels the expended life essence and targets another creature it can see within 30 feet of itself. The target must succeed on a 13 Constitution saving throw or become poisoned for 1 minute. While poisoned in this way, the target takes 3 (1d6) poison damage at the start of each of its turns. The target can repeat the save at the end of each of its turns, ending the effect on itself on a success."
+            "description": "When the pledgemage sees a creature within 30 feet of itself drop to 0 hit points, the pledgemage channels the expended life essence and targets another creature it can see within 30 feet of itself. The target must succeed on a DC 13 Constitution saving throw or become poisoned for 1 minute. While poisoned in this way, the target takes 3 (1d6) poison damage at the start of each of its turns. The target can repeat the save at the end of each of its turns, ending the effect on itself on a success."
           }
         ],
         "legendaryActions": [],
@@ -4310,12 +4450,17 @@
           {
             "id": "strixhaven-witherbloom-professor-of-decay-action-1",
             "name": "Mortality Spear",
-            "description": "ms,rs 7 to hit, reach 5 ft. or range 120 ft., one target. {@h}17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the professor's next turn."
+            "description": "Melee or Ranged Spell Attack: +7 to hit, reach 5 ft. or range 120 ft., one target. Hit: 17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the professor's next turn."
           },
           {
             "id": "strixhaven-witherbloom-professor-of-decay-action-2",
-            "name": "Essence Pulse 5",
-            "description": "The professor creates a life-draining vortex in a 30-foot-radius sphere centered on itself. Each creature of the professor's choice that it can see within that area must make a 15 Constitution saving throw, taking 23 (5d8) necrotic damage on a failed save, or half as much damage on a successful one. The professor then regains 10 hit points. An affected creature's hit point maximum is reduced by an amount equal to the necrotic damage taken. This reduction lasts until the creature finishes a long rest. The creature dies if its hit point maximum is reduced to 0."
+            "name": "Essence Pulse (Recharge 5-6)",
+            "description": "The professor creates a life-draining vortex in a 30-foot-radius sphere centered on itself. Each creature of the professor's choice that it can see within that area must make a DC 15 Constitution saving throw, taking 23 (5d8) necrotic damage on a failed save, or half as much damage on a successful one. The professor then regains 10 hit points. An affected creature's hit point maximum is reduced by an amount equal to the necrotic damage taken. This reduction lasts until the creature finishes a long rest. The creature dies if its hit point maximum is reduced to 0."
+          },
+          {
+            "id": "strixhaven-witherbloom-professor-of-decay-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The professor casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability (spell save DC 15):\n\n- At will: druidcraft, spare the dying\n- 1/day each: antilife shell, bane, feign death, speak with dead"
           }
         ],
         "bonusActions": [],
@@ -4380,12 +4525,17 @@
           {
             "id": "strixhaven-witherbloom-professor-of-growth-action-1",
             "name": "Verdant Lash",
-            "description": "ms 7 to hit, reach 30 ft., one target. {@h}11 (2d6 + 4) piercing damage plus 7 (2d6) poison damage, and the target must succeed on a 15 Strength saving throw or be pulled up to 10 feet closer to the professor."
+            "description": "Melee Spell Attack: +7 to hit, reach 30 ft., one target. Hit: 11 (2d6 + 4) piercing damage plus 7 (2d6) poison damage, and the target must succeed on a DC 15 Strength saving throw or be pulled up to 10 feet closer to the professor."
           },
           {
             "id": "strixhaven-witherbloom-professor-of-growth-action-2",
             "name": "Summon Nature's Avatar (Recharges after a Short or Long Rest)",
             "description": "The professor magically summons a Groff. The groff appears in an unoccupied space within 60 feet of the professor, acts as the professor's ally, and takes its turns immediately after the professor's. The professor can communicate telepathically with this groff while it remains. The groff remains for 10 minutes, until it or the professor dies, or until the professor dismisses it as an action."
+          },
+          {
+            "id": "strixhaven-witherbloom-professor-of-growth-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The professor casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability:\n\n- At will: druidcraft, spare the dying\n- 1/day each: greater restoration, lesser restoration, mass cure wounds, pass without trace, plant growth, revivify"
           }
         ],
         "bonusActions": [],
@@ -4465,19 +4615,19 @@
           {
             "id": "strixhaven-y-demi-action-1",
             "name": "Blood Lash",
-            "description": "ms 9 to hit, reach 10 ft., one target. {@h}21 (3d10 + 5) necrotic damage. If the target is a creature, it can't regain hit points until the start of the Y'demi's next turn."
+            "description": "Melee Spell Attack: +9 to hit, reach 10 ft., one target. Hit: 21 (3d10 + 5) necrotic damage. If the target is a creature, it can't regain hit points until the start of the Y'demi's next turn."
           },
           {
             "id": "strixhaven-y-demi-action-2",
-            "name": "Blood Boil 4",
-            "description": "Y'demi chooses a point within 150 feet of itself, and a 20-foot radius sphere centered on that point fills with a burst of searing, blood-red mist. Each creature of Y'demi's choice that she can see in that area must make a 17 Constitution saving throw. On a failed save, a creature takes 38 (7d10) necrotic damage and is incapacitated until the end of its next turn. On a success, a creature takes half as much damage and isn't incapacitated. A creature dies if reduced to 0 hit points by this necrotic damage."
+            "name": "Blood Boil (Recharge 4-6)",
+            "description": "Y'demi chooses a point within 150 feet of itself, and a 20-foot radius sphere centered on that point fills with a burst of searing, blood-red mist. Each creature of Y'demi's choice that she can see in that area must make a DC 17 Constitution saving throw. On a failed save, a creature takes 38 (7d10) necrotic damage and is incapacitated until the end of its next turn. On a success, a creature takes half as much damage and isn't incapacitated. A creature dies if reduced to 0 hit points by this necrotic damage."
           }
         ],
         "bonusActions": [
           {
             "id": "strixhaven-y-demi-bonus-0",
             "name": "Sanguine Tentacles (1/Day)",
-            "description": "The blood in the copper basin disappears as tentacles of congealed blood fill a 10-foot cube centered at a point on the ground that Y'demi can see within 15 feet of her. The effect lasts for 1 minute, during which time that area is 3. Any creature entering that area for the first time on a turn or starting its turn there must succeed on a 13 Dexterity saving throw or be restrained by the tentacles. A creature that starts its turn restrained by the tentacles takes 10 (3d6) bludgeoning damage. A creature restrained by the tentacles can use its action to make either a 13 Strength (Athletics) check or a 13 Dexterity (Acrobatics) check, ending the restrained condition on itself on a success."
+            "description": "The blood in the copper basin disappears as tentacles of congealed blood fill a 10-foot cube centered at a point on the ground that Y'demi can see within 15 feet of her. The effect lasts for 1 minute, during which time that area is 3. Any creature entering that area for the first time on a turn or starting its turn there must succeed on a DC 13 Dexterity saving throw or be restrained by the tentacles. A creature that starts its turn restrained by the tentacles takes 10 (3d6) bludgeoning damage. A creature restrained by the tentacles can use its action to make either a DC 13 Strength (Athletics) check or a DC 13 Dexterity (Acrobatics) check, ending the restrained condition on itself on a success."
           }
         ],
         "reactions": [],
@@ -4494,6 +4644,6 @@
   "sections": [],
   "documents": [],
   "notes": [
-    "Converted from 5etools JSON filtered to source \"SCC\" downloaded from https://5e.tools/book.html#SCC."
+    "Converted from 5etools JSON filtered to source \"SCC\"."
   ]
 }

@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source VRGR).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T04:13:55.014Z",
+    "importedAt": "2026-10-14T06:27:37.905Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -670,7 +670,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "Before you finish making a character, roll once on the Horror Trinkets table for a unique object your character has with them at the start of their adventuring career. These trinkets hint toward various horrific tales and might lead to dreadful revelations or be nothing more than grim keepsakes. At the DM's discretion any of these trinkets might also be a Mist talisman (detailed in 3), a focal item that can lead the bearer through the Mists to a particular Domain of Dread. Horror Trinkets: 01 — A picture you drew as a child of your imaginary friend; 02 — A lock that opens when blood is dripped in its keyhole; 03 — Clothes stolen from a scarecrow; 04 — A spinning top carved with four faces: happy, sad, wrathful, and dead; 05 — The necklace of a sibling who died on the day you were born; 06 — A wig from someone executed by beheading; 07 — The unopened letter to you from your dying father; 08 — A pocket watch that runs backward for an hour every midnight; 09 — A winter coat stolen from a dying soldier; 10 — A bottle of invisible ink that can only be read at sunset; 11 — A wineskin that refills when interred with a dead person for a night; 12 — A set of silverware used by a king for his last meal; 13 — A spyglass that always shows the world suffering a terrible storm; 14 — A cameo with the profile's face scratched away; 15 — A lantern with a black candle that never runs out and that burns with green flame; 16 — A teacup from a child's tea set, stained with blood; 17 — A little black book that records your dreams, and yours alone, when you sleep; 18 — A necklace formed of the interlinked holy symbols of a dozen deities; 19 — A noose that feels heavier than it should; 20 — A birdcage into which small birds fly but once inside never eat or leave; 21 — A lepidopterist's box filled with dead moths with skull-like patterns on their wings; 22 — A jar of pickled ghouls' tongues; 23 — The wooden hand of a notorious pirate; 24 — A urn with the ashes of a dead relative; 25 — A hand mirror backed with a bronze depiction of a medusa; 26 — Pallid leather gloves crafted with ivory fingernails; 27 — Dice made from the knuckles of a notorious charlatan; 28 — A ring of keys for forgotten locks; 29 — Nails from the coffin of a murderer; 30 — A key to the family crypt; 31 — A bouquet of funerary flowers that always looks and smells fresh; 32 — A switch used to discipline you as a child; 33 — A music box that plays by itself whenever someone holding it dances; 34 — A walking cane with an iron ferrule that strikes sparks on stone; 35 — A flag from a ship lost at sea; 36 — A porcelain doll's head that always seems to be looking at you; 37 — A wolf's head wrought in silver that is also a whistle; 38 — A small mirror that shows a much older version of the viewer; 39 — A small, worn book of children's nursery rhymes; 40 — A mummified raven claw; 41 — A broken pendant of a silver dragon that's always cold to the touch; 42 — A small locked box that quietly hums a lovely melody at night, but you always forget it in the morning; 43 — An inkwell that makes one a little nauseous when staring at it; 44 — An old doll made from a dark, dense wood and missing a hand and a foot; 45 — A black executioner's hood; 46 — A pouch made of flesh, with a sinew drawstring; 47 — A tiny spool of black thread that never runs out; 48 — A tiny clockwork figurine of a dancer that's missing a gear and doesn't work; 49 — A black wooden pipe that creates puffs of smoke that look like skulls; 50 — A vial of perfume, the scent of which only certain creatures can detect; 51 — A stone that emits a single endless sigh; 52 — A rag doll with two red dots on its neck; 53 — A spring-loaded toy with a missing crank; 54 — A mason jar containing a harmless but agitated, animate ooze; 55 — A black wooden die with 1's on all the faces; 56 — A child's portrait with \"born\" written on the back, along with next year's date; 57 — A dagger-sized shark tooth; 58 — A finger that's taken root in a small pot; 59 — A toolbox containing the remains of a dangerous but broken clockwork arachnid; 60 — A pitcher-sized, opalescent snail shell that occasionally, inexplicably shudders or tips over; 61 — The logbook of an ice-breaking ship called The Haifisch; 62 — A small portrait of you as a child, alongside your identically dressed twin; 63 — A silver pocket watch with thirteen hours marked on the face; 64 — A woodcut of a wolf devouring its own hind leg; 65 — A planchette etched with raven skulls; 66 — A moist coral figurine of a lamprey with arms, legs, and a bipedal stance; 67 — A bronze fingertrap sculpted with roaring tigers; 68 — A pearl necklace that turns red under the full moon; 69 — A fossil of a fish with humanoid features; 70 — A plague doctor's mask; 71 — A paper talisman with smudged ink; 72 — A locket containing the smeared image of an eyeless figure; 73 — A canopic jar with a lid sculpted like a goat; 74 — A jack-o'-lantern made from a small, pale gourd; 75 — A single high-heeled, iron shoe; 76 — A candle made from a severed hand; 77 — A clockwork device that beats like a heart; 78 — A blank masquerade mask; 79 — A glass eye with a live worm inside; 80 — A sheet with two eyeholes cut in it; 81 — The deed to someplace called Tergeron Manor; 82 — An ornate, wax-sealed crimson envelope that resists all attempts to open it; 83 — A mourning veil trimmed in black lace; 84 — A straitjacket covered in charcoal runes; 85 — A tattered, burlap mask with a crooked smile painted on it; 86 — A green ribbon designed to be worn as a choker; 87 — Dentures with mismatched, sharpened teeth; 88 — A warm, fist-sized egg case; 89 — A copper ring with \"mine\" engraved on the inside; 90 — A glass ampoule containing a neon green fluid; 91 — An eye patch embroidered with a holy symbol; 92 — A severed big toe with a nail that continues to grow; 93 — A journal that has been heavily redacted; 94 — A glove with a mouth-like design stitched on the palm; 95 — An ornate but empty reliquary made of silver and fractured glass; 96 — A ceramic figure of a cat with too many eyes; 97 — A crumpled paper ticket bearing the words \"admit none\"; 98 — An electrum coin with your face on one side; 99 — A shrunken gremishka head that twitches when anyone casts magic nearby; 100 — A sunburst amulet with a red stone at the center",
+        "description": "Before you finish making a character, roll once on the Horror Trinkets table for a unique object your character has with them at the start of their adventuring career. These trinkets hint toward various horrific tales and might lead to dreadful revelations or be nothing more than grim keepsakes. At the DM's discretion any of these trinkets might also be a Mist talisman (detailed in chapter 3), a focal item that can lead the bearer through the Mists to a particular Domain of Dread. Horror Trinkets: 01 — A picture you drew as a child of your imaginary friend; 02 — A lock that opens when blood is dripped in its keyhole; 03 — Clothes stolen from a scarecrow; 04 — A spinning top carved with four faces: happy, sad, wrathful, and dead; 05 — The necklace of a sibling who died on the day you were born; 06 — A wig from someone executed by beheading; 07 — The unopened letter to you from your dying father; 08 — A pocket watch that runs backward for an hour every midnight; 09 — A winter coat stolen from a dying soldier; 10 — A bottle of invisible ink that can only be read at sunset; 11 — A wineskin that refills when interred with a dead person for a night; 12 — A set of silverware used by a king for his last meal; 13 — A spyglass that always shows the world suffering a terrible storm; 14 — A cameo with the profile's face scratched away; 15 — A lantern with a black candle that never runs out and that burns with green flame; 16 — A teacup from a child's tea set, stained with blood; 17 — A little black book that records your dreams, and yours alone, when you sleep; 18 — A necklace formed of the interlinked holy symbols of a dozen deities; 19 — A noose that feels heavier than it should; 20 — A birdcage into which small birds fly but once inside never eat or leave; 21 — A lepidopterist's box filled with dead moths with skull-like patterns on their wings; 22 — A jar of pickled ghouls' tongues; 23 — The wooden hand of a notorious pirate; 24 — A urn with the ashes of a dead relative; 25 — A hand mirror backed with a bronze depiction of a medusa; 26 — Pallid leather gloves crafted with ivory fingernails; 27 — Dice made from the knuckles of a notorious charlatan; 28 — A ring of keys for forgotten locks; 29 — Nails from the coffin of a murderer; 30 — A key to the family crypt; 31 — A bouquet of funerary flowers that always looks and smells fresh; 32 — A switch used to discipline you as a child; 33 — A music box that plays by itself whenever someone holding it dances; 34 — A walking cane with an iron ferrule that strikes sparks on stone; 35 — A flag from a ship lost at sea; 36 — A porcelain doll's head that always seems to be looking at you; 37 — A wolf's head wrought in silver that is also a whistle; 38 — A small mirror that shows a much older version of the viewer; 39 — A small, worn book of children's nursery rhymes; 40 — A mummified raven claw; 41 — A broken pendant of a silver dragon that's always cold to the touch; 42 — A small locked box that quietly hums a lovely melody at night, but you always forget it in the morning; 43 — An inkwell that makes one a little nauseous when staring at it; 44 — An old doll made from a dark, dense wood and missing a hand and a foot; 45 — A black executioner's hood; 46 — A pouch made of flesh, with a sinew drawstring; 47 — A tiny spool of black thread that never runs out; 48 — A tiny clockwork figurine of a dancer that's missing a gear and doesn't work; 49 — A black wooden pipe that creates puffs of smoke that look like skulls; 50 — A vial of perfume, the scent of which only certain creatures can detect; 51 — A stone that emits a single endless sigh; 52 — A rag doll with two red dots on its neck; 53 — A spring-loaded toy with a missing crank; 54 — A mason jar containing a harmless but agitated, animate ooze; 55 — A black wooden die with 1's on all the faces; 56 — A child's portrait with \"born\" written on the back, along with next year's date; 57 — A dagger-sized shark tooth; 58 — A finger that's taken root in a small pot; 59 — A toolbox containing the remains of a dangerous but broken clockwork arachnid; 60 — A pitcher-sized, opalescent snail shell that occasionally, inexplicably shudders or tips over; 61 — The logbook of an ice-breaking ship called The Haifisch; 62 — A small portrait of you as a child, alongside your identically dressed twin; 63 — A silver pocket watch with thirteen hours marked on the face; 64 — A woodcut of a wolf devouring its own hind leg; 65 — A planchette etched with raven skulls; 66 — A moist coral figurine of a lamprey with arms, legs, and a bipedal stance; 67 — A bronze fingertrap sculpted with roaring tigers; 68 — A pearl necklace that turns red under the full moon; 69 — A fossil of a fish with humanoid features; 70 — A plague doctor's mask; 71 — A paper talisman with smudged ink; 72 — A locket containing the smeared image of an eyeless figure; 73 — A canopic jar with a lid sculpted like a goat; 74 — A jack-o'-lantern made from a small, pale gourd; 75 — A single high-heeled, iron shoe; 76 — A candle made from a severed hand; 77 — A clockwork device that beats like a heart; 78 — A blank masquerade mask; 79 — A glass eye with a live worm inside; 80 — A sheet with two eyeholes cut in it; 81 — The deed to someplace called Tergeron Manor; 82 — An ornate, wax-sealed crimson envelope that resists all attempts to open it; 83 — A mourning veil trimmed in black lace; 84 — A straitjacket covered in charcoal runes; 85 — A tattered, burlap mask with a crooked smile painted on it; 86 — A green ribbon designed to be worn as a choker; 87 — Dentures with mismatched, sharpened teeth; 88 — A warm, fist-sized egg case; 89 — A copper ring with \"mine\" engraved on the inside; 90 — A glass ampoule containing a neon green fluid; 91 — An eye patch embroidered with a holy symbol; 92 — A severed big toe with a nail that continues to grow; 93 — A journal that has been heavily redacted; 94 — A glove with a mouth-like design stitched on the palm; 95 — An ornate but empty reliquary made of silver and fractured glass; 96 — A ceramic figure of a cat with too many eyes; 97 — A crumpled paper ticket bearing the words \"admit none\"; 98 — An electrum coin with your face on one side; 99 — A shrunken gremishka head that twitches when anyone casts magic nearby; 100 — A sunburst amulet with a red stone at the center",
         "properties": []
       },
       {
@@ -684,7 +684,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "This poison bears a distinct scent and chemical message from Ivana Boritsi. A creature subjected to this poison must succeed on a 18 Constitution saving throw or experience the effects of a dream spell created by Ivana the next time they sleep. This poison is nonmagical, and Ivana doesn't directly communicate with those affected during the dream. Rather, she creates the illusion of speaking with her intended target by alchemically crafting her message, predicting her target's reactions, and chemically encoding in her responses. She wears this poison as a perfume or hides it within gift bouquets, allowing it to convey her message later.",
+        "description": "This poison bears a distinct scent and chemical message from Ivana Boritsi. A creature subjected to this poison must succeed on a DC 18 Constitution saving throw or experience the effects of a dream spell created by Ivana the next time they sleep. This poison is nonmagical, and Ivana doesn't directly communicate with those affected during the dream. Rather, she creates the illusion of speaking with her intended target by alchemically crafting her message, predicting her target's reactions, and chemically encoding in her responses. She wears this poison as a perfume or hides it within gift bouquets, allowing it to convey her message later.",
         "properties": []
       },
       {
@@ -785,12 +785,12 @@
           {
             "id": "ravenloft-bodytaker-plant-action-1",
             "name": "Vine Lash",
-            "description": "mw 7 to hit, reach 20 ft., one target. {@h}11 (2d6 + 4) slashing damage. If the target is a creature, it is grappled (escape 15). Until the grapple ends, the target is restrained. The plant has four vines, each of which can grapple one target."
+            "description": "Melee Weapon Attack: +7 to hit, reach 20 ft., one target. Hit: 11 (2d6 + 4) slashing damage. If the target is a creature, it is grappled (escape DC 15). Until the grapple ends, the target is restrained. The plant has four vines, each of which can grapple one target."
           },
           {
             "id": "ravenloft-bodytaker-plant-action-2",
             "name": "Entrapping Pod",
-            "description": "mw 7 to hit, reach 5 ft., one Medium or smaller creature grappled by the plant. {@h}22 (4d8 + 4) acid damage, and the target is pulled into the plant's space and enveloped by the pod, and the grapple ends. While enveloped, the target is restrained, and it has 3 against attacks and effects originating outside the pod. The enveloped target must also immediately succeed on a 16 Constitution saving throw or be stunned by the plant's sapping enzymes until it is removed from the pod or the plant dies. The enveloped target doesn't require air and gains 1 level of exhaustion for each hour it spends in the pod. If the target dies while enveloped, it immediately emerges from the pod as a living podling, wearing or carrying all of the original creature's equipment. As an action, a creature within 5 feet of the bodytaker plant that is outside the pod can open the pod and pull the target free with a successful 15 Strength check. If the plant dies, the target is no longer restrained and can escape from the pod by spending 10 feet of movement, exiting prone. The plant has one pod, which can envelop one creature at a time."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one Medium or smaller creature grappled by the plant. Hit: 22 (4d8 + 4) acid damage, and the target is pulled into the plant's space and enveloped by the pod, and the grapple ends. While enveloped, the target is restrained, and it has 3 against attacks and effects originating outside the pod. The enveloped target must also immediately succeed on a DC 16 Constitution saving throw or be stunned by the plant's sapping enzymes until it is removed from the pod or the plant dies. The enveloped target doesn't require air and gains 1 level of exhaustion for each hour it spends in the pod. If the target dies while enveloped, it immediately emerges from the pod as a living podling, wearing or carrying all of the original creature's equipment. As an action, a creature within 5 feet of the bodytaker plant that is outside the pod can open the pod and pull the target free with a successful DC 15 Strength check. If the plant dies, the target is no longer restrained and can escape from the pod by spending 10 feet of movement, exiting prone. The plant has one pod, which can envelop one creature at a time."
           }
         ],
         "bonusActions": [],
@@ -856,17 +856,17 @@
           {
             "id": "ravenloft-boneless-action-0",
             "name": "Multiattack",
-            "description": "The boneless makes two Slam attacks. If both attacks hit a Large or smaller creature, the creature is grappled (escape 13), and the boneless can use Crushing Embrace."
+            "description": "The boneless makes two Slam attacks. If both attacks hit a Large or smaller creature, the creature is grappled (escape DC 13), and the boneless can use Crushing Embrace."
           },
           {
             "id": "ravenloft-boneless-action-1",
             "name": "Slam",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}5 (1d4 + 3) bludgeoning damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 5 (1d4 + 3) bludgeoning damage."
           },
           {
             "id": "ravenloft-boneless-action-2",
             "name": "Crushing Embrace",
-            "description": "The boneless wraps its body around a Large or smaller creature grappled by it. While the boneless is attached, the target is blinded and is unable to breathe. The target must succeed on a 13 Strength saving throw at the start of each of the boneless' turns or take 5 (1d4 + 3) bludgeoning damage. If something moves the target, the boneless moves with it. The boneless can detach itself by spending 5 feet of its movement. A creature, including the target, can use its action to try to detach the boneless and force it to move into the nearest unoccupied space, doing so with a successful 13 Strength check. When the boneless dies, it detaches from any creature it is attached to."
+            "description": "The boneless wraps its body around a Large or smaller creature grappled by it. While the boneless is attached, the target is blinded and is unable to breathe. The target must succeed on a DC 13 Strength saving throw at the start of each of the boneless' turns or take 5 (1d4 + 3) bludgeoning damage. If something moves the target, the boneless moves with it. The boneless can detach itself by spending 5 feet of its movement. A creature, including the target, can use its action to try to detach the boneless and force it to move into the nearest unoccupied space, doing so with a successful DC 13 Strength check. When the boneless dies, it detaches from any creature it is attached to."
           }
         ],
         "bonusActions": [],
@@ -931,18 +931,23 @@
             "id": "ravenloft-brain-in-a-jar-trait-2",
             "name": "Unusual Nature",
             "description": "The brain doesn't require air, food, drink, or sleep."
+          },
+          {
+            "id": "ravenloft-brain-in-a-jar-spellcasting-0",
+            "name": "Innate Spellcasting (Psionics)",
+            "description": "The brain's innate spellcasting ability is Intelligence (spell save DC 14, +6 to hit with spell attacks). It can innately cast the following spells, requiring no components:\n\n- At will: chill touch (see \"Actions\" below), detect thoughts, mage hand, zone of truth\n- 3/day each: charm person, hold person\n- 1/day each: compulsion, hold monster, sleep (3rd-level version), Tasha's hideous laughter"
           }
         ],
         "actions": [
           {
             "id": "ravenloft-brain-in-a-jar-action-0",
             "name": "Chill Touch (Cantrip)",
-            "description": "rs 6 to hit, range 120 ft., one creature. {@h}13 (3d8) necrotic damage, and the target can't regain hit points until the start of the brain's next turn. If the target is undead, it also has disadvantage on attack rolls against the brain until the end of the brain's next turn."
+            "description": "Ranged Spell Attack: +6 to hit, range 120 ft., one creature. Hit: 13 (3d8) necrotic damage, and the target can't regain hit points until the start of the brain's next turn. If the target is undead, it also has disadvantage on attack rolls against the brain until the end of the brain's next turn."
           },
           {
             "id": "ravenloft-brain-in-a-jar-action-1",
-            "name": "Mind Blast 5",
-            "description": "The brain magically emits psychic energy in a 60-foot cone. Each creature in that area must succeed on a 14 Intelligence saving throw or take 17 (3d8 + 4) psychic damage and be stunned for 1 minute. A stunned creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "name": "Mind Blast (Recharge 5-6)",
+            "description": "The brain magically emits psychic energy in a 60-foot cone. Each creature in that area must succeed on a DC 14 Intelligence saving throw or take 17 (3d8 + 4) psychic damage and be stunned for 1 minute. A stunned creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           }
         ],
         "bonusActions": [],
@@ -995,12 +1000,12 @@
           {
             "id": "ravenloft-carrion-stalker-action-1",
             "name": "Tentacle",
-            "description": "mw 5 to hit, reach 5 ft., one creature. {@h}5 (1d4 + 3) piercing damage, and the carrion stalker attaches to the target and pulls itself into the target's space. While attached, the carrion stalker moves with the target and has advantage on attack rolls against it. A creature can use its action to try to detach the carrion stalker and force it to move into the nearest unoccupied space, doing so with a successful 11 Strength check. On its turn, the carrion stalker can detach itself from the target by using 5 feet of movement. When it dies, the carrion stalker detaches from any creature it is attached to."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one creature. Hit: 5 (1d4 + 3) piercing damage, and the carrion stalker attaches to the target and pulls itself into the target's space. While attached, the carrion stalker moves with the target and has advantage on attack rolls against it. A creature can use its action to try to detach the carrion stalker and force it to move into the nearest unoccupied space, doing so with a successful DC 11 Strength check. On its turn, the carrion stalker can detach itself from the target by using 5 feet of movement. When it dies, the carrion stalker detaches from any creature it is attached to."
           },
           {
             "id": "ravenloft-carrion-stalker-action-2",
             "name": "Larval Burst (1/Day)",
-            "description": "The carrion stalker releases a burst of larvae in a 10-foot-radius sphere centered on itself. Each creature in that area must succeed on a 13 Constitution saving throw or be poisoned. A creature poisoned in this way takes 7 (2d6) poison damage at the start of each of its turns as larvae infest its body. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. Any effect that cures disease or removes the poisoned condition instantly kills the larvae in the creature, ending the effect on it. If a creature is reduced to 0 hit points by the infestation, it dies. The larvae remain in the corpse, and one survives to become a fully grown carrion stalker in 1d4 weeks. Any effect that cures diseases or removes the poisoned condition that targets the corpse instantly kills the larvae."
+            "description": "The carrion stalker releases a burst of larvae in a 10-foot-radius sphere centered on itself. Each creature in that area must succeed on a DC 13 Constitution saving throw or be poisoned. A creature poisoned in this way takes 7 (2d6) poison damage at the start of each of its turns as larvae infest its body. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. Any effect that cures disease or removes the poisoned condition instantly kills the larvae in the creature, ending the effect on it. If a creature is reduced to 0 hit points by the infestation, it dies. The larvae remain in the corpse, and one survives to become a fully grown carrion stalker in 1d4 weeks. Any effect that cures diseases or removes the poisoned condition that targets the corpse instantly kills the larvae."
           }
         ],
         "bonusActions": [],
@@ -1047,7 +1052,7 @@
           {
             "id": "ravenloft-carrionette-trait-0",
             "name": "False Object",
-            "description": "If the carrionette is motionless at the start of combat, it has advantage on its initiative roll. Moreover, if a creature hasn't observed the carrionette move or act, that creature must succeed on a 15 Wisdom (Perception) check to discern that the carrionette is animate."
+            "description": "If the carrionette is motionless at the start of combat, it has advantage on its initiative roll. Moreover, if a creature hasn't observed the carrionette move or act, that creature must succeed on a DC 15 Wisdom (Perception) check to discern that the carrionette is animate."
           },
           {
             "id": "ravenloft-carrionette-trait-1",
@@ -1059,12 +1064,12 @@
           {
             "id": "ravenloft-carrionette-action-0",
             "name": "Silver Needle",
-            "description": "mw 4 to hit, reach 5 ft., one creature. {@h}1 piercing damage plus 3 (1d6) necrotic damage, and the target must succeed on a 12 Charisma saving throw or become cursed for 1 minute. While cursed in this way, the target's speed is reduced by 10 feet, and it must roll a 1d4 and subtract the number rolled from each ability check or attack roll it makes."
+            "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one creature. Hit: 1 piercing damage plus 3 (1d6) necrotic damage, and the target must succeed on a DC 12 Charisma saving throw or become cursed for 1 minute. While cursed in this way, the target's speed is reduced by 10 feet, and it must roll a 1d4 and subtract the number rolled from each ability check or attack roll it makes."
           },
           {
             "id": "ravenloft-carrionette-action-1",
             "name": "Soul Swap",
-            "description": "The carrionette targets a creature it can see within 15 feet of it that is cursed by its Silver Needle. Unless the target is protected by a protection from evil and good spell, it must succeed on a 12 Charisma saving throw or have its consciousness swapped with the carrionette. The carrionette gains control of the target's body, and the target is unconscious for 1 hour, after which it gains control of the carrionette's body. While controlling the target's body, the carrionette retains its Intelligence, Wisdom, and Charisma scores. It otherwise uses the controlled body's statistics, but doesn't gain access to the target's knowledge, class features, or proficiencies. If the carrionette's body is destroyed, both the carrionette and the target die. A protection from evil and good spell cast on the controlled body drives the carrionette out and returns the consciousness of both creatures to their original bodies. The swap is also undone if the controlled body takes damage from the carrionette's Silver Needle."
+            "description": "The carrionette targets a creature it can see within 15 feet of it that is cursed by its Silver Needle. Unless the target is protected by a protection from evil and good spell, it must succeed on a DC 12 Charisma saving throw or have its consciousness swapped with the carrionette. The carrionette gains control of the target's body, and the target is unconscious for 1 hour, after which it gains control of the carrionette's body. While controlling the target's body, the carrionette retains its Intelligence, Wisdom, and Charisma scores. It otherwise uses the controlled body's statistics, but doesn't gain access to the target's knowledge, class features, or proficiencies. If the carrionette's body is destroyed, both the carrionette and the target die. A protection from evil and good spell cast on the controlled body drives the carrionette out and returns the consciousness of both creatures to their original bodies. The swap is also undone if the controlled body takes damage from the carrionette's Silver Needle."
           }
         ],
         "bonusActions": [],
@@ -1120,17 +1125,17 @@
           {
             "id": "ravenloft-death-s-head-action-0",
             "name": "Gnashing Bite (Gnashing Head Only)",
-            "description": "mw 3 to hit, reach 5 ft., one target. {@h}4 (1d6 + 1) piercing damage plus 7 (2d6) necrotic damage."
+            "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 4 (1d6 + 1) piercing damage plus 7 (2d6) necrotic damage."
           },
           {
             "id": "ravenloft-death-s-head-action-1",
             "name": "Mind-Bending Bite (Aberrant Head Only)",
-            "description": "mw 3 to hit, reach 5 ft., one target. {@h}4 (1d6 + 1) piercing damage plus 5 (1d10) necrotic damage, and the target must succeed on a 10 Intelligence saving throw or it can't take a reaction until the end of its next turn. Moreover, on its next turn, the target must choose whether it gets a move, an action, or a bonus action; it gets only one of the three."
+            "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 4 (1d6 + 1) piercing damage plus 5 (1d10) necrotic damage, and the target must succeed on a DC 10 Intelligence saving throw or it can't take a reaction until the end of its next turn. Moreover, on its next turn, the target must choose whether it gets a move, an action, or a bonus action; it gets only one of the three."
           },
           {
             "id": "ravenloft-death-s-head-action-2",
             "name": "Petrifying Bite (Petrifying Head Only)",
-            "description": "mw 3 to hit, reach 5 ft., one target. {@h}3 (1d4 + 1) piercing damage, and the target must succeed on a 10 Constitution saving throw or be restrained as it begins to turn to stone. The target must repeat the saving throw at the end of its next turn. On a success, the effect ends. On a failure, the target is petrified for 10 minutes."
+            "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 3 (1d4 + 1) piercing damage, and the target must succeed on a DC 10 Constitution saving throw or be restrained as it begins to turn to stone. The target must repeat the saving throw at the end of its next turn. On a success, the effect ends. On a failure, the target is petrified for 10 minutes."
           }
         ],
         "bonusActions": [],
@@ -1206,12 +1211,12 @@
           {
             "id": "ravenloft-dullahan-action-1",
             "name": "Battleaxe",
-            "description": "mw 8 to hit, reach 5 ft., one target. {@h}8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) slashing damage if used with two hands, plus 11 (2d10) necrotic damage. If the dullahan scores a critical hit against a creature, the target must succeed on a 15 Constitution saving throw or the dullahan cuts off the target's head. The target dies if it can't survive without the lost head. A creature that doesn't have or need a head, or has legendary actions, instead takes an extra 27 (6d8) slashing damage."
+            "description": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) slashing damage if used with two hands, plus 11 (2d10) necrotic damage. If the dullahan scores a critical hit against a creature, the target must succeed on a DC 15 Constitution saving throw or the dullahan cuts off the target's head. The target dies if it can't survive without the lost head. A creature that doesn't have or need a head, or has legendary actions, instead takes an extra 27 (6d8) slashing damage."
           },
           {
             "id": "ravenloft-dullahan-action-2",
             "name": "Fiery Skull",
-            "description": "rs 7 to hit, range 120 ft., one target. {@h}14 (2d10 + 3) fire damage."
+            "description": "Ranged Spell Attack: +7 to hit, range 120 ft., one target. Hit: 14 (2d10 + 3) fire damage."
           }
         ],
         "bonusActions": [],
@@ -1225,7 +1230,7 @@
           {
             "id": "ravenloft-dullahan-legendary-1",
             "name": "Frightful Presence (Costs 2 Actions)",
-            "description": "Each creature of the dullahan's choice within 30 feet of it must succeed on a 15 Wisdom saving throw or become frightened of the dullahan until the end of its next turn."
+            "description": "Each creature of the dullahan's choice within 30 feet of it must succeed on a DC 15 Wisdom saving throw or become frightened of the dullahan until the end of its next turn."
           },
           {
             "id": "ravenloft-dullahan-legendary-2",
@@ -1312,7 +1317,7 @@
           {
             "id": "ravenloft-elise-action-1",
             "name": "Slam",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}13 (2d8 + 4) bludgeoning damage."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 13 (2d8 + 4) bludgeoning damage."
           }
         ],
         "bonusActions": [],
@@ -1397,12 +1402,12 @@
           {
             "id": "ravenloft-gallows-speaker-action-0",
             "name": "Foretelling Touch",
-            "description": "ms 7 to hit, reach 5 ft., one creature. {@h}15 (2d10 + 4) psychic damage, and the target must roll a d4 and subtract the number rolled from the next attack roll or saving throw it makes before the start of the gallows speaker's next turn."
+            "description": "Melee Spell Attack: +7 to hit, reach 5 ft., one creature. Hit: 15 (2d10 + 4) psychic damage, and the target must roll a d4 and subtract the number rolled from the next attack roll or saving throw it makes before the start of the gallows speaker's next turn."
           },
           {
             "id": "ravenloft-gallows-speaker-action-1",
             "name": "Suffering Echoes",
-            "description": "The gallows speaker targets a creature it can see within 30 feet of it. The target must make a 15 Wisdom saving throw. On a failed save, the target takes 19 (3d12) psychic damage, and waves of painful memories leap from the target to up to three other creatures of the gallows speaker's choice that are within 30 feet of the target, each of which takes 13 (3d8) psychic damage."
+            "description": "The gallows speaker targets a creature it can see within 30 feet of it. The target must make a DC 15 Wisdom saving throw. On a failed save, the target takes 19 (3d12) psychic damage, and waves of painful memories leap from the target to up to three other creatures of the gallows speaker's choice that are within 30 feet of the target, each of which takes 13 (3d8) psychic damage."
           }
         ],
         "bonusActions": [],
@@ -1480,17 +1485,17 @@
           {
             "id": "ravenloft-greater-star-spawn-emissary-action-1",
             "name": "Lashing Maw",
-            "description": "mw 14 to hit, reach 15 ft., one target. {@h}20 (2d10 + 7) piercing damage plus 13 (3d8) acid damage."
+            "description": "Melee Weapon Attack: +14 to hit, reach 15 ft., one target. Hit: 20 (2d10 + 7) piercing damage plus 13 (3d8) acid damage."
           },
           {
             "id": "ravenloft-greater-star-spawn-emissary-action-2",
             "name": "Psychic Orb",
-            "description": "rs 15 to hit, range 120 ft., one creature. {@h}27 (3d12 + 8) psychic damage."
+            "description": "Ranged Spell Attack: +15 to hit, range 120 ft., one creature. Hit: 27 (3d12 + 8) psychic damage."
           },
           {
             "id": "ravenloft-greater-star-spawn-emissary-action-3",
-            "name": "Unearthly Bile 5",
-            "description": "The emissary expels bile that splashes all creatures in a 30-foot-radius sphere centered on a point within 120 feet of the emissary. Each creature in that area must make a 23 Dexterity saving throw, taking 55 (10d10) acid damage on a failed save, or half as much damage on a successful one. For each creature that fails the saving throw, a gibbering mouther (see its entry in the Monster Manual) appears in an unoccupied space on a surface that can support it within 30 feet of that creature. The gibbering mouthers act right after the emissary on the same initiative count, gaining a +7 bonus to their attack and damage rolls, and fighting until they are destroyed. They disappear when the emissary dies."
+            "name": "Unearthly Bile (Recharge 5-6)",
+            "description": "The emissary expels bile that splashes all creatures in a 30-foot-radius sphere centered on a point within 120 feet of the emissary. Each creature in that area must make a DC 23 Dexterity saving throw, taking 55 (10d10) acid damage on a failed save, or half as much damage on a successful one. For each creature that fails the saving throw, a gibbering mouther (see its entry in the Monster Manual) appears in an unoccupied space on a surface that can support it within 30 feet of that creature. The gibbering mouthers act right after the emissary on the same initiative count, gaining a +7 bonus to their attack and damage rolls, and fighting until they are destroyed. They disappear when the emissary dies."
           }
         ],
         "bonusActions": [],
@@ -1509,7 +1514,7 @@
           {
             "id": "ravenloft-greater-star-spawn-emissary-legendary-2",
             "name": "Mind Cloud (Costs 3 Actions)",
-            "description": "The emissary unleashes a psychic wave. Each creature within 30 feet of the emissary must succeed on a 23 Wisdom saving throw or take 32 (5d12) psychic damage. In addition, every spell ends on creatures and objects of the emissary's choice in that area."
+            "description": "The emissary unleashes a psychic wave. Each creature within 30 feet of the emissary must succeed on a DC 23 Wisdom saving throw or take 32 (5d12) psychic damage. In addition, every spell ends on creatures and objects of the emissary's choice in that area."
           }
         ],
         "languages": [
@@ -1549,7 +1554,7 @@
           {
             "id": "ravenloft-gremishka-action-0",
             "name": "Bite",
-            "description": "mw 4 to hit, reach 5 ft., one target. {@h}2 (1d4 + 2) piercing damage plus 3 (1d6) force damage."
+            "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 2 (1d4 + 2) piercing damage plus 3 (1d6) force damage."
           }
         ],
         "bonusActions": [],
@@ -1557,7 +1562,7 @@
           {
             "id": "ravenloft-gremishka-reaction-0",
             "name": "Magic Allergy (1/Day)",
-            "description": "Immediately after a creature within 30 feet of the gremishka casts a spell, the gremishka can spontaneously react to the magic. Roll a d6 to determine the effect: 1-2: The gremishka emanates magical energy. Each creature within 30 feet of the gremishka must succeed on a 10 Constitution saving throw or take 3 (1d6) force damage. 3-4: The gremishka surges with magical energy and regains 3 (1d6) hit points. 5-6: The gremishka explodes and dies, and one swarm of gremishkas instantly appears in the space where this gremishka died. The swarm uses the gremishka's initiative."
+            "description": "Immediately after a creature within 30 feet of the gremishka casts a spell, the gremishka can spontaneously react to the magic. Roll a d6 to determine the effect: 1-2: The gremishka emanates magical energy. Each creature within 30 feet of the gremishka must succeed on a DC 10 Constitution saving throw or take 3 (1d6) force damage. 3-4: The gremishka surges with magical energy and regains 3 (1d6) hit points. 5-6: The gremishka explodes and dies, and one swarm of gremishkas instantly appears in the space where this gremishka died. The swarm uses the gremishka's initiative."
           }
         ],
         "legendaryActions": [],
@@ -1615,17 +1620,22 @@
           {
             "id": "ravenloft-inquisitor-of-the-mind-fire-action-1",
             "name": "Silver Longsword",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) if used with two hands, plus 18 (4d8) force damage."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) if used with two hands, plus 18 (4d8) force damage."
           },
           {
             "id": "ravenloft-inquisitor-of-the-mind-fire-action-2",
             "name": "Mind Fire",
-            "description": "The inquisitor targets one creature it can see within 120 feet of it. The target must succeed on a 15 Intelligence saving throw or take 17 (3d8 + 4) psychic damage and be stunned until the start of the inquisitor's next turn."
+            "description": "The inquisitor targets one creature it can see within 120 feet of it. The target must succeed on a DC 15 Intelligence saving throw or take 17 (3d8 + 4) psychic damage and be stunned until the start of the inquisitor's next turn."
           },
           {
             "id": "ravenloft-inquisitor-of-the-mind-fire-action-3",
-            "name": "Inquisitor's Command 5",
-            "description": "Each creature of the inquisitor's choice that it can see within 60 feet of it must succeed on a 15 Wisdom saving throw or be charmed until the start of the inquisitor's next turn. On the charmed target's turn, the inquisitor can telepathically control the target's move, action, or both. When controlled in this way, the target can take only the Attack (inquisitor chooses the target) or Dash action."
+            "name": "Inquisitor's Command (Recharge 5-6)",
+            "description": "Each creature of the inquisitor's choice that it can see within 60 feet of it must succeed on a DC 15 Wisdom saving throw or be charmed until the start of the inquisitor's next turn. On the charmed target's turn, the inquisitor can telepathically control the target's move, action, or both. When controlled in this way, the target can take only the Attack (inquisitor chooses the target) or Dash action."
+          },
+          {
+            "id": "ravenloft-inquisitor-of-the-mind-fire-spellcasting-0",
+            "name": "Innate Spellcasting (Psionics)",
+            "description": "The inquisitor casts one of the following spells, requiring no components and using Charisma as the spellcasting ability (spell save DC 15):\n\n- At will: arcane eye, calm emotions, detect magic, detect thoughts, dispel magic, sending, suggestion\n- 1/day each: mass suggestion, modify memory"
           }
         ],
         "bonusActions": [],
@@ -1694,7 +1704,12 @@
           {
             "id": "ravenloft-inquisitor-of-the-sword-action-1",
             "name": "Silver Longsword",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) if used with two hands, plus 18 (4d8) force damage."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) if used with two hands, plus 18 (4d8) force damage."
+          },
+          {
+            "id": "ravenloft-inquisitor-of-the-sword-spellcasting-0",
+            "name": "Innate Spellcasting (Psionics)",
+            "description": "The inquisitor casts one of the following spells, requiring no components and using Wisdom as the spellcasting ability (spell save DC 15):\n\n- At will: detect magic, detect thoughts, dispel magic, sending\n- 1/day each: dimension door, fly, greater invisibility"
           }
         ],
         "bonusActions": [
@@ -1763,17 +1778,22 @@
           {
             "id": "ravenloft-inquisitor-of-the-tome-action-1",
             "name": "Force Bolt",
-            "description": "rs 7 to hit, range 120 ft., one target. {@h}22 (4d8 + 4) force damage, and if the target is a Large or smaller creature, the inquisitor can push it up to 10 feet away."
+            "description": "Ranged Spell Attack: +7 to hit, range 120 ft., one target. Hit: 22 (4d8 + 4) force damage, and if the target is a Large or smaller creature, the inquisitor can push it up to 10 feet away."
           },
           {
             "id": "ravenloft-inquisitor-of-the-tome-action-2",
             "name": "Silver Longsword",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) if used with two hands, plus 18 (4d8) force damage."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) if used with two hands, plus 18 (4d8) force damage."
           },
           {
             "id": "ravenloft-inquisitor-of-the-tome-action-3",
-            "name": "Implode 4",
-            "description": "Each creature in a 20-foot-radius sphere centered on a point the inquisitor can see within 120 feet of it must succeed on a 15 Constitution saving throw or take 31 (6d8 + 4) force damage and be knocked prone and moved to the unoccupied space closest to the sphere's center. Large and smaller objects that aren't being worn or carried in the sphere automatically take the damage and are similarly moved."
+            "name": "Implode (Recharge 4-6)",
+            "description": "Each creature in a 20-foot-radius sphere centered on a point the inquisitor can see within 120 feet of it must succeed on a DC 15 Constitution saving throw or take 31 (6d8 + 4) force damage and be knocked prone and moved to the unoccupied space closest to the sphere's center. Large and smaller objects that aren't being worn or carried in the sphere automatically take the damage and are similarly moved."
+          },
+          {
+            "id": "ravenloft-inquisitor-of-the-tome-spellcasting-0",
+            "name": "Innate Spellcasting (Psionics)",
+            "description": "The inquisitor casts one of the following spells, requiring no components and using Intelligence as the spellcasting ability (spell save DC 15):\n\n- At will: detect magic, dispel magic, levitate, mage armor, mage hand, sending\n- 1/day each: Otiluke's resilient sphere, telekinesis"
           }
         ],
         "bonusActions": [],
@@ -1849,6 +1869,11 @@
             "id": "ravenloft-isolde-trait-1",
             "name": "Magic Resistance Aura",
             "description": "While holding Nepenthe, Isolde creates an aura in a 10-foot radius around her. While this aura is active, Isolde and all creatures friendly to her in the aura have advantage on saving throws against spells and other magical effects."
+          },
+          {
+            "id": "ravenloft-isolde-spellcasting-0",
+            "name": "Innate Spellcasting",
+            "description": "Isolde's spellcasting ability is Charisma (spell save DC 14). Isolde can innately cast the following spells, requiring no material components:\n\n- 1/day: plane shift (self only)\n- 3/day each: alter self, command, detect magic"
           }
         ],
         "actions": [
@@ -1860,17 +1885,17 @@
           {
             "id": "ravenloft-isolde-action-1",
             "name": "Nepenthe",
-            "description": "mw 10 to hit, reach 5 ft.., one target. {@h}11 (1d8 + 7) slashing damage, or 12 (1d10 + 7) slashing damage if used with two hands to make a melee attack. If the target is a fiend or an undead, it takes an extra 11 (2d10) radiant damage."
+            "description": "Melee Weapon Attack: +10 to hit, reach 5 ft.., one target. Hit: 11 (1d8 + 7) slashing damage, or 12 (1d10 + 7) slashing damage if used with two hands to make a melee attack. If the target is a fiend or an undead, it takes an extra 11 (2d10) radiant damage."
           },
           {
             "id": "ravenloft-isolde-action-2",
             "name": "Fire Ray",
-            "description": "rs 7 to hit, range 120 ft., one target. {@h}10 (3d6) fire damage."
+            "description": "Ranged Spell Attack: +7 to hit, range 120 ft., one target. Hit: 10 (3d6) fire damage."
           },
           {
             "id": "ravenloft-isolde-action-3",
             "name": "Fiendish Charm",
-            "description": "One humanoid Isolde can see within 30 feet of it must succeed on a 14 Wisdom saving throw or be magically charmed for 1 day. The charmed target obeys Isolde's spoken commands. If the target suffers any harm from Isolde or another creature or receives a suicidal command from Isolde, the target can repeat the saving throw, ending the effect on itself on a success. If a target's saving throw is successful, or if the effect ends for it, the creature is immune to Isolde's Fiendish Charm for the next 24 hours."
+            "description": "One humanoid Isolde can see within 30 feet of it must succeed on a DC 14 Wisdom saving throw or be magically charmed for 1 day. The charmed target obeys Isolde's spoken commands. If the target suffers any harm from Isolde or another creature or receives a suicidal command from Isolde, the target can repeat the saving throw, ending the effect on itself on a success. If a target's saving throw is successful, or if the effect ends for it, the creature is immune to Isolde's Fiendish Charm for the next 24 hours."
           }
         ],
         "bonusActions": [],
@@ -1943,12 +1968,12 @@
           {
             "id": "ravenloft-jiangshi-action-1",
             "name": "Slam",
-            "description": "mw 8 to hit, reach 5 ft., one target. {@h}13 (2d8 + 4) bludgeoning damage."
+            "description": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit: 13 (2d8 + 4) bludgeoning damage."
           },
           {
             "id": "ravenloft-jiangshi-action-2",
             "name": "Consume Energy",
-            "description": "The jiangshi draws energy from a creature it can see within 30 feet of it. The target makes a 16 Constitution saving throw, taking 18 (4d8) necrotic damage on a failed save, or half as much damage on a successful one. The jiangshi regains hit points equal to the amount of necrotic damage dealt. After regaining hit points from this action, the jiangshi gains the following benefits for 7 days: its walking speed increases to 40 feet, and it gains a flying speed equal to its walking speed and can hover. A Humanoid slain by this necrotic damage rises as a wight (see its entry in the Monster Manual) at the end of the jiangshi's turn. The wight acts immediately after the jiangshi in the initiative order. If this wight slays a Humanoid with its Life Drain, the wight transforms into a jiangshi 5 days later."
+            "description": "The jiangshi draws energy from a creature it can see within 30 feet of it. The target makes a DC 16 Constitution saving throw, taking 18 (4d8) necrotic damage on a failed save, or half as much damage on a successful one. The jiangshi regains hit points equal to the amount of necrotic damage dealt. After regaining hit points from this action, the jiangshi gains the following benefits for 7 days: its walking speed increases to 40 feet, and it gains a flying speed equal to its walking speed and can hover. A Humanoid slain by this necrotic damage rises as a wight (see its entry in the Monster Manual) at the end of the jiangshi's turn. The wight acts immediately after the jiangshi in the initiative order. If this wight slays a Humanoid with its Life Drain, the wight transforms into a jiangshi 5 days later."
           },
           {
             "id": "ravenloft-jiangshi-action-3",
@@ -2036,12 +2061,12 @@
           {
             "id": "ravenloft-lesser-star-spawn-emissary-action-1",
             "name": "Lashing Maw",
-            "description": "mw 11 to hit, reach 15 ft., one target. {@h}16 (2d10 + 5) piercing damage plus 13 (3d8) acid damage."
+            "description": "Melee Weapon Attack: +11 to hit, reach 15 ft., one target. Hit: 16 (2d10 + 5) piercing damage plus 13 (3d8) acid damage."
           },
           {
             "id": "ravenloft-lesser-star-spawn-emissary-action-2",
             "name": "Psychic Orb",
-            "description": "rs 13 to hit, range 120 ft., one creature. {@h}18 (2d10 + 7) psychic damage."
+            "description": "Ranged Spell Attack: +13 to hit, range 120 ft., one creature. Hit: 18 (2d10 + 7) psychic damage."
           },
           {
             "id": "ravenloft-lesser-star-spawn-emissary-action-3",
@@ -2065,7 +2090,7 @@
           {
             "id": "ravenloft-lesser-star-spawn-emissary-legendary-2",
             "name": "Psychic Lash (Costs 3 Actions)",
-            "description": "The emissary targets a creature it can see within 30 feet of it and psychically lashes at that creature's mind. The target must succeed on a 21 Wisdom saving throw or take 36 (8d8) psychic damage and be stunned until the start of its next turn."
+            "description": "The emissary targets a creature it can see within 30 feet of it and psychically lashes at that creature's mind. The target must succeed on a DC 21 Wisdom saving throw or take 36 (8d8) psychic damage and be stunned until the start of its next turn."
           }
         ],
         "languages": [
@@ -2139,17 +2164,17 @@
           {
             "id": "ravenloft-loup-garou-action-1",
             "name": "Bite (Dire Wolf or Hybrid Form Only)",
-            "description": "mw 9 to hit, reach 5 ft., one target. {@h}13 (2d8 + 4) piercing damage plus 14 (4d6) necrotic damage. If the target is a Humanoid, it must succeed on a 17 Constitution saving throw or be cursed with loup garou lycanthropy."
+            "description": "Melee Weapon Attack: +9 to hit, reach 5 ft., one target. Hit: 13 (2d8 + 4) piercing damage plus 14 (4d6) necrotic damage. If the target is a Humanoid, it must succeed on a DC 17 Constitution saving throw or be cursed with loup garou lycanthropy."
           },
           {
             "id": "ravenloft-loup-garou-action-2",
             "name": "Claws (Dire Wolf or Hybrid Form Only)",
-            "description": "mw 9 to hit, reach 5 ft., one target. {@h}11 (2d6 + 4) slashing damage. If the target is a creature, it must succeed on a 17 Strength saving throw or be knocked prone."
+            "description": "Melee Weapon Attack: +9 to hit, reach 5 ft., one target. Hit: 11 (2d6 + 4) slashing damage. If the target is a creature, it must succeed on a DC 17 Strength saving throw or be knocked prone."
           },
           {
             "id": "ravenloft-loup-garou-action-3",
             "name": "Longsword (Humanoid Form Only)",
-            "description": "mw 9 to hit, reach 5 ft., one target. {@h}13 (2d8 + 4) slashing damage, or 15 (2d10 + 4) slashing damage if used with two hands."
+            "description": "Melee Weapon Attack: +9 to hit, reach 5 ft., one target. Hit: 13 (2d8 + 4) slashing damage, or 15 (2d10 + 4) slashing damage if used with two hands."
           }
         ],
         "bonusActions": [
@@ -2263,17 +2288,17 @@
           {
             "id": "ravenloft-necrichor-action-1",
             "name": "Pseudopod",
-            "description": "mw 5 to hit, reach 10 ft., one target. {@h}5 (1d6 + 2) necrotic damage, and the target must succeed on a 14 Constitution saving throw or be paralyzed until the start of the necrichor's next turn."
+            "description": "Melee Weapon Attack: +5 to hit, reach 10 ft., one target. Hit: 5 (1d6 + 2) necrotic damage, and the target must succeed on a DC 14 Constitution saving throw or be paralyzed until the start of the necrichor's next turn."
           },
           {
             "id": "ravenloft-necrichor-action-2",
             "name": "Necrotic Bolt",
-            "description": "rs 6 to hit, range 120 ft., one creature. {@h}12 (2d8 + 3) necrotic damage, and the target can't regain hit points until the start of the necrichor's next turn."
+            "description": "Ranged Spell Attack: +6 to hit, range 120 ft., one creature. Hit: 12 (2d8 + 3) necrotic damage, and the target can't regain hit points until the start of the necrichor's next turn."
           },
           {
             "id": "ravenloft-necrichor-action-3",
-            "name": "Blood Puppeteering {@recharge}",
-            "description": "The necrichor targets a creature it can see within 5 feet of it that is missing any of its hit points. If the target isn't a Construct or an Undead, it must succeed on a 14 Constitution saving throw or the necrichor enters the target's space and attaches itself to the target for 1 minute. While attached, the necrichor takes only half damage dealt to it (round down), and the target takes the remaining damage. The necrichor can attach to only one creature at a time. The attached necrichor can telepathically control the target's move, action, or both. When controlled this way, the target can take only the Attack action (necrichor chooses the target) or the Dash action. The attached target can repeat the saving throw at the end of each of its turns, detaching from the necrichor and forcing it to move into the nearest unoccupied space on a success."
+            "name": "Blood Puppeteering (Recharge 6)",
+            "description": "The necrichor targets a creature it can see within 5 feet of it that is missing any of its hit points. If the target isn't a Construct or an Undead, it must succeed on a DC 14 Constitution saving throw or the necrichor enters the target's space and attaches itself to the target for 1 minute. While attached, the necrichor takes only half damage dealt to it (round down), and the target takes the remaining damage. The necrichor can attach to only one creature at a time. The attached necrichor can telepathically control the target's move, action, or both. When controlled this way, the target can take only the Attack action (necrichor chooses the target) or the Dash action. The attached target can repeat the saving throw at the end of each of its turns, detaching from the necrichor and forcing it to move into the nearest unoccupied space on a success."
           }
         ],
         "bonusActions": [],
@@ -2358,17 +2383,17 @@
           {
             "id": "ravenloft-nosferatu-action-1",
             "name": "Claw",
-            "description": "mw 8 to hit, reach 5 ft., one target. {@h}9 (1d8 + 5) slashing damage."
+            "description": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit: 9 (1d8 + 5) slashing damage."
           },
           {
             "id": "ravenloft-nosferatu-action-2",
             "name": "Bite",
-            "description": "mw 8 to hit, reach 5 ft., one creature. {@h}9 (1d8 + 5) piercing damage plus 7 (2d6) necrotic damage. If the target is missing any of its hit points, it instead takes 11 (2d10) necrotic damage. The target's hit point maximum is reduced by an amount equal to the necrotic damage taken, and the nosferatu regains hit points equal to that amount. The reduction lasts until the target finishes a long rest. The target dies if its hit point maximum is reduced to 0. A Humanoid slain in this way and then buried in the ground rises as a nosferatu after 1d10 days."
+            "description": "Melee Weapon Attack: +8 to hit, reach 5 ft., one creature. Hit: 9 (1d8 + 5) piercing damage plus 7 (2d6) necrotic damage. If the target is missing any of its hit points, it instead takes 11 (2d10) necrotic damage. The target's hit point maximum is reduced by an amount equal to the necrotic damage taken, and the nosferatu regains hit points equal to that amount. The reduction lasts until the target finishes a long rest. The target dies if its hit point maximum is reduced to 0. A Humanoid slain in this way and then buried in the ground rises as a nosferatu after 1d10 days."
           },
           {
             "id": "ravenloft-nosferatu-action-3",
-            "name": "Blood Disgorge 5",
-            "description": "The nosferatu vomits blood in a 15-foot cone. Each creature in that area must make a 16 Constitution saving throw. On a failed save, a creature takes 18 (4d8) necrotic damage, and it can't regain hit points for 1 minute. On a successful save, the creature takes half as much damage with no additional effects."
+            "name": "Blood Disgorge (Recharge 5-6)",
+            "description": "The nosferatu vomits blood in a 15-foot cone. Each creature in that area must make a DC 16 Constitution saving throw. On a failed save, a creature takes 18 (4d8) necrotic damage, and it can't regain hit points for 1 minute. On a successful save, the creature takes half as much damage with no additional effects."
           }
         ],
         "bonusActions": [],
@@ -2413,7 +2438,7 @@
           {
             "id": "ravenloft-podling-trait-0",
             "name": "Semblance of Life",
-            "description": "The podling is a physical copy of a creature digested by a bodytaker plant. The podling has the digested creature's memories and behaves like that creature, but with occasional lapses. An observer familiar with the digested creature can recognize the discrepancies with a successful 20 Wisdom (Insight) check, or automatically if the podling does something in direct contradiction to the digested creature's established beliefs or behavior. The podling melts into a slurry when it dies, when the bodytaker plant that created it dies, or when the bodytaker plant dismisses it (no action required)."
+            "description": "The podling is a physical copy of a creature digested by a bodytaker plant. The podling has the digested creature's memories and behaves like that creature, but with occasional lapses. An observer familiar with the digested creature can recognize the discrepancies with a successful DC 20 Wisdom (Insight) check, or automatically if the podling does something in direct contradiction to the digested creature's established beliefs or behavior. The podling melts into a slurry when it dies, when the bodytaker plant that created it dies, or when the bodytaker plant dismisses it (no action required)."
           },
           {
             "id": "ravenloft-podling-trait-1",
@@ -2425,7 +2450,7 @@
           {
             "id": "ravenloft-podling-action-0",
             "name": "Slam",
-            "description": "mw 4 to hit, reach 5 ft., one target. {@h}5 (1d6 + 2) bludgeoning damage."
+            "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) bludgeoning damage."
           }
         ],
         "bonusActions": [],
@@ -2487,18 +2512,18 @@
           {
             "id": "ravenloft-priest-of-osybus-action-1",
             "name": "Soul Blade",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}7 (2d4 + 2) piercing damage, and if the target is a creature, it is paralyzed until the start of the priest's next turn. If this damage reduces a Medium or smaller creature to 0 hit points, the creature dies, and its soul is trapped in the priest's body, manifesting as a shadowy Soul Tattoo on the priest. The soul is freed if the priest dies."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (2d4 + 2) piercing damage, and if the target is a creature, it is paralyzed until the start of the priest's next turn. If this damage reduces a Medium or smaller creature to 0 hit points, the creature dies, and its soul is trapped in the priest's body, manifesting as a shadowy Soul Tattoo on the priest. The soul is freed if the priest dies."
           },
           {
             "id": "ravenloft-priest-of-osybus-action-2",
             "name": "Necrotic Bolt",
-            "description": "rs 7 to hit, range 120 ft., one target. {@h}17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the priest's next turn."
+            "description": "Ranged Spell Attack: +7 to hit, range 120 ft., one target. Hit: 17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the priest's next turn."
           }
         ],
         "bonusActions": [
           {
             "id": "ravenloft-priest-of-osybus-bonus-0",
-            "name": "Soul Tattoo 5",
+            "name": "Soul Tattoo (Recharge 5-6)",
             "description": "The priest touches one of the Soul Tattoos on its body. The tattoo vanishes as the trapped soul manifests as a shadowy creature that appears in an unoccupied space the priest can see within 30 feet of it. The creature has the size and silhouette of its original body, but it otherwise uses the stat block of a shadow. The shadow obeys the priest's mental commands (no action required) and takes its turn immediately after the priest. If the creature is within 5 feet of the priest, it can turn back into a tattoo as an action, reappearing on the priest's flesh and regaining all its hit points."
           }
         ],
@@ -2564,18 +2589,18 @@
           {
             "id": "ravenloft-priest-of-osybus-blazing-boon-action-1",
             "name": "Soul Blade",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}7 (2d4 + 2) piercing damage, and if the target is a creature, it is paralyzed until the start of the priest's next turn. If this damage reduces a Medium or smaller creature to 0 hit points, the creature dies, and its soul is trapped in the priest's body, manifesting as a shadowy Soul Tattoo on the priest. The soul is freed if the priest dies."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (2d4 + 2) piercing damage, and if the target is a creature, it is paralyzed until the start of the priest's next turn. If this damage reduces a Medium or smaller creature to 0 hit points, the creature dies, and its soul is trapped in the priest's body, manifesting as a shadowy Soul Tattoo on the priest. The soul is freed if the priest dies."
           },
           {
             "id": "ravenloft-priest-of-osybus-blazing-boon-action-2",
             "name": "Necrotic Bolt",
-            "description": "rs 7 to hit, range 120 ft., one target. {@h}17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the priest's next turn."
+            "description": "Ranged Spell Attack: +7 to hit, range 120 ft., one target. Hit: 17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the priest's next turn."
           }
         ],
         "bonusActions": [
           {
             "id": "ravenloft-priest-of-osybus-blazing-boon-bonus-0",
-            "name": "Soul Tattoo 5",
+            "name": "Soul Tattoo (Recharge 5-6)",
             "description": "The priest touches one of the Soul Tattoos on its body. The tattoo vanishes as the trapped soul manifests as a shadowy creature that appears in an unoccupied space the priest can see within 30 feet of it. The creature has the size and silhouette of its original body, but it otherwise uses the stat block of a shadow. The shadow obeys the priest's mental commands (no action required) and takes its turn immediately after the priest. If the creature is within 5 feet of the priest, it can turn back into a tattoo as an action, reappearing on the priest's flesh and regaining all its hit points."
           }
         ],
@@ -2636,23 +2661,28 @@
           {
             "id": "ravenloft-priest-of-osybus-deathly-boon-action-1",
             "name": "Soul Blade",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}7 (2d4 + 2) piercing damage, and if the target is a creature, it is paralyzed until the start of the priest's next turn. If this damage reduces a Medium or smaller creature to 0 hit points, the creature dies, and its soul is trapped in the priest's body, manifesting as a shadowy Soul Tattoo on the priest. The soul is freed if the priest dies."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (2d4 + 2) piercing damage, and if the target is a creature, it is paralyzed until the start of the priest's next turn. If this damage reduces a Medium or smaller creature to 0 hit points, the creature dies, and its soul is trapped in the priest's body, manifesting as a shadowy Soul Tattoo on the priest. The soul is freed if the priest dies."
           },
           {
             "id": "ravenloft-priest-of-osybus-deathly-boon-action-2",
             "name": "Necrotic Bolt",
-            "description": "rs 7 to hit, range 120 ft., one target. {@h}17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the priest's next turn."
+            "description": "Ranged Spell Attack: +7 to hit, range 120 ft., one target. Hit: 17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the priest's next turn."
           },
           {
             "id": "ravenloft-priest-of-osybus-deathly-boon-action-3",
-            "name": "Circle of Death (Spell; 5)",
-            "description": "Each creature in a 60-foot-radius sphere centered on a point the priest can see within 150 feet of it must make a 15 Constitution saving throw, taking 28 (8d6) necrotic damage on a failed save, or half as much damage on a successful one."
+            "name": "Circle of Death (Spell; (Recharge 5-6))",
+            "description": "Each creature in a 60-foot-radius sphere centered on a point the priest can see within 150 feet of it must make a DC 15 Constitution saving throw, taking 28 (8d6) necrotic damage on a failed save, or half as much damage on a successful one."
+          },
+          {
+            "id": "ravenloft-priest-of-osybus-deathly-boon-spellcasting-0",
+            "name": "Innate Spellcasting",
+            "description": "The priest casts one of the following spells, requiring no components and using Intelligence as the spellcasting ability (spell save DC 15):\n\n- At will: circle of death\n- 1/day each: animate dead, create undead"
           }
         ],
         "bonusActions": [
           {
             "id": "ravenloft-priest-of-osybus-deathly-boon-bonus-0",
-            "name": "Soul Tattoo 5",
+            "name": "Soul Tattoo (Recharge 5-6)",
             "description": "The priest touches one of the Soul Tattoos on its body. The tattoo vanishes as the trapped soul manifests as a shadowy creature that appears in an unoccupied space the priest can see within 30 feet of it. The creature has the size and silhouette of its original body, but it otherwise uses the stat block of a shadow. The shadow obeys the priest's mental commands (no action required) and takes its turn immediately after the priest. If the creature is within 5 feet of the priest, it can turn back into a tattoo as an action, reappearing on the priest's flesh and regaining all its hit points."
           }
         ],
@@ -2706,7 +2736,7 @@
           {
             "id": "ravenloft-priest-of-osybus-dread-boon-trait-1",
             "name": "Dread Boon",
-            "description": "Eerie whispers can now be heard around the priest. Any non-Undead creature that starts its turn within 30 feet of the priest must succeed on a 15 Wisdom saving throw or be frightened of the priest until the start of the creature's next turn."
+            "description": "Eerie whispers can now be heard around the priest. Any non-Undead creature that starts its turn within 30 feet of the priest must succeed on a DC 15 Wisdom saving throw or be frightened of the priest until the start of the creature's next turn."
           }
         ],
         "actions": [
@@ -2718,18 +2748,18 @@
           {
             "id": "ravenloft-priest-of-osybus-dread-boon-action-1",
             "name": "Soul Blade",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}7 (2d4 + 2) piercing damage, and if the target is a creature, it is paralyzed until the start of the priest's next turn. If this damage reduces a Medium or smaller creature to 0 hit points, the creature dies, and its soul is trapped in the priest's body, manifesting as a shadowy Soul Tattoo on the priest. The soul is freed if the priest dies."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (2d4 + 2) piercing damage, and if the target is a creature, it is paralyzed until the start of the priest's next turn. If this damage reduces a Medium or smaller creature to 0 hit points, the creature dies, and its soul is trapped in the priest's body, manifesting as a shadowy Soul Tattoo on the priest. The soul is freed if the priest dies."
           },
           {
             "id": "ravenloft-priest-of-osybus-dread-boon-action-2",
             "name": "Necrotic Bolt",
-            "description": "rs 7 to hit, range 120 ft., one target. {@h}17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the priest's next turn."
+            "description": "Ranged Spell Attack: +7 to hit, range 120 ft., one target. Hit: 17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the priest's next turn."
           }
         ],
         "bonusActions": [
           {
             "id": "ravenloft-priest-of-osybus-dread-boon-bonus-0",
-            "name": "Soul Tattoo 5",
+            "name": "Soul Tattoo (Recharge 5-6)",
             "description": "The priest touches one of the Soul Tattoos on its body. The tattoo vanishes as the trapped soul manifests as a shadowy creature that appears in an unoccupied space the priest can see within 30 feet of it. The creature has the size and silhouette of its original body, but it otherwise uses the stat block of a shadow. The shadow obeys the priest's mental commands (no action required) and takes its turn immediately after the priest. If the creature is within 5 feet of the priest, it can turn back into a tattoo as an action, reappearing on the priest's flesh and regaining all its hit points."
           }
         ],
@@ -2795,18 +2825,18 @@
           {
             "id": "ravenloft-priest-of-osybus-ectoplasmic-boon-action-1",
             "name": "Soul Blade",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}7 (2d4 + 2) piercing damage, and if the target is a creature, it is paralyzed until the start of the priest's next turn. If this damage reduces a Medium or smaller creature to 0 hit points, the creature dies, and its soul is trapped in the priest's body, manifesting as a shadowy Soul Tattoo on the priest. The soul is freed if the priest dies."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (2d4 + 2) piercing damage, and if the target is a creature, it is paralyzed until the start of the priest's next turn. If this damage reduces a Medium or smaller creature to 0 hit points, the creature dies, and its soul is trapped in the priest's body, manifesting as a shadowy Soul Tattoo on the priest. The soul is freed if the priest dies."
           },
           {
             "id": "ravenloft-priest-of-osybus-ectoplasmic-boon-action-2",
             "name": "Necrotic Bolt",
-            "description": "rs 7 to hit, range 120 ft., one target. {@h}17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the priest's next turn."
+            "description": "Ranged Spell Attack: +7 to hit, range 120 ft., one target. Hit: 17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the priest's next turn."
           }
         ],
         "bonusActions": [
           {
             "id": "ravenloft-priest-of-osybus-ectoplasmic-boon-bonus-0",
-            "name": "Soul Tattoo 5",
+            "name": "Soul Tattoo (Recharge 5-6)",
             "description": "The priest touches one of the Soul Tattoos on its body. The tattoo vanishes as the trapped soul manifests as a shadowy creature that appears in an unoccupied space the priest can see within 30 feet of it. The creature has the size and silhouette of its original body, but it otherwise uses the stat block of a shadow. The shadow obeys the priest's mental commands (no action required) and takes its turn immediately after the priest. If the creature is within 5 feet of the priest, it can turn back into a tattoo as an action, reappearing on the priest's flesh and regaining all its hit points."
           }
         ],
@@ -2872,18 +2902,18 @@
           {
             "id": "ravenloft-priest-of-osybus-spectral-boon-action-1",
             "name": "Soul Blade",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}7 (2d4 + 2) piercing damage, and if the target is a creature, it is paralyzed until the start of the priest's next turn. If this damage reduces a Medium or smaller creature to 0 hit points, the creature dies, and its soul is trapped in the priest's body, manifesting as a shadowy Soul Tattoo on the priest. The soul is freed if the priest dies."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (2d4 + 2) piercing damage, and if the target is a creature, it is paralyzed until the start of the priest's next turn. If this damage reduces a Medium or smaller creature to 0 hit points, the creature dies, and its soul is trapped in the priest's body, manifesting as a shadowy Soul Tattoo on the priest. The soul is freed if the priest dies."
           },
           {
             "id": "ravenloft-priest-of-osybus-spectral-boon-action-2",
             "name": "Necrotic Bolt",
-            "description": "rs 7 to hit, range 120 ft., one target. {@h}17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the priest's next turn."
+            "description": "Ranged Spell Attack: +7 to hit, range 120 ft., one target. Hit: 17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the priest's next turn."
           }
         ],
         "bonusActions": [
           {
             "id": "ravenloft-priest-of-osybus-spectral-boon-bonus-0",
-            "name": "Soul Tattoo 5",
+            "name": "Soul Tattoo (Recharge 5-6)",
             "description": "The priest touches one of the Soul Tattoos on its body. The tattoo vanishes as the trapped soul manifests as a shadowy creature that appears in an unoccupied space the priest can see within 30 feet of it. The creature has the size and silhouette of its original body, but it otherwise uses the stat block of a shadow. The shadow obeys the priest's mental commands (no action required) and takes its turn immediately after the priest. If the creature is within 5 feet of the priest, it can turn back into a tattoo as an action, reappearing on the priest's flesh and regaining all its hit points."
           }
         ],
@@ -2949,18 +2979,18 @@
           {
             "id": "ravenloft-priest-of-osybus-vampiric-boon-action-1",
             "name": "Soul Blade",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}7 (2d4 + 2) piercing damage, and if the target is a creature, it is paralyzed until the start of the priest's next turn. If this damage reduces a Medium or smaller creature to 0 hit points, the creature dies, and its soul is trapped in the priest's body, manifesting as a shadowy Soul Tattoo on the priest. The soul is freed if the priest dies."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (2d4 + 2) piercing damage, and if the target is a creature, it is paralyzed until the start of the priest's next turn. If this damage reduces a Medium or smaller creature to 0 hit points, the creature dies, and its soul is trapped in the priest's body, manifesting as a shadowy Soul Tattoo on the priest. The soul is freed if the priest dies."
           },
           {
             "id": "ravenloft-priest-of-osybus-vampiric-boon-action-2",
             "name": "Necrotic Bolt",
-            "description": "rs 7 to hit, range 120 ft., one target. {@h}17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the priest's next turn."
+            "description": "Ranged Spell Attack: +7 to hit, range 120 ft., one target. Hit: 17 (3d8 + 4) necrotic damage, and the target can't regain hit points until the start of the priest's next turn."
           }
         ],
         "bonusActions": [
           {
             "id": "ravenloft-priest-of-osybus-vampiric-boon-bonus-0",
-            "name": "Soul Tattoo 5",
+            "name": "Soul Tattoo (Recharge 5-6)",
             "description": "The priest touches one of the Soul Tattoos on its body. The tattoo vanishes as the trapped soul manifests as a shadowy creature that appears in an unoccupied space the priest can see within 30 feet of it. The creature has the size and silhouette of its original body, but it otherwise uses the stat block of a shadow. The shadow obeys the priest's mental commands (no action required) and takes its turn immediately after the priest. If the creature is within 5 feet of the priest, it can turn back into a tattoo as an action, reappearing on the priest's flesh and regaining all its hit points."
           }
         ],
@@ -3037,17 +3067,17 @@
           {
             "id": "ravenloft-relentless-juggernaut-action-1",
             "name": "Executioner's Pick",
-            "description": "mw 10 to hit, reach 5 ft., one target. {@h}17 (2d10 + 6) piercing damage, and if the target is a creature, its speed is reduced by 10 feet until the start of the juggernaut's next turn."
+            "description": "Melee Weapon Attack: +10 to hit, reach 5 ft., one target. Hit: 17 (2d10 + 6) piercing damage, and if the target is a creature, its speed is reduced by 10 feet until the start of the juggernaut's next turn."
           },
           {
             "id": "ravenloft-relentless-juggernaut-action-2",
             "name": "Fist",
-            "description": "mw 10 to hit, reach 5 ft., one target. {@h}11 (1d10 + 6) bludgeoning damage, and if the target is a Large or smaller creature, it must succeed on a 18 Strength saving throw or be knocked prone."
+            "description": "Melee Weapon Attack: +10 to hit, reach 5 ft., one target. Hit: 11 (1d10 + 6) bludgeoning damage, and if the target is a Large or smaller creature, it must succeed on a DC 18 Strength saving throw or be knocked prone."
           },
           {
             "id": "ravenloft-relentless-juggernaut-action-3",
-            "name": "Deadly Shaping 5",
-            "description": "The juggernaut magically shapes a feature of its surroundings into a deadly implement. A creature the juggernaut can see within 60 feet of it must make a 18 Dexterity saving throw. If the saving throw fails, the targeted creature is struck by one of the following (juggernaut's choice):"
+            "name": "Deadly Shaping (Recharge 5-6)",
+            "description": "The juggernaut magically shapes a feature of its surroundings into a deadly implement. A creature the juggernaut can see within 60 feet of it must make a DC 18 Dexterity saving throw. If the saving throw fails, the targeted creature is struck by one of the following (juggernaut's choice):"
           },
           {
             "id": "ravenloft-relentless-juggernaut-action-4",
@@ -3057,7 +3087,7 @@
           {
             "id": "ravenloft-relentless-juggernaut-action-5",
             "name": "Scything Shrapnel",
-            "description": "The target takes 14 (4d6) slashing damage, and the implement vanishes. At the start of each of its turns, the target takes 10 (3d6) necrotic damage from the wound left by the shrapnel. The wound ends if the target regains any hit points or if a creature uses an action to stanch the wound, which requires a successful 15 Wisdom (Medicine) check."
+            "description": "The target takes 14 (4d6) slashing damage, and the implement vanishes. At the start of each of its turns, the target takes 10 (3d6) necrotic damage from the wound left by the shrapnel. The wound ends if the target regains any hit points or if a creature uses an action to stanch the wound, which requires a successful DC 15 Wisdom (Medicine) check."
           }
         ],
         "bonusActions": [],
@@ -3141,7 +3171,7 @@
           {
             "id": "ravenloft-relentless-slasher-action-1",
             "name": "Slasher's Knife",
-            "description": "mw,rw 7 to hit, reach 5 ft. or range 30/60 ft., one target. {@h}6 (1d4 + 4) slashing damage plus 21 (6d6) necrotic damage. If the target is a creature, it suffers a lingering wound that causes it to take 7 (2d6) necrotic damage at the start of each of its turns. Each time the slasher hits the wounded target with this attack, the damage dealt by the wound increases by 3 (1d6). The wound ends if the target regains hit points or if a creature uses an action to stanch the wound, which requires a successful 15 Wisdom (Medicine) check."
+            "description": "Melee or Ranged Weapon Attack: +7 to hit, reach 5 ft. or range 30/60 ft., one target. Hit: 6 (1d4 + 4) slashing damage plus 21 (6d6) necrotic damage. If the target is a creature, it suffers a lingering wound that causes it to take 7 (2d6) necrotic damage at the start of each of its turns. Each time the slasher hits the wounded target with this attack, the damage dealt by the wound increases by 3 (1d6). The wound ends if the target regains hit points or if a creature uses an action to stanch the wound, which requires a successful DC 15 Wisdom (Medicine) check."
           }
         ],
         "bonusActions": [],
@@ -3150,7 +3180,7 @@
           {
             "id": "ravenloft-relentless-slasher-legendary-0",
             "name": "Slice",
-            "description": "mw,rw 7 to hit, reach 5 ft. or range 30/60 ft., one target. {@h}7 (1d6 + 4) slashing damage."
+            "description": "Melee or Ranged Weapon Attack: +7 to hit, reach 5 ft. or range 30/60 ft., one target. Hit: 7 (1d6 + 4) slashing damage."
           },
           {
             "id": "ravenloft-relentless-slasher-legendary-1",
@@ -3221,12 +3251,12 @@
           {
             "id": "ravenloft-strigoi-action-1",
             "name": "Claw",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}7 (1d8 + 3) slashing damage plus 6 (1d12) acid damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (1d8 + 3) slashing damage plus 6 (1d12) acid damage."
           },
           {
             "id": "ravenloft-strigoi-action-2",
             "name": "Proboscis",
-            "description": "mw 5 to hit, reach 5 ft., one creature. {@h}8 (1d10 + 3) piercing damage plus 10 (3d6) necrotic damage, and the strigoi regains hit points equal to the amount of necrotic damage dealt. A creature reduced to 0 hit points from this attack dies and leaves nothing behind except its skin and its equipment."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one creature. Hit: 8 (1d10 + 3) piercing damage plus 10 (3d6) necrotic damage, and the strigoi regains hit points equal to the amount of necrotic damage dealt. A creature reduced to 0 hit points from this attack dies and leaves nothing behind except its skin and its equipment."
           },
           {
             "id": "ravenloft-strigoi-action-3",
@@ -3302,7 +3332,7 @@
           {
             "id": "ravenloft-swarm-of-gremishkas-action-0",
             "name": "Bites",
-            "description": "mw 4 to hit, reach 0 ft., one target in the swarm's space. {@h}12 (3d6 + 2) piercing damage, or 5 (1d6 + 2) piercing damage if the swarm has half of its hit points or fewer, plus 7 (2d6) force damage."
+            "description": "Melee Weapon Attack: +4 to hit, reach 0 ft., one target in the swarm's space. Hit: 12 (3d6 + 2) piercing damage, or 5 (1d6 + 2) piercing damage if the swarm has half of its hit points or fewer, plus 7 (2d6) force damage."
           }
         ],
         "bonusActions": [],
@@ -3371,7 +3401,7 @@
           {
             "id": "ravenloft-swarm-of-maggots-action-0",
             "name": "Infestation",
-            "description": "mw 3 to hit, reach 0 ft., one target in the swarm's space. {@h}10 (4d4) piercing damage, or 5 (2d4) piercing damage if the swarm has half of its hit points or fewer. A creature damaged by the swarm must succeed on a 12 Constitution saving throw or contract a disease. Each time the diseased creature finishes a long rest, roll a d6 to determine the disease's effect: 1-2: The creature is blinded until it finishes a long rest. 3-4: The creature's hit point maximum decreases by 5 (2d4), and the reduction can't be removed until the disease ends. The creature dies if its hit point maximum drops to 0. 5-6: The creature has disadvantage on ability checks and attack rolls until it finishes its next long rest. The disease lasts until it's removed by magic or until the creature rolls the same random effect for the disease two long rests in a row."
+            "description": "Melee Weapon Attack: +3 to hit, reach 0 ft., one target in the swarm's space. Hit: 10 (4d4) piercing damage, or 5 (2d4) piercing damage if the swarm has half of its hit points or fewer. A creature damaged by the swarm must succeed on a DC 12 Constitution saving throw or contract a disease. Each time the diseased creature finishes a long rest, roll a d6 to determine the disease's effect: 1-2: The creature is blinded until it finishes a long rest. 3-4: The creature's hit point maximum decreases by 5 (2d4), and the reduction can't be removed until the disease ends. The creature dies if its hit point maximum drops to 0. 5-6: The creature has disadvantage on ability checks and attack rolls until it finishes its next long rest. The disease lasts until it's removed by magic or until the creature rolls the same random effect for the disease two long rests in a row."
           }
         ],
         "bonusActions": [],
@@ -3441,7 +3471,7 @@
           {
             "id": "ravenloft-swarm-of-scarabs-action-0",
             "name": "Ravenous Bites",
-            "description": "mw 4 to hit, reach 0 ft., one target in the swarm's space. {@h}14 (4d6) piercing damage, or 7 (2d6) piercing damage if the swarm has half of its hit points or fewer. If the target is a creature, scarabs burrow into its body, and the creature takes 3 (1d6) piercing damage at the start of each of its turns. Any creature can use an action to kill or remove the scarabs with fire or a weapon that deals piercing damage, causing 1 damage of the appropriate type to the target. A creature reduced to 0 hit points by the swarm's piercing damage dies."
+            "description": "Melee Weapon Attack: +4 to hit, reach 0 ft., one target in the swarm's space. Hit: 14 (4d6) piercing damage, or 7 (2d6) piercing damage if the swarm has half of its hit points or fewer. If the target is a creature, scarabs burrow into its body, and the creature takes 3 (1d6) piercing damage at the start of each of its turns. Any creature can use an action to kill or remove the scarabs with fire or a weapon that deals piercing damage, causing 1 damage of the appropriate type to the target. A creature reduced to 0 hit points by the swarm's piercing damage dies."
           }
         ],
         "bonusActions": [],
@@ -3516,12 +3546,12 @@
           {
             "id": "ravenloft-swarm-of-zombie-limbs-action-1",
             "name": "Undead Mass",
-            "description": "mw 4 to hit, reach 0 ft., one target in the swarm's space. {@h}5 (1d6 + 2) bludgeoning damage, or 4 (1d4 + 2) bludgeoning damage if the swarm has half of its hit points or fewer."
+            "description": "Melee Weapon Attack: +4 to hit, reach 0 ft., one target in the swarm's space. Hit: 5 (1d6 + 2) bludgeoning damage, or 4 (1d4 + 2) bludgeoning damage if the swarm has half of its hit points or fewer."
           },
           {
             "id": "ravenloft-swarm-of-zombie-limbs-action-2",
             "name": "Grasping Limbs",
-            "description": "mw 4 to hit, reach 0 ft., one creature in the swarm's space. {@h}7 (2d6) necrotic damage, and the creature must succeed on a 12 Strength saving throw or be restrained. The creature can repeat the saving throw at the end of each of its turns, taking 7 (2d6) necrotic damage on a failed save. The creature is freed if it succeeds on this saving throw, the swarm moves out of the creature's space, or the swarm dies."
+            "description": "Melee Weapon Attack: +4 to hit, reach 0 ft., one creature in the swarm's space. Hit: 7 (2d6) necrotic damage, and the creature must succeed on a DC 12 Strength saving throw or be restrained. The creature can repeat the saving throw at the end of each of its turns, taking 7 (2d6) necrotic damage on a failed save. The creature is freed if it succeeds on this saving throw, the swarm moves out of the creature's space, or the swarm dies."
           }
         ],
         "bonusActions": [],
@@ -3567,7 +3597,7 @@
           {
             "id": "ravenloft-the-bagman-trait-1",
             "name": "Regeneration",
-            "description": "The Bagman regains 10 hit points at the start of its turn. If the troll takes acid or fire damage, this trait doesn't function at the start of the troll's next turn. The troll dies only if it starts its turn with 0 hit points and doesn't regenerate."
+            "description": "The Bagman regains 10 hit points at the start of its turn. If the Bagman takes acid or fire damage, this trait doesn't function at the start of the Bagman's next turn. The Bagman dies only if it starts its turn with 0 hit points and doesn't regenerate."
           },
           {
             "id": "ravenloft-the-bagman-trait-2",
@@ -3582,7 +3612,7 @@
           {
             "id": "ravenloft-the-bagman-trait-4",
             "name": "Alien Mind",
-            "description": "If a creature tries to read the Bagman's thoughts, that creature must succeed on a 8 Intelligence saving throw or be stunned for 1 minute. The stunned creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "description": "If a creature tries to read the Bagman's thoughts, that creature must succeed on a DC 8 Intelligence saving throw or be stunned for 1 minute. The stunned creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           }
         ],
         "actions": [
@@ -3594,12 +3624,12 @@
           {
             "id": "ravenloft-the-bagman-action-1",
             "name": "Bite",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}7 (1d6 + 4) piercing damage."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 7 (1d6 + 4) piercing damage."
           },
           {
             "id": "ravenloft-the-bagman-action-2",
             "name": "Claw",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}11 (2d6 + 4) slashing damage."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 11 (2d6 + 4) slashing damage."
           }
         ],
         "bonusActions": [],
@@ -3662,7 +3692,7 @@
           {
             "id": "ravenloft-unspeakable-horror-trait-3",
             "name": "Relentless Stride (Loathsome Limbs Only)",
-            "description": "The horror can move through the space of another creature. The first time on a turn that the horror enters a creature's space during this move, the creature must succeed on a 16 Strength saving throw or be knocked prone."
+            "description": "The horror can move through the space of another creature. The first time on a turn that the horror enters a creature's space during this move, the creature must succeed on a DC 16 Strength saving throw or be knocked prone."
           }
         ],
         "actions": [
@@ -3674,12 +3704,12 @@
           {
             "id": "ravenloft-unspeakable-horror-action-1",
             "name": "Limbs",
-            "description": "mw 8 to hit, reach 5 ft., one target. {@h}21 (3d10 + 5) bludgeoning damage."
+            "description": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit: 21 (3d10 + 5) bludgeoning damage."
           },
           {
             "id": "ravenloft-unspeakable-horror-action-2",
-            "name": "Hex Blast 5",
-            "description": "The horror expels necrotic energy in a 30-foot cone. Each creature in that area must make a 15 Constitution saving throw, taking 45 (7d12) necrotic damage on a failed save, or half as much damage on a successful one."
+            "name": "Hex Blast (Recharge 5-6)",
+            "description": "The horror expels necrotic energy in a 30-foot cone. Each creature in that area must make a DC 15 Constitution saving throw, taking 45 (7d12) necrotic damage on a failed save, or half as much damage on a successful one."
           }
         ],
         "bonusActions": [],
@@ -3758,24 +3788,24 @@
           {
             "id": "ravenloft-vampiric-mind-flayer-action-1",
             "name": "Claw",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}8 (1d8 + 4) slashing damage plus 10 (3d6) necrotic damage."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) slashing damage plus 10 (3d6) necrotic damage."
           },
           {
             "id": "ravenloft-vampiric-mind-flayer-action-2",
             "name": "Tentacles",
-            "description": "mw 7 to hit, reach 5 ft., one creature. {@h}7 (1d6 + 4) piercing damage, and if the target is a creature, it is grappled (escape 15)."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one creature. Hit: 7 (1d6 + 4) piercing damage, and if the target is a creature, it is grappled (escape DC 15)."
           },
           {
             "id": "ravenloft-vampiric-mind-flayer-action-3",
             "name": "Drink Sapience",
-            "description": "The mind flayer targets one creature it is grappling. The target must succeed on a 15 Wisdom saving throw or take 14 (4d6) psychic damage and gain 1 level of exhaustion. The mind flayer regains a number of hit points equal to the psychic damage dealt. A creature reduced to 0 hit points by the psychic damage dies."
+            "description": "The mind flayer targets one creature it is grappling. The target must succeed on a DC 15 Wisdom saving throw or take 14 (4d6) psychic damage and gain 1 level of exhaustion. The mind flayer regains a number of hit points equal to the psychic damage dealt. A creature reduced to 0 hit points by the psychic damage dies."
           }
         ],
         "bonusActions": [
           {
             "id": "ravenloft-vampiric-mind-flayer-bonus-0",
-            "name": "Disrupt Psyche 5",
-            "description": "The mind flayer magically emits psionic energy in a 30-foot-radius sphere centered on itself. Each creature in that area must succeed on a 15 Intelligence saving throw or be incapacitated for 1 minute. The incapacitated creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "name": "Disrupt Psyche (Recharge 5-6)",
+            "description": "The mind flayer magically emits psionic energy in a 30-foot-radius sphere centered on itself. Each creature in that area must succeed on a DC 15 Intelligence saving throw or be incapacitated for 1 minute. The incapacitated creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           }
         ],
         "reactions": [],
@@ -3824,7 +3854,7 @@
           {
             "id": "ravenloft-wereraven-trait-1",
             "name": "Mimicry",
-            "description": "The wereraven can mimic simple sounds it has heard, such as a person whispering, a baby crying, or an animal chittering. A creature that hears the sounds can tell they are imitations with a successful 10 Wisdom (Insight) check."
+            "description": "The wereraven can mimic simple sounds it has heard, such as a person whispering, a baby crying, or an animal chittering. A creature that hears the sounds can tell they are imitations with a successful DC 10 Wisdom (Insight) check."
           },
           {
             "id": "ravenloft-wereraven-trait-2",
@@ -3841,17 +3871,17 @@
           {
             "id": "ravenloft-wereraven-action-1",
             "name": "Beak (Raven or Hybrid Form Only)",
-            "description": "mw 4 to hit, reach 5 ft., one target. {@h}1 piercing damage in raven form, or 4 (1d4 + 2) piercing damage in hybrid form. If the target is humanoid, it must succeed on a 10 Constitution saving throw or be cursed with wereraven lycanthropy."
+            "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 1 piercing damage in raven form, or 4 (1d4 + 2) piercing damage in hybrid form. If the target is humanoid, it must succeed on a DC 10 Constitution saving throw or be cursed with wereraven lycanthropy."
           },
           {
             "id": "ravenloft-wereraven-action-2",
             "name": "Shortsword (Human or Hybrid Form Only)",
-            "description": "mw 4 to hit, reach 5 ft., one target. {@h}5 (1d6 + 2) piercing damage."
+            "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage."
           },
           {
             "id": "ravenloft-wereraven-action-3",
             "name": "Hand Crossbow (Human or Hybrid Form Only)",
-            "description": "rw 4 to hit, range 30/120 ft., one target. {@h}5 (1d6 + 2) piercing damage."
+            "description": "Ranged Weapon Attack: +4 to hit, range 30/120 ft., one target. Hit: 5 (1d6 + 2) piercing damage."
           }
         ],
         "bonusActions": [],
@@ -3906,7 +3936,7 @@
           {
             "id": "ravenloft-zombie-clot-trait-0",
             "name": "Deathly Stench",
-            "description": "Any creature that starts its turn within 10 feet of the zombie must succeed on a 14 Constitution saving throw or take 9 (2d8) poison damage and be poisoned until the start of the creature's next turn."
+            "description": "Any creature that starts its turn within 10 feet of the zombie must succeed on a DC 14 Constitution saving throw or take 9 (2d8) poison damage and be poisoned until the start of the creature's next turn."
           },
           {
             "id": "ravenloft-zombie-clot-trait-1",
@@ -3928,12 +3958,12 @@
           {
             "id": "ravenloft-zombie-clot-action-1",
             "name": "Slam",
-            "description": "mw 8 to hit, reach 10 ft., one target. {@h}18 (3d8 + 5) bludgeoning damage."
+            "description": "Melee Weapon Attack: +8 to hit, reach 10 ft., one target. Hit: 18 (3d8 + 5) bludgeoning damage."
           },
           {
             "id": "ravenloft-zombie-clot-action-2",
-            "name": "Flesh Entomb 5",
-            "description": "The zombie flings a detached clump of corpses at a creature it can see within 30 feet of it. The target must succeed on a 16 Strength saving throw or take 16 (3d10) bludgeoning damage, and if the target is a Large or smaller creature, it becomes entombed in dead flesh. A creature entombed in the dead flesh is restrained, has 3 against attacks and other effects outside the dead flesh, and takes 10 (3d6) necrotic damage at the start of each of its turns. The creature can be freed if the dead flesh is destroyed. The dead flesh is a Large object with AC 10, 25 hit points, and immunity to poison and psychic damage."
+            "name": "Flesh Entomb (Recharge 5-6)",
+            "description": "The zombie flings a detached clump of corpses at a creature it can see within 30 feet of it. The target must succeed on a DC 16 Strength saving throw or take 16 (3d10) bludgeoning damage, and if the target is a Large or smaller creature, it becomes entombed in dead flesh. A creature entombed in the dead flesh is restrained, has 3 against attacks and other effects outside the dead flesh, and takes 10 (3d6) necrotic damage at the start of each of its turns. The creature can be freed if the dead flesh is destroyed. The dead flesh is a Large object with AC 10, 25 hit points, and immunity to poison and psychic damage."
           }
         ],
         "bonusActions": [],
@@ -3995,7 +4025,7 @@
           {
             "id": "ravenloft-zombie-plague-spreader-trait-2",
             "name": "Viral Aura",
-            "description": "Any creature that starts its turn within 10 feet of the plague spreader must make a 12 Constitution saving throw. On a failed save, the creature is poisoned and can't regain hit points until the end of its next turn. On a successful save, the creature is immune to this plague spreader's Viral Aura for 24 hours."
+            "description": "Any creature that starts its turn within 10 feet of the plague spreader must make a DC 12 Constitution saving throw. On a failed save, the creature is poisoned and can't regain hit points until the end of its next turn. On a successful save, the creature is immune to this plague spreader's Viral Aura for 24 hours."
           }
         ],
         "actions": [
@@ -4007,12 +4037,12 @@
           {
             "id": "ravenloft-zombie-plague-spreader-action-1",
             "name": "Slam",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}6 (1d6 + 3) bludgeoning damage plus 9 (2d8) necrotic damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) bludgeoning damage plus 9 (2d8) necrotic damage."
           },
           {
             "id": "ravenloft-zombie-plague-spreader-action-2",
             "name": "Virulent Miasma (1/Day)",
-            "description": "The plague spreader releases toxic gas in a 30-foot-radius sphere centered on itself. Each creature in that area must make a 12 Constitution saving throw, taking 14 (4d6) poison damage on a failed save, or half as much damage on a successful one. A Humanoid reduced to 0 hit points by this damage dies and rises as a zombie (see its stat block in the Monster Manual) 1 minute later. The zombie acts immediately after the plague spreader in the initiative count."
+            "description": "The plague spreader releases toxic gas in a 30-foot-radius sphere centered on itself. Each creature in that area must make a DC 12 Constitution saving throw, taking 14 (4d6) poison damage on a failed save, or half as much damage on a successful one. A Humanoid reduced to 0 hit points by this damage dies and rises as a zombie (see its stat block in the Monster Manual) 1 minute later. The zombie acts immediately after the plague spreader in the initiative count."
           }
         ],
         "bonusActions": [],
@@ -4030,6 +4060,6 @@
   "sections": [],
   "documents": [],
   "notes": [
-    "Converted from 5etools JSON filtered to source \"VRGR\" downloaded from https://5e.tools/book.html#VRGR."
+    "Converted from 5etools JSON filtered to source \"VRGR\"."
   ]
 }

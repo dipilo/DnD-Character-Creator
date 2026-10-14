@@ -132,8 +132,12 @@ const extractFeatureOptionsFromSection = (raw, config) => {
     return [];
   }
 
+  // Three classes print a section called "Fighting Style" with different options under each, so a
+  // config may name the anchor instead of the title.
   const sectionBlock = collectHeadingBlocks(raw, config.sectionLevel)
-    .find((block) => normalizeIdentifier(block.title) === normalizeIdentifier(config.sectionTitle));
+    .find((block) => (config.sectionId
+      ? block.id === config.sectionId
+      : normalizeIdentifier(block.title) === normalizeIdentifier(config.sectionTitle)));
   if (!sectionBlock) {
     return [];
   }
@@ -158,6 +162,21 @@ const extractFeatureOptionsFromSection = (raw, config) => {
     .filter((option) => option.name);
 };
 
+// Each class prints its own list, so the pools stay keyed by class rather than merged into one.
+const extractFightingStylePools = (raw, configs) => Object.fromEntries(
+  Object.entries(configs ?? {})
+    .map(([classKey, config]) => [classKey, extractFeatureOptionsFromSection(raw, config)])
+    .filter(([, options]) => options.length > 0)
+);
+
+const mergeFightingStylePools = (...pools) => {
+  const merged = {};
+  for (const classKey of new Set(pools.flatMap((pool) => Object.keys(pool ?? {})))) {
+    merged[classKey] = mergeFeatureOptions(...pools.map((pool) => pool?.[classKey] ?? []));
+  }
+  return merged;
+};
+
 const extractNamedBattleMasterManeuvers = (raw) => {
   return [...new Set(
     extractParagraphEntries(raw)
@@ -172,7 +191,12 @@ const documentChoicePoolConfigs = {
   'basic-rules-2014': {
     metamagic: { sectionTitle: 'Metamagic', sectionLevel: 3, optionLevel: 4 },
     eldritchInvocations: { sectionTitle: 'Eldritch Invocations', sectionLevel: 2, optionLevel: 4 },
-    pactBoons: { sectionTitle: 'Pact Boon', sectionLevel: 3, optionLevel: 4 }
+    pactBoons: { sectionTitle: 'Pact Boon', sectionLevel: 3, optionLevel: 4 },
+    fightingStyles: {
+      fighter: { sectionId: 'FighterFightingStyle', sectionLevel: 3, optionLevel: 4 },
+      paladin: { sectionId: 'PaladinFightingStyle', sectionLevel: 3, optionLevel: 4 },
+      ranger: { sectionId: 'RangerFightingStyle', sectionLevel: 3, optionLevel: 4 }
+    }
   },
   'basic-rules-2024': {
     metamagic: { sectionTitle: 'Metamagic Options', sectionLevel: 4, optionLevel: 5 },
@@ -182,7 +206,9 @@ const documentChoicePoolConfigs = {
     metamagic: { sectionTitle: 'Metamagic Options', sectionLevel: 3, optionLevel: 4 },
     eldritchInvocations: { sectionTitle: 'Eldritch Invocation Options', sectionLevel: 3, optionLevel: 4 },
     maneuverOptions: { sectionTitle: 'Maneuver Options', sectionLevel: 2, optionLevel: 3 },
-    pactBoons: { sectionTitle: 'Pact Boon Option', sectionLevel: 3, optionLevel: 4 }
+    pactBoons: { sectionTitle: 'Pact Boon Option', sectionLevel: 3, optionLevel: 4 },
+    // Printed as a 1st-level fighter feature, so it adds to the fighter's list and no other.
+    fightingStyles: { fighter: { sectionTitle: 'Fighting Style Options', sectionId: 'FightingStyleOptions', sectionLevel: 3, optionLevel: 4 } }
   }
 };
 
@@ -326,6 +352,7 @@ const buildExtractedChoicePools = async (pack, rawDocument) => {
   const localInvocationOptions = extractFeatureOptionsFromSection(localRaw, localConfig.eldritchInvocations);
   const localTashaManeuvers = extractFeatureOptionsFromSection(localRaw, localConfig.maneuverOptions);
   const localPactBoonOptions = extractFeatureOptionsFromSection(localRaw, localConfig.pactBoons);
+  const localFightingStyles = extractFightingStylePools(localRaw, localConfig.fightingStyles);
 
   let tashasRaw = null;
   let borrowedTashasDocument = false;
@@ -346,6 +373,7 @@ const buildExtractedChoicePools = async (pack, rawDocument) => {
   const tashasInvocationOptions = extractFeatureOptionsFromSection(tashasRaw, tashasConfig.eldritchInvocations);
   const tashasManeuverAdditions = extractFeatureOptionsFromSection(tashasRaw, tashasConfig.maneuverOptions);
   const tashasPactBoonOptions = extractFeatureOptionsFromSection(tashasRaw, tashasConfig.pactBoons);
+  const tashasFightingStyles = extractFightingStylePools(tashasRaw, tashasConfig.fightingStyles);
   const baseBattleMasterNames = extractNamedBattleMasterManeuvers(tashasRaw)
     .filter((name) => !tashasManeuverAdditions.some((option) => normalizeIdentifier(option.name) === normalizeIdentifier(name)))
     .map((name) => createFeatureOption(name, 'Battle Master maneuver option.'));
@@ -366,7 +394,10 @@ const buildExtractedChoicePools = async (pack, rawDocument) => {
     pactBoonOptions: edition === '2014'
       ? mergeFeatureOptions(localPactBoonOptions, tashasPactBoonOptions)
       : localPactBoonOptions,
-    battleMasterManeuverOptions: mergeFeatureOptions(baseBattleMasterNames, localTashaManeuvers, tashasManeuverAdditions)
+    battleMasterManeuverOptions: mergeFeatureOptions(baseBattleMasterNames, localTashaManeuvers, tashasManeuverAdditions),
+    fightingStyleOptions: edition === '2014'
+      ? mergeFightingStylePools(localFightingStyles, tashasFightingStyles)
+      : localFightingStyles
   };
 };
 
@@ -389,6 +420,17 @@ const enrichClassEntry = (entry, extractedPools) => {
           extractedPools.metamagicOptions
         ))
       )
+    };
+  }
+
+  const fightingStyleOptions = extractedPools.fightingStyleOptions?.[classKey] ?? [];
+  if (fightingStyleOptions.length > 0) {
+    // "You can't take a Fighting Style option more than once": both features draw on one pool, so
+    // the shared-pool block already refuses a repeat.
+    const withBaseChoice = applyFeatureChoice(entry.features, 'fighting style', { chooseCount: 1, options: fightingStyleOptions });
+    return {
+      ...entry,
+      features: applyFeatureChoice(withBaseChoice, 'additional fighting style', { chooseCount: 1, options: fightingStyleOptions })
     };
   }
 
@@ -571,8 +613,13 @@ const isPoolAnnouncementFeature = (feature, poolSectionNames) => {
 };
 
 const dropPoolAnnouncementFeatures = (content, sourceId) => {
+  // A pool may be keyed by class ({ fighter: config, … }), so flatten one level before reading.
+  const flattenConfigs = (config) => (config?.sectionLevel ? [config] : Object.values(config ?? {}).flatMap(flattenConfigs));
   const poolSectionNames = new Set(
-    Object.values(documentChoicePoolConfigs[sourceId] ?? {}).map((config) => normalizeIdentifier(config.sectionTitle))
+    Object.values(documentChoicePoolConfigs[sourceId] ?? {})
+      .flatMap(flattenConfigs)
+      .filter((config) => config.sectionTitle)
+      .map((config) => normalizeIdentifier(config.sectionTitle))
   );
   if (poolSectionNames.size === 0) {
     return content;

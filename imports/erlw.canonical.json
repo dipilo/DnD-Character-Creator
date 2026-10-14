@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source ERLW).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T04:13:41.490Z",
+    "importedAt": "2026-10-14T06:27:32.521Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -2292,7 +2292,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "This symbiotic crown is carved from dark purple and mauve stone, with ten points like stalks set with gemstones resembling the eyestalks of a beholder. To attune to this item, you must wear it on your head for the entire attunement period, during which the crown's hidden tendrils burrow into your scalp to bond with your skull. While wearing the crown, you can see normally in darkness, both magical and nonmagical, to a distance of 120 feet. Spells. The crown has 10 charges. While wearing it, you can use an action to expend some of its charges to cast one of the following spells from it (spell save 16): charm person (1 charge), disintegrate (6 charges), fear (3 charges), finger of death (7 charges), flesh to stone (6 charges), hold person (2 charges), ray of enfeeblement (2 charges), sleep (1 charge), slow (3 charges), telekinesis (5 charges). The crown regains 1d6 + 3 expended charges daily at dawn. Symbiotic Nature. The crown can't be removed from you while you're attuned to it, and you can't voluntarily end your attunement to it. If you're targeted by a spell that ends a curse, your attunement to the crown ends, and it detaches from you. The daelkyr Belashyrra made these crowns. While on the same plane of existence as the crown, Belashyrra can see through its eyestalks.",
+        "description": "This symbiotic crown is carved from dark purple and mauve stone, with ten points like stalks set with gemstones resembling the eyestalks of a beholder. To attune to this item, you must wear it on your head for the entire attunement period, during which the crown's hidden tendrils burrow into your scalp to bond with your skull. While wearing the crown, you can see normally in darkness, both magical and nonmagical, to a distance of 120 feet. Spells. The crown has 10 charges. While wearing it, you can use an action to expend some of its charges to cast one of the following spells from it (spell save DC 16): charm person (1 charge), disintegrate (6 charges), fear (3 charges), finger of death (7 charges), flesh to stone (6 charges), hold person (2 charges), ray of enfeeblement (2 charges), sleep (1 charge), slow (3 charges), telekinesis (5 charges). The crown regains 1d6 + 3 expended charges daily at dawn. Symbiotic Nature. The crown can't be removed from you while you're attuned to it, and you can't voluntarily end your attunement to it. If you're targeted by a spell that ends a curse, your attunement to the crown ends, and it detaches from you. The daelkyr Belashyrra made these crowns. While on the same plane of existence as the crown, Belashyrra can see through its eyestalks.",
         "properties": []
       },
       {
@@ -2397,7 +2397,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "To attune to this symbiont, you must hold it against the skin behind your ear for the entire attunement period, whereupon it burrows into your head and bonds to your skull. While the earworm is inside you, you can speak, read, and write Deep Speech. Spells. The earworm has 4 charges. You can cast the following spells from it, expending the necessary number of charges (spell save 15): detect thoughts (2 charges) or dissonant whispers (1 charge). Each time you use the earworm to cast the detect thoughts spell, it sends the information gleaned to the nearest daelkyr, or to the next nearest earworm until it reaches a daelkyr. The earworm regains 1d4 expended charges daily at dawn. Symbiotic Nature. The earworm can't be removed from you while you're attuned to it, and you can't voluntarily end your attunement to it. If you're targeted by a spell that ends a curse, your attunement to the earworm ends, and it exits your body.",
+        "description": "To attune to this symbiont, you must hold it against the skin behind your ear for the entire attunement period, whereupon it burrows into your head and bonds to your skull. While the earworm is inside you, you can speak, read, and write Deep Speech. Spells. The earworm has 4 charges. You can cast the following spells from it, expending the necessary number of charges (spell save DC 15): detect thoughts (2 charges) or dissonant whispers (1 charge). Each time you use the earworm to cast the detect thoughts spell, it sends the information gleaned to the nearest daelkyr, or to the next nearest earworm until it reaches a daelkyr. The earworm regains 1d4 expended charges daily at dawn. Symbiotic Nature. The earworm can't be removed from you while you're attuned to it, and you can't voluntarily end your attunement to it. If you're targeted by a spell that ends a curse, your attunement to the earworm ends, and it exits your body.",
         "properties": []
       },
       {
@@ -2495,7 +2495,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "This opalescent, symbiotic goo comes sealed in a jar and slowly shifts and moves, as if endlessly exploring the jar's interior. To attune to this item, you must first drink the contents of the jar, unlocking the following properties. Resistant. While attuned to Kyrzin's ooze, you have resistance to poison and acid damage, and you're immune to the poisoned condition. Amorphous. As an action, you can speak a command word and cause your body to assume the amorphous qualities of an ooze. For the next minute, you (along with any equipment you're wearing or carrying) can move through a space as narrow as 1 inch wide without squeezing. Once you use this property, it can't be used again until the next dawn. Acid Breath. As an action, you can exhale acid in a 30-foot line that is 5 feet wide. Each creature in that line must make a 15 Dexterity saving throw, taking 36 (8d8) acid damage on a failed save, or half as much damage on a successful one. Once you use this property, it can't be used again until the next dawn. Symbiotic Nature. The ooze can't be removed from you while you're attuned to it, and you can't voluntarily end your attunement to it. If you're targeted by a spell that ends a curse, your attunement to the ooze ends, as it seeps out of you. If you die while the ooze is inside you, it bursts out and engulfs you, turning your corpse into a black pudding allied with the daelkyr.",
+        "description": "This opalescent, symbiotic goo comes sealed in a jar and slowly shifts and moves, as if endlessly exploring the jar's interior. To attune to this item, you must first drink the contents of the jar, unlocking the following properties. Resistant. While attuned to Kyrzin's ooze, you have resistance to poison and acid damage, and you're immune to the poisoned condition. Amorphous. As an action, you can speak a command word and cause your body to assume the amorphous qualities of an ooze. For the next minute, you (along with any equipment you're wearing or carrying) can move through a space as narrow as 1 inch wide without squeezing. Once you use this property, it can't be used again until the next dawn. Acid Breath. As an action, you can exhale acid in a 30-foot line that is 5 feet wide. Each creature in that line must make a DC 15 Dexterity saving throw, taking 36 (8d8) acid damage on a failed save, or half as much damage on a successful one. Once you use this property, it can't be used again until the next dawn. Symbiotic Nature. The ooze can't be removed from you while you're attuned to it, and you can't voluntarily end your attunement to it. If you're targeted by a spell that ends a curse, your attunement to the ooze ends, as it seeps out of you. If you die while the ooze is inside you, it bursts out and engulfs you, turning your corpse into a black pudding allied with the daelkyr.",
         "properties": []
       },
       {
@@ -2621,7 +2621,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "These metallic nodules were created in response to the poisonous gases used on the battlefields of the Last War. When you attune to these lungs, they replace the lungs in your chest, which disappear. The lungs allow you to breathe normally, even in an antimagic field, and their breathing function can't be suppressed by magic. Outside an antimagic field or any other effect that suppresses magic, these lungs allow you to breathe normally in any environment (including a vacuum), and you have advantage on saving throws against harmful gases such as those created by a cloudkill spell, a stinking cloud spell, inhaled poisons, and gaseous breath weapons. As an action, you can use these lungs to exhale a gust of wind, as if you had cast the gust of wind spell (spell save 15) with no components. This property of the lungs can't be used again until the next dawn. If your attunement to the lungs ends, your original lungs reappear.",
+        "description": "These metallic nodules were created in response to the poisonous gases used on the battlefields of the Last War. When you attune to these lungs, they replace the lungs in your chest, which disappear. The lungs allow you to breathe normally, even in an antimagic field, and their breathing function can't be suppressed by magic. Outside an antimagic field or any other effect that suppresses magic, these lungs allow you to breathe normally in any environment (including a vacuum), and you have advantage on saving throws against harmful gases such as those created by a cloudkill spell, a stinking cloud spell, inhaled poisons, and gaseous breath weapons. As an action, you can use these lungs to exhale a gust of wind, as if you had cast the gust of wind spell (spell save DC 15) with no components. This property of the lungs can't be used again until the next dawn. If your attunement to the lungs ends, your original lungs reappear.",
         "properties": []
       },
       {
@@ -2692,7 +2692,7 @@
       {
         "id": "erlw-aberrant-dragonmark",
         "name": "Aberrant Dragonmark",
-        "description": "You have manifested an aberrant dragonmark. Determine its appearance and the flaw associated with it. You gain the following benefits: You learn a level=0. In addition, choose a level=1. You learn that spell and can cast it through your mark. Once you cast it, you must finish a short or long rest before you can cast it again through the mark. Constitution is your spellcasting ability for these spells. When you cast the 1st-level spell through your mark, you can expend one of your Hit Dice and roll it. If you roll an even number, you gain a number of temporary hit points equal to the number rolled. If you roll an odd number, one random creature within 30 feet of you (not including you) takes force damage equal to the number rolled. If no other creatures are in range, you take the damage. You also develop a random flaw from the Aberrant Dragonmark Flaws table. Aberrant Dragonmark Flaws: 1 — Your mark is a source of constant physical pain.; 2 — Your mark whispers to you. Its meaning can be unclear.; 3 — When you're stressed, the mark hisses audibly.; 4 — The skin around the mark is burned, scaly, or withered.; 5 — Animals are uneasy around you.; 6 — You have a mood swing any time you use your mark.; 7 — Your looks change slightly whenever you use the mark.; 8 — You have horrific nightmares after you use your mark. Option: Greater Aberrant Powers. At the DM's option, a character who has the Aberrant Dragonmark feat has a chance of manifesting greater power. Upon reaching 10th level, such a character has a 10 chance of gaining an type=boon from among the options in chapter 7 of the Dungeon Master's Guide. If the character fails to gain a boon, they have a 10 chance the next time they gain a level. If the character gains a boon, the DM chooses it or determines it randomly. The character also permanently loses one of their Hit Dice, and their hit point maximum is reduced by an amount equal to a roll of that die plus their Constitution modifier (minimum reduction of 1). This reduction can't be reversed by any means.",
+        "description": "You have manifested an aberrant dragonmark. Determine its appearance and the flaw associated with it. You gain the following benefits: You learn a level=0. In addition, choose a level=1. You learn that spell and can cast it through your mark. Once you cast it, you must finish a short or long rest before you can cast it again through the mark. Constitution is your spellcasting ability for these spells. When you cast the 1st-level spell through your mark, you can expend one of your Hit Dice and roll it. If you roll an even number, you gain a number of temporary hit points equal to the number rolled. If you roll an odd number, one random creature within 30 feet of you (not including you) takes force damage equal to the number rolled. If no other creatures are in range, you take the damage. You also develop a random flaw from the Aberrant Dragonmark Flaws table. Aberrant Dragonmark Flaws: 1 — Your mark is a source of constant physical pain.; 2 — Your mark whispers to you. Its meaning can be unclear.; 3 — When you're stressed, the mark hisses audibly.; 4 — The skin around the mark is burned, scaly, or withered.; 5 — Animals are uneasy around you.; 6 — You have a mood swing any time you use your mark.; 7 — Your looks change slightly whenever you use the mark.; 8 — You have horrific nightmares after you use your mark. Option: Greater Aberrant Powers. At the DM's option, a character who has the Aberrant Dragonmark feat has a chance of manifesting greater power. Upon reaching 10th level, such a character has a 10 percent chance of gaining an type=boon from among the options in chapter 7 of the Dungeon Master's Guide. If the character fails to gain a boon, they have a 10 percent chance the next time they gain a level. If the character gains a boon, the DM chooses it or determines it randomly. The character also permanently loses one of their Hit Dice, and their hit point maximum is reduced by an amount equal to a roll of that die plus their Constitution modifier (minimum reduction of 1). This reduction can't be reversed by any means.",
         "prerequisites": {
           "text": "No other dragonmark"
         },
@@ -2803,7 +2803,7 @@
           {
             "id": "erlw-belashyrra-trait-0",
             "name": "Alien Mind",
-            "description": "If a creature tries to read Belashyrra's thoughts or deals psychic damage to it, that creature must succeed on a 22 Intelligence saving throw or be stunned for 1 minute. The stunned creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "description": "If a creature tries to read Belashyrra's thoughts or deals psychic damage to it, that creature must succeed on a DC 22 Intelligence saving throw or be stunned for 1 minute. The stunned creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           },
           {
             "id": "erlw-belashyrra-trait-1",
@@ -2840,12 +2840,12 @@
           {
             "id": "erlw-belashyrra-action-1",
             "name": "Claw",
-            "description": "mw 14 to hit, reach 5 ft., one target. {@h}17 (3d6 + 7) slashing damage."
+            "description": "Melee Weapon Attack: +14 to hit, reach 5 ft., one target. Hit: 17 (3d6 + 7) slashing damage."
           },
           {
             "id": "erlw-belashyrra-action-2",
             "name": "Eye Ray",
-            "description": "Belashyrra shoots one of the following magical eye rays of its choice, targeting one creature it can see within 120 feet of it: 1. Psyche-Reconstruction Ray: The target must make a 22 Wisdom saving throw, taking 49 (9d10) psychic damage on a failed save, or half as much damage on a successful one. If this damage reduces a creature to 0 hit points, it dies and transforms into a spectator under Belashyrra's control and acts immediately after Belashyrra in the initiative order. The target can't be returned to its original form by any means short of a wish spell. 2. Domination Ray: The target must succeed on a 22 Wisdom saving throw or be charmed by Belashyrra for 1 minute or until the target takes damage. Belashyrra can issue telepathic commands to the charmed creature (no action required), which it does its best to obey. 3. Mind-Weakening Ray: The target must succeed on a 22 Intelligence saving throw or take 36 (8d8) psychic damage and be unable to cast spells or activate magic items for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. 4. Blinding Ray: The target and each creature within 10 feet of it must succeed on a 22 Constitution saving throw or take 19 (3d12) radiant damage and be blinded for 1 minute. Until this blindness ends, Belashyrra can see through the blinded creature's eyes. The blinded creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "description": "Belashyrra shoots one of the following magical eye rays of its choice, targeting one creature it can see within 120 feet of it: 1. Psyche-Reconstruction Ray: The target must make a DC 22 Wisdom saving throw, taking 49 (9d10) psychic damage on a failed save, or half as much damage on a successful one. If this damage reduces a creature to 0 hit points, it dies and transforms into a spectator under Belashyrra's control and acts immediately after Belashyrra in the initiative order. The target can't be returned to its original form by any means short of a wish spell. 2. Domination Ray: The target must succeed on a DC 22 Wisdom saving throw or be charmed by Belashyrra for 1 minute or until the target takes damage. Belashyrra can issue telepathic commands to the charmed creature (no action required), which it does its best to obey. 3. Mind-Weakening Ray: The target must succeed on a DC 22 Intelligence saving throw or take 36 (8d8) psychic damage and be unable to cast spells or activate magic items for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. 4. Blinding Ray: The target and each creature within 10 feet of it must succeed on a DC 22 Constitution saving throw or take 19 (3d12) radiant damage and be blinded for 1 minute. Until this blindness ends, Belashyrra can see through the blinded creature's eyes. The blinded creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           }
         ],
         "bonusActions": [],
@@ -2859,12 +2859,12 @@
           {
             "id": "erlw-belashyrra-legendary-1",
             "name": "Implant Fear (Costs 2 Actions)",
-            "description": "Belashyrra targets a creature it can see within 60 feet of it. The target must succeed on a 22 Wisdom saving throw or take 22 (4d10) psychic damage and immediately use its reaction, if available, to move as far as its speed allows away from Belashyrra."
+            "description": "Belashyrra targets a creature it can see within 60 feet of it. The target must succeed on a DC 22 Wisdom saving throw or take 22 (4d10) psychic damage and immediately use its reaction, if available, to move as far as its speed allows away from Belashyrra."
           },
           {
             "id": "erlw-belashyrra-legendary-2",
             "name": "Rend Reality (Costs 3 Actions)",
-            "description": "Belashyrra rips at the bonds of reality in its immediate area. Each creature within 10 feet of Belashyrra must succeed on a 22 Constitution saving throw or take 19 (3d12) force damage and gain one level of exhaustion."
+            "description": "Belashyrra rips at the bonds of reality in its immediate area. Each creature within 10 feet of Belashyrra must succeed on a DC 22 Constitution saving throw or take 19 (3d12) force damage and gain one level of exhaustion."
           }
         ],
         "languages": [
@@ -2916,12 +2916,17 @@
           {
             "id": "erlw-bone-knight-trait-0",
             "name": "Commander of Bones",
-            "description": "As a bonus action, the knight can target one skeleton or zombie it can see within 30 feet of it. The target must make a 14 Wisdom saving throw. On a failed save, the target must obey the knight's commands until the knight dies or until the knight releases it as a bonus action. The knight can command up to twelve undead at a time this way."
+            "description": "As a bonus action, the knight can target one skeleton or zombie it can see within 30 feet of it. The target must make a DC 14 Wisdom saving throw. On a failed save, the target must obey the knight's commands until the knight dies or until the knight releases it as a bonus action. The knight can command up to twelve undead at a time this way."
           },
           {
             "id": "erlw-bone-knight-trait-1",
             "name": "Master of the Pallid Banner",
             "description": "While within 60 feet of the knight, any undead ally of the knight has advantage on saving throws against any effect that turns undead."
+          },
+          {
+            "id": "erlw-bone-knight-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The knight is an 8th-level spellcaster. Its spellcasting ability is Charisma (spell save DC 14, +6 to hit with spell attacks). It has the following paladin spells prepared:\n\n- 1st level (4 slots): command, compelled duel, hellish rebuke, wrathful smite\n- 2nd level (3 slots): branding smite, crown of madness, darkness, find steed, magic weapon"
           }
         ],
         "actions": [
@@ -2933,12 +2938,12 @@
           {
             "id": "erlw-bone-knight-action-1",
             "name": "Greatsword",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}11 (2d6 + 4) slashing damage."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 11 (2d6 + 4) slashing damage."
           },
           {
             "id": "erlw-bone-knight-action-2",
             "name": "Longbow",
-            "description": "rw 4 to hit, range 150/600 ft., one target. {@h}5 (1d8 + 1) piercing damage."
+            "description": "Ranged Weapon Attack: +4 to hit, range 150/600 ft., one target. Hit: 5 (1d8 + 1) piercing damage."
           }
         ],
         "bonusActions": [],
@@ -2998,12 +3003,12 @@
           {
             "id": "erlw-changeling-action-1",
             "name": "Dagger",
-            "description": "mw,rw 4 to hit, reach 5 ft. or range 20/60 ft., one target. {@h}4 (1d4 + 2) piercing damage."
+            "description": "Melee or Ranged Weapon Attack: +4 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d4 + 2) piercing damage."
           },
           {
             "id": "erlw-changeling-action-2",
             "name": "Unsettling Visage (Recharges after a Short or Long Rest)",
-            "description": "Each creature within 30 feet of the changeling must succeed on a 13 Wisdom saving throw or be frightened for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "description": "Each creature within 30 feet of the changeling must succeed on a DC 13 Wisdom saving throw or be frightened for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           }
         ],
         "bonusActions": [],
@@ -3057,7 +3062,7 @@
           {
             "id": "erlw-clawfoot-trait-1",
             "name": "Pounce",
-            "description": "If the clawfoot moves at least 20 feet straight toward a creature and then hits it with a claw attack on the same turn, that target must succeed on a 11 Strength saving throw or be knocked prone. If the target is prone, the clawfoot can make one bite attack against it as a bonus action."
+            "description": "If the clawfoot moves at least 20 feet straight toward a creature and then hits it with a claw attack on the same turn, that target must succeed on a DC 11 Strength saving throw or be knocked prone. If the target is prone, the clawfoot can make one bite attack against it as a bonus action."
           }
         ],
         "actions": [
@@ -3069,12 +3074,12 @@
           {
             "id": "erlw-clawfoot-action-1",
             "name": "Bite",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}7 (1d8 + 3) piercing damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (1d8 + 3) piercing damage."
           },
           {
             "id": "erlw-clawfoot-action-2",
             "name": "Claws",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}7 (1d8 + 3) slashing damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (1d8 + 3) slashing damage."
           }
         ],
         "bonusActions": [],
@@ -3126,7 +3131,7 @@
           {
             "id": "erlw-corrin-delmaco-trait-1",
             "name": "Sneak Attack (1/Turn)",
-            "description": "Corrin deals an extra 7 (2d6) damage when it hits a target with a weapon attack and has advantage on the attack roll, or when the target is within 5 feet of an ally of the spy that isn't incapacitated and the spy doesn't have disadvantage on the attack roll."
+            "description": "Corrin deals an extra 7 (2d6) damage when it hits a target with a weapon attack and has advantage on the attack roll, or when the target is within 5 feet of an ally of Corrin that isn't incapacitated and Corrin doesn't have disadvantage on the attack roll."
           }
         ],
         "actions": [
@@ -3138,12 +3143,12 @@
           {
             "id": "erlw-corrin-delmaco-action-1",
             "name": "Shortsword",
-            "description": "mw 4 to hit, reach 5 ft., one target. {@h}5 (1d6 + 2) piercing damage."
+            "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage."
           },
           {
             "id": "erlw-corrin-delmaco-action-2",
             "name": "Hand Crossbow",
-            "description": "rw 4 to hit, range 30/120 ft., one target. {@h}5 (1d6 + 2) piercing damage."
+            "description": "Ranged Weapon Attack: +4 to hit, range 30/120 ft., one target. Hit: 5 (1d6 + 2) piercing damage."
           }
         ],
         "bonusActions": [],
@@ -3209,17 +3214,17 @@
           {
             "id": "erlw-dolgaunt-action-1",
             "name": "Tentacle",
-            "description": "mw 6 to hit, reach 15 ft., one target. {@h}7 (1d6 + 4) bludgeoning damage. The target is grappled (escape 12) if it is a Large or smaller creature. Until this grapple ends, the dolgaunt can't use the same tentacle on another target. The dolgaunt has two tentacles."
+            "description": "Melee Weapon Attack: +6 to hit, reach 15 ft., one target. Hit: 7 (1d6 + 4) bludgeoning damage. The target is grappled (escape DC 12) if it is a Large or smaller creature. Until this grapple ends, the dolgaunt can't use the same tentacle on another target. The dolgaunt has two tentacles."
           },
           {
             "id": "erlw-dolgaunt-action-2",
             "name": "Unarmed Strike",
-            "description": "mw 6 to hit, reach 5 ft., one target. {@h}6 (1d4 + 4) bludgeoning damage."
+            "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 6 (1d4 + 4) bludgeoning damage."
           },
           {
             "id": "erlw-dolgaunt-action-3",
             "name": "Vitality Drain",
-            "description": "One creature grappled by a tentacle of the dolgaunt must make a 11 Constitution saving throw. On a failed save, the target takes 9 (2d8) necrotic damage, and the dolgaunt regains a number of hit points equal to half the necrotic damage taken."
+            "description": "One creature grappled by a tentacle of the dolgaunt must make a DC 11 Constitution saving throw. On a failed save, the target takes 9 (2d8) necrotic damage, and the dolgaunt regains a number of hit points equal to half the necrotic damage taken."
           }
         ],
         "bonusActions": [],
@@ -3273,17 +3278,17 @@
           {
             "id": "erlw-dolgrim-action-1",
             "name": "Morningstar",
-            "description": "mw 4 to hit, reach 5 ft., one target. {@h}6 (1d8 + 2) piercing damage."
+            "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 6 (1d8 + 2) piercing damage."
           },
           {
             "id": "erlw-dolgrim-action-2",
             "name": "Spear",
-            "description": "mw,rw 4 to hit, reach 5 ft. or range 20/60 ft., one target. {@h}5 (1d6 + 2) piercing damage, or 6 (1d8 + 2) piercing damage if used with two hands to make a melee attack."
+            "description": "Melee or Ranged Weapon Attack: +4 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 5 (1d6 + 2) piercing damage, or 6 (1d8 + 2) piercing damage if used with two hands to make a melee attack."
           },
           {
             "id": "erlw-dolgrim-action-3",
             "name": "Hand Crossbow",
-            "description": "rw 4 to hit, range 30/120 ft., one target. {@h}5 (1d6 + 2) piercing damage."
+            "description": "Ranged Weapon Attack: +4 to hit, range 30/120 ft., one target. Hit: 5 (1d6 + 2) piercing damage."
           }
         ],
         "bonusActions": [],
@@ -3340,6 +3345,11 @@
             "id": "erlw-dusk-hag-trait-0",
             "name": "Magic Resistance",
             "description": "The hag has advantage on saving throws against spells and other magical effects."
+          },
+          {
+            "id": "erlw-dusk-hag-spellcasting-0",
+            "name": "Innate Spellcasting",
+            "description": "The hag's spellcasting ability is Charisma (spell save DC 15). She can innately cast the following spells, requiring no material components:\n\n- At will: detect magic, disguise self\n- 3/day each: dream, hypnotic pattern, sleep (9d8)\n- 1/day each: legend lore, scrying"
           }
         ],
         "actions": [
@@ -3351,12 +3361,12 @@
           {
             "id": "erlw-dusk-hag-action-1",
             "name": "Claws",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}5 (1d6 + 2) slashing damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage."
           },
           {
             "id": "erlw-dusk-hag-action-2",
             "name": "Nightmare Touch",
-            "description": "ms 7 to hit, reach 5 ft., one creature. {@h}18 (4d6 + 4) psychic damage. If the target is unconscious, it takes an extra 10 (3d6) psychic damage and is cursed until the hag dies or the curse is removed. The cursed creature's hit point maximum decreases by 5 (1d10) whenever it finishes a long rest."
+            "description": "Melee Spell Attack: +7 to hit, reach 5 ft., one creature. Hit: 18 (4d6 + 4) psychic damage. If the target is unconscious, it takes an extra 10 (3d6) psychic damage and is cursed until the hag dies or the curse is removed. The cursed creature's hit point maximum decreases by 5 (1d10) whenever it finishes a long rest."
           }
         ],
         "bonusActions": [],
@@ -3364,7 +3374,7 @@
           {
             "id": "erlw-dusk-hag-reaction-0",
             "name": "Dream Eater",
-            "description": "When an unconscious creature the hag can see within 30 feet of her regains consciousness, the hag can force the creature to make a 15 Wisdom saving throw. Unless the save succeeds, the creature takes 11 (2d10) psychic damage, and the hag regains hit points equal to the amount of damage taken."
+            "description": "When an unconscious creature the hag can see within 30 feet of her regains consciousness, the hag can force the creature to make a DC 15 Wisdom saving throw. Unless the save succeeds, the creature takes 11 (2d10) psychic damage, and the hag regains hit points equal to the amount of damage taken."
           }
         ],
         "legendaryActions": [],
@@ -3428,7 +3438,7 @@
           {
             "id": "erlw-dyrrn-trait-0",
             "name": "Alien Mind",
-            "description": "If a creature tries to read Dyrrn's thoughts or deals psychic damage to it, that creature must succeed on a 23 Intelligence saving throw or be stunned for 1 minute. The stunned creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "description": "If a creature tries to read Dyrrn's thoughts or deals psychic damage to it, that creature must succeed on a DC 23 Intelligence saving throw or be stunned for 1 minute. The stunned creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           },
           {
             "id": "erlw-dyrrn-trait-1",
@@ -3460,17 +3470,17 @@
           {
             "id": "erlw-dyrrn-action-1",
             "name": "Tentacle Whip",
-            "description": "mw 15 to hit, reach 10 ft., one target. {@h}24 (3d10 + 8) slashing damage. If the target is a Medium or smaller creature, it is grappled (escape 23), pulled into an unoccupied space within 5 feet of Dyrrn, and must succeed on a 23 Intelligence saving throw or be stunned until this grapple ends. Dyrrn can't use the same tentacle whip on another target until this grapple ends. Dyrrn has two tentacle whips."
+            "description": "Melee Weapon Attack: +15 to hit, reach 10 ft., one target. Hit: 24 (3d10 + 8) slashing damage. If the target is a Medium or smaller creature, it is grappled (escape DC 23), pulled into an unoccupied space within 5 feet of Dyrrn, and must succeed on a DC 23 Intelligence saving throw or be stunned until this grapple ends. Dyrrn can't use the same tentacle whip on another target until this grapple ends. Dyrrn has two tentacle whips."
           },
           {
             "id": "erlw-dyrrn-action-2",
             "name": "Corruption",
-            "description": "Dyrrn targets one creature it can see within 60 feet of it. The target must succeed on a 23 Constitution saving throw or take 22 (4d6 + 8) necrotic damage and become corrupted for 1 minute. A corrupted creature's flesh twists in alien ways. The creature has disadvantage on attack rolls, its speed is reduced by half, and if it tries to cast a spell, it must first succeed on a 15 Intelligence check or the spell fails and is wasted. The corrupted creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "description": "Dyrrn targets one creature it can see within 60 feet of it. The target must succeed on a DC 23 Constitution saving throw or take 22 (4d6 + 8) necrotic damage and become corrupted for 1 minute. A corrupted creature's flesh twists in alien ways. The creature has disadvantage on attack rolls, its speed is reduced by half, and if it tries to cast a spell, it must first succeed on a DC 15 Intelligence check or the spell fails and is wasted. The corrupted creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           },
           {
             "id": "erlw-dyrrn-action-3",
             "name": "Extract Brain",
-            "description": "mw 15 to hit, reach 5 ft., one incapacitated creature grappled by Dyrrn. {@h}55 (10d10) piercing damage. If this damage reduces the target to 0 hit points, Dyrrn kills the target by extracting and devouring its brain."
+            "description": "Melee Weapon Attack: +15 to hit, reach 5 ft., one incapacitated creature grappled by Dyrrn. Hit: 55 (10d10) piercing damage. If this damage reduces the target to 0 hit points, Dyrrn kills the target by extracting and devouring its brain."
           }
         ],
         "bonusActions": [],
@@ -3489,7 +3499,7 @@
           {
             "id": "erlw-dyrrn-legendary-2",
             "name": "Mind Blast (Costs 3 Actions)",
-            "description": "Dyrrn magically emits psychic energy in a 60-foot cone. Each creature in that area must succeed on a 23 Intelligence saving throw or take 30 (5d8 + 8) psychic damage and be stunned for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "description": "Dyrrn magically emits psychic energy in a 60-foot cone. Each creature in that area must succeed on a DC 23 Intelligence saving throw or take 30 (5d8 + 8) psychic damage and be stunned for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           }
         ],
         "languages": [
@@ -3551,7 +3561,7 @@
           {
             "id": "erlw-expeditious-messenger-action-0",
             "name": "Bite",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}5 (1d4 + 3) piercing damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 5 (1d4 + 3) piercing damage."
           }
         ],
         "bonusActions": [],
@@ -3591,7 +3601,7 @@
         "traits": [
           {
             "id": "erlw-fastieth-trait-0",
-            "name": "Quickness 5",
+            "name": "Quickness (Recharge 5-6)",
             "description": "The fastieth can take the Dodge action as a bonus action."
           }
         ],
@@ -3599,7 +3609,7 @@
           {
             "id": "erlw-fastieth-action-0",
             "name": "Bite",
-            "description": "mw 6 to hit, reach 5 ft., one target. {@h}8 (1d8 + 4) piercing damage."
+            "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) piercing damage."
           }
         ],
         "bonusActions": [],
@@ -3638,12 +3648,12 @@
           {
             "id": "erlw-garra-action-0",
             "name": "Battleaxe",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}12 (2d8 + 3) slashing damage, or 14 (2d10 + 3) slashing damage if used with two hands."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 12 (2d8 + 3) slashing damage, or 14 (2d10 + 3) slashing damage if used with two hands."
           },
           {
             "id": "erlw-garra-action-1",
             "name": "Javelin",
-            "description": "mw,rw 5 to hit, reach 5 ft. or range 30/120 ft., one target. {@h}10 (2d6 + 3) piercing damage."
+            "description": "Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or range 30/120 ft., one target. Hit: 10 (2d6 + 3) piercing damage."
           }
         ],
         "bonusActions": [],
@@ -3698,7 +3708,13 @@
         "senses": [
           "darkvision 60 ft., passive Perception 13"
         ],
-        "traits": [],
+        "traits": [
+          {
+            "id": "erlw-hashalaq-quori-spellcasting-0",
+            "name": "Innate Spellcasting (Psionics)",
+            "description": "The quori's spellcasting ability is Intelligence (spell save DC 16). It can innately cast the following spells, requiring no components:\n\n- At will: charm person\n- 1/day: dominate person, dream\n- 3/day each: detect thoughts, disguise self, suggestion"
+          }
+        ],
         "actions": [
           {
             "id": "erlw-hashalaq-quori-action-0",
@@ -3708,17 +3724,17 @@
           {
             "id": "erlw-hashalaq-quori-action-1",
             "name": "Idyllic Touch",
-            "description": "ms 8 to hit, reach 5 ft., one target. {@h}9 (1d10 + 4) force damage. If the target is a creature, it must succeed on a 16 Wisdom saving throw or fall prone in a fit of laughter."
+            "description": "Melee Spell Attack: +8 to hit, reach 5 ft., one target. Hit: 9 (1d10 + 4) force damage. If the target is a creature, it must succeed on a DC 16 Wisdom saving throw or fall prone in a fit of laughter."
           },
           {
             "id": "erlw-hashalaq-quori-action-2",
             "name": "Mind Thrust",
-            "description": "The quori targets a creature it can see within 60 feet of it. The target must make a 16 Wisdom saving throw, taking 18 (4d8) psychic damage on a failed save, or half as much damage on a successful one."
+            "description": "The quori targets a creature it can see within 60 feet of it. The target must make a DC 16 Wisdom saving throw, taking 18 (4d8) psychic damage on a failed save, or half as much damage on a successful one."
           },
           {
             "id": "erlw-hashalaq-quori-action-3",
-            "name": "Possession {@recharge}",
-            "description": "One humanoid that the quori can see within 5 feet of it must succeed on a 16 Charisma saving throw or be possessed by the quori; the quori then disappears, and the target is incapacitated and loses control of its body. The quori now controls the body but doesn't deprive the target of awareness. The quori can't be targeted by any attack, spell, or other effect, and it retains its alignment, Intelligence, Wisdom, Charisma, and immunity to being charmed and frightened. It otherwise uses the possessed target's statistics, but doesn't gain access to the target's knowledge, class features, or proficiencies. The possession lasts until the body drops to 0 hit points, the quori ends it as a bonus action, or the quori is forced out by an effect like the dispel evil and good spell. When the possession ends, the quori reappears in an unoccupied space within 5 feet of the body. The target is immune to this quori's Possession for 24 hours after succeeding on the saving throw or after the possession ends."
+            "name": "Possession (Recharge 6)",
+            "description": "One humanoid that the quori can see within 5 feet of it must succeed on a DC 16 Charisma saving throw or be possessed by the quori; the quori then disappears, and the target is incapacitated and loses control of its body. The quori now controls the body but doesn't deprive the target of awareness. The quori can't be targeted by any attack, spell, or other effect, and it retains its alignment, Intelligence, Wisdom, Charisma, and immunity to being charmed and frightened. It otherwise uses the possessed target's statistics, but doesn't gain access to the target's knowledge, class features, or proficiencies. The possession lasts until the body drops to 0 hit points, the quori ends it as a bonus action, or the quori is forced out by an effect like the dispel evil and good spell. When the possession ends, the quori reappears in an unoccupied space within 5 feet of the body. The target is immune to this quori's Possession for 24 hours after succeeding on the saving throw or after the possession ends."
           }
         ],
         "bonusActions": [],
@@ -3726,7 +3742,7 @@
           {
             "id": "erlw-hashalaq-quori-reaction-0",
             "name": "Empathic Feedback",
-            "description": "When the quori takes damage from a creature it can see within 60 feet of it, the quori can force that creature to succeed on a 16 Intelligence saving throw or take 11 (2d10) psychic damage."
+            "description": "When the quori takes damage from a creature it can see within 60 feet of it, the quori can force that creature to succeed on a DC 16 Intelligence saving throw or take 11 (2d10) psychic damage."
           }
         ],
         "legendaryActions": [],
@@ -3783,6 +3799,11 @@
             "id": "erlw-inspired-trait-0",
             "name": "Dual Mind",
             "description": "The Inspired has advantage on Wisdom saving throws."
+          },
+          {
+            "id": "erlw-inspired-spellcasting-0",
+            "name": "Innate Spellcasting (Psionics)",
+            "description": "The Inspired's spellcasting ability is Intelligence (spell save DC 13). It can innately cast the following spells, requiring no material components:\n\n- At will: mage hand, vicious mockery (see \"Actions\" below)\n- 1/day each: charm person, dissonant whispers, hex, hold person, mage armor"
           }
         ],
         "actions": [
@@ -3794,12 +3815,12 @@
           {
             "id": "erlw-inspired-action-1",
             "name": "Crysteel Dagger",
-            "description": "mw 4 to hit, reach 5 ft., one target. {@h}4 (1d4 + 2) piercing damage plus 10 (3d6) force damage."
+            "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 4 (1d4 + 2) piercing damage plus 10 (3d6) force damage."
           },
           {
             "id": "erlw-inspired-action-2",
             "name": "Vicious Mockery (Cantrip)",
-            "description": "The Inspired unleashes a string of insults laced with subtle enchantments at one creature it can see within 60 feet of it. If the target can hear the Inspired, the target must succeed on a 13 Wisdom saving throw or take 2 (1d4) psychic damage and have disadvantage on the next attack roll it makes before the end of its next turn."
+            "description": "The Inspired unleashes a string of insults laced with subtle enchantments at one creature it can see within 60 feet of it. If the target can hear the Inspired, the target must succeed on a DC 13 Wisdom saving throw or take 2 (1d4) psychic damage and have disadvantage on the next attack roll it makes before the end of its next turn."
           }
         ],
         "bonusActions": [],
@@ -3864,7 +3885,7 @@
           {
             "id": "erlw-iron-defender-action-0",
             "name": "Bite",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}6 (1d6 + 3) piercing damage. If the target is a creature, it must succeed on a 13 Strength saving throw or take an extra 3 (1d6) piercing damage and be grappled (escape 13). The defender can have only one creature grappled in this way at a time."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage. If the target is a creature, it must succeed on a DC 13 Strength saving throw or take an extra 3 (1d6) piercing damage and be grappled (escape DC 13). The defender can have only one creature grappled in this way at a time."
           }
         ],
         "bonusActions": [],
@@ -3947,6 +3968,11 @@
             "id": "erlw-kalaraq-quori-trait-2",
             "name": "Magic Resistance",
             "description": "The quori has advantage on saving throws against spells and other magical effects."
+          },
+          {
+            "id": "erlw-kalaraq-quori-spellcasting-0",
+            "name": "Innate Spellcasting (Psionics)",
+            "description": "The quori's spellcasting ability is Charisma (spell save DC 21, +13 to hit with spell attacks). It can innately cast the following spells, requiring no components:\n\n- At will: arcane eye\n- 3/day each: clairvoyance, confusion, dream, eyebite"
           }
         ],
         "actions": [
@@ -3958,27 +3984,27 @@
           {
             "id": "erlw-kalaraq-quori-action-1",
             "name": "Arcane Blast",
-            "description": "rs 13 to hit, range 120 ft., one target. {@h}12 (1d10 + 7) force damage."
+            "description": "Ranged Spell Attack: +13 to hit, range 120 ft., one target. Hit: 12 (1d10 + 7) force damage."
           },
           {
             "id": "erlw-kalaraq-quori-action-2",
             "name": "Soul Binding",
-            "description": "ms 13 to hit, reach 5 ft., one target. {@h}29 (4d10 + 7) necrotic damage. A creature reduced to 0 hit points from this attack dies and has its soul imprisoned in one of the quori's eyes. The target can't be revived by any means short of a wish spell until the quori is destroyed."
+            "description": "Melee Spell Attack: +13 to hit, reach 5 ft., one target. Hit: 29 (4d10 + 7) necrotic damage. A creature reduced to 0 hit points from this attack dies and has its soul imprisoned in one of the quori's eyes. The target can't be revived by any means short of a wish spell until the quori is destroyed."
           },
           {
             "id": "erlw-kalaraq-quori-action-3",
             "name": "Mind Seed (1/Day)",
-            "description": "The quori touches one humanoid, which must succeed on a 21 Intelligence saving throw or be cursed. The curse lasts until it's removed by a remove curse or greater restoration spell. The cursed target suffers 1 level of exhaustion every 24 hours, and finishing a long rest doesn't reduce its exhaustion. If the cursed target reaches exhaustion level 6, it doesn't die; it instead becomes a thrall under the quori's control, and all its exhaustion is removed. Only the wish spell can free the thrall from this control."
+            "description": "The quori touches one humanoid, which must succeed on a DC 21 Intelligence saving throw or be cursed. The curse lasts until it's removed by a remove curse or greater restoration spell. The cursed target suffers 1 level of exhaustion every 24 hours, and finishing a long rest doesn't reduce its exhaustion. If the cursed target reaches exhaustion level 6, it doesn't die; it instead becomes a thrall under the quori's control, and all its exhaustion is removed. Only the wish spell can free the thrall from this control."
           },
           {
             "id": "erlw-kalaraq-quori-action-4",
-            "name": "Swarm of Eyes {@recharge}",
-            "description": "The quori creates a swarm of spectral eyes that fills a 30-foot-radius sphere centered on a point it can see within 60 feet of it. Each creature in that area must make a 21 Wisdom saving throw. On a failure, a creature takes 45 (10d8) psychic damage, and it is blinded for 1 minute. On a success, a creature takes half as much damage and isn't blinded. A blinded creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "name": "Swarm of Eyes (Recharge 6)",
+            "description": "The quori creates a swarm of spectral eyes that fills a 30-foot-radius sphere centered on a point it can see within 60 feet of it. Each creature in that area must make a DC 21 Wisdom saving throw. On a failure, a creature takes 45 (10d8) psychic damage, and it is blinded for 1 minute. On a success, a creature takes half as much damage and isn't blinded. A blinded creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           },
           {
             "id": "erlw-kalaraq-quori-action-5",
-            "name": "Possession {@recharge}",
-            "description": "One humanoid that the quori can see within 5 feet of it must succeed on a 21 Charisma saving throw or be possessed by the quori; the quori then disappears, and the target is incapacitated and loses control of its body. The quori now controls the body but doesn't deprive the target of awareness. The quori can't be targeted by any attack, spell, or other effect, and it retains its alignment, Intelligence, Wisdom, Charisma, and immunity to being charmed and frightened. It otherwise uses the possessed target's statistics, but doesn't gain access to the target's knowledge, class features, or proficiencies. The possession lasts until the body drops to 0 hit points, the quori ends it as a bonus action, or the quori is forced out by an effect like the dispel evil and good spell. When the possession ends, the quori reappears in an unoccupied space within 5 feet of the body. The target is immune to this quori's Possession for 24 hours after succeeding on the saving throw or after the possession ends."
+            "name": "Possession (Recharge 6)",
+            "description": "One humanoid that the quori can see within 5 feet of it must succeed on a DC 21 Charisma saving throw or be possessed by the quori; the quori then disappears, and the target is incapacitated and loses control of its body. The quori now controls the body but doesn't deprive the target of awareness. The quori can't be targeted by any attack, spell, or other effect, and it retains its alignment, Intelligence, Wisdom, Charisma, and immunity to being charmed and frightened. It otherwise uses the possessed target's statistics, but doesn't gain access to the target's knowledge, class features, or proficiencies. The possession lasts until the body drops to 0 hit points, the quori ends it as a bonus action, or the quori is forced out by an effect like the dispel evil and good spell. When the possession ends, the quori reappears in an unoccupied space within 5 feet of the body. The target is immune to this quori's Possession for 24 hours after succeeding on the saving throw or after the possession ends."
           }
         ],
         "bonusActions": [],
@@ -4035,12 +4061,12 @@
           {
             "id": "erlw-kalashtar-action-0",
             "name": "Dagger",
-            "description": "mw,rw 4 to hit, reach 5 ft. or range 20/60 ft., one target. {@h}4 (1d4 + 2) piercing damage."
+            "description": "Melee or Ranged Weapon Attack: +4 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d4 + 2) piercing damage."
           },
           {
             "id": "erlw-kalashtar-action-1",
             "name": "Mind Thrust",
-            "description": "The kalashtar targets a creature it can see within 30 feet of it. The target must succeed on a 12 Wisdom saving throw or take 11 (2d10) psychic damage."
+            "description": "The kalashtar targets a creature it can see within 30 feet of it. The target must succeed on a DC 12 Wisdom saving throw or take 11 (2d10) psychic damage."
           }
         ],
         "bonusActions": [],
@@ -4112,12 +4138,12 @@
           {
             "id": "erlw-karrnathi-undead-soldier-action-1",
             "name": "Longsword",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}7 (1d8 + 3) slashing damage, or 8 (1d10 + 3) slashing damage if used with two hands."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (1d8 + 3) slashing damage, or 8 (1d10 + 3) slashing damage if used with two hands."
           },
           {
             "id": "erlw-karrnathi-undead-soldier-action-2",
             "name": "Longbow",
-            "description": "rw 4 to hit, range 150/600 ft., one target. {@h}6 (1d8 + 2) piercing damage."
+            "description": "Ranged Weapon Attack: +4 to hit, range 150/600 ft., one target. Hit: 6 (1d8 + 2) piercing damage."
           }
         ],
         "bonusActions": [],
@@ -4209,23 +4235,28 @@
             "id": "erlw-lady-illmarrow-trait-2",
             "name": "Rejuvenation",
             "description": "Illmarrow's body turns to dust when she drops to 0 hit points, and her equipment is left behind. She gains a new body after 1d10 days, regaining all her hit points and becoming active again. The new body appears within two hundred miles of the location at which she was destroyed."
+          },
+          {
+            "id": "erlw-lady-illmarrow-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "Illmarrow is a 20th-level spellcaster. Her spellcasting ability is Intelligence (spell save DC 23, +15 to hit with spell attacks). Illmarrow has the following wizard spells prepared:\n\n- Cantrips (at will): chill touch (see \"Actions\" below), fire bolt, mage hand, prestidigitation, ray of frost\n- 1st level (4 slots): magic missile, shield, sleep\n- 2nd level (3 slots): blur, detect thoughts, mirror image\n- 3rd level (3 slots): animate dead, counterspell, fireball, fly, lightning bolt\n- 4th level (3 slots): blight, confusion, polymorph\n- 5th level (3 slots): cloudkill, cone of cold, hold monster, scrying\n- 6th level (2 slots): chain lightning, circle of death, create undead\n- 7th level (2 slots): finger of death, forcecage, prismatic spray\n- 8th level (1 slot): incendiary cloud, maze\n- 9th level (1 slot): power word kill, time stop"
           }
         ],
         "actions": [
           {
             "id": "erlw-lady-illmarrow-action-0",
             "name": "Chill Touch (Cantrip)",
-            "description": "rs 15 to hit, range 120 ft., one creature. {@h}18 (4d8) necrotic damage, and the target can't regain hit points until the start of Illmarrow's next turn. If the target is undead, it also has disadvantage on attack rolls against Illmarrow until the end of her next turn."
+            "description": "Ranged Spell Attack: +15 to hit, range 120 ft., one creature. Hit: 18 (4d8) necrotic damage, and the target can't regain hit points until the start of Illmarrow's next turn. If the target is undead, it also has disadvantage on attack rolls against Illmarrow until the end of her next turn."
           },
           {
             "id": "erlw-lady-illmarrow-action-1",
             "name": "Paralyzing Claw",
-            "description": "mw 10 to hit, reach 5 ft., one creature. {@h}13 (3d6 + 3) slashing damage plus 10 (3d6) cold damage, and the target must succeed on a 20 Constitution saving throw or be paralyzed for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "description": "Melee Weapon Attack: +10 to hit, reach 5 ft., one creature. Hit: 13 (3d6 + 3) slashing damage plus 10 (3d6) cold damage, and the target must succeed on a DC 20 Constitution saving throw or be paralyzed for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           },
           {
             "id": "erlw-lady-illmarrow-action-2",
-            "name": "Poison Breath 5",
-            "description": "Illmarrow exhales poisonous gas in a 30-foot cone. Each creature in that area must make a 20 Constitution saving throw. On a failed save, a creature takes 35 (10d6) poison damage and is poisoned for 1 minute. While poisoned in this way, the creature can't regain hit points. On a successful save, the creature takes half as much damage and isn't poisoned. A humanoid reduced to 0 hit points by this damage dies and rises at the start of Illmarrow's next turn as a zombie. The zombie acts immediately after Illmarrow in the initiative count and is permanently under her command, following her verbal orders."
+            "name": "Poison Breath (Recharge 5-6)",
+            "description": "Illmarrow exhales poisonous gas in a 30-foot cone. Each creature in that area must make a DC 20 Constitution saving throw. On a failed save, a creature takes 35 (10d6) poison damage and is poisoned for 1 minute. While poisoned in this way, the creature can't regain hit points. On a successful save, the creature takes half as much damage and isn't poisoned. A humanoid reduced to 0 hit points by this damage dies and rises at the start of Illmarrow's next turn as a zombie. The zombie acts immediately after Illmarrow in the initiative count and is permanently under her command, following her verbal orders."
           }
         ],
         "bonusActions": [],
@@ -4244,7 +4275,7 @@
           {
             "id": "erlw-lady-illmarrow-legendary-2",
             "name": "Frightening Presence (Costs 2 Actions)",
-            "description": "Illmarrow targets up to three creatures she can see within 30 feet of her. Each target must succeed on a 20 Wisdom saving throw or be frightened for 1 minute. A frightened target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. If a target's saving throw is successful or the effect ends for it, the target is immune to Illmarrow's Frightening Presence for the next 24 hours."
+            "description": "Illmarrow targets up to three creatures she can see within 30 feet of her. Each target must succeed on a DC 20 Wisdom saving throw or be frightened for 1 minute. A frightened target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. If a target's saving throw is successful or the effect ends for it, the target is immune to Illmarrow's Frightening Presence for the next 24 hours."
           },
           {
             "id": "erlw-lady-illmarrow-legendary-3",
@@ -4320,12 +4351,12 @@
           {
             "id": "erlw-living-burning-hands-action-0",
             "name": "Magical Strike",
-            "description": "ms 5 to hit, reach 5 ft., one target. {@h}6 (1d6 + 3) fire damage."
+            "description": "Melee Spell Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) fire damage."
           },
           {
             "id": "erlw-living-burning-hands-action-1",
-            "name": "Spell Mimicry 5",
-            "description": "The living spell unleashes a thin sheet of flames in a 15-foot cone. Each creature in that area must make a 13 Dexterity saving throw, taking 10 (3d6) fire damage on a failed save, or half as much damage on a successful one."
+            "name": "Spell Mimicry (Recharge 5-6)",
+            "description": "The living spell unleashes a thin sheet of flames in a 15-foot cone. Each creature in that area must make a DC 13 Dexterity saving throw, taking 10 (3d6) fire damage on a failed save, or half as much damage on a successful one."
           }
         ],
         "bonusActions": [],
@@ -4399,12 +4430,12 @@
           {
             "id": "erlw-living-cloudkill-action-1",
             "name": "Magical Strike",
-            "description": "ms 8 to hit, reach 10 ft., one target. {@h}22 (5d6 + 5) poison damage."
+            "description": "Melee Spell Attack: +8 to hit, reach 10 ft., one target. Hit: 22 (5d6 + 5) poison damage."
           },
           {
             "id": "erlw-living-cloudkill-action-2",
-            "name": "Spell Mimicry 5",
-            "description": "The living spell creates a 40-foot-diameter sphere of fog within 60 feet of it (the fog spreads around corners). When a creature enters the fog for the first time on a turn or starts its turn there, it must make a 16 Constitution saving throw, taking 22 (5d8) poison damage on a failed save, or half as much damage on a successful one. The fog moves 10 feet away from the living spell at the start of each of its turns, rolling along the ground and through openings. The fog lasts for 10 minutes or until the living spell's concentration ends (as if concentrating on a spell)."
+            "name": "Spell Mimicry (Recharge 5-6)",
+            "description": "The living spell creates a 40-foot-diameter sphere of fog within 60 feet of it (the fog spreads around corners). When a creature enters the fog for the first time on a turn or starts its turn there, it must make a DC 16 Constitution saving throw, taking 22 (5d8) poison damage on a failed save, or half as much damage on a successful one. The fog moves 10 feet away from the living spell at the start of each of its turns, rolling along the ground and through openings. The fog lasts for 10 minutes or until the living spell's concentration ends (as if concentrating on a spell)."
           }
         ],
         "bonusActions": [],
@@ -4478,12 +4509,12 @@
           {
             "id": "erlw-living-lightning-bolt-action-1",
             "name": "Magical Strike",
-            "description": "ms 7 to hit, reach 10 ft., one target. {@h}21 (5d6 + 4) lightning damage."
+            "description": "Melee Spell Attack: +7 to hit, reach 10 ft., one target. Hit: 21 (5d6 + 4) lightning damage."
           },
           {
             "id": "erlw-living-lightning-bolt-action-2",
-            "name": "Spell Mimicry 5",
-            "description": "The living spell unleashes a stroke of lightning in a line 100 feet long and 5 feet wide. Each creature in the line must make a 15 Dexterity saving throw, taking 28 (8d6) lightning damage on a failed save, or half as much damage on a successful one."
+            "name": "Spell Mimicry (Recharge 5-6)",
+            "description": "The living spell unleashes a stroke of lightning in a line 100 feet long and 5 feet wide. Each creature in the line must make a DC 15 Dexterity saving throw, taking 28 (8d6) lightning damage on a failed save, or half as much damage on a successful one."
           }
         ],
         "bonusActions": [],
@@ -4520,12 +4551,18 @@
         "senses": [
           "passive Perception 12"
         ],
-        "traits": [],
+        "traits": [
+          {
+            "id": "erlw-magewright-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The magewright's spellcasting ability is Intelligence (spell save DC 12). To cast one of its rituals, the magewright must provide additional material components whose value in gold pieces is 20 times the spell's level. These components are consumed when the ritual is finished. The magewright knows the following spells:\n\n- At will: mage hand, prestidigitation\n- Rituals: knock"
+          }
+        ],
         "actions": [
           {
             "id": "erlw-magewright-action-0",
             "name": "Dagger",
-            "description": "mw,rw 3 to hit, reach 5 ft. or range 20/60 ft., one target. {@h}3 (1d4 + 1) piercing damage."
+            "description": "Melee or Ranged Weapon Attack: +3 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 3 (1d4 + 1) piercing damage."
           }
         ],
         "bonusActions": [],
@@ -4589,6 +4626,11 @@
             "id": "erlw-mordakhesh-trait-0",
             "name": "Limited Magic Immunity",
             "description": "Mordakhesh can't be affected or detected by spells of 6th level or lower unless he wishes to be. Mordakhesh has advantage on saving throws against all other spells and magical effects."
+          },
+          {
+            "id": "erlw-mordakhesh-spellcasting-0",
+            "name": "Innate Spellcasting",
+            "description": "Mordakhesh's spellcasting ability is Charisma (spell save DC 18, +10 to hit with spell attacks). Mordakhesh can innately cast the following spells, requiring no material components:\n\n- At will: chromatic orb (see \"Actions\" below), detect thoughts, disguise self\n- 1/day each: banishing smite, destructive wave, fly, mass suggestion, staggering smite, suggestion, true seeing"
           }
         ],
         "actions": [
@@ -4600,12 +4642,12 @@
           {
             "id": "erlw-mordakhesh-action-1",
             "name": "Greatsword",
-            "description": "mw 10 to hit, reach 5 ft., one target. {@h}12 (2d6 + 5) slashing damage plus 5 (1d10) force damage."
+            "description": "Melee Weapon Attack: +10 to hit, reach 5 ft., one target. Hit: 12 (2d6 + 5) slashing damage plus 5 (1d10) force damage."
           },
           {
             "id": "erlw-mordakhesh-action-2",
             "name": "Chromatic Orb",
-            "description": "rs 10 to hit, range 120 ft., one creature. {@h}13 (3d8) damage of a type chosen by Mordakhesh: acid, cold, fire, lightning, poison, or thunder."
+            "description": "Ranged Spell Attack: +10 to hit, range 120 ft., one creature. Hit: 13 (3d8) damage of a type chosen by Mordakhesh: acid, cold, fire, lightning, poison, or thunder."
           }
         ],
         "bonusActions": [],
@@ -4685,12 +4727,17 @@
           {
             "id": "erlw-radiant-idol-trait-0",
             "name": "Aura of False Divinity",
-            "description": "A creature that starts its turn within 30 feet of the radiant idol must make a 17 Wisdom saving throw, provided the radiant idol isn't incapacitated. On a failed save, the creature is charmed by the radiant idol. A creature charmed in this way can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. Once it succeeds on the saving throw, a creature is immune to this radiant idol's Aura of False Divinity for 24 hours."
+            "description": "A creature that starts its turn within 30 feet of the radiant idol must make a DC 17 Wisdom saving throw, provided the radiant idol isn't incapacitated. On a failed save, the creature is charmed by the radiant idol. A creature charmed in this way can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. Once it succeeds on the saving throw, a creature is immune to this radiant idol's Aura of False Divinity for 24 hours."
           },
           {
             "id": "erlw-radiant-idol-trait-1",
             "name": "Magic Resistance",
             "description": "The radiant idol has advantage on saving throws against spells and other magical effects."
+          },
+          {
+            "id": "erlw-radiant-idol-spellcasting-0",
+            "name": "Innate Spellcasting",
+            "description": "The radiant idol's spellcasting ability is Charisma (spell save DC 17). The radiant idol can innately cast the following spells, requiring no material components:\n\n- At will: charm person, cure wounds, disguise self, thaumaturgy\n- 1/day each: commune, dominate person, insect plague, mass suggestion, raise dead"
           }
         ],
         "actions": [
@@ -4702,12 +4749,12 @@
           {
             "id": "erlw-radiant-idol-action-1",
             "name": "Flail",
-            "description": "mw 10 to hit, reach 5 ft., one target. {@h}10 (1d8 + 6) bludgeoning damage plus 18 (4d8) radiant damage."
+            "description": "Melee Weapon Attack: +10 to hit, reach 5 ft., one target. Hit: 10 (1d8 + 6) bludgeoning damage plus 18 (4d8) radiant damage."
           },
           {
             "id": "erlw-radiant-idol-action-2",
             "name": "Radiant Strike (1/Day)",
-            "description": "The radiant idol chooses a point on the ground it can see within 60 feet of it. A 30-foot-radius, 40-foot-high cylinder of bright light appears there until the start of the radiant idol's next turn. Each creature in the cylinder when it appears or that ends its turn there must make a 17 Constitution saving throw, taking 36 (8d8) radiant damage on a failed save, or half as much damage on a successful one."
+            "description": "The radiant idol chooses a point on the ground it can see within 60 feet of it. A 30-foot-radius, 40-foot-high cylinder of bright light appears there until the start of the radiant idol's next turn. Each creature in the cylinder when it appears or that ends its turn there must make a DC 17 Constitution saving throw, taking 36 (8d8) radiant damage on a failed save, or half as much damage on a successful one."
           }
         ],
         "bonusActions": [],
@@ -4796,6 +4843,11 @@
             "id": "erlw-rak-tulkhesh-trait-3",
             "name": "Whirlwind of Weapons",
             "description": "A magical aura of weapons surrounds Rak Tulkhesh in a 10 foot radius. At the start of each of his turns, any other creature in the aura takes 14 (4d6) force damage."
+          },
+          {
+            "id": "erlw-rak-tulkhesh-spellcasting-0",
+            "name": "Innate Spellcasting",
+            "description": "Rak Tulkhesh's spellcasting ability is Charisma (spell save DC 24). He can innately cast the following spells, requiring no material components:\n\n- At will: detect thoughts, dispel magic, spirit guardians\n- 1/day each: banishing smite, blinding smite, staggering smite"
           }
         ],
         "actions": [
@@ -4807,12 +4859,12 @@
           {
             "id": "erlw-rak-tulkhesh-action-1",
             "name": "Spawned Melee Weapon",
-            "description": "mw 17 to hit, reach 10 ft., one target. {@h}28 (3d12 + 9) force damage."
+            "description": "Melee Weapon Attack: +17 to hit, reach 10 ft., one target. Hit: 28 (3d12 + 9) force damage."
           },
           {
             "id": "erlw-rak-tulkhesh-action-2",
             "name": "Spawned Ranged Weapon",
-            "description": "rw 12 to hit, range 150/600 ft., one target. {@h}17 (3d8 + 4) force damage."
+            "description": "Ranged Weapon Attack: +12 to hit, range 150/600 ft., one target. Hit: 17 (3d8 + 4) force damage."
           },
           {
             "id": "erlw-rak-tulkhesh-action-3",
@@ -4836,7 +4888,7 @@
           {
             "id": "erlw-rak-tulkhesh-legendary-2",
             "name": "Provoke Rage (Costs 3 Actions)",
-            "description": "Each creature within 60 feet of Rak Tulkhesh must succeed on a 24 Wisdom saving throw or use its reaction to make a melee weapon attack against a random creature within reach. If no creatures are within reach, it makes a ranged weapon attack against a random creature within range, throwing its weapon if necessary. This attack is made with advantage and gains a +4 bonus to the damage roll."
+            "description": "Each creature within 60 feet of Rak Tulkhesh must succeed on a DC 24 Wisdom saving throw or use its reaction to make a melee weapon attack against a random creature within reach. If no creatures are within reach, it makes a ranged weapon attack against a random creature within range, throwing its weapon if necessary. This attack is made with advantage and gains a +4 bonus to the damage roll."
           }
         ],
         "languages": [
@@ -4879,7 +4931,7 @@
           {
             "id": "erlw-sergeant-action-0",
             "name": "Spear",
-            "description": "mw,rw 3 to hit, reach 5 ft. or range 20/60 ft., one target. {@h}4 (1d6 + 1) piercing damage, or 5 (1d8 + 1) piercing damage if used with two hands to make a melee attack."
+            "description": "Melee or Ranged Weapon Attack: +3 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d6 + 1) piercing damage, or 5 (1d8 + 1) piercing damage if used with two hands to make a melee attack."
           }
         ],
         "bonusActions": [],
@@ -4933,12 +4985,12 @@
           {
             "id": "erlw-shifter-action-0",
             "name": "Shortsword",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}6 (1d6 + 3) piercing damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage."
           },
           {
             "id": "erlw-shifter-action-1",
             "name": "Bite",
-            "description": "mw 5 to hit, reach 5 ft., one creature. {@h}5 (1d4 + 3) piercing damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one creature. Hit: 5 (1d4 + 3) piercing damage."
           }
         ],
         "bonusActions": [],
@@ -5022,6 +5074,11 @@
             "id": "erlw-sul-khatesh-trait-2",
             "name": "Master of Magic",
             "description": "Sul Khatesh has advantage on Constitution saving throws to maintain concentration."
+          },
+          {
+            "id": "erlw-sul-khatesh-spellcasting-0",
+            "name": "Innate Spellcasting",
+            "description": "Sul Khatesh's spellcasting ability is Intelligence (spell save DC 26, +18 to hit with spell attacks). She can innately cast the following spells, requiring no material components:\n\n- At will: counterspell, detect magic, detect thoughts, dispel magic, eyebite, fireball, lightning bolt, shield\n- 3/day each: chain lightning, create undead, dream, hold monster, mass suggestion, scrying\n- 1/day each: foresight, gate, power word kill, teleport"
           }
         ],
         "actions": [
@@ -5033,17 +5090,17 @@
           {
             "id": "erlw-sul-khatesh-action-1",
             "name": "Arcane Blast",
-            "description": "rs 18 to hit, range 120 ft., one target. {@h}15 (1d10 + 10) force damage."
+            "description": "Ranged Spell Attack: +18 to hit, range 120 ft., one target. Hit: 15 (1d10 + 10) force damage."
           },
           {
             "id": "erlw-sul-khatesh-action-2",
             "name": "Magic Staff",
-            "description": "mw 12 to hit, reach 5 ft., one target. {@h}36 (5d12 + 4) force damage."
+            "description": "Melee Weapon Attack: +12 to hit, reach 5 ft., one target. Hit: 36 (5d12 + 4) force damage."
           },
           {
             "id": "erlw-sul-khatesh-action-3",
             "name": "Arcane Cataclysm (Recharges after a Long Rest)",
-            "description": "Sul Khatesh conjures orbs of magical energy that plummet to the ground at three different points she can see within 1 mile of her. Each creature in a 40-foot-radius sphere centered on each point must make a 26 Dexterity saving throw, taking 71 (11d12) force damage on a failed save or half as much damage on a successful one. A creature in the area of more than one arcane burst is affected only once. The area of each arcane burst then acts as an antimagic field for 1 hour. Sul Khatesh and spells she casts are unaffected by these fields."
+            "description": "Sul Khatesh conjures orbs of magical energy that plummet to the ground at three different points she can see within 1 mile of her. Each creature in a 40-foot-radius sphere centered on each point must make a DC 26 Dexterity saving throw, taking 71 (11d12) force damage on a failed save or half as much damage on a successful one. A creature in the area of more than one arcane burst is affected only once. The area of each arcane burst then acts as an antimagic field for 1 hour. Sul Khatesh and spells she casts are unaffected by these fields."
           },
           {
             "id": "erlw-sul-khatesh-action-4",
@@ -5062,12 +5119,12 @@
           {
             "id": "erlw-sul-khatesh-legendary-1",
             "name": "Consume Magic (Costs 2 Actions)",
-            "description": "Sul Khatesh targets a creature within 120 feet of her who is concentrating on a spell. The target must succeed on a 26 Constitution saving throw or its concentration is broken on the spell, and Sul Khatesh gains 5 temporary hit points per level of that spell."
+            "description": "Sul Khatesh targets a creature within 120 feet of her who is concentrating on a spell. The target must succeed on a DC 26 Constitution saving throw or its concentration is broken on the spell, and Sul Khatesh gains 5 temporary hit points per level of that spell."
           },
           {
             "id": "erlw-sul-khatesh-legendary-2",
             "name": "Maddening Secrets (Costs 3 Actions)",
-            "description": "Sul Khatesh whispers an arcane secret into the mind of a creature she can see within 60 feet of her. The target must succeed on a 26 Wisdom saving throw or expend one of its spell slots of 3rd level or lower and deal 26 (4d12) force damage to each creature within 30 feet of it. A creature that fails the saving throw but can't expend a spell slot is instead stunned until the end of its next turn."
+            "description": "Sul Khatesh whispers an arcane secret into the mind of a creature she can see within 60 feet of her. The target must succeed on a DC 26 Wisdom saving throw or expend one of its spell slots of 3rd level or lower and deal 26 (4d12) force damage to each creature within 30 feet of it. A creature that fails the saving throw but can't expend a spell slot is instead stunned until the end of its next turn."
           }
         ],
         "languages": [
@@ -5113,7 +5170,12 @@
           {
             "id": "erlw-tarkanan-assassin-trait-0",
             "name": "Unstable Mark",
-            "description": "When the assassin casts an innate spell, each creature within 10 feet of the assassin must make a 12 Constitution saving throw, taking 4 (1d8) force damage on a failed save, or half as much damage on a successful one."
+            "description": "When the assassin casts an innate spell, each creature within 10 feet of the assassin must make a DC 12 Constitution saving throw, taking 4 (1d8) force damage on a failed save, or half as much damage on a successful one."
+          },
+          {
+            "id": "erlw-tarkanan-assassin-spellcasting-0",
+            "name": "Innate Spellcasting",
+            "description": "The assassin's spellcasting ability is Constitution (+4 to hit with spell attacks). It can innately cast the following spells, requiring no material components:\n\n- At will: fire bolt\n- 1/day: chromatic orb"
           }
         ],
         "actions": [
@@ -5125,17 +5187,17 @@
           {
             "id": "erlw-tarkanan-assassin-action-1",
             "name": "Shortsword",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}6 (1d6 + 3) piercing damage plus 7 (2d6) poison damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage plus 7 (2d6) poison damage."
           },
           {
             "id": "erlw-tarkanan-assassin-action-2",
             "name": "Fire Bolt (Cantrip)",
-            "description": "rs 4 to hit, range 120 ft., one target. {@h}11 (2d10) fire damage. A flammable object hit by this spell ignites if it isn't being worn or carried."
+            "description": "Ranged Spell Attack: +4 to hit, range 120 ft., one target. Hit: 11 (2d10) fire damage. A flammable object hit by this spell ignites if it isn't being worn or carried."
           },
           {
             "id": "erlw-tarkanan-assassin-action-3",
             "name": "Chromatic Orb (1/Day)",
-            "description": "rs 4 to hit, range 90 ft., one creature. {@h}18 (4d8) damage of a type chosen by the assassin: acid, cold, fire, lightning, poison, or thunder."
+            "description": "Ranged Spell Attack: +4 to hit, range 90 ft., one creature. Hit: 18 (4d8) damage of a type chosen by the assassin: acid, cold, fire, lightning, poison, or thunder."
           }
         ],
         "bonusActions": [],
@@ -5209,12 +5271,17 @@
           {
             "id": "erlw-the-lord-of-blades-trait-2",
             "name": "Charge",
-            "description": "If the Lord of Blades moves at least 10 feet straight toward a target and then hits it with his adamantine sixblade on the same turn, the target takes an extra 11 (2d10) slashing damage. If the target is a creature, it must succeed on a 19 Strength saving throw or be pushed up to 10 feet away and knocked prone."
+            "description": "If the Lord of Blades moves at least 10 feet straight toward a target and then hits it with his adamantine sixblade on the same turn, the target takes an extra 11 (2d10) slashing damage. If the target is a creature, it must succeed on a DC 19 Strength saving throw or be pushed up to 10 feet away and knocked prone."
           },
           {
             "id": "erlw-the-lord-of-blades-trait-3",
             "name": "Warforged Resilience",
             "description": "The Lord of Blades has advantage on saving throws against being poisoned, is immune to disease, and magic can't put him to sleep."
+          },
+          {
+            "id": "erlw-the-lord-of-blades-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The Lord of Blades is a 20th-level spellcaster. His spellcasting ability is Intelligence (spell save DC 18, +10 to hit with spell attacks). He has the following artificer spells prepared:\n\n- Cantrips (at will): fire bolt (see \"Actions\" below), mage hand, mending, prestidigitation\n- 1st level (4 slots): expeditious retreat, sanctuary, thunderwave\n- 2nd level (3 slots): blur, heat metal, scorching ray, see invisibility\n- 3rd level (3 slots): dispel magic, fly, haste\n- 4th level (3 slots): freedom of movement, Mordenkainen's faithful hound\n- 5th level (2 slots): animate objects, wall of force"
           }
         ],
         "actions": [
@@ -5226,17 +5293,17 @@
           {
             "id": "erlw-the-lord-of-blades-action-1",
             "name": "Adamantine Sixblade",
-            "description": "mw 11 to hit, reach 10 ft., one target. {@h}21 (3d10 + 5) slashing damage plus 7 (2d6) force damage."
+            "description": "Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit: 21 (3d10 + 5) slashing damage plus 7 (2d6) force damage."
           },
           {
             "id": "erlw-the-lord-of-blades-action-2",
             "name": "Bladed Wings",
-            "description": "mw,rw 11 to hit, reach 5 ft. or range 20/60 ft., one target. {@h}8 (1d6 + 5) slashing damage."
+            "description": "Melee or Ranged Weapon Attack: +11 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 8 (1d6 + 5) slashing damage."
           },
           {
             "id": "erlw-the-lord-of-blades-action-3",
             "name": "Fire Bolt (Cantrip)",
-            "description": "rs 10 to hit, range 120 ft., one target. {@h}22 (4d10) fire damage."
+            "description": "Ranged Spell Attack: +10 to hit, range 120 ft., one target. Hit: 22 (4d10) fire damage."
           }
         ],
         "bonusActions": [],
@@ -5312,7 +5379,13 @@
         "senses": [
           "darkvision 60 ft., passive Perception 15"
         ],
-        "traits": [],
+        "traits": [
+          {
+            "id": "erlw-tsucora-quori-spellcasting-0",
+            "name": "Innate Spellcasting (Psionics)",
+            "description": "The quori's spellcasting ability is Charisma (spell save DC 14). It can innately cast the following spells, requiring no components:\n\n- At will: charm person\n- 1/day: fear"
+          }
+        ],
         "actions": [
           {
             "id": "erlw-tsucora-quori-action-0",
@@ -5322,22 +5395,22 @@
           {
             "id": "erlw-tsucora-quori-action-1",
             "name": "Pincer",
-            "description": "mw 6 to hit, reach 5 ft., one target. {@h}8 (1d10 + 3) bludgeoning damage. The target is grappled (escape 14) if it is a Large or smaller creature. The quori has two pincers, each of which can grapple one target."
+            "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d10 + 3) bludgeoning damage. The target is grappled (escape DC 14) if it is a Large or smaller creature. The quori has two pincers, each of which can grapple one target."
           },
           {
             "id": "erlw-tsucora-quori-action-2",
             "name": "Claws",
-            "description": "mw 6 to hit, reach 5 ft., one target. {@h}13 (4d4 + 3) slashing damage."
+            "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 13 (4d4 + 3) slashing damage."
           },
           {
             "id": "erlw-tsucora-quori-action-3",
             "name": "Stinger",
-            "description": "mw 6 to hit, reach 10 ft., one creature. {@h}8 (1d10 + 3) piercing damage plus 10 (3d6) psychic damage, and the target must succeed on a 14 Wisdom saving throw or be frightened of the quori for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+            "description": "Melee Weapon Attack: +6 to hit, reach 10 ft., one creature. Hit: 8 (1d10 + 3) piercing damage plus 10 (3d6) psychic damage, and the target must succeed on a DC 14 Wisdom saving throw or be frightened of the quori for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
           },
           {
             "id": "erlw-tsucora-quori-action-4",
-            "name": "Possession {@recharge}",
-            "description": "One humanoid that the quori can see within 5 feet of it must succeed on a 14 Charisma saving throw or be possessed by the quori; the quori then disappears, and the target is incapacitated and loses control of its body. The quori now controls the body but doesn't deprive the target of awareness. The quori can't be targeted by any attack, spell, or other effect, and it retains its alignment, Intelligence, Wisdom, Charisma, and immunity to being charmed and frightened. It otherwise uses the possessed target's statistics, but doesn't gain access to the target's knowledge, class features, or proficiencies. The possession lasts until the body drops to 0 hit points, the quori ends it as a bonus action, or the quori is forced out by an effect like the dispel evil and good spell. When the possession ends, the quori reappears in an unoccupied space within 5 feet of the body. The target is immune to this quori's Possession for 24 hours after succeeding on the saving throw or after the possession ends."
+            "name": "Possession (Recharge 6)",
+            "description": "One humanoid that the quori can see within 5 feet of it must succeed on a DC 14 Charisma saving throw or be possessed by the quori; the quori then disappears, and the target is incapacitated and loses control of its body. The quori now controls the body but doesn't deprive the target of awareness. The quori can't be targeted by any attack, spell, or other effect, and it retains its alignment, Intelligence, Wisdom, Charisma, and immunity to being charmed and frightened. It otherwise uses the possessed target's statistics, but doesn't gain access to the target's knowledge, class features, or proficiencies. The possession lasts until the body drops to 0 hit points, the quori ends it as a bonus action, or the quori is forced out by an effect like the dispel evil and good spell. When the possession ends, the quori reappears in an unoccupied space within 5 feet of the body. The target is immune to this quori's Possession for 24 hours after succeeding on the saving throw or after the possession ends."
           }
         ],
         "bonusActions": [],
@@ -5411,6 +5484,11 @@
             "id": "erlw-undying-councilor-trait-1",
             "name": "Magic Resistance",
             "description": "The councilor has advantage on saving throws against spells and other magical effects."
+          },
+          {
+            "id": "erlw-undying-councilor-spellcasting-0",
+            "name": "Spellcasting",
+            "description": "The councilor is a 13th-level spellcaster. Its spellcasting ability is Wisdom (spell save DC 17, +9 to hit with spell attacks). It has the following cleric spells prepared:\n\n- Cantrips (at will): guidance, mending, sacred flame, spare the dying, thaumaturgy\n- 1st level (4 slots): bless, command, create or destroy water\n- 2nd level (3 slots): augury, calm emotions, hold person\n- 3rd level (3 slots): daylight, dispel magic, spirit guardians\n- 4th level (3 slots): banishment, divination, guardian of faith\n- 5th level (2 slots): dispel evil and good, flame strike (see \"Actions\" below), scrying\n- 6th level (1 slot): forbiddance, planar ally\n- 7th level (1 slot): plane shift"
           }
         ],
         "actions": [
@@ -5422,7 +5500,7 @@
           {
             "id": "erlw-undying-councilor-action-1",
             "name": "Radiant Touch",
-            "description": "ms 9 to hit, reach 5 ft., one target. {@h}15 (3d6 + 5) radiant damage."
+            "description": "Melee Spell Attack: +9 to hit, reach 5 ft., one target. Hit: 15 (3d6 + 5) radiant damage."
           },
           {
             "id": "erlw-undying-councilor-action-2",
@@ -5432,7 +5510,7 @@
           {
             "id": "erlw-undying-councilor-action-3",
             "name": "Flame Strike (5th-Level Spell; Requires a Spell Slot)",
-            "description": "The councilor chooses a point it can see within 60 feet of it. Each creature in a 10-foot-radius, 40-foot-high cylinder centered on that point must make a 17 Dexterity saving throw. A creature takes 14 (4d6) fire damage and 14 (4d6) radiant damage on a failed save, or half as much damage on a successful one. If the councilor casts this spell using a spell slot of 6th level or higher, the fire damage or the radiant damage (its choice) increases by 1d6 for each slot level above 5th."
+            "description": "The councilor chooses a point it can see within 60 feet of it. Each creature in a 10-foot-radius, 40-foot-high cylinder centered on that point must make a DC 17 Dexterity saving throw. A creature takes 14 (4d6) fire damage and 14 (4d6) radiant damage on a failed save, or half as much damage on a successful one. If the councilor casts this spell using a spell slot of 6th level or higher, the fire damage or the radiant damage (its choice) increases by 1d6 for each slot level above 5th."
           }
         ],
         "bonusActions": [],
@@ -5446,7 +5524,7 @@
           {
             "id": "erlw-undying-councilor-legendary-1",
             "name": "Shimmering Aura (Costs 2 Actions)",
-            "description": "The councilor channels positive energy into its Aura of Radiance. Until the end of the councilor's next turn, it sheds bright light in a 30-foot radius and dim light for an additional 30 feet. Any creature that starts its turn in the bright light must succeed on a 17 Constitution saving throw or be blinded until the end of the councilor's next turn."
+            "description": "The councilor channels positive energy into its Aura of Radiance. Until the end of the councilor's next turn, it sheds bright light in a 30-foot radius and dim light for an additional 30 feet. Any creature that starts its turn in the bright light must succeed on a DC 17 Constitution saving throw or be blinded until the end of the councilor's next turn."
           }
         ],
         "languages": [
@@ -5525,7 +5603,7 @@
           {
             "id": "erlw-undying-soldier-action-1",
             "name": "Spear",
-            "description": "mw,rw 5 to hit, reach 5 ft. or range 20/60 ft., one target. {@h}6 (1d6 + 3) piercing damage or 7 (1d8 + 3) piercing damage if used with two hands to make a melee attack, plus 9 (2d8) radiant damage if the target is a fiend or undead."
+            "description": "Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 6 (1d6 + 3) piercing damage or 7 (1d8 + 3) piercing damage if used with two hands to make a melee attack, plus 9 (2d8) radiant damage if the target is a fiend or undead."
           }
         ],
         "bonusActions": [],
@@ -5582,7 +5660,7 @@
           {
             "id": "erlw-valenar-hawk-action-0",
             "name": "Talons",
-            "description": "mw 6 to hit, reach 5 ft., one target. {@h}6 (1d4 + 4) slashing damage."
+            "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 6 (1d4 + 4) slashing damage."
           }
         ],
         "bonusActions": [],
@@ -5640,7 +5718,7 @@
           {
             "id": "erlw-valenar-hound-action-0",
             "name": "Bite",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}6 (1d6 + 3) piercing damage. If the target is a creature, it must succeed on a 13 Strength saving throw or be knocked prone."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage. If the target is a creature, it must succeed on a DC 13 Strength saving throw or be knocked prone."
           }
         ],
         "bonusActions": [],
@@ -5693,7 +5771,7 @@
           {
             "id": "erlw-valenar-steed-action-0",
             "name": "Hooves",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}10 (2d6 + 3) bludgeoning damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 10 (2d6 + 3) bludgeoning damage."
           }
         ],
         "bonusActions": [],
@@ -5779,7 +5857,7 @@
           {
             "id": "erlw-warforged-colossus-trait-4",
             "name": "Towering Terror",
-            "description": "Any enemy outside the colossus that starts its turn within 30 feet of it must succeed on a 26 Wisdom saving throw or be frightened until the start of the enemy's next turn. If the enemy's saving throw is successful, it is immune to this colossus's Towering Terror for the next 24 hours."
+            "description": "Any enemy outside the colossus that starts its turn within 30 feet of it must succeed on a DC 26 Wisdom saving throw or be frightened until the start of the enemy's next turn. If the enemy's saving throw is successful, it is immune to this colossus's Towering Terror for the next 24 hours."
           }
         ],
         "actions": [
@@ -5791,22 +5869,22 @@
           {
             "id": "erlw-warforged-colossus-action-1",
             "name": "Slam",
-            "description": "mw 18 to hit, reach 20 ft., one target. {@h}29 (3d12 + 10) bludgeoning damage, and the colossus can push the target up to 20 feet away from it."
+            "description": "Melee Weapon Attack: +18 to hit, reach 20 ft., one target. Hit: 29 (3d12 + 10) bludgeoning damage, and the colossus can push the target up to 20 feet away from it."
           },
           {
             "id": "erlw-warforged-colossus-action-2",
             "name": "Eldritch Turret",
-            "description": "rs 18 to hit, range 300 ft., one target. {@h}18 (4d8) force damage, and if the target is a creature, it is knocked prone."
+            "description": "Ranged Spell Attack: +18 to hit, range 300 ft., one target. Hit: 18 (4d8) force damage, and if the target is a creature, it is knocked prone."
           },
           {
             "id": "erlw-warforged-colossus-action-3",
             "name": "Stomp",
-            "description": "The colossus stomps one of its feet at a point on the ground within 20 feet of it. Any creature in a 20-foot-radius, 20-foot-high cylinder centered on this point must succeed on a 26 Dexterity saving throw or take 33 (6d10) bludgeoning damage and fall prone. Until the colossus uses its Stomp again or moves, the creature is restrained. While restrained in this way, the creature (or another creature within 5 feet of it) can use its action to make a 26 Strength check. On a success, the creature relocates to an unoccupied space of its choice within 5 feet of the colossus and is no longer restrained. Structures, as well as nonmagical objects that are neither being worn nor carried, take the same amount of damage if they are in the cylinder (no save)."
+            "description": "The colossus stomps one of its feet at a point on the ground within 20 feet of it. Any creature in a 20-foot-radius, 20-foot-high cylinder centered on this point must succeed on a DC 26 Dexterity saving throw or take 33 (6d10) bludgeoning damage and fall prone. Until the colossus uses its Stomp again or moves, the creature is restrained. While restrained in this way, the creature (or another creature within 5 feet of it) can use its action to make a DC 26 Strength check. On a success, the creature relocates to an unoccupied space of its choice within 5 feet of the colossus and is no longer restrained. Structures, as well as nonmagical objects that are neither being worn nor carried, take the same amount of damage if they are in the cylinder (no save)."
           },
           {
             "id": "erlw-warforged-colossus-action-4",
-            "name": "Incinerating Beam 5",
-            "description": "The colossus fires a beam of light in a 150-foot line that is 10 feet wide. Each creature in the line must make a 26 Dexterity saving throw, taking 60 (11d10) radiant damage on a failed save, or half as much damage on a successful one. A creature reduced to 0 hit points by this beam is disintegrated, leaving behind anything it was wearing or carrying."
+            "name": "Incinerating Beam (Recharge 5-6)",
+            "description": "The colossus fires a beam of light in a 150-foot line that is 10 feet wide. Each creature in the line must make a DC 26 Dexterity saving throw, taking 60 (11d10) radiant damage on a failed save, or half as much damage on a successful one. A creature reduced to 0 hit points by this beam is disintegrated, leaving behind anything it was wearing or carrying."
           }
         ],
         "bonusActions": [],
@@ -5870,12 +5948,12 @@
           {
             "id": "erlw-warforged-soldier-action-1",
             "name": "Armblade",
-            "description": "mw 5 to hit, reach 5 ft., one target. {@h}6 (1d6 + 3) slashing damage."
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) slashing damage."
           },
           {
             "id": "erlw-warforged-soldier-action-2",
             "name": "Javelin",
-            "description": "mw,rw 5 to hit, reach 5 ft. or range 30/120 ft., one target. {@h}6 (1d6 + 3) piercing damage."
+            "description": "Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or range 30/120 ft., one target. Hit: 6 (1d6 + 3) piercing damage."
           }
         ],
         "bonusActions": [],
@@ -5951,17 +6029,17 @@
           {
             "id": "erlw-warforged-titan-action-1",
             "name": "Axehand",
-            "description": "mw 9 to hit, reach 10 ft., one target. {@h}19 (3d8 + 6) slashing damage, plus 11 (2d10) slashing damage if the target is prone."
+            "description": "Melee Weapon Attack: +9 to hit, reach 10 ft., one target. Hit: 19 (3d8 + 6) slashing damage, plus 11 (2d10) slashing damage if the target is prone."
           },
           {
             "id": "erlw-warforged-titan-action-2",
             "name": "Hammerfist",
-            "description": "mw 9 to hit, reach 10 ft., one target. {@h}19 (3d8 + 6) bludgeoning damage. If the target is a creature, it must succeed on a 17 Strength saving throw or be knocked prone."
+            "description": "Melee Weapon Attack: +9 to hit, reach 10 ft., one target. Hit: 19 (3d8 + 6) bludgeoning damage. If the target is a creature, it must succeed on a DC 17 Strength saving throw or be knocked prone."
           },
           {
             "id": "erlw-warforged-titan-action-3",
-            "name": "Sweeping Axe {@recharge}",
-            "description": "The warforged titan makes a sweep with its axehand, and each creature within 10 feet of it must make a 17 Dexterity saving throw. A creature takes 19 (3d8 + 6) slashing damage on a failed save, or half as much damage on a successful one."
+            "name": "Sweeping Axe (Recharge 6)",
+            "description": "The warforged titan makes a sweep with its axehand, and each creature within 10 feet of it must make a DC 17 Dexterity saving throw. A creature takes 19 (3d8 + 6) slashing damage on a failed save, or half as much damage on a successful one."
           }
         ],
         "bonusActions": [],
@@ -6026,7 +6104,12 @@
           {
             "id": "erlw-zakya-rakshasa-trait-2",
             "name": "Martial Prowess (1/Turn)",
-            "description": "When the rakshasa hits a creature with a melee weapon attack, the attack deals an extra 11 (2d10) damage of the weapon's type, and the creature must make a 15 Strength saving throw. On a failure, the rakshasa can push the creature up to 10 feet away from it, knock the creature prone, or make the creature drop one item it is holding of the rakshasa's choice."
+            "description": "When the rakshasa hits a creature with a melee weapon attack, the attack deals an extra 11 (2d10) damage of the weapon's type, and the creature must make a DC 15 Strength saving throw. On a failure, the rakshasa can push the creature up to 10 feet away from it, knock the creature prone, or make the creature drop one item it is holding of the rakshasa's choice."
+          },
+          {
+            "id": "erlw-zakya-rakshasa-spellcasting-0",
+            "name": "Innate Spellcasting",
+            "description": "The rakshasa's innate spellcasting ability is Charisma (spell save DC 11). The rakshasa can innately cast the following spells, requiring no material components:\n\n- At will: detect thoughts, disguise self\n- 1/day: shield"
           }
         ],
         "actions": [
@@ -6038,12 +6121,12 @@
           {
             "id": "erlw-zakya-rakshasa-action-1",
             "name": "Longsword",
-            "description": "mw 7 to hit, reach 5 ft., one target. {@h}8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) slashing damage if used with two hands."
+            "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) slashing damage if used with two hands."
           },
           {
             "id": "erlw-zakya-rakshasa-action-2",
             "name": "Javelin",
-            "description": "mw,rw 7 to hit, reach 5 ft. or range 30/120 ft., one target. {@h}7 (1d6 + 4) piercing damage."
+            "description": "Melee or Ranged Weapon Attack: +7 to hit, reach 5 ft. or range 30/120 ft., one target. Hit: 7 (1d6 + 4) piercing damage."
           }
         ],
         "bonusActions": [],
@@ -6208,6 +6291,6 @@
   "sections": [],
   "documents": [],
   "notes": [
-    "Converted from 5etools JSON filtered to source \"ERLW\" downloaded from https://5e.tools/book.html#ERLW."
+    "Converted from 5etools JSON filtered to source \"ERLW\"."
   ]
 }

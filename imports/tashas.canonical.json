@@ -6,7 +6,7 @@
     "category": "supplement",
     "aliases": [],
     "origin": "parsed-html",
-    "importedAt": "2026-10-06T23:38:25.559Z",
+    "importedAt": "2026-10-14T06:30:07.701Z",
     "parser": "tcoe-html",
     "visibility": "private"
   },
@@ -652,14 +652,6 @@
         "skillCount": 0,
         "features": [
           {
-            "id": "tashas-fighter-fighting-style-options",
-            "name": "Fighting Style Options",
-            "description": "When you choose a fighting style, the following styles are added to your list of options.",
-            "level": 1,
-            "source": "Tasha's Cauldron of Everything",
-            "optional": true
-          },
-          {
             "id": "tashas-fighter-martial-versatility",
             "name": "Martial Versatility",
             "description": "Whenever you reach a level in this class that grants the Ability Score Improvement feature, you can do one of the following, as you shift the focus of your martial practice: • Replace a fighting style you know with another fighting style available to fighters. • If you know any maneuvers from the Battle Master archetype, you can replace one maneuver you know with a different maneuver.",
@@ -743,14 +735,6 @@
             "id": "tashas-paladin-additional-paladin-spells",
             "name": "Additional Paladin Spells",
             "description": "The spells in the following list expand the paladin spell list in the Player’s Handbook. The list is organized by spell level, not character level. Each spell is in the Player’s Handbook, unless it has an asterisk (a Tasha's Cauldron of Everything spell). Xanathar’s Guide to Everything also offers more spells. 2nd: Gentle repose, Prayer of healing, Warding bond 3rd: Spirit shroud* 5th: Summon celestial*",
-            "level": 2,
-            "source": "Tasha's Cauldron of Everything",
-            "optional": true
-          },
-          {
-            "id": "tashas-paladin-fighting-style-options",
-            "name": "Fighting Style Options",
-            "description": "When you choose a fighting style, the following styles are added to your list of options.",
             "level": 2,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
@@ -841,14 +825,6 @@
             "id": "tashas-ranger-additional-ranger-spells",
             "name": "Additional Ranger Spells",
             "description": "The spells in the following list expand the ranger spell list in the Player’s Handbook. The list is organized by spell level, not character level. Each spell is in the Player’s Handbook, unless it has an asterisk (a Tasha's Cauldron of Everything spell). Xanathar’s Guide to Everything also offers more spells. 1st: Entangle, Searing smite 2nd: Aid, Enhance ability, Gust of wind, Magic weapon, Summon beast* 3rd: Elemental weapon, Meld into stone, Revivify, Summon fey* 4th: Dominate beast, Summon elemental* 5th: Greater restoration",
-            "level": 2,
-            "source": "Tasha's Cauldron of Everything",
-            "optional": true
-          },
-          {
-            "id": "tashas-ranger-fighting-style-options",
-            "name": "Fighting Style Options",
-            "description": "When you choose a fighting style, the following styles are added to your list of options.",
             "level": 2,
             "source": "Tasha's Cauldron of Everything",
             "optional": true
@@ -6934,8 +6910,7 @@
       }
     ],
     "monsters": [],
-    "ua": [],
-    "combatActions": []
+    "ua": []
   },
   "sections": [
     {

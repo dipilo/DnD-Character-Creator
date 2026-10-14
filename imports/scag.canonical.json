@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source SCAG).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T04:13:37.995Z",
+    "importedAt": "2026-10-14T06:27:39.368Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -2699,7 +2699,7 @@
         ],
         "feature": {
           "name": "Feature: Mercenary Life",
-          "description": "You know the mercenary life as only someone who has experienced it can. You are able to identify mercenary companies by their emblems, and you know a little about any such company, including who has hired them recently. You can find the taverns and festhalls where mercenaries abide in any area, as long as you speak the language. You can find mercenary work between adventures sufficient to maintain a comfortable lifestyle (see \"8\" under \"Downtime Activities\" in chapter 8 of the Player's Handbook)."
+          "description": "You know the mercenary life as only someone who has experienced it can. You are able to identify mercenary companies by their emblems, and you know a little about any such company, including who has hired them recently. You can find the taverns and festhalls where mercenaries abide in any area, as long as you speak the language. You can find mercenary work between adventures sufficient to maintain a comfortable lifestyle (see \"Practicing a Profession\" under \"Downtime Activities\" in chapter 8 of the Player's Handbook)."
         },
         "personalityTraits": [],
         "ideals": [],
@@ -3294,6 +3294,6 @@
   "sections": [],
   "documents": [],
   "notes": [
-    "Converted from 5etools JSON filtered to source \"SCAG\" downloaded from https://5e.tools/book.html#SCAG."
+    "Converted from 5etools JSON filtered to source \"SCAG\"."
   ]
 }
