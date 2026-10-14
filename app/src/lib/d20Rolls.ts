@@ -1,15 +1,4 @@
-/**
- * D20 tests, and the advantage state they are thrown under.
- *
- * Advantage is 5e's rule, not the tray's, so it lives here: the tray takes a generic "keep this
- * many dice, from this end" and this module is the only place that knows two d20s keeping the
- * higher is what advantage means.
- *
- * The mode is deliberately sticky rather than resetting after each roll — a fighter making three
- * attacks with advantage should not have to set it three times — and it is stated on the roll's
- * own label, so a mode left on is visible in the result rather than silently changing every
- * subsequent number.
- */
+// Advantage is 5e's rule, not the tray's; the mode is sticky and stated on the label.
 import { create } from 'zustand';
 import { modifierNotation } from '@/lib/diceNotation';
 import {
@@ -32,10 +21,7 @@ interface D20ModeState {
   setMode: (mode: D20Mode) => void;
 }
 
-/**
- * Not persisted: an advantage left on from yesterday's session is a wrong number tomorrow, and
- * this is UI state rather than anything about the character.
- */
+/** Not persisted: UI state, and yesterday's advantage is tomorrow's wrong number. */
 export const useD20ModeStore = create<D20ModeState>()((set) => ({
   mode: 'normal',
   setMode: (mode) => set({ mode })
@@ -49,10 +35,7 @@ const keepRuleFor = (mode: D20Mode): DiceKeepRule | undefined => {
   return undefined;
 };
 
-/**
- * Advantage and disadvantage on the same roll cancel, in both printings. It is the dice rule
- * rather than a fact about the features, so it is resolved here and not in `rollEffects`.
- */
+/** The dice rule, not a fact about the features, so it resolves here. */
 function modeFromEffects(base: D20Mode, effects: AppliedRollEffects | undefined): D20Mode {
   const up = base === 'advantage' || Boolean(effects?.advantage);
   const down = base === 'disadvantage' || Boolean(effects?.disadvantage);
@@ -66,11 +49,7 @@ export interface D20RollRequest {
   detail?: string;
   /** Overrides the tray's current mode. A death save is always a straight roll, for instance. */
   mode?: D20Mode;
-  /**
-   * What the character's own features do to this roll (`applyRollEffects`). They are folded in
-   * here rather than by each caller so one sheet row cannot apply them and the next forget. A row
-   * that prints its modifier must print `effectiveModifier`, or the total will not add up.
-   */
+  /** Folded in here, so one row cannot apply effects and the next forget. */
   effects?: AppliedRollEffects;
 }
 
@@ -83,9 +62,7 @@ export function rollD20({ modifier, label, detail, mode, effects }: D20RollReque
   const activeMode = modeFromEffects(mode ?? getD20Mode(), effects);
   const dice = activeMode === 'normal' ? 1 : 2;
   const modeLabel = activeMode === 'normal' ? undefined : D20_MODE_LABELS[activeMode];
-  // The features that applied are named under the roll, so a number a feature changed says which.
-  // A conditional one is named too, on its own terms: the roll is the bare one and the player
-  // decides whether the clause holds.
+  // A conditional one is named on its own terms; the roll itself stays bare.
   const applied = effects ? describeRollEffects(effects.applied) : undefined;
   const offered = effects ? describeConditionalRollEffects(effects.conditional) : undefined;
 

@@ -14,8 +14,6 @@ const { cleanupOrphanedUser, isCampaignOwner, memberHasPermission, optionalAuth,
 
 const router = express.Router();
 
-// ---------- Campaign endpoints ----------
-
 // Create a campaign (authenticated user becomes owner)
 router.post('/api/campaigns', requireAuth, async (req, res) => {
   try {
@@ -107,12 +105,7 @@ router.get('/api/campaigns', requireAuth, async (req, res) => {
   }
 });
 
-/**
- * A campaign's allowed content sources (MERGE_PLAN.md Phase 5). The ids belong to the client's
- * source manifest, so the server stores them without interpreting them — it only bounds the shape,
- * because this string is read back by every member's builder. An empty list means no restriction,
- * which is the same thing the builder's own source filter means when nothing is selected.
- */
+/** Stored uninterpreted; an empty list is no restriction, as in the builder's own filter. */
 function normaliseAllowedSourceIds(value) {
   if (value === null || value === undefined || value === '') return { value: null };
   if (!Array.isArray(value)) return { error: 'allowed_source_ids_must_be_an_array' };
@@ -127,11 +120,7 @@ function normaliseAllowedSourceIds(value) {
   return { value: ids.length > 0 ? JSON.stringify(ids) : null };
 }
 
-/**
- * The game a table plays. Same posture as `allowed_source_ids`: the registry of systems is the
- * client's (`app/src/data/gameSystems.ts`), so this bounds the shape and interprets nothing —
- * adding a system must not need a server deploy. NULL means "whatever the client defaults to".
- */
+/** Shape only: adding a system must not need a server deploy. NULL is the client default. */
 function normaliseSystemId(value) {
   if (value === null || value === undefined || value === '') return { value: null };
   if (typeof value !== 'string' || !/^[a-z0-9][a-z0-9-]{0,63}$/.test(value)) {
@@ -218,11 +207,7 @@ router.delete('/api/campaigns/:campaignId', requireCampaignAccess('owner'), asyn
   }
 });
 
-/**
- * A character is attached to a campaign only while its owner is a member of it — attaching is how
- * a sheet becomes readable by the table (see `findReadableCharacter`), so losing the membership has
- * to take that back. The sheet itself belongs to its user and survives (MERGE_PLAN.md §9).
- */
+/** Losing the membership takes the sharing back; the sheet belongs to its account. */
 async function detachUserCharacters(campaignId, userId) {
   if (!campaignId || !userId) return;
   await db.run(
@@ -244,9 +229,7 @@ router.post('/api/campaigns/:campaignId/leave', requireCampaignAccess(), async (
 
     // Remove user from campaign_members
     await db.run('DELETE FROM campaign_members WHERE campaign_id = ? AND user_id = ?', campaignId, user.id);
-    // Their Pre-Game Form goes with them. It is a statement about playing at *this* table,
-    // so leaving it feeding the compiled merge would report a consent nobody at the table
-    // still holds.
+    // A statement about playing at *this* table, so it cannot keep feeding the merge.
     await db.run('DELETE FROM pre_game_forms WHERE campaign_id = ? AND user_id = ?', campaignId, user.id);
     await detachUserCharacters(campaignId, user.id);
 
@@ -323,14 +306,7 @@ router.get('/api/campaigns/:campaignId/members', requireCampaignAccess(), async 
   }
 });
 
-/**
- * The party view (MERGE_PLAN.md Phase 5): every character seated at this campaign, whoever owns it.
- *
- * This is the one place a member reads other people's characters, and the permission story is the
- * one attaching already implies — a character carries a `campaign_id` because its owner put it
- * there. Summaries only, as everywhere else: a document can carry two data-URL images, and a
- * member opens the ones they actually want by id (`GET /api/characters/:id` allows the same read).
- */
+/** The one place a member reads others' characters; summaries only, as everywhere. */
 router.get('/api/campaigns/:campaignId/characters', requireCampaignAccess(), async (req, res) => {
   try {
     const columns = SUMMARY_COLUMNS.split(', ').map((column) => `ch.${column}`).join(', ');
@@ -350,14 +326,7 @@ router.get('/api/campaigns/:campaignId/characters', requireCampaignAccess(), asy
   }
 });
 
-/**
- * A member's answer to "may the GM edit my characters at this table?".
- *
- * It is written by its holder and by nobody else — deliberately its own column rather than a flag
- * in `campaign_members.permissions`, because that blob is the owner's to edit and this is the one
- * grant an owner must not be able to give themselves. Consent covers every character its holder
- * seats here, including ones built later, which is why it is not a row in `character_grants`.
- */
+/** Its own column: the permissions blob is the owner's, and this grant is not theirs to give. */
 router.put('/api/campaigns/:campaignId/character-edit-consent', requireCampaignAccess(), async (req, res) => {
   try {
     const consent = req.body?.consent ? 1 : 0;
@@ -373,10 +342,7 @@ router.put('/api/campaigns/:campaignId/character-edit-consent', requireCampaignA
   }
 });
 
-/**
- * A member's own answer to "does a seat I make become mine?", written by its holder alone. The
- * owner's per-member override lives beside it and wins; the campaign default sits under both.
- */
+/** Written by its holder alone; the owner's override wins and the default sits under both. */
 router.put('/api/campaigns/:campaignId/auto-claim', requireCampaignAccess(), async (req, res) => {
   try {
     const mode = normaliseAutoClaimMode(req.body?.mode ?? null);
@@ -438,13 +404,7 @@ router.post('/api/campaigns/:campaignId/members', requireAuth, async (req, res) 
   }
 });
 
-// List unclaimed players for a campaign (players with no user mapping)
-// This endpoint is intentionally permissive so invite landing pages and anonymous
-// claim flows can show which players are available to claim without requiring
-// the user to already be authenticated. It only returns players that have no
-// discord_id (so it won't expose already-claimed accounts). Also exclude players
-// that have been reserved/claimed (password_hash not null) or that have an
-// active campaign_members.user_id mapping.
+// Permissive so an invite landing page can list claimable seats signed out.
 router.get('/api/campaigns/:campaignId/unclaimed-players', setCache, async (req, res) => {
   try {
     const campaignId = req.params.campaignId;
@@ -495,18 +455,14 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
     });
 
     if (!campaign) return res.status(404).json({ error: 'campaign_not_found' });
-    // Claiming a seat creates a campaign-scoped account whose only reason to exist is that seat, so
-    // editing and releasing it are a floor the campaign's defaults are layered on top of — without
-    // them the new account can see the roster and change nothing on its own row.
+    // A floor under the campaign defaults, or the new account can change nothing of its own.
     const claimPermissions = joinPermissionsBlob(campaign, null, SELF_SERVICE_PERMISSIONS);
 
     const user = req.user;
     if (user) {
       // Use database transaction for consistency and better performance
       const transaction = async () => await db.transaction(async (trx) => {
-        // Someone already at this table keeps whatever the owner granted them: passing a blob here
-        // *replaced* it, so a player who re-claimed their seat silently lost `can_create_players`
-        // and every other grant. The floor below is for an arrival who has no row yet.
+        // Passing a blob here *replaced* it, so a re-claim silently dropped every grant.
         const existing = await readMembership(trx, campaignId, user.id);
         const grant = existing ? null : claimPermissions;
         if (playerId) {
@@ -524,9 +480,7 @@ router.post('/api/campaigns/:campaignId/claim-player', optionalAuth, async (req,
           // row: the seat and the grant land on it rather than beside it.
           await upsertMembership(trx, { campaignId, userId: user.id, playerId, permissions: grant });
           
-          // A seat released earlier carries `unclaimed_at`, and `is_claimed` is read from it — so
-          // leaving it set made a re-claimed seat report as unclaimed forever, which is what
-          // "claiming a seat doesn't work" looked like from the Roster.
+          // Clear it, or a re-claimed seat reports as unclaimed forever.
           await trx.run('UPDATE players SET unclaimed_at = NULL WHERE id = ?', playerId);
           if (user.discord_id) {
             await trx.run('UPDATE players SET discord_id = ? WHERE id = ?', user.discord_id, playerId);
@@ -677,11 +631,7 @@ router.patch('/api/campaigns/:campaignId/members/:memberId/permissions', require
   }
 });
 
-/**
- * Remove someone from a campaign (owner only). Everything this takes away is the membership: the
- * seat they held goes back to unclaimed rather than being deleted, and their characters come off
- * the table exactly as `leave` would take them — a sheet belongs to its account.
- */
+/** Takes the membership only: the seat goes back to unclaimed and the sheets stay. */
 router.delete('/api/campaigns/:campaignId/members/:memberId', requireCampaignAccess('owner'), async (req, res) => {
   try {
     const memberId = Number.parseInt(req.params.memberId, 10);
@@ -697,9 +647,7 @@ router.delete('/api/campaigns/:campaignId/members/:memberId', requireCampaignAcc
         member.player_id,
       );
     }
-    // The removed member's Pre-Game Form goes with them. It is a statement about playing at *this* table,
-    // so leaving it feeding the compiled merge would report a consent nobody at the table
-    // still holds.
+    // A statement about playing at *this* table, so it cannot keep feeding the merge.
     await db.run('DELETE FROM pre_game_forms WHERE campaign_id = ? AND user_id = ?', req.campaign.id, member.user_id);
     await detachUserCharacters(req.campaign.id, member.user_id);
     await cleanupOrphanedUser(member.user_id);
@@ -710,11 +658,7 @@ router.delete('/api/campaigns/:campaignId/members/:memberId', requireCampaignAcc
   }
 });
 
-/**
- * Take a character off this table (owner only). It is the same write the character's own owner
- * makes with `PUT /api/characters/:id/seat` and carries no `version` for the same reason: the seat
- * is row metadata, and nobody but the owning account may touch the document itself.
- */
+/** The same seat write the owner makes, so it carries no `version` either. */
 router.delete('/api/campaigns/:campaignId/characters/:characterId', requireCampaignAccess('owner'), async (req, res) => {
   try {
     // Detaching reads the row to confirm it is at this table, never for its document.

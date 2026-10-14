@@ -13,11 +13,7 @@ import type {
 } from './types';
 import type { KobBondedActionEntry, KobCharacter } from '@/types/kob';
 
-/**
- * Everything the builder and the sheet need to know about Kids on Bikes, derived from the
- * imported content. No rule is written twice: the age bonuses, the free Strengths and the die
- * spreads all come out of `generated.ts`, which comes out of the vault.
- */
+/** Derived from `generated.ts`, so no imported rule is written twice. */
 
 export const kob = kidsOnBikesContent;
 
@@ -70,10 +66,7 @@ export function statBonusesForAge(age: string | null | undefined): Partial<Recor
   return bonuses;
 }
 
-/**
- * The Strength an age grants for free, which does not count against the two the player picks.
- * Adults get "Skilled at ___", so the sheet has to know to ask what the blank says.
- */
+/** Adults get "Skilled at ___", so the sheet has to ask what the blank says. */
 export function freeStrengthForAge(age: string | null | undefined): KobStrength | null {
   const id = getAgeRules(age)?.freeStrength;
   return id ? getStrength(id) : null;
@@ -103,19 +96,13 @@ export function getPlayRuleSection(id: string): KobPlayRuleSection | null {
   return kob.playRules.sections.find((section) => section.id === id) ?? null;
 }
 
-/**
- * A rule the note set in a callout beside its section rather than in the section's own text: the
- * Knack reminder is the `[!warning]` under Planned Actions And Snap Decisions.
- */
+/** The Knack reminder is the `[!warning]` under Planned Actions And Snap Decisions. */
 export function getPlayRuleCallout(sectionId: string, kind: string): string {
   const callout = getPlayRuleSection(sectionId)?.callouts.find((entry) => entry.kind === kind);
   return callout?.paragraphs.join(' ') ?? '';
 }
 
-/**
- * The difficulty band a rolled total lands in, read off the imported table rather than a scale
- * written into the sheet. Null when the total is below the lowest band the table states.
- */
+/** Null below the lowest band the imported table states. */
 export function difficultyBandFor(total: number): KobDifficultyBand | null {
   return (
     kob.playRules.difficulties.find(
@@ -124,10 +111,7 @@ export function difficultyBandFor(total: number): KobDifficultyBand | null {
   );
 }
 
-/**
- * The outcome band a roll's margin over its target lands in, read off the imported Consequences
- * For Failure table. Null when the table states no band for it.
- */
+/** Null when the imported Consequences For Failure table states no band. */
 export function outcomeBandFor(margin: number): KobOutcomeBand | null {
   return (
     kob.playRules.outcomes.find(
@@ -155,10 +139,7 @@ export function describeKobCharacter(character: KobCharacter): string {
   return parts.length > 0 ? parts.join(' ') : 'Unfinished character';
 }
 
-/**
- * What is still missing before the character can be played. The builder shows this rather than
- * blocking navigation — a Kids on Bikes character is finished at the table, not in a form.
- */
+/** Shown rather than blocking: a KoB character is finished at the table, not in a form. */
 export function outstandingChoices(character: KobCharacter): string[] {
   const missing: string[] = [];
   if (!character.firstName.trim()) missing.push('a first name');

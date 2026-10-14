@@ -4,10 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { resolveActiveGameSystem, useGameSystemStore } from '@/store/gameSystemStore';
 
-/**
- * Whatever the router could not match. A wrong link used to render an empty page, which reads as
- * the app having crashed rather than as a link that goes nowhere — the way back has to be visible.
- */
+/** An empty page reads as a crash, so the way back has to be visible. */
 export function NotFoundPage() {
   const location = useLocation();
   const preferredSystemId = useGameSystemStore((state) => state.preferredSystemId);

@@ -30,9 +30,7 @@ export function SubclassDetails() {
 
   const cls = classId ? getRuntimeClassById(classId) : undefined;
   const subclass = classId && subclassId ? getRuntimeSubclass(classId, subclassId) : undefined;
-  // Resolve the entry the same way the class itself resolves. A raw id match missed a character
-  // whose stored id predates the current pack, so the page claimed the class was not selected and
-  // left "Select Subclass" disabled next to a Current Class Level it could not read.
+  // A raw id match missed a stored id predating the pack and disabled Select Subclass.
   const classEntry = cls ? findCharacterClassEntry(builderState.character?.classes, cls.id, getRuntimeClassById) : undefined;
   const selectedFeatureChoices = builderState.character?.features || [];
   const unlocked = Boolean(cls && classEntry && classEntry.level >= cls.subclassLevel);

@@ -2,9 +2,7 @@ const crypto = require('node:crypto');
 
 const TOKEN_ALPHABET = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-// utility: generate a random token
-// Backed by crypto rather than Math.random: invite tokens and campaign codes minted here are
-// credentials — a guessable invite token joins a stranger to a campaign.
+// crypto, not Math.random: a guessable invite token joins a stranger to a campaign.
 function genToken(len = 24) {
   let out = '';
   for (let i = 0; i < len; i++) out += TOKEN_ALPHABET[crypto.randomInt(TOKEN_ALPHABET.length)];

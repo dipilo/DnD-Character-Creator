@@ -66,22 +66,14 @@ const repairMojibake = (value) => {
   return Object.entries(mojibakeMap).reduce((current, [broken, fixed]) => current.replaceAll(broken, fixed), value);
 };
 
-// Inline elements render without whitespace in a browser, and D&D Beyond wraps mid-word
-// fragments in tags such as <span class="No-Break">ason's tools</span>. Removing inline
-// tags (instead of replacing them with a space) keeps those words intact; block-level
-// tags still become spaces so adjacent cells/paragraphs stay separated.
+// Drop inline tags without a space, or DDB's mid-word fragments split ("m ason's tools").
 const inlineTagNames = new Set(['a', 'abbr', 'b', 'cite', 'code', 'em', 'i', 'mark', 'q', 's', 'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'wbr']);
 const tagOrCommentPattern = /<!--[\s\S]*?-->|<\/?([a-z][a-z0-9-]*)(?:\s[^>]*)?\/?>/gi;
 const replaceTags = (value) => value.replaceAll(tagOrCommentPattern, (match, tagName) => (
   tagName && inlineTagNames.has(tagName.toLowerCase()) ? '' : ' '
 ));
 
-// Blockquotes carry two very different things: an entity's own boxed rules text, and page
-// furniture. The furniture is the chapter epigraph (`compendium-first-line-blockquote`, e.g.
-// "— Elaine Cunningham, Daughter of the Drow"), the grey sidebar box (whose first paragraph
-// carries a `Sidebar-Styles_` heading, e.g. "YOUR PACT BOON" printed beside Eldritch Master),
-// and the in-character marginalia Xanathar's Guide prints throughout ("Hexblade. What a cool
-// name!"). None of it belongs to the entity whose section happens to contain it.
+// Epigraphs, sidebars and in-character marginalia are blockquotes too, marked by their headings.
 const furnitureBlockquoteClassPattern = /compendium-first-line-blockquote|compendium-parchment-blockquote|xanathar-talking-blockquote|adventure-read-aloud-text|compendium-toc-blockquote/i;
 const sidebarHeadingClassPattern = /class="[^"]*Sidebar-Styles_/i;
 const blockquotePattern = /<blockquote\b([^>]*)>([\s\S]*?)<\/blockquote>/gi;
@@ -89,9 +81,7 @@ const removeFurnitureBlockquotes = (value) => value.replaceAll(blockquotePattern
   furnitureBlockquoteClassPattern.test(attrs) || sidebarHeadingClassPattern.test(body) ? ' ' : match
 ));
 
-// Asides (designer commentary boxes), figures (art plus captions), and script/style
-// blocks are page furniture interleaved with the article body; they are never part of
-// an entity's own text.
+// Asides, figures and script/style blocks are page furniture, never an entity's text.
 const removeNonContentBlocks = (value) => removeFurnitureBlockquotes(value)
   .replaceAll(/<aside\b[\s\S]*?<\/aside>/gi, ' ')
   .replaceAll(/<figure\b[\s\S]*?<\/figure>/gi, ' ')
@@ -112,9 +102,7 @@ const extractedTextNoisePatterns = [
   /\b[A-Z][^.]+ subclass is a specialization that grants you features at certain [^.]+ levels, as specified in the subclass\.[\s\S]*$/i
 ];
 
-// Removing a tag can leave the whitespace that surrounded it stranded in front of the punctuation
-// that followed ("you can't be blinded , deafened , or incapacitated"). Runs after whitespace has
-// been collapsed, so a single literal space is all there is to match.
+// A removed tag strands its whitespace before the punctuation ("blinded , deafened").
 const strandedPunctuationPattern = / ([,;.])/g;
 
 const sanitizeExtractedText = (value) => {
@@ -124,22 +112,13 @@ const sanitizeExtractedText = (value) => {
     .trim();
 };
 
-// A printed book navigates by chapter ("see chapter 5, "Equipment""); a builder has none, so a
-// bare chapter number is dead text. The document itself says what its chapters are called, so the
-// titles are indexed from the references that name one and reused for the references that don't.
-// Only chapters that correspond to a builder step survive as a reference — `ContentReferenceText`
-// turns "see Equipment" into a link to it; everything else is dropped rather than left pointing at
-// a page the player cannot open.
+// A builder has no chapters; only a reference landing on a step survives. See docs/rules/content-pipeline.md.
 const navigableChapterTitles = new Set(['equipment', 'spells', 'feats', 'backgrounds', 'classes']);
-// The closing quote — or the period that stands in for it when the book drops one — terminates
-// the title, so the title run excludes those instead of repeating the opening class. Adjacent runs
-// that can match the same characters are what make a pattern backtrack super-linearly.
+// Title run excludes its terminators; adjacent runs matching the same chars backtrack.
 const chapterTitleReferencePattern = /\bchapters?\s+(\d+)\s*,\s*[“"']([A-Za-z][^”"'.]{1,40})[”"'.]/gi;
 const spellChapterReferencePattern = /\ba spell in chapters?\s+\d+/gi;
 const bareChapterReferencePattern = /\bchapters?\s+(\d+)(?:\s+of\s+the\s+[^,.;)]+)?/gi;
-// Marks a chapter pointer that resolved to nothing a player can open, so the surrounding
-// parenthetical, clause, or navigation-only sentence can be removed around it. Each run leading up
-// to the marker excludes it, so no run can swallow the marker and then have to give it back.
+// Marks an unresolvable pointer so its parenthetical or sentence goes with it.
 const deadReferenceMarker = '\uE000';
 const deadParentheticalPattern = new RegExp(String.raw`\s*\([^()${deadReferenceMarker}]*${deadReferenceMarker}[^()]*\)`, 'g');
 const navigationSentencePattern = new RegExp(
@@ -205,13 +184,9 @@ const trailingSectionReferencePattern = /\bat the end of the (?:class|subclass|s
 // "Your Spellbook" sidebar)" — would send the player to something that is no longer there.
 const sidebarPointerPattern = /\s*\((?:see|described in|explained in) the [^()]{0,60}sidebar[^()]{0,20}\)/gi;
 
-// Pointers to another part of the printed page. Every one of them carries a locating phrase
-// ("later in this class's description", "earlier in this section", "a class's section"), which is
-// what separates them from the ordinary noun — "a 10-foot section of wall" stays untouched.
+// The locating phrase is what separates a pointer from the noun ("a 10-foot section of wall").
 const sectionPointerRewrites = [
-  // "...described in the "Eldritch Invocation Options" section later in this class's description."
-  // "...two Metamagic options of your choice from "Metamagic Options" later in this class's
-  // description." Either way the thing being pointed at renders directly under the feature.
+  // Either phrasing points at something rendered directly under the feature.
   [/\s+(?:in|from) (?:the )?[“"'][^”"']{1,60}[”"'](?: section)?(?: (?:later|earlier))? in this (?:class|subclass|species|race)[’']?s? description/gi, ' below'],
   // "(see the Cleric class's section for a list of Cleric spells)" — that list is the Spells step.
   [/\s*\([^()]{0,40}class[’']?s? section[^()]{0,40}spells?[^()]{0,20}\)/gi, ' (see Spells)'],
@@ -229,9 +204,7 @@ const rewriteSectionPointers = (value) => {
 // both reading and any match against the word.
 const softHyphenPattern = /\u00AD/g;
 
-// Turns a book's internal navigation into something a builder can honour. Shared with the
-// SRD-derived generator, whose entries never pass through the HTML extractor but carry the same
-// "(described later in this section)" pointers.
+// Shared with the SRD generator, whose entries skip the extractor but carry the same pointers.
 export const rewriteSourceCrossReferences = (value) => {
   if (typeof value !== 'string' || !value) {
     return value;
@@ -300,9 +273,7 @@ const sanitizeContent = (content, source) => {
       .filter(Boolean);
   }
 
-  // Not one of `contentBucketKeys`: an action every character already has is not an entry anybody
-  // picks, so it is neither counted in a pack's total nor offered in the homebrew hub. Omitted when
-  // empty, for the same reason `languages` is.
+  // Not a `contentBucketKey`: nobody picks a Dodge, so it is uncounted and omitted when empty.
   const combatActions = (Array.isArray(content?.combatActions) ? content.combatActions : [])
     .filter((entry) => isObject(entry) && entry.name && entry.timing)
     .map((entry) => ({
@@ -321,9 +292,7 @@ const sanitizeContent = (content, source) => {
     delete sanitized.combatActions;
   }
 
-  // Not one of `contentBucketKeys` either: a language is picked in a slot a species or background
-  // opens, not out of the library. Omitted when empty, so regenerating a pack from a document that
-  // tabulates no languages stays a byte-identical diff.
+  // Not a `contentBucketKey` either: a language is picked in a slot, not out of the library.
   const languages = (Array.isArray(content?.languages) ? content.languages : [])
     .filter((entry) => isObject(entry) && entry.name && entry.rarity)
     .map((entry) => ({
@@ -426,11 +395,7 @@ const tableRowRegex = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
 const tableCellRegex = /<td[^>]*>([\s\S]*?)<\/td>/gi;
 const anchorLinkRegex = /<a[^>]*href="#([^"]+)"[^>]*>([\s\S]*?)<\/a>/i;
 
-// A section ends where the document outline leaves it: at the next heading of the same level or
-// of any *higher* level. Ending only at the next same-level heading let a section run straight
-// through the chapter boundary that follows it — the Warlock's last class feature (Eldritch
-// Master, an <h3>) swallowed the whole "Eldritch Invocations" <h2> chapter because the next <h3>
-// only came inside it.
+// Ends at the next heading of the same level *or any higher*, or Eldritch Master eats a chapter.
 const openingHeadingPattern = /<h([1-6])\b[^>]*>/gi;
 
 const findSectionEnd = (raw, level, contentStart) => {
@@ -472,9 +437,7 @@ export const collectHeadingBlocks = (raw, level) => {
   return blocks;
 };
 
-// A heading block's `content` runs to the next heading *of the same level*, so it can swallow
-// every nested subsection. When only the section's own body is wanted, cut at the next heading
-// of any level.
+// `content` runs to the next same-level heading, so cut here for a section's own body alone.
 const anyHeadingPattern = /<h[1-6]\b[^>]*>/i;
 export const sliceSectionBody = (raw, contentStart = 0) => {
   const body = raw.slice(contentStart);
@@ -552,11 +515,7 @@ export const extractStructuredTexts = (raw) => {
     .filter(Boolean);
 };
 
-// An expanded/additional spell list is laid out as a torn-paper aside: bold level headings
-// ("Cantrip (0 Level)", "3rd Level") each followed by one paragraph per spell link. Asides are
-// page furniture everywhere else, so the list is only read back for features that announce one —
-// otherwise "Additional Warlock Spells" ships the sentence "The spells in the following list..."
-// with no list behind it.
+// These lists are asides, read back only for a feature that announces one, or it ships no list.
 const spellListLevelPattern = /^(cantrip|\d(?:st|nd|rd|th))\b/i;
 const spellListAnnouncementPattern = /following list|following spells|(?:added to|expand) the [\w' -]{0,30}spell list/i;
 
@@ -732,10 +691,7 @@ const parsePrimaryAbility = (value) => {
 
 const parseSavingThrows = (value) => parseAbilityNames(value);
 
-// "or" separates alternatives, not list members: the Monk's "Choose one type of artisan's tools
-// or one musical instrument" is a single choice across two families. Splitting on it turned that
-// into two separate proficiencies (and lost the "choose one" framing), so only commas and
-// semicolons split entries — "A, B, or C" still splits correctly on its commas.
+// "or" separates alternatives, not list members, so only commas and semicolons split.
 const parseSimpleList = (value) => {
   if (!value || /^none$/i.test(value.trim())) {
     return [];
@@ -780,9 +736,7 @@ const findSizeTokens = (value) => {
   return found;
 };
 
-// An explicit statement such as "Your size is Medium" (or "Your size is Medium or
-// Small") is authoritative; the clause up to the end of the sentence bounds which size
-// words count, so sizes mentioned in surrounding flavor text are ignored.
+// An explicit statement wins, bounded to its own sentence so flavor text cannot vote.
 const getExplicitSizeClause = (value) => {
   const explicit = /\b(?:your\s+size\s+is|size\s+category\s+is)([^.]*)/i.exec(value);
   return explicit ? explicit[1] : undefined;
@@ -801,9 +755,7 @@ const parseSizeFromText = (value, fallback = 'Medium') => {
   return tokens.sort((left, right) => sizeOrder.indexOf(right) - sizeOrder.indexOf(left))[0];
 };
 
-// Species whose Size trait offers a choice ("Small or Medium") should surface that choice
-// in the builder. Returns the options ordered largest-first so the default matches the
-// primary size reported by parseSizeFromText.
+// Largest-first, so the default matches `parseSizeFromText`'s primary size.
 const parseSizeOptionsFromText = (value) => {
   if (!value || !/\bor\b/i.test(value)) {
     return undefined;
@@ -828,10 +780,7 @@ const parseSpeedFromText = (value, fallback = 30) => {
 };
 
 const languageNamePattern = /common(?: sign language)?|draconic|dwarvish|elvish|giant|gnomish|goblin|halfling|orc|abyssal|celestial|deep speech|druidic|infernal|primordial|sylvan|undercommon/gi;
-// A Languages trait states the grant in its first sentence and then rambles about the culture,
-// name-dropping other tongues ("...Orc curses, Elvish musical expressions, Dwarvish military
-// phrases"). Scanning the whole trait turns that colour text into granted languages, so the scan
-// is scoped to the explicit grant clause.
+// Scoped to the grant clause; the rest of the trait name-drops tongues it does not grant.
 const languageGrantClausePattern = /(?:you (?:can|know how to) speak,?\s*read,?\s*and write|your languages? (?:are|is))\s+([^.]*)\./i;
 const languageChoicePattern = /\b(one|two|three|four|\d+)\s+(?:extra|additional|other|more)?\s*languages?\s+of your choice/i;
 export const languageChoicePlaceholder = 'One of your choice';
@@ -893,10 +842,7 @@ const parseAbilityScoreIncreaseText = (value) => {
   return increases.length > 0 ? increases : undefined;
 };
 
-// Features often present an explicit inline choice as a colon-separated list, e.g.
-// "You gain proficiency with the artisan's tools of your choice: smith's tools,
-// brewer's supplies, or mason's tools." Surface those as structured options so the
-// builder can offer an inline selector instead of plain text.
+// A colon list is an explicit inline choice, so it becomes structured options, not prose.
 const inlineChoiceLeadPattern = /(?:\b(one|two|three|four|a|an)\s+)?(?:[\w'’-]+\s+){0,4}of your choice(?:\s+from the following(?:\s+list)?)?\s*:\s*([^.:;]+)[.;]/i;
 const inlineChoiceFollowingPattern = /choose\s+(one|two|three|four|\d+)\s+of the following(?:\s+options)?\s*:\s*([^.:;]+)[.;]/i;
 
@@ -945,9 +891,7 @@ export const applyInlineFeatureChoiceOptions = (feature) => {
     return feature;
   }
 
-  // "Otherworldly Patron" and "Primal Path" name their subclasses inline, but a subclass is not an
-  // inline option: the builder picks it on the Subclasses tab, where the full features live. An
-  // inline selector here would be a second, competing control that records nothing the sheet reads.
+  // A subclass is picked on the Subclasses tab, so an inline selector here records nothing.
   if (subclassFeaturePattern.test(feature.name ?? '')) {
     return feature;
   }
@@ -1005,9 +949,7 @@ const extractLabeledParagraphPairs = (raw) => {
 // "Label. Value" trait shape. These never appear in real species traits, so drop them.
 const traitChromeNoisePattern = /javascript|enable javascript|works best with|cookie|your browser|sign in|log in|dndbeyond|all rights reserved|privacy policy/i;
 
-// The article body is followed by page chrome (footer link lists, nav, cookie notices). These
-// markers only appear in that furniture, so extracted text is truncated at the first one so
-// trailing chrome never leaks into a description.
+// Page chrome follows the body in every dump; truncate at the first of these markers.
 const chromeCutoffPattern = /\s*(?:\/\/\s*)?(?:•\s*)?(?:Help Portal|This site works best with JavaScript|Toggle mobile navigation|Do Not Sell or Share My Personal Information|Download the D&D Beyond App|Sign in Create Account|Latest Changelog)[\s\S]*$/i;
 const stripTrailingChrome = (text) => (typeof text === 'string'
   ? text.replace(chromeCutoffPattern, '').replace(/[\s•/]+$/u, '').trim()
@@ -1143,10 +1085,7 @@ const addFeatureLevelsFromRow = (cells, featureLevels, currentSubclassLevel, fea
   return subclassLevel;
 };
 
-// Class tables do not agree on where the Features column sits: the Barbarian's is third, but
-// classes with their own resource columns push it further right (Rogue's Sneak Attack, Monk's
-// Martial Arts/Ki/Unarmored Movement, Sorcerer's Sorcery Points). Reading a fixed index made
-// those tables yield no feature levels at all, which dropped every one of their features.
+// The Features column is not always third; a fixed index lost Rogue, Monk and Sorcerer entirely.
 const findFeaturesColumnIndex = (table) => {
   for (const rowMatch of table.matchAll(tableRowRegex)) {
     const headers = [...rowMatch[1].matchAll(/<th[^>]*>([\s\S]*?)<\/th>/gi)]
@@ -1377,16 +1316,11 @@ const parseClassEquipmentOptions = (equipmentText) => {
   return packageOptions.length > 1 ? [packageOptions] : [];
 };
 
-// 2014 class chapters have no "Starting Equipment" label; they list starting gear as bullets
-// under an Equipment heading, one choice group per bullet ("(a) a greataxe or (b) any martial
-// melee weapon"). Bullets without a marker are fixed grants, so they become single-option groups.
+// 2014 lists starting gear as bullets, one group each; an unmarked bullet is a fixed grant.
 const equipmentChoiceMarkerPattern = /\(([a-z])\)\s*/gi;
 const capitalizeFirst = (value) => (value ? value[0].toUpperCase() + value.slice(1) : value);
 
-// "Leather armor, any simple weapon, and two daggers" is three grants printed as one line. The
-// 2024 chapters already ship each kit as a list of contents, and the app resolves, equips and
-// prices contents one by one — so a 2014 line that lists several items has to arrive the same
-// shape, or the leather armor never reaches the AC calculation and the weapon is never chosen.
+// A line listing several items is several grants, so it splits into `contents` like 2024's.
 const splitCompoundEquipmentText = (value) => {
   const parts = splitEquipmentList(value)
     .flatMap((entry) => entry.split(/\s+and\s+/i))
@@ -1416,6 +1350,21 @@ const parseCompoundEquipmentOption = (segment) => {
   return contents.length > 1 ? { ...option, contents } : option;
 };
 
+/**
+ * A background's equipment is one sentence of grants, so each part of its list is one slot and a
+ * part that names several items keeps them together as `contents`.
+ */
+export const parseBackgroundEquipmentText = (text) => {
+  const normalized = repairMojibake(String(text ?? '')).replaceAll(/\s+/g, ' ').replace(/^equipment:?\s*/i, '').trim();
+  if (!normalized) {
+    return [];
+  }
+
+  return splitEquipmentList(normalized.replace(/\.$/, ''))
+    .map((segment) => parseCompoundEquipmentOption(capitalizeFirst(segment.trim())))
+    .filter(Boolean);
+};
+
 const parseBasicRulesEquipmentBullets = (classBlockContent) => {
   const equipmentSection = [...collectHeadingBlocks(classBlockContent, 3), ...collectHeadingBlocks(classBlockContent, 4)]
     .find((entry) => /^equipment$/i.test(entry.title));
@@ -1443,18 +1392,11 @@ const parseBasicRulesEquipmentBullets = (classBlockContent) => {
     .filter((group) => group.length > 0);
 };
 
-/**
- * The 2014 caster tables print their slot levels on a second header row, under a merged "Spell
- * Slots per Spell Level" cell. Its first cell is an ordinal too, so it reads as a level-1 data row
- * and shifts every per-level column one out of step.
- */
+/** The 2014 caster tables' second header row reads as a data row and shifts every value. */
 const isSlotLevelHeaderRow = (row) => row.length > 0
   && row.every((cell) => /^\d+(?:st|nd|rd|th)$/i.test(String(cell ?? '').trim()));
 
-/**
- * Where that row's first cell sits in a data row. The columns before the merged cell carry
- * `rowspan="2"`, so they are absent from it: the gap is the difference in width.
- */
+/** The columns before the merged cell carry `rowspan="2"`, so the gap is the width difference. */
 const slotLevelColumnOffset = (slotLevelRow, dataRow) => Math.max(dataRow.length - slotLevelRow.length, 0);
 
 const extractBasicRulesSpellcasting = (raw, classId, primaryAbility) => {
@@ -1565,12 +1507,7 @@ const extractBasicRulesSpellcasting = (raw, classId, primaryAbility) => {
   return spellcasting;
 };
 
-/**
- * Every column of every class table in a block, from level 1 up. The pool columns and the dice
- * columns are read from the same walk, so the row-finding — including the 2014 caster tables'
- * second header row of slot levels — is stated once. What a column *means* is
- * `lib/classTables.mjs`, which the 5etools adapter reads the same answers out of.
- */
+/** One walk for pools and dice alike; what a column *means* is `lib/classTables.mjs`. */
 const collectClassTableColumns = (raw) => {
   const columns = [];
 
@@ -1595,9 +1532,7 @@ const collectClassTableColumns = (raw) => {
   return columns;
 };
 
-// What a class hands a character who takes it after their first. 2014 states it once, in the
-// Multiclassing chapter's table; 2024 states it per class under "As a Multiclass <Class>"; Tasha's
-// Artificer states it in prose. All three land in the same shape as the starting proficiencies.
+// All three books word this differently; all three land in the starting-proficiency shape.
 const multiclassSkillListPattern = /skill list/i;
 const multiclassArmorPattern = /\barmou?r\b|\bshields?\b/i;
 const multiclassToolPattern = /\btools?\b|\bkit\b|\binstruments?\b|\bsupplies\b|\bgaming set\b/i;
@@ -1641,9 +1576,7 @@ const extractMulticlassProficiencyTable = (raw) => {
     .map(([classId, value]) => [classId, /^[-—–]$/.test(value.trim()) ? [] : parseSimpleList(value)]));
 };
 
-// 2024: "Gain the following traits from the Core Rogue Traits table: Hit Point Die, proficiency in
-// one skill of your choice from the Rogue's skill list, proficiency with Thieves' Tools, and
-// training with Light armor." Monk, Sorcerer and Wizard get only "Gain the Hit Point Die".
+// 2024 words this per class, and Monk, Sorcerer and Wizard get the hit die alone.
 const multiclassTraitsSentencePattern = /^Gain the following traits from the Core .{1,40}?Traits table:\s*(.+?)\.?$/i;
 const multiclassHitDieOnlyPattern = /^Gain the Hit Point Die(?: trait)? from the Core .{1,40}?Traits table\.?$/i;
 
@@ -1672,11 +1605,7 @@ const extractMulticlassProficiencies = ({ items, starting }) => {
   return classifyMulticlassGrants(items, starting);
 };
 
-// Who may take the class after their first. 2014 states it once, in the Multiclassing chapter's
-// Ability Score Minimum table ("Strength 13 or Dexterity 13"); 2024 states one rule — at least 13 in
-// the primary ability of the new class and the current ones — which each class's own Primary
-// Ability line resolves ("Strength or Dexterity"); Tasha's Artificer states it in a sentence. The
-// shape is a list of alternatives, each one every ability it names at its minimum.
+// A list of alternatives, each every ability it names at its minimum, so "or" stays apart.
 const abilityRequirementTokenPattern = /\b(strength|dexterity|constitution|intelligence|wisdom|charisma)\b(?: score of)?(?: (\d+))?/gi;
 
 const parseAbilityRequirementAlternatives = (text, defaultMinimum) => {
@@ -1727,11 +1656,7 @@ const extractMulticlassPrerequisites = ({ table, classId, primaryAbilityText, pr
 
 const extractClassResources = (raw, features) => resourcesFromColumns(collectClassTableColumns(raw), features);
 
-// A class table's dice columns: the Monk's Martial Arts die, the Rogue's Sneak Attack, the 2024
-// Bard's Bardic die. The feature's own sentences state only what it rolls at 1st level and then
-// point at the column ("as shown in the Martial Arts column of the Monk table"), so without the
-// column a level-20 Monk still read 1d4. Which feature a column belongs to is that same
-// cross-reference, and a column no feature claims is dropped rather than guessed at.
+// Without the column a level-20 Monk reads 1d4; the cross-reference says whose column it is.
 const extractClassFeatureDice = (raw, features) => featureDiceFromColumns(collectClassTableColumns(raw), features);
 
 const extractClassFeaturesFromBlock = (raw, label, featureLevels) => {
@@ -1778,11 +1703,7 @@ const getSubclassSectionForClassBlock = (block, sourceId) => {
   return collectHeadingBlocks(block.content, 2).find((entry) => /(paths|colleges|domains|circles|archetypes|traditions|oaths|origins|patrons)$/i.test(entry.title));
 };
 
-// Subclass features state their level in prose, and 5e uses every phrasing under the sun:
-// "Beginning at 6th level", "Starting at 3rd level", "At 14th level", "By 13th level",
-// "When you reach 17th level", "When you choose this archetype at 3rd level". Missing one of
-// these silently falls the feature back to the subclass's unlock level, so a 17th-level feature
-// shows up as available at 3rd. Keep the alternatives in one place.
+// Many phrasings state a level; a miss falls back to the unlock level and reads as 3rd.
 const subclassFeatureLevelPattern = /\b(?:when you (?:choose|select|adopt|join|reach|gain)[^.]{0,60}?\bat|when you reach|beginning at|starting at|by|at)\s+(\d+)(?:st|nd|rd|th)[\s-]level/i;
 
 const parseFeatureLevelFromSubclassText = (title, description, fallbackLevel) => {
@@ -1962,10 +1883,7 @@ const splitMonsterValueList = (value, separator = /[,;]\s*/) => {
     .filter(Boolean);
 };
 
-// Language lines mix plain lists ("Common, Draconic") with semantic phrases that must not
-// be split on commas ("understands Common, Elvish, and Sylvan but can't speak") and
-// telepathy notes. Splitting phrases apart produced fragments like "and Undercommon but
-// can't speak", so keep each phrase whole and only comma-split plain lists.
+// Monster language lines mix plain lists with semantic phrases, so never comma-split.
 export const parseMonsterLanguages = (value) => {
   const normalized = repairMojibake(String(value ?? '').trim()).replace(/^Languages?\s+/i, '').trim();
   if (!normalized || /^(?:none|[—–-]+)$/i.test(normalized)) {
@@ -2355,11 +2273,7 @@ const extractModernStatBlockMonsters = (raw, label, sourceId) => {
     .filter((entry) => entry?.actions?.length > 0);
 };
 
-// The 2014 dump splits every class chapter across sibling <h2> sections — the class name
-// ("Barbarian"), then "Class Features", then the subclass section ("Primal Paths") — so a block
-// sliced at the next <h2> stops before the proficiencies, equipment, and feature bodies. Extend
-// each class block to the next class heading (or the next chapter <h1>) so the whole chapter
-// travels with its class.
+// 2014 splits a class across *sibling* <h2>s, so run to the next class heading or chapter <h1>.
 const collectBasicRules2014ClassBlocks = (raw) => {
   const chapterStarts = collectHeadingBlocks(raw, 1).map((entry) => entry.start);
   const classBlocks = collectHeadingBlocks(raw, 2).filter((block) => Boolean(getClassIdFromName(block.title)));
@@ -2391,10 +2305,7 @@ const extractBasicRulesClasses = (raw, label, sourceId) => {
       const tablePairs = extractTableLabelValuePairs(block.content);
       const paragraphPairs = extractLabeledParagraphPairs(block.content);
       const introDescription = extractParagraphTexts(block.content.split(/<h[3-6][^>]*>/i)[0]).join(' ') || summary.description;
-      // The subclass section's heading ("Sorcerer Subclass") collides with the class-table
-      // feature of the same name, and its section block would win the name dedupe and swallow
-      // the whole subclass body as the feature description. Subclasses are extracted
-      // separately, so cut the section out before collecting class features.
+      // "Sorcerer Subclass" collides with the class-table feature, so cut it out first.
       const subclassSection = getSubclassSectionForClassBlock(block, sourceId);
       const classFeatureContent = subclassSection
         ? block.content.slice(0, subclassSection.start) + block.content.slice(subclassSection.contentStart + subclassSection.content.length)
@@ -2548,10 +2459,7 @@ const extractBasicRulesSpecies = (raw, label, sourceId) => {
     .map((block) => {
       const traitsHeadingLevel = sourceId === 'basic-rules-2024' ? 4 : 3;
       const traitHeading = collectHeadingBlocks(block.content, traitsHeadingLevel).find((entry) => / traits$/i.test(entry.title));
-      // A species chapter is mostly lore subsections (ethnicities, names, sidebars) between the
-      // opening paragraphs and the traits block. Slicing at the traits heading swept all of that
-      // into the description — for Human that was the whole chapter — so keep only the lead
-      // paragraphs that precede the first subsection.
+      // Keep only the lead paragraphs; slicing at the traits heading swept in Human's whole chapter.
       const description = stripTrailingChrome(extractParagraphTexts(sliceSectionBody(block.content)).join(' '));
       const traitsRaw = traitHeading?.content ?? block.content;
       const traitEntries = extractTraitEntries(traitsRaw);
@@ -2648,27 +2556,17 @@ const extractCompendiumSpells = (raw, label, sourceId, classNamesBySpellKey = un
     .filter((entry) => entry?.description && entry.castingTime && entry.range && entry.duration);
 };
 
-/* -------------------------------------------------------------------------- *
- * Actions in Combat
- * -------------------------------------------------------------------------- */
-
-// Both printings label these themselves, in different places, and neither list is written here.
-// 2024's rules glossary stamps the timing onto the heading — "Dodge [Action]" — and 2014 collects
-// them under a chapter section of its own, "Actions in Combat", whose every child is an action.
+// Each book labels these its own way, and neither list is written here.
 const glossaryActionHeadingPattern = /^(.+?)\s*\[(Action|Bonus Action|Reaction)\]$/i;
 
-// The glossary tags only Actions, so an entry that is a Reaction carries no tag at all. Its own
-// text still says when it is taken, and an entry that tells you to do something opens by
-// addressing you, which is what separates Opportunity Attacks from the entry defining "Reaction".
+// The glossary tags only Actions, so take untagged entries that open by addressing you.
 const untaggedActionTimings = [
   ['reaction', /\btake a Reaction\b/i],
   ['bonus-action', /\bas a Bonus Action\b/i]
 ];
 const instructionBodyPattern = /^(?:You|When you|If you)\b/;
 
-// An action's entry can name another entry listing the options a use of it offers, under the
-// book's own bold labels. The option that makes an attack roll is already the sheet's attack row
-// (`deriveUnarmedStrike`); Grapple and Shove appear nowhere else.
+// Follow the link rather than naming the entry; the attack-roll option is already derived.
 const optionAnnouncementPattern = /choose one of the following options/i;
 const optionParagraphPattern = /<p[^>]*>\s*<strong>\s*<em>([^<]+?)<\/em>\s*<\/strong>([\s\S]*?)<\/p>/gi;
 const attackRollOptionPattern = /\battack roll\b/i;
@@ -3006,11 +2904,7 @@ const extractSubclassRows = (raw) => {
   return rows;
 };
 
-// "<Something> Spells" is not always a class's spell list. The 2014 Basic Rules index the spell
-// descriptions alphabetically under "A Spells" … "Z Spells", and the chapter also carries
-// "Beast Spells", "Signature Spells" and "Known and Prepared Spells" — every one of which used to
-// become a class, so all 304 spells listed their own initial as a class they belong to. The name
-// has to resolve to a real class.
+// "<X> Spells" is a heading, not a class list: 2014 indexes "A Spells" … "Z Spells".
 const extractSpellClassMap = (raw) => {
   const classesBySpellId = new Map();
   const blocks = [...collectHeadingBlocks(raw, 2), ...collectHeadingBlocks(raw, 3)].filter((block) => / spells$/i.test(block.title));
@@ -3162,10 +3056,7 @@ const extractXanatharContent = (raw, label, sourceId) => {
             id: `${slugify(row.subclassName)}-feature-${index + 1}`,
             name: feature.title,
             description,
-            // The subclass table is the authority, but it does not always list every feature
-            // (Consult the Spirits, Vengeful Ancestors). Read the level out of the feature's own
-            // prose before giving up and stamping it with the subclass's unlock level, which
-            // otherwise makes a 14th-level feature look available at 3rd.
+            // The table is authoritative but incomplete, so try the feature's own prose next.
             level: featureLevels.get(normalizeFeatureName(feature.title))
               ?? parseFeatureLevelFromSubclassText(feature.title, description, row.level),
             source: label
@@ -3279,9 +3170,7 @@ const tashasSubclassSectionClassIds = new Map([
   ['artificerspecialists', 'artificer']
 ]);
 
-// A subclass that expands the spell list prints two headings: the prose "Expanded Spell List" and
-// the table "<Subclass> Expanded Spells". They are one feature, so the table is folded into the
-// prose instead of surfacing as a second, duplicate feature.
+// The prose heading and the table heading are one feature, so fold the table into the prose.
 const expandedSpellTablePattern = / expanded spells$/i;
 const expandedSpellListPattern = /^expanded spell list$/i;
 
@@ -3300,10 +3189,7 @@ const foldExpandedSpellTables = (features) => {
 };
 
 const buildOptionalFeatureFromBlock = (featureBlock, classKey, label) => {
-  // Sections that introduce a pool ("Eldritch Invocation Options", "Pact Boon Option") nest each
-  // option under their own heading. The block's content runs to the next *same-level* heading, so
-  // reading all of it glued the option bodies — prerequisites and all — onto the section's own
-  // description. The options are extracted separately into the feature's choice pool.
+  // A pool section nests its options, so its own content runs on into their bodies.
   const body = sliceSectionBody(featureBlock.content);
   const texts = extractStructuredTexts(body);
   const levelLine = texts.find((entry) => featureLevelBoilerplatePattern.test(entry));
@@ -3327,9 +3213,7 @@ const buildOptionalFeatureFromBlock = (featureBlock, classKey, label) => {
   };
 };
 
-// Optional class features amend an existing class, so they ride in placeholder class
-// entries (hitDie 0). The runtime merges same-name classes and drops the placeholder,
-// leaving the optional features attached to the real class.
+// These amend an existing class, so they ride in placeholder entries the runtime merges away.
 const extractTashasOptionalFeatureSupplements = (raw, label, sourceId) => {
   const supplementsByClassKey = new Map();
 
@@ -3658,9 +3542,7 @@ const getSpeciesVariantDescription = (variantBlock, variantName, speciesTitle) =
   return introText ?? `${variantName} lineage of the ${speciesTitle}.`;
 };
 
-// Species chapters such as Monsters of the Multiverse print each species as a heading
-// followed by an "<Name> Traits" section. Some species (e.g. Genasi) publish several
-// trait sections, one per lineage; those become variants.
+// Several trait sections under one species are its lineages, and become variants.
 const extractCompendiumSpecies = (raw, label, sourceId, { speciesHeadingLevel = 2, traitsHeadingLevel = 3 } = {}) => {
   return collectHeadingBlocks(raw, speciesHeadingLevel)
     .map((block) => {
@@ -3977,11 +3859,7 @@ export default ${safeName};
 const importedAtPattern = /"importedAt":\s*"([^"]*)"/;
 const readStamp = (text) => importedAtPattern.exec(text.replaceAll('\\"', '"'))?.[1];
 
-/**
- * Keeps the previous `importedAt` when the regenerated text is otherwise identical, so
- * "regenerate and check the diff is empty" is a real check. `render(stamp)` produces the file
- * text for a stamp; the one on disk is read off its `"importedAt": "..."` pair, escaped or not.
- */
+/** Keeps the old `importedAt` when nothing else changed, so an empty diff is a real check. */
 export const settleImportedAt = (previousText, currentStamp, render) => {
   if (typeof previousText !== 'string') return render(currentStamp);
   const previousStamp = readStamp(previousText);

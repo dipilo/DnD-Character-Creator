@@ -1,8 +1,4 @@
-// Builder characters (MERGE_PLAN.md Phase 2).
-//
-// Characters are private data, which is why this router could not exist before Phase 1b gave the
-// server a real identity boundary: every route here is `requireAuth`, and a row belongs to exactly
-// one user. Another user's id reads as 404 rather than 403 so the id space is not walkable.
+// Builder characters: every route `requireAuth`, and another user's id reads as 404.
 const express = require('express');
 const crypto = require('node:crypto');
 const db = require('../db');
@@ -13,9 +9,7 @@ const { canUserModifyPlayer, getCampaignMembership, holdsPlayerSeat, optionalAut
 
 const router = express.Router();
 
-// The builder mints `crypto.randomUUID()` client-side and that id is the character's identity in
-// localStorage, so the server accepts the client's id instead of assigning its own. Constrain it
-// to something id-shaped: it lands in URLs and in a primary key.
+// The client's id is the identity, so constrain it: it lands in URLs and a primary key.
 const ID_PATTERN = /^[A-Za-z0-9_-]{1,100}$/;
 
 // `genToken` mints 24 alphanumerics; the bound is wide enough to survive that length changing.
@@ -36,17 +30,7 @@ async function findOwnedCharacter(userId, id) {
   return await db.get(`SELECT ${SUMMARY_COLUMNS}, share_token FROM characters WHERE id = ? AND user_id = ?`, id, userId);
 }
 
-/**
- * What the caller may do with a row, or null when it should read as absent (MERGE_PLAN.md Phase 5
- * plus sharing). Every rule lives in `lib/characterAccess.js`; this is the id check in front of it.
- *
- * Invisible still means **404 rather than 403**, because a 403 would confirm the id exists.
- *
- * `withDocument` is opt-in, and `SELECT *` is gone, because `characters.data` is a whole sheet
- * with its portrait inlined: reading it to answer a sharing or seat question put a 217 KB
- * character past the database's statement deadline, so every character with a picture on it
- * answered 500 and disappeared from its owner's list.
- */
+/** Invisible means 404, not 403; `withDocument` is opt-in because `data` holds a portrait. */
 async function resolveAccess(user, id, { withDocument = false } = {}) {
   if (!isValidId(id)) return null;
   const columns = withDocument ? `${SUMMARY_COLUMNS}, share_token, data` : `${SUMMARY_COLUMNS}, share_token`;
@@ -55,11 +39,7 @@ async function resolveAccess(user, id, { withDocument = false } = {}) {
   return await resolveCharacterAccess(user, row);
 }
 
-/**
- * Resolve the campaign seat a character is attached to. Both columns are nullable — a character
- * built signed-in but outside any campaign is the common case — but a non-null value has to be
- * one the caller may actually use, or this becomes a way to write into someone else's campaign.
- */
+/** A non-null value must be one the caller may use, or this writes into another campaign. */
 async function resolveScope(user, body, existing) {
   const campaignId = Object.hasOwn(body, 'campaign_id')
     ? normaliseId(body.campaign_id)
@@ -78,9 +58,7 @@ async function resolveScope(user, body, existing) {
     if (!player || Number(player.campaign_id) !== Number(campaignId)) {
       return { error: 'player_not_in_campaign', status: 400 };
     }
-    // The seat's own holder, or whoever runs the campaign. Seating writes nothing on the seat, so
-    // it does not want `can_edit_self` — a member whose permissions were later narrowed can still
-    // put their character where they sit.
+    // Seating writes nothing on the seat, so it does not want `can_edit_self`.
     const mayUse = await holdsPlayerSeat(user, campaignId, playerId)
       || await canUserModifyPlayer(user, campaignId, playerId);
     if (!mayUse) return { error: 'forbidden', status: 403 };
@@ -94,10 +72,7 @@ function normaliseId(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-// List the caller's characters. `?campaign_id=` narrows to one campaign — still only the caller's
-// own rows; a party view across every member's characters is Phase 5 and needs its own permission
-// story. Summaries only: the documents carry portrait data URLs and a client fetches the ones it
-// actually needs by id.
+// Summaries only: the documents carry portrait data URLs.
 router.get('/api/characters', requireAuth, async (req, res) => {
   try {
     const campaignId = normaliseId(req.query.campaign_id);
@@ -111,18 +86,7 @@ router.get('/api/characters', requireAuth, async (req, res) => {
   }
 });
 
-/**
- * Characters somebody else handed this account.
- *
- * Registered before `/:id` on purpose: "shared-with-me" is a valid character id shape, so the
- * parameterised route would swallow it.
- *
- * Only *explicit* grants are listed — a row naming this user, or naming a campaign they run. The
- * table-wide `character_edit_consent` is deliberately not here: it covers every character its
- * holder seats at that table, and those already have a home on the campaign's party page. A list
- * that folded them in would restate the party view under a heading that says somebody chose to
- * share with *you*.
- */
+/** Before `/:id`, which would swallow it; only *explicit* grants are listed. */
 router.get('/api/characters/shared-with-me', requireAuth, async (req, res) => {
   try {
     const owned = await db.all(
@@ -213,16 +177,7 @@ router.post('/api/characters', requireAuth, async (req, res) => {
   }
 });
 
-/**
- * Update one character. `version` is the version the client last saw; a mismatch means the sheet
- * was edited somewhere else since, and the write is refused with the server's copy attached rather
- * than silently clobbering the other device's edit.
- *
- * An edit grant reaches this route, but only the *document*: the seat is the owner's act of
- * sharing, so a granted editor sending `campaign_id` or `player_id` is told no rather than quietly
- * ignored. Someone who may read but not write gets 403 — they already know the id exists, so there
- * is nothing left for a 404 to protect.
- */
+/** A version mismatch is refused with the server's copy; a grant reaches the document alone. */
 router.put('/api/characters/:id', requireAuth, async (req, res) => {
   try {
     const body = req.body || {};
@@ -253,9 +208,7 @@ router.put('/api/characters/:id', requireAuth, async (req, res) => {
       normaliseSchemaVersion(body.schema_version ?? row.schema_version),
       new Date().toISOString(), row.id, expected,
     );
-    // The document that just landed is the document to echo, so the row is re-read for its new
-    // version and nothing else: fetching `data` back out would charge the write the same
-    // hundreds of kilobytes the request already carried.
+    // Re-read for the version alone: fetching `data` back would double the write's cost.
     const updated = await db.get(`SELECT ${SUMMARY_COLUMNS} FROM characters WHERE id = ?`, row.id);
     res.json({ ok: true, character: publicCharacter({ ...updated, data: doc.text }, access) });
   } catch (e) {
@@ -275,19 +228,7 @@ async function resolveWriteScope(user, body, access) {
   return { campaignId: access.row.campaign_id ?? null, playerId: access.row.player_id ?? null };
 }
 
-/**
- * Seat a character at a campaign table, or take it off one (MERGE_PLAN.md Phase 5).
- *
- * The seat is row metadata, not part of the document, so this is deliberately *not* the document
- * write: it carries no `version` and bumps none. A player seating their character has not edited
- * the sheet, and making them send the whole document to do it would mean a device that only knows
- * the summary could not seat anything. `updated_at` is left alone for the same reason — nothing
- * about the character changed.
- *
- * Attaching shares the sheet with the campaign's members (see `findReadableCharacter`), so the
- * write is the owner's alone; `resolveScope` then checks that they may actually use that campaign
- * and that seat.
- */
+/** Row metadata, so it carries no `version` and leaves `updated_at` alone. */
 router.put('/api/characters/:id/seat', requireAuth, async (req, res) => {
   try {
     const body = req.body || {};
@@ -340,11 +281,7 @@ router.delete('/api/characters/:id', requireAuth, async (req, res) => {
   }
 });
 
-/**
- * The one-time upload offered when someone signs in with characters already in localStorage.
- * Ids that already exist are reported as skipped rather than merged: the local copy and the server
- * copy of the same id may differ, and picking a winner is the sync layer's job, not the import's.
- */
+/** An existing id is skipped: picking a winner is the sync layer's job, not the import's. */
 router.post('/api/characters/import', requireAuth, async (req, res) => {
   try {
     const incoming = req.body?.characters;
@@ -387,16 +324,6 @@ async function importOne(user, entry) {
   return { ok: true, id };
 }
 
-/* -------------------------------------------------------------------------
- * Sharing: who may open this sheet, and who may edit it.
- *
- * Everything under here is the owner's alone. `visibility` is the D&D Beyond-shaped choice
- * (private / campaign / public), `share_token` is the link that carries it, and
- * `character_grants` is the named list — a specific account, or whoever runs a given campaign.
- * A share link is one URL whatever the setting: who it lets in is `visibility`'s answer, so
- * narrowing a character narrows every link already sent without minting a new one.
- * ------------------------------------------------------------------------- */
-
 /** The owner's view of a character's sharing, minting the link token on first read. */
 router.get('/api/characters/:id/sharing', requireAuth, async (req, res) => {
   try {
@@ -410,10 +337,7 @@ router.get('/api/characters/:id/sharing', requireAuth, async (req, res) => {
   }
 });
 
-/**
- * Set the visibility, and optionally rotate the link. Rotating is the revoke: every URL handed out
- * so far stops resolving, which is the only way back from "I posted it somewhere I should not have".
- */
+/** Rotating is the revoke: every URL handed out so far stops resolving. */
 router.put('/api/characters/:id/sharing', requireAuth, async (req, res) => {
   try {
     const body = req.body || {};
@@ -436,11 +360,7 @@ router.put('/api/characters/:id/sharing', requireAuth, async (req, res) => {
   }
 });
 
-/**
- * Hand the sheet to one account, or to whoever runs one campaign. The subject has to be someone
- * the owner already shares a table with — a grant list that could name any account on the system
- * would be a way to test whether a username exists.
- */
+/** The subject must already share a table, or this tests whether a username exists. */
 router.post('/api/characters/:id/grants', requireAuth, async (req, res) => {
   try {
     const body = req.body || {};
@@ -492,11 +412,7 @@ router.delete('/api/characters/:id/grants/:grantId', requireAuth, async (req, re
   }
 });
 
-/**
- * A shared link. `optionalAuth` because a public character is readable signed out — that is the
- * whole point of the setting — while a campaign-only or privately granted one resolves through the
- * same rules as its id would, so one URL serves every visibility.
- */
+/** `optionalAuth`: one URL serves every visibility, resolved by the same rules as the id. */
 router.get('/api/shared/characters/:token', optionalAuth, async (req, res) => {
   try {
     const token = req.params.token;
@@ -531,10 +447,7 @@ async function sharesACampaign(userId, otherUserId) {
   return Boolean(row);
 }
 
-/**
- * The sharing state as the owner's editor needs it. Each grant carries a label because a list of
- * bare ids is not something anyone can revoke with confidence.
- */
+/** Each grant carries a label: nobody revokes a bare id with confidence. */
 async function sharingPayload(row) {
   const rows = await db.all(`
     SELECT g.*, u.username AS subject_username, c.name AS subject_campaign_name

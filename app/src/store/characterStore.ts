@@ -17,11 +17,7 @@ import { restorableBuilderState } from '@/lib/builderDraft';
 import { createDebouncedLocalStorage } from '@/lib/debouncedStorage';
 import type { CharacterSyncMeta, PendingSeat } from '@/store/syncTypes';
 
-/**
- * What the server knows about one locally-held character (MERGE_PLAN.md Phase 2). localStorage is
- * a cache now rather than the record, and `CharacterSyncMeta` is the bookkeeping that makes it one.
- * It is shared with the Kids on Bikes store, which is reconciled by the same sync pass.
- */
+/** localStorage is a cache now; this is the bookkeeping that makes it one. */
 export type { CharacterSyncMeta };
 
 interface CharacterState {
@@ -34,12 +30,7 @@ interface CharacterState {
   syncMeta: Record<string, CharacterSyncMeta>;
   /** Characters deleted locally whose tombstone the server has not been told about yet. */
   pendingDeletes: string[];
-  /**
-   * Seats a character should take once the server has it (MERGE_PLAN.md Phase 5). Starting a
-   * character "for this campaign" records the intent here, because the character does not exist
-   * server-side yet — sync applies it after the create lands, and keeps it until then, so the
-   * builder still works offline and signed out.
-   */
+  /** Recorded as an intent, so the builder still works offline and signed out. */
   pendingSeats: Record<string, PendingSeat>;
   /** When the "upload your local characters" offer was last declined, so it is asked once. */
   uploadPromptDismissedAt: string | null;
@@ -64,10 +55,7 @@ interface CharacterState {
   updateBuilderState: (updates: Partial<BuilderState>) => void;
   updateBuilderCharacter: (updates: Partial<Character>) => void;
   loadCharacterIntoBuilder: (id: string) => boolean;
-  /**
-   * Open a document that is not in this cache — someone else's character, held on a grant. A
-   * separate entry point rather than a flag, because there is nothing here to look up.
-   */
+  /** A separate entry point rather than a flag: there is nothing here to look up. */
   loadDocumentIntoBuilder: (document: Character, remote: RemoteEditTarget) => void;
   resetBuilder: () => void;
   
@@ -90,6 +78,7 @@ const initialBuilderState: BuilderState = {
     abilityScoreChoiceModes: {},
     abilityScoreChoiceSelections: {},
     backgroundLanguageSelections: [],
+    backgroundSkillSelections: [],
     speciesLanguageSelections: [],
     proficiencies: {
       skills: [],
@@ -118,9 +107,7 @@ function buildEditorState(character: Character): BuilderState {
     ? dndContent().getRuntimeSpeciesVariant(character.speciesId, character.variantId)
     : undefined;
   const background = character.backgroundId ? dndContent().getRuntimeBackgroundById(character.backgroundId) : undefined;
-  // Repair stored class ids first: a character saved against an older printing keeps that
-  // printing's id, and every step that resolves a class by exact id then behaves as though
-  // the character had no class at all.
+  // A character saved against an older printing otherwise behaves as though classless.
   const classes = normalizeCharacterClassIds(character.classes, dndContent().getRuntimeClassById);
   const resolvedClasses = resolveCharacterClasses({
     classes,
@@ -219,9 +206,7 @@ export const useCharacterStore = create<CharacterState>()(
         return newCharacter;
       },
 
-      // `stillDirty` is for the write that was overtaken: the server accepted the document that was
-      // sent, so its version must be recorded, but the copy here has moved on since and still owes
-      // the server an update. Clearing the flag in that case loses the newer edit silently.
+      // The sent version must be recorded, but the copy here has moved on and still owes a push.
       markCharacterSynced: (id, version, stillDirty = false) => {
         set((state) => ({
           syncMeta: { ...state.syncMeta, [id]: { version, dirty: stillDirty, syncedAt: new Date().toISOString() } }

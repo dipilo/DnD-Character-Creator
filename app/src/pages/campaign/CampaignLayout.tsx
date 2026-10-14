@@ -19,11 +19,7 @@ const SHARED_TABS: GameSystemCampaignTab[] = [
   { to: 'members', label: 'Members & invites', icon: Mail },
 ];
 
-/**
- * Resolves the campaign in the URL and the caller's membership in it, then hands both to the tab
- * pages through the store. Membership is what decides which controls are offered; the server
- * checks it again on every route, so this only ever hides work that would be refused.
- */
+/** Membership picks which controls are offered; the server checks it again anyway. */
 export function CampaignLayout() {
   const { campaignId: campaignIdParam } = useParams<{ campaignId: string }>();
   const campaignId = Number(campaignIdParam);

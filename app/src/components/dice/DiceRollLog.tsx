@@ -16,10 +16,7 @@ interface DiceRollLogProps {
   /** Styling for the dark roller page; the tray's own card uses the app palette. */
   dark?: boolean;
   emptyMessage?: string;
-  /**
-   * Throw one die of the newest roll again. Offered only by a caller that owns the surface those
-   * dice are still sitting on: dice-box can only reroll a die it is currently rendering.
-   */
+  /** Only for a caller owning the surface: dice-box rerolls only what it is rendering. */
   onRerollDie?: (index: number) => void;
   rerollDisabled?: boolean;
 }

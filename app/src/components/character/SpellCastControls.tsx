@@ -1,12 +1,4 @@
-// Cast, and the slot it costs.
-//
-// A cantrip costs nothing so it says At Will, and a levelled spell spends its lowest usable slot on
-// one click; the caret beside it is where upcasting lives, so a bigger slot stays a real choice
-// without being the only way to cast. The button names the act, not the bookkeeping — which slot
-// went is read off the slot track, and "Cast (pact 3)" was a label restating what the row below it
-// already shows.
-//
-// Shared by the Spells tab and the Actions table, which both offer a cast of the same spell.
+// One click spends the lowest usable slot; the caret is where upcasting lives.
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

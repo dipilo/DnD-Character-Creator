@@ -1,24 +1,5 @@
 #!/usr/bin/env node
-/**
- * Imports Kids on Bikes (2nd edition) content out of an Obsidian vault into a generated source
- * module the app reads.
- *
- * The vault's notes are the source document, the same way the D&D Beyond HTML dumps are for 5e:
- * nothing here is transcribed into the app by hand, and a gap in the vault is reported rather
- * than filled in.
- *
- * The rulebook PDF beside the vault is the second source, and only for the chapters the vault has
- * no note for: appendices A (the Pre-Game Form), B (the content warnings) and K (the Powered
- * Character's aspects), and chapter 5's rules for playing one. It is read on the same terms; see
- * `lib/kobAppendices.mjs` and `lib/kobChapters.mjs`. A checkout with no rulebook still regenerates
- * everything the vault supplies, and says what it could not reach.
- *
- *   node scripts/import-kids-on-bikes.mjs
- *   node scripts/import-kids-on-bikes.mjs --vault "C:/…/Obsidian Vault/TTRPG/Kids on Bikes"
- *   node scripts/import-kids-on-bikes.mjs --rulebook "C:/…/Core Rulebook.pdf"
- *
- * Output: app/src/data/gameSystems/kidsOnBikes/generated.ts
- */
+// Kids on Bikes vault (and the rulebook PDF for the chapters it lacks) -> generated.ts.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -48,11 +29,7 @@ const STAT_NAMES = ['Brains', 'Brawn', 'Fight', 'Flight', 'Charm', 'Grit'];
 const DICE_ORDER = ['d20', 'd12', 'd10', 'd8', 'd6', 'd4'];
 const AGES = ['child', 'teen', 'adult'];
 
-/**
- * Two trope tables pluralise a stat ("Charms", "Brawns"). That is a typo in one cell of the
- * source, not a seventh stat, and rejecting it drops the whole trope — so the plural resolves to
- * its stat and the difference is reported rather than corrected in silence.
- */
+/** A pluralised stat is a typo in one cell, so it resolves and is reported, not corrected. */
 function resolveStatName(cell) {
   const exact = STAT_NAMES.find((stat) => stat.toLowerCase() === cell.toLowerCase());
   if (exact) return { stat: exact, variant: null };
@@ -119,11 +96,7 @@ function stripFrontmatter(text) {
 // caption would ship as a sentence about a chart that is not there.
 const EMBED = /!\[\[[^\]]*\]\]/g;
 
-/**
- * These notes are written for Obsidian's renderer, so presentation markup is interleaved with the
- * text: `<center>` wrappers, `<font color>` spans for the flaw column, `<br>` line breaks, and
- * `[[wikilinks]]` that point at other notes. Strip the presentation, keep the words.
- */
+/** Obsidian presentation markup is interleaved with the text; strip it, keep the words. */
 function cleanCell(raw) {
   return raw
     .replaceAll(/<br\s*\/?>/gi, ' \u2028')
@@ -173,14 +146,7 @@ function isSeparatorRow(line) {
   return /^\s*\|[\s|:-]+\|\s*$/.test(line);
 }
 
-// ---------------------------------------------------------------------------------------------
-// Bullet-list notes: Strengths, Flaws, Bonded Actions
-// ---------------------------------------------------------------------------------------------
-
-/**
- * Reads `- **Name:** text` bullets. A bullet with no bold heading is a bare name (the Flaws note),
- * which keeps an empty description rather than a synthetic one.
- */
+/** A bullet with no bold heading is a bare name, and keeps an empty description. */
 function parseBulletEntries(text, { label }) {
   const entries = [];
   for (const rawLine of stripFrontmatter(text).split(/\r?\n/)) {
@@ -205,11 +171,7 @@ function parseBulletEntries(text, { label }) {
   return entries;
 }
 
-/**
- * A Strength's own text says who it is free for and who may take it, so age eligibility is read
- * from the rules rather than restated in the builder. "Free for and available only to teens"
- * is the whole of Rebellious's restriction.
- */
+/** Age eligibility is read from the Strength's own text, never restated here. */
 function readStrengthEligibility(description) {
   const note = /^\((?<note>[^)]*)\)/.exec(description);
   if (!note) return { freeFor: [], restrictedTo: null, note: null };
@@ -235,19 +197,7 @@ function readStrengthEligibility(description) {
   return { freeFor, restrictedTo, note: cleanCell(note.groups.note) };
 }
 
-// ---------------------------------------------------------------------------------------------
-// Ages
-// ---------------------------------------------------------------------------------------------
-
-/**
- * The play rules: what a Stat Check is, the Lucky Break, what failing a roll gives you, and the
- * two tables. The app rolls dice, so the numbers a result is read against have to come from the
- * note rather than from a table typed into a component.
- *
- * The note writes its rules as blockquotes and, in the later sections, as plain paragraphs and
- * numbered steps; its worked examples are callouts and are kept apart from the rule text. Which
- * table a row belongs to is read off the table's own header.
- */
+/** The numbers a roll is read against come from the note, never a table in a component. */
 function parsePlayRules(text) {
   const lines = stripFrontmatter(text).split(/\r?\n/);
   const sections = [];
@@ -313,11 +263,7 @@ function stripListMarker(raw) {
   return raw.replace(/^(?:\d+\.|[-*+])\s+/, '');
 }
 
-/**
- * One table row, given which table the previous row said it was in. A header names the table:
- * "Difficulty" is the difficulty table, "(Roll + Modifiers) - Target" the outcome table. Returns
- * the table the next row is in.
- */
+/** A header names the table; returns the table the next row is in. */
 function readPlayRuleTableRow(cells, table, into, section) {
   if (cells.length < 2 || /^-+$/.test(cells[0])) return table;
   if (/^difficul/i.test(cells[0])) return 'difficulties';
@@ -334,11 +280,7 @@ function readPlayRuleTableRow(cells, table, into, section) {
   return table;
 }
 
-/**
- * `[[#Lucky Breaks]]` is a link between headings of one note, and the app shows every section at
- * once, so the sentence that carries it navigates nowhere. Drop the sentence, not just the link —
- * "For more details, see ." is worse than either.
- */
+/** The app shows every section at once, so drop the whole sentence, not just the link. */
 function dropSectionPointers(text) {
   return text
     .replaceAll(/\s*(?:For more(?:\s+\w+)*, )?see "#[^"]*\.?"\.?/gi, '')
@@ -346,10 +288,7 @@ function dropSectionPointers(text) {
     .trim();
 }
 
-/**
- * `[[Another Note]]` is the same dead end one note over: the app has no screen for the note, and
- * `cleanCell` would leave its title reading as prose. Cut the whole sentence, before that strip.
- */
+/** Cut the sentence before `cleanCell` leaves a note title reading as prose. */
 function dropNotePointers(raw) {
   return raw
     .split(/(?<=[.!?])\s+/)
@@ -358,10 +297,7 @@ function dropNotePointers(raw) {
     .trim();
 }
 
-/**
- * "20 or greater", "13 to 16", "1 or 2" — the bounds are what lets a rolled total be read against
- * the table. A band whose wording does not state them is reported, never guessed at.
- */
+/** A band whose wording states no bounds is reported, never guessed at. */
 function readDifficultyBand(rangeCell, explanationCell) {
   const range = cleanCell(rangeCell);
   const explanation = cleanCell(explanationCell);
@@ -386,10 +322,7 @@ function readDifficultyBand(rangeCell, explanationCell) {
   return null;
 }
 
-/**
- * "+10 or higher", "+5 to +9", "0", "-4 to -1", "-15 or lower" — the margin between the roll and
- * the target, read the same way as a difficulty band but signed at both ends.
- */
+/** The margin between roll and target, read as a difficulty band but signed at both ends. */
 function readOutcomeBand(rangeCell, explanationCell) {
   const range = cleanCell(rangeCell);
   const explanation = cleanCell(explanationCell);
@@ -416,11 +349,7 @@ function readOutcomeBand(rangeCell, explanationCell) {
   return null;
 }
 
-/**
- * Age is mechanical, not flavour: it grants a Strength for free, may forbid one, and adds +1 to
- * two named stats. The Character Creation note states all three in one paragraph per age, so the
- * paragraph is the record — a table in the app would be the same rule written twice.
- */
+/** The paragraph is the record; a table here would be the same rule written twice. */
 function parseAges(text) {
   const source = stripFrontmatter(text);
   const ageSpecs = [
@@ -466,14 +395,7 @@ function parseAges(text) {
   });
 }
 
-// ---------------------------------------------------------------------------------------------
-// Finishing Touches
-// ---------------------------------------------------------------------------------------------
-
-/**
- * Finishing Touches states each field it asks for as `>**Name:** what it is`, with Obsidian
- * callouts under it. The builder printed paraphrases of all seven; these are the book's own words.
- */
+/** The book's own words for all seven fields; the builder printed paraphrases. */
 function parseFinishingTouches(text) {
   const lines = stripFrontmatter(text).split(/\r?\n/);
   const entries = [];
@@ -527,15 +449,7 @@ function parseFinishingTouches(text) {
   return entries.map((item) => ({ ...item, callouts: item.callouts.filter((c) => c.paragraphs.length > 0) }));
 }
 
-// ---------------------------------------------------------------------------------------------
-// Bonded Actions
-// ---------------------------------------------------------------------------------------------
-
-/**
- * What a Bonded Action is, and the tip that a pair may invent one, are stated in Character
- * Creation's own section — the appendix only lists the fifteen. Obsidian's `+`/`-` on a callout
- * is the note saying whether it opens expanded, so the sheet does not have to decide.
- */
+/** Obsidian's `+`/`-` on a callout says whether it opens expanded. */
 function parseBondedActionRules(text) {
   const lines = stripFrontmatter(text).split(/\r?\n/);
   const intro = [];
@@ -581,14 +495,7 @@ function parseBondedActionRules(text) {
   return { intro, callouts: callouts.filter((entry) => entry.paragraphs.length > 0) };
 }
 
-// ---------------------------------------------------------------------------------------------
-// Bikes
-// ---------------------------------------------------------------------------------------------
-
-/**
- * The Bikes note holds two tables of the same shape: a name with an italic adjective under it and
- * the benefit alongside. `<br>` became a newline in `cleanCell`, so the adjective is line two.
- */
+/** `<br>` became a newline in `cleanCell`, so the italic adjective is line two. */
 function parseBikeTables(text) {
   const lines = stripFrontmatter(text).split(/\r?\n/);
   const tables = [];
@@ -632,10 +539,6 @@ function parseBikeTables(text) {
   return { colors, upgrades };
 }
 
-// ---------------------------------------------------------------------------------------------
-// Relationship questions
-// ---------------------------------------------------------------------------------------------
-
 /** `1. …` through `20. …` — the number is the d20 result that selects the question. */
 function parseNumberedQuestions(text, { label }) {
   const questions = [];
@@ -651,14 +554,7 @@ function parseNumberedQuestions(text, { label }) {
   return questions.sort((a, b) => a.roll - b.roll);
 }
 
-// ---------------------------------------------------------------------------------------------
-// Tropes
-// ---------------------------------------------------------------------------------------------
-
-/**
- * Reads the "**Teen:** Yellow, Basket" shape into per-age suggestions. A trope offering one age
- * states the bike without a label, so an unlabelled suggestion applies to every age it allows.
- */
+/** An unlabelled bike suggestion applies to every age the trope allows. */
 function parseSuggestedBikes(cell, ages) {
   const suggestions = [];
   for (const line of cell.split('\n')) {
@@ -678,10 +574,7 @@ function parseSuggestedBikes(cell, ages) {
   return suggestions;
 }
 
-/**
- * One trope block: the die row and the stat row beneath it are positional, so the Nth die belongs
- * to the Nth stat. Reading them any other way silently mis-assigns a character's whole spread.
- */
+/** The die row and stat row are positional, so the Nth die belongs to the Nth stat. */
 function parseTropeBlock(name, blockLines) {
   const rows = blockLines
     .filter((line) => line.trim().startsWith('|') && !isSeparatorRow(line))
@@ -783,20 +676,9 @@ function parseTropes(text) {
   return tropes;
 }
 
-// ---------------------------------------------------------------------------------------------
-// Cross-checks and output
-// ---------------------------------------------------------------------------------------------
-
-/**
- * The trope tables name bikes and strengths by hand, so they can name one the appendices do not
- * define. Report those rather than quietly dropping them — an unmatched colour is a real gap in
- * the vault, and the builder needs to know to offer it as free text.
- */
+/** A name the appendices do not define is a real gap, so report it rather than drop it. */
 function crossCheck({ tropes, strengths, flaws, bikes }) {
-  // "Skilled at ..." is written a dozen ways across the tables; compare on the stem. Hyphens go
-  // too: the trope tables carry InDesign soft hyphens inside words ("Hot­tempered"), which
-  // `cleanCell` strips, so "Hot-tempered" in the appendix would otherwise never match. Both sides
-  // go through this — normalising only the trope side reported every hyphenated name as missing.
+  // Compare on the stem, both sides: the trope tables carry InDesign soft hyphens.
   const normalise = (value) =>
     value.toLowerCase().replace(/\s*\.{2,}\s*$/, '').replaceAll('-', '').replace(/\s+/g, ' ').trim();
 
@@ -832,12 +714,8 @@ function crossCheck({ tropes, strengths, flaws, bikes }) {
 function renderModule(data) {
   const body = JSON.stringify(data, null, 2);
   return `// GENERATED FILE — do not edit by hand.
-// Source: an Obsidian vault of Kids on Bikes (2nd edition) notes, and the rulebook PDF for the
-// three appendices the vault has no note for.
-// Regenerate with: node scripts/import-kids-on-bikes.mjs
-//
-// Every value below is read out of those sources. Anything they do not say is absent
-// here rather than invented; \`meta.warnings\` records what the import could not resolve.
+// Source: an Obsidian vault of Kids on Bikes (2nd edition) notes, plus the rulebook PDF.
+// Regenerate with: node scripts/import-kids-on-bikes.mjs; \`meta.warnings\` records what it could not reach.
 
 import type { KidsOnBikesContent } from './types';
 
@@ -847,10 +725,7 @@ export default kidsOnBikesContent;
 `;
 }
 
-/**
- * Appendices A, B and K, or empty shapes plus a warning when the rulebook is not beside the vault.
- * A gap here reads the same way a missing note does: reported, never invented.
- */
+/** A missing rulebook reads like a missing note: reported, never invented. */
 async function readRulebook(file) {
   if (!fs.existsSync(file)) {
     warn(`Rulebook not found at ${file} — the Pre-Game Form, the content warnings and the Powered Character did not import. Pass --rulebook "<path>".`);

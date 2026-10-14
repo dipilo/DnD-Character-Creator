@@ -1,12 +1,4 @@
-// The party view (MERGE_PLAN.md Phase 5) — the payoff for merging the two apps.
-//
-// Everything before Phase 5 was consolidation. This page only works because the builder and the
-// scheduler are one app: it lists the real characters the builder produced, seated at this
-// campaign's real seats, and it is where a player attaches one or starts a new one already scoped
-// to the sources this table plays with.
-//
-// Like the roster, it is server state held per page rather than in a store: the seat a character
-// sits in is the server's to state, and a stale party list is worse than a brief spinner.
+// Server state per page: the seat is the server's to state, so a stale list is worse.
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, UserRoundMinus, UserRoundPlus, Users } from 'lucide-react';
@@ -80,20 +72,11 @@ export function PartyPage() {
 
   const campaign = useMemo(() => campaigns.find((c) => c.id === campaignId) ?? null, [campaigns, campaignId]);
   const allowedSourceIds = useMemo(() => parseAllowedSourceIds(campaign), [campaign]);
-  // A table plays one game. Every system's characters are stored server-side now — one collection,
-  // discriminated by the document's own `systemId` — so the only thing the system decides here is
-  // which builder "new character" opens.
+  // One collection discriminated by `systemId`, so the system picks only which builder opens.
   const system = getGameSystem(campaign?.system_id);
   const usesBuilderState = system.id === DEFAULT_GAME_SYSTEM_ID;
 
-  /**
-   * Start a character already scoped to this table. Seeding the source filter is the whole point —
-   * the campaign's own agreement about which books are in play becomes the builder's default rather
-   * than something every player has to be told separately.
-   *
-   * Either way the seat is recorded as an *intent*: the character has only just been created
-   * locally and may not have synced, and the builder has to work signed out (Phase 5).
-   */
+  /** Seeds the source filter; the seat is an intent, since the character may not have synced. */
   const handleNewCharacter = () => {
     if (!usesBuilderState) {
       const character = createKobCharacter();
@@ -127,10 +110,7 @@ export function PartyPage() {
     }
   };
 
-  /**
-   * The owner can take anyone's character off the table. It is the same write as its owner's own
-   * Detach: the seat and the sharing go, the document stays theirs and never leaves their account.
-   */
+  /** The same write as the owner's own Detach: the document stays theirs. */
   const handleRemove = async () => {
     const character = confirmRemove;
     if (!character) return;
@@ -357,11 +337,7 @@ interface AttachCharacterDialogProps {
   onAttached: () => void;
 }
 
-/**
- * Attach one of your own characters to this campaign. It lists from the server rather than the
- * local cache on purpose: the character has to exist server-side before it can hold a seat, and a
- * character that has not synced yet is exactly the one that cannot.
- */
+/** Lists from the server: a character must exist there before it can hold a seat. */
 function AttachCharacterDialog({
   campaignId,
   open,
@@ -423,9 +399,7 @@ function AttachCharacterForm({
   }, []);
 
   const attached = new Set(alreadyAttached);
-  // A row's system is not on the summary, so it is read from whichever local cache holds the id.
-  // These are the signed-in account's own characters, so a synced one is always in one of them; an
-  // id neither holds has not been pulled yet and is offered rather than hidden.
+  // The system comes from whichever local cache holds the id; an unknown id is offered.
   const available = (mine ?? []).filter((character) => {
     if (attached.has(character.id)) return false;
     const holder = getStoreHolding(character.id);

@@ -14,40 +14,26 @@ import type {
   SharedCharacterSummary,
 } from './types';
 
-/**
- * Characters stored server-side (MERGE_PLAN.md Phase 2). Listing returns summaries only: the
- * documents can carry a portrait data URL each, so a client fetches the ones it actually needs.
- */
+/** Listing returns summaries only: each document can carry a portrait data URL. */
 export async function listCharacters(campaignId?: number): Promise<CharacterRecordSummary[]> {
   const query = campaignId === undefined ? '' : `?campaign_id=${encodeURIComponent(campaignId)}`;
   const body = await api.get<{ characters: CharacterRecordSummary[] }>(`/api/characters${query}`);
   return body.characters ?? [];
 }
 
-/**
- * Every character seated at a campaign, whoever owns it (MERGE_PLAN.md Phase 5) — the party view.
- * Summaries only, like every other character list; open the ones you want by id, which the server
- * allows for any campaign-mate of a seated character.
- */
+/** The party view; summaries only, opened by id like every other character list. */
 export async function listCampaignCharacters(campaignId: number): Promise<CampaignCharacterSummary[]> {
   const body = await api.get<{ characters: CampaignCharacterSummary[] }>(`/api/campaigns/${campaignId}/characters`);
   return body.characters ?? [];
 }
 
-/**
- * Characters somebody else granted this account, either by name or through a campaign it runs.
- * Nothing notifies a grantee, so this list is how they find out at all.
- */
+/** Nothing notifies a grantee, so this list is how they find out at all. */
 export async function listSharedCharacters(): Promise<SharedCharacterSummary[]> {
   const body = await api.get<{ characters: SharedCharacterSummary[] }>('/api/characters/shared-with-me');
   return body.characters ?? [];
 }
 
-/**
- * Attach a character to a campaign seat, or take it off one. Deliberately not the document write:
- * no `version` rides along, because seating a character does not edit it — which also means a page
- * holding only the summary can do this without fetching the whole sheet.
- */
+/** Not the document write: no `version`, so a page holding the summary can do it. */
 export async function setCharacterSeat(id: string, seat: CharacterSeat): Promise<CharacterRecordSummary> {
   const body = await api.put<{ character: CharacterRecordSummary }>(
     `/api/characters/${encodeURIComponent(id)}/seat`,
@@ -66,10 +52,7 @@ export async function createCharacter(payload: CharacterWritePayload): Promise<C
   return body.character;
 }
 
-/**
- * Update one character. `version` is the version last seen; the server answers 409 with its own
- * copy when the sheet moved on elsewhere, rather than clobbering the other device's edit.
- */
+/** 409 with the server's copy rather than clobbering another device's edit. */
 export async function updateCharacter(id: string, version: number, payload: CharacterWritePayload): Promise<CharacterRecord> {
   const body = await api.put<{ character: CharacterRecord }>(`/api/characters/${encodeURIComponent(id)}`, { ...payload, version });
   return body.character;
@@ -79,20 +62,10 @@ export async function deleteCharacter(id: string): Promise<void> {
   await api.delete(`/api/characters/${encodeURIComponent(id)}`);
 }
 
-/**
- * The one-time upload offered when someone signs in with characters already in localStorage.
- *
- * Entries arrive already named and summarised, because only the owning system's cache knows how to
- * do either — a Kids on Bikes document has no `name` field and no character level.
- */
+/** Named and summarised by the owning cache: a KoB document has no `name` field. */
 export async function importCharacters(entries: CharacterImportEntry[]): Promise<CharacterImportResult> {
   return await api.post<CharacterImportResult>('/api/characters/import', { characters: entries });
 }
-
-/* -------------------------------------------------------------------------
- * Sharing. Everything here is the owner's: a granted editor may write the
- * document and nothing else, so none of these routes answer to them.
- * ------------------------------------------------------------------------- */
 
 /** The current sharing state. Reading it mints the share link if there is not one yet. */
 export async function getCharacterSharing(id: string): Promise<CharacterSharing> {
@@ -100,10 +73,7 @@ export async function getCharacterSharing(id: string): Promise<CharacterSharing>
   return body.sharing;
 }
 
-/**
- * Change who may open the sheet. One link serves every visibility, so narrowing a character
- * narrows every URL already handed out; `rotateToken` is the harder revoke that invalidates them.
- */
+/** One link serves every visibility; `rotateToken` is the harder revoke. */
 export async function setCharacterSharing(
   id: string,
   patch: { visibility?: CharacterVisibility; rotateToken?: boolean },
@@ -115,10 +85,7 @@ export async function setCharacterSharing(
   return body.sharing;
 }
 
-/**
- * Hand the sheet to one account, or to whoever runs one campaign. The subject has to be someone
- * the owner already shares a table with, so this cannot be used to probe for accounts.
- */
+/** The subject must already share a table, so this cannot probe for accounts. */
 export async function grantCharacterAccess(
   id: string,
   grant: { subjectType: CharacterGrantSubject; subjectId: number; access: CharacterGrantAccess },
@@ -138,11 +105,7 @@ export async function revokeCharacterAccess(id: string, grantId: number): Promis
   return body.sharing;
 }
 
-/**
- * Open a character from a share link. Signed out is a real case — that is what `public` means — so
- * this is the one character read that does not require a session; a link to a narrower character
- * simply 404s for anyone it does not cover.
- */
+/** The one character read needing no session; a narrower character simply 404s. */
 export async function getSharedCharacter(token: string): Promise<CharacterRecord> {
   const body = await api.get<{ character: CharacterRecord }>(`/api/shared/characters/${encodeURIComponent(token)}`);
   return body.character;

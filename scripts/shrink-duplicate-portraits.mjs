@@ -1,23 +1,7 @@
-// One-time repair for characters stored with their portrait twice.
-//
-// `avatar` predates `portrait.imageDataUrl` and every reader falls back to it, so the builder used
-// to write both — a 107 KB data URL became a 217 KB row, which is what put the document read past
-// the database's statement deadline and 500'd those characters. The builder writes one copy now;
-// this drops the second from rows that already have it.
-//
-// Safe by construction: a document is only touched when the two fields are byte-identical, so
-// nothing a reader can see changes. `version` is deliberately left alone — the sheet did not
-// change, and bumping it would hand every other device a spurious conflict.
+// Drops `avatar` where it is byte-identical to the portrait; leaves `version` alone.
 //
 //   node scripts/shrink-duplicate-portraits.mjs              # report only
 //   node scripts/shrink-duplicate-portraits.mjs --write      # apply
-//
-// Reads the same TURSO_DATABASE_URL / LIBSQL_URL the server does; a `file:` URL works for a local
-// copy, which is the sensible place to try it first.
-//
-// One row's document is read per request. Selecting every `data` column in one statement is the
-// read that made characters with a portrait answer 500 in the first place, and against the HTTP
-// pipeline it simply never came back.
 
 const url = process.env.TURSO_DATABASE_URL || process.env.LIBSQL_URL || process.env.DATABASE_URL;
 const authToken = process.env.TURSO_AUTH_TOKEN || process.env.LIBSQL_AUTH_TOKEN || process.env.AUTH_TOKEN;

@@ -1,16 +1,4 @@
-// The spellcasting half of the sheet: what this character can cast, what it costs, and the slots
-// it costs it from.
-//
-// The list is the same table the Actions tab prints — Name, Time, Range, Hit/DC, Damage, Notes —
-// grouped by spell level, with the statblock behind the name. It used to be an accordion row whose
-// name column and control group fought each other for width, which is what made a long spell name
-// read as overlapping text.
-//
-// Cast spends the lowest slot that can carry the spell, which is what casting it normally means;
-// the caret beside it is where upcasting lives, so a bigger slot stays a real choice.
-//
-// Same posture as every other sheet panel: it holds no state and writes nothing of its own, so a
-// campaign-mate reading a shared sheet gets the same component with no `onChange`.
+// The Actions table grouped by level; Cast spends the lowest slot, the caret upcasts.
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -53,11 +41,7 @@ interface SheetSpellsPanelProps {
   pactSlotsByLevel: number[];
   /** Total level, which is what a cantrip's own damage table keys off. */
   characterLevel: number;
-  /**
-   * How many levelled spells may be prepared at once, where any of this character's classes
-   * prepares them. Undefined for a character who prepares nothing — a Sorcerer knows their spells,
-   * so a limit there would be a rule they do not play under.
-   */
+  /** Undefined for a character who prepares nothing, such as a Sorcerer. */
   preparedLimit?: number;
   /** What the character's features do to a spell attack, read from their own sentences. */
   rollEffects?: readonly ResolvedRollEffect[];
@@ -67,11 +51,7 @@ interface SheetSpellsPanelProps {
 const rollButtonClass =
   'min-h-9 rounded px-1.5 font-semibold tabular-nums transition-colors hover:bg-accent coarse:min-h-11 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none';
 
-/**
- * The letters, not the shopping list. A material component prints its whole parenthetical — "M (a
- * tiny ball of bat guano and sulfur)" — which is four wrapped lines in a Notes column; the material
- * is in the statblock the row opens.
- */
+/** The parenthetical is four wrapped lines in Notes; it lives in the statblock. */
 const componentLetters = (spell: Spell) =>
   spell.components.map((component) => component.split(' ')[0]).join('/');
 

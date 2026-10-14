@@ -1,11 +1,4 @@
-/**
- * Play sessions, and the roll feed they collect.
- *
- * The server records what a client says settled and interprets none of it — the dice, the
- * notation and the wording of a roll are the client's, exactly as `characters.summary` is. What it
- * *does* own is who may write: a roll belongs to the session it was made in, and only a member of
- * that campaign can add one or read the feed.
- */
+/** The roll's wording is the client's; who may write it is the server's. */
 
 /** Longest a label or a note may be. A roll's wording is a caption, not a document. */
 const MAX_TEXT = 200;
@@ -17,10 +10,7 @@ function readText(value, limit = MAX_TEXT) {
   return trimmed ? trimmed.slice(0, limit) : null;
 }
 
-/**
- * One settled roll, bounded. `results` is stored as the client's own JSON so the feed can show the
- * individual dice; anything that is not a list of plain numbers is dropped rather than stored.
- */
+/** Anything that is not a list of plain numbers is dropped rather than stored. */
 function normaliseRoll(body) {
   const label = readText(body?.label);
   if (!label) return { error: 'label_required' };
@@ -70,10 +60,7 @@ function publicSession(row) {
   };
 }
 
-/**
- * A roll row as a client sees it, with the dice parsed back out. A blob that is not valid JSON is
- * reported as no dice rather than failing the whole feed — the total is the part that matters.
- */
+/** Invalid JSON reports as no dice: the total is the part that matters. */
 function publicRoll(row) {
   let results = [];
   if (row.results) {

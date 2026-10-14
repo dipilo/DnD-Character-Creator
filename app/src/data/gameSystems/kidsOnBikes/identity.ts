@@ -1,15 +1,7 @@
 import type { KobCharacter } from '@/types/kob';
 import type { KobDie, KobStatId, KobTrope } from './types';
 
-/**
- * The parts of the Kids on Bikes rules that need no content pack.
- *
- * They live apart from `rules.ts` because that module statically imports `generated.ts`, and the
- * sync layer reaches for a handful of these on boot: `store/documentStores.ts` and
- * `store/kobCharacterStore.ts` are both in `main.tsx`'s graph, so importing them from `rules.ts`
- * put the whole content pack in the entry chunk — the same rule CLAUDE.md states for `@/data`.
- * `rules.ts` re-exports everything here, so nothing else has to know about the split.
- */
+/** Apart from `rules.ts`, whose static `generated.ts` import would enter the boot graph. */
 
 export const KOB_STAT_IDS: KobStatId[] = ['brains', 'brawn', 'fight', 'flight', 'charm', 'grit'];
 

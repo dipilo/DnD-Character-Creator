@@ -1,12 +1,7 @@
 import type { Character } from '@/types/dnd';
 import type { KobCharacter } from '@/types/kob';
 
-/**
- * What `/api/characters` can be asked to hold. The server treats `data` as opaque JSON, so a row is
- * whichever system's document was written into it — discriminated by `systemId`, which is why
- * `KobCharacter` carries one. `Character` has none: a document without the field is a D&D one,
- * written before there was a second system.
- */
+/** Discriminated by `systemId`; a document without the field is a D&D one. */
 export type StoredCharacterDocument = Character | KobCharacter;
 
 /** The public profile the server returns. There is no token here and no id the client echoes back. */
@@ -24,16 +19,9 @@ export interface CharacterRecordSummary {
   campaign_id: number | null;
   player_id: number | null;
   name: string | null;
-  /**
-   * "Level 5 Elf Wizard 5 (Evocation)", denormalised out of the document by the *writing* client so
-   * a party view can list a campaign's characters without fetching everyone's sheet. Null on rows
-   * written before Phase 5, which simply list by name.
-   */
+  /** Denormalised by the writing client so a party view needs no sheet fetch; null pre-Phase 5. */
   summary: string | null;
-  /**
-   * Who may open this sheet. A row written before the column reads as `'campaign'`, because
-   * attaching a character to a campaign was already the act of sharing it.
-   */
+  /** A row written before the column reads as `campaign`. */
   visibility: CharacterVisibility;
   schema_version: number;
   /** Bumped by the server on every write. Send the one you last saw or the write is refused. */
@@ -42,11 +30,7 @@ export interface CharacterRecordSummary {
   updated_at: string | null;
 }
 
-/**
- * The D&D Beyond-shaped choice, and the only thing that decides who a share link lets in:
- * `private` is the owner plus whoever they named, `campaign` adds the members of the campaign the
- * character is attached to, `public` adds anyone holding the link, signed in or not.
- */
+/** The only thing deciding who a share link lets in. */
 export type CharacterVisibility = 'private' | 'campaign' | 'public';
 
 /** What the owner may grant, and to whom. */
@@ -64,10 +48,7 @@ export interface CharacterGrant {
   label: string;
 }
 
-/**
- * A character's sharing state, readable and writable by its owner alone. `share_token` is a
- * credential: it is minted on first read and rotating it is what revokes every link already sent.
- */
+/** Readable and writable by its owner alone; rotating `share_token` revokes every link sent. */
 export interface CharacterSharing {
   character_id: string;
   visibility: CharacterVisibility;
@@ -75,18 +56,9 @@ export interface CharacterSharing {
   grants: CharacterGrant[];
 }
 
-/**
- * A stored character. `data` is the builder's own `Character` object, round-tripped verbatim —
- * the server stores it as one JSON document precisely so every choice-mode and selection field
- * survives to be read back into the builder (CLAUDE.md; MERGE_PLAN.md §5.3). It is null only when
- * a stored document failed to parse.
- */
+/** `data` is the builder's `Character`, round-tripped verbatim; null only when it failed to parse. */
 export interface CharacterRecord extends CharacterRecordSummary {
-  /**
-   * Whether the reader owns this row, and whether they may write it. Both are a courtesy — the
-   * server checks again on every write — but `is_owner` is what gates anything that is not the
-   * document: the seat, the visibility, the grant list and deletion stay with the owner.
-   */
+  /** A courtesy, rechecked on every write; `is_owner` gates everything that is not the document. */
   is_owner: boolean;
   can_edit: boolean;
   data: StoredCharacterDocument | null;
@@ -117,49 +89,27 @@ export interface CharacterImportResult {
   skipped: { id: string | null; reason: string }[];
 }
 
-/**
- * Where a character sits (MERGE_PLAN.md Phase 5). This is row metadata, not part of the document,
- * and it is written on its own route: seating a character is not editing the sheet, so it carries
- * no `version` and bumps none. `campaign_id: null` detaches, which clears the seat with it — a seat
- * only exists inside a campaign.
- */
+/** Row metadata on its own route, so it carries no `version`; detaching clears the seat. */
 export interface CharacterSeat {
   campaign_id: number | null;
   player_id?: number | null;
 }
 
-/**
- * One character in a campaign's party view. Attaching a character to a campaign is what shares it
- * with that campaign's members, so this is the only list where `user_id` is somebody else's;
- * `owner_name` and `player_name` are the joins that make the row readable.
- */
+/** The only list where `user_id` is somebody else's. */
 export interface CampaignCharacterSummary extends CharacterRecordSummary {
   owner_name: string | null;
   player_name: string | null;
-  /**
-   * A character its owner has made private still holds its seat and still fills a line here — they
-   * put it there — but the sheet behind it does not open. Read this before linking to one.
-   */
+  /** A private character still holds its seat, but the sheet behind it does not open. */
   can_read: boolean;
   can_edit: boolean;
 }
 
-/**
- * A character someone handed this account, from `GET /api/characters/shared-with-me`.
- *
- * `granted_via` says which grant reached you: `user` names the account, `campaign_owner` names a
- * campaign you run — so the grant stays with the seat if the table changes hands.
- */
+/** `granted_via` says which grant reached you, so it stays with the seat. */
 export interface SharedCharacterSummary extends CampaignCharacterSummary {
   granted_via: 'user' | 'campaign_owner';
 }
 
-// ---------------------------------------------------------------------------
-// Scheduler (MERGE_PLAN.md Phase 4). These mirror the server's row shapes; the
-// server answers with `SELECT *` in most places, so the columns in db/schema.js
-// are the contract.
-// ---------------------------------------------------------------------------
-
+// Scheduler row shapes; the server answers with `SELECT *`, so db/schema.js is the contract.
 export interface Campaign {
   id: number;
   name: string | null;
@@ -168,43 +118,21 @@ export interface Campaign {
   /** The short join code. Owners can regenerate it; it is a credential, so treat it as one. */
   campaign_code: string | null;
   sort_index: number | null;
-  /**
-   * The table's content agreement (MERGE_PLAN.md Phase 5): a JSON array of content-source ids, as
-   * stored. The server keeps it opaque — the source manifest is the client's — so read it with
-   * `parseAllowedSourceIds` rather than at each call site. Null or empty means no restriction,
-   * which is what an empty selection means in the builder's own source filter too.
-   */
+  /** Opaque to the server; read it with `parseAllowedSourceIds`. Null or empty is no restriction. */
   allowed_source_ids: string | null;
-  /**
-   * The game this table plays, as a `GameSystemId`. The server bounds the shape and interprets
-   * nothing — the registry is the client's (`data/gameSystems.ts`) — so read it through
-   * `getGameSystem`, which falls back to the default for the null a pre-column campaign carries.
-   */
+  /** Read through `getGameSystem`, which falls back to the default a pre-column campaign carries. */
   system_id: string | null;
   /** JSON permission blob granted to anyone who joins. Null grants nothing. */
   default_member_permissions: string | null;
-  /**
-   * JSON permission blob a new invite link starts with. Distinct from the member default because
-   * an invited arrival and someone joining with the campaign code are not the same audience.
-   */
+  /** Distinct from the member default: an invited arrival is not the same audience. */
   default_invite_permissions: string | null;
-  /**
-   * The table's default for whether making a seat also takes it: 'never', 'first' or 'always'.
-   * Null is "no opinion", which resolves to 'first' for a player and 'never' for the owner.
-   */
+  /** Null is "no opinion": 'first' for a player, 'never' for the owner. */
   default_auto_claim_seats: AutoClaimMode | null;
-  /**
-   * Whether this table asks its players to let the GM edit their characters. It is the ask and not
-   * the answer: each member's reply lives on their own membership row, which the owner cannot
-   * write. Stored 0/1.
-   */
+  /** The ask, not the answer; the reply is on the member's own row. Stored 0/1. */
   requests_character_edit: number | null;
 }
 
-/**
- * The flags a campaign owner may grant a member. The owner implicitly holds all of them, so a
- * client asking "may I?" must check ownership first — see `memberCan` in `campaignStore`.
- */
+/** The owner implicitly holds all of them, so check ownership first (`memberCan`). */
 export interface CampaignPermissions {
   can_create_players?: boolean;
   can_delete_players?: boolean;
@@ -217,10 +145,7 @@ export interface CampaignPermissions {
   players_self_delete?: boolean;
 }
 
-/**
- * Whether a seat someone creates becomes theirs. 'first' claims only while they hold none, so it
- * covers the seat made after deleting a previous one as well as the literal first.
- */
+/** 'first' claims only while they hold none, so it covers a seat made after a deletion. */
 export type AutoClaimMode = 'never' | 'first' | 'always';
 
 export interface CampaignMember {
@@ -231,11 +156,7 @@ export interface CampaignMember {
   role: string | null;
   /** JSON, as stored. Parse with `parsePermissions` rather than at each call site. */
   permissions: string | null;
-  /**
-   * This member's own answer to the campaign's ask: 1 lets whoever runs the table edit every
-   * character they seat here, including ones built later. Theirs to set and nobody else's — which
-   * is why it is a column of its own rather than a flag in `permissions`.
-   */
+  /** Theirs to set and nobody else's, which is why it is its own column. */
   character_edit_consent: number | null;
   /** The owner's word on this member's auto-claim. Null hands the decision to their preference. */
   auto_claim_override: AutoClaimMode | null;
@@ -247,10 +168,7 @@ export interface CampaignMember {
   player_name: string | null;
 }
 
-/**
- * A campaign seat. It can exist unclaimed — imported from a sheet before anyone owns it — which is
- * why a player is not the same thing as a user (MERGE_PLAN.md §9). `password_hash` is never sent.
- */
+/** Can exist unclaimed, so a player is not a user; `password_hash` is never sent. */
 export interface Player {
   id: number;
   name: string | null;
@@ -320,10 +238,7 @@ export type AvailabilityOp =
   | { op: 'update'; id: number; start_iso: string; end_iso: string }
   | { op: 'delete'; id: number };
 
-/**
- * One slice of the aggregate scan: how many of the campaign's players are free between `start` and
- * `end`. The server splits the window at every block boundary, so the count is constant across it.
- */
+/** The server splits at every block boundary, so the count is constant across the slice. */
 export interface AggregateInterval {
   start: string;
   end: string;
@@ -378,20 +293,14 @@ export interface Invite {
   challenge_min_score: number;
   used_count: number;
   created_at: string | null;
-  /**
-   * What this link grants whoever joins on it, as a JSON blob. Null means "no opinion" and the
-   * campaign's `default_invite_permissions` applies; `"{}"` is an explicit "grant nothing".
-   */
+  /** Null defers to the campaign's default; `"{}"` is an explicit "grant nothing". */
   permissions: string | null;
 }
 
 export interface InvitePreview {
   ok: true;
   invite: Invite;
-  /**
-   * `requests_character_edit` rides along so the landing page can put the question before someone
-   * joins rather than after. It is only the ask; the answer is the joiner's, and absent means no.
-   */
+  /** Only the ask, so the landing page can put it before joining; absent means no. */
   campaign: Pick<Campaign, 'id' | 'name' | 'requests_character_edit'> | null;
 }
 
@@ -410,12 +319,7 @@ export interface UnclaimedPlayer {
   sort_index: number | null;
 }
 
-/* ---------- Google Sheets intake (MERGE_PLAN.md §20) ---------- */
-
-/**
- * One question the intake template asks. Mirrors `server/lib/sheetIntake.js`, which is the single
- * definition — this type describes what `GET /api/sheet-template` sends, it does not restate it.
- */
+/** Describes what `GET /api/sheet-template` sends; `server/lib/sheetIntake.js` defines it. */
 export interface IntakeField {
   key: string;
   /** The `players` column the answer is stored in. */
@@ -472,10 +376,7 @@ export interface SheetImportResult {
   players: Player[];
 }
 
-/**
- * One list of the Pre-Game Form. `warnings` are picked from Appendix B's list, `notes` are the
- * player's own lines; both are the author's words and the compiled merge carries both.
- */
+/** `warnings` come from Appendix B, `notes` are the player's; the merge carries both. */
 export interface PreGameFormList {
   warnings: string[];
   notes: string[];
@@ -493,10 +394,7 @@ export interface PreGameForm {
   updated_at: string | null;
 }
 
-/**
- * The table's answers with nobody's name on them. `respondents` is a count and not a roster, for
- * the same reason the lines carry no author.
- */
+/** `respondents` is a count, not a roster, for the same reason lines carry no author. */
 export interface PreGameFormSummary {
   respondents: number;
   lists: Record<string, string[]>;

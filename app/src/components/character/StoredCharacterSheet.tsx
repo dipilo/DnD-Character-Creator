@@ -1,9 +1,4 @@
-// One stored document, rendered by whichever system's sheet owns it.
-//
-// Which system's screens to show is the *document's* answer and not the campaign's — a campaign's
-// system is a default and a label, never a filter, so a row seated at a D&D table could still
-// legitimately be a Kids on Bikes character. Shared by the party view and the share-link page so
-// the branch exists once.
+// Which screens to show is the *document's* answer; a campaign's system is a label.
 import type { ReactNode } from 'react';
 import { CharacterSheetView } from '@/components/character/CharacterSheetView';
 import { KobSheetView } from '@/components/kob/KobSheetView';

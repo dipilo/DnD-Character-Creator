@@ -1,16 +1,4 @@
-/**
- * What a starting-equipment line still leaves the player to decide.
- *
- * A class kit prints two kinds of unresolved item: a weapon named by category ("any simple
- * weapon", "two martial weapons") and an item named by family ("an arcane focus", "a holy
- * symbol", "Musical Instrument of your choice"). Both are picks, not proficiencies — the same rule
- * that governs "One type of gaming set" on the proficiency side — so they get a selector and the
- * sheet shows what was picked, never the phrase.
- *
- * The tests are deliberately exact on the family name. "Arcane Focus (crystal)" and "Druidic Focus
- * (sprig of mistletoe)" are the 2024 book naming a specific item, so they stay fixed grants; only a
- * bare family, a "…of your choice", or a "Choose 1 from …" is offered as a choice.
- */
+/** A category or family is a pick, not a grant; a named item in parentheses stays fixed. */
 
 export type WeaponCategory = 'simple' | 'martial';
 export type WeaponType = 'melee' | 'ranged';
@@ -42,11 +30,7 @@ export function normalizeEquipmentOptionName(value: string) {
   return value.toLowerCase().replaceAll(/[^a-z0-9]+/g, ' ').trim();
 }
 
-/**
- * Strip the leading article or count and any "of your choice" / "Choose 1 from" wrapper, leaving
- * the bare thing being named. Returns the count alongside it, so "two martial weapons" is one
- * phrase asking for two picks.
- */
+/** Returns the count too, so "two martial weapons" is one phrase asking for two picks. */
 function readChoicePhrase(optionName: string) {
   let text = normalizeEquipmentOptionName(optionName);
   let count = 1;
@@ -94,10 +78,7 @@ export function getStartingWeaponRule(optionName: string): StartingWeaponRule | 
   };
 }
 
-/**
- * The families a line can name instead of an item. `tag` is the semantic tag the equipment filter
- * already computes for a catalogue entry, so the candidate list and the type filter agree.
- */
+/** `tag` is the filter's own tag, so the candidates and the type filter agree. */
 const equipmentChoiceFamilies: Array<{ pattern: RegExp; tag: string; label: string }> = [
   { pattern: /^(?:other )?musical instruments?$/, tag: 'instrument', label: 'musical instrument' },
   { pattern: /^gaming sets?$/, tag: 'gaming set', label: 'gaming set' },

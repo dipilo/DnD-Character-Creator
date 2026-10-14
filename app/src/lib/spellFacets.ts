@@ -1,11 +1,4 @@
-/**
- * The two statblock lines the books never print but every table needs: what a spell rolls against,
- * and what it does when it lands.
- *
- * Read from the spell's own sentences, exactly as `detectActionTiming` reads a feature's — nothing
- * here is a per-spell table, so a spell added by an imported pack gets both lines for free. A spell
- * that states neither gets neither: an unstated facet stays unstated rather than being guessed.
- */
+// What a spell rolls against and what it does; an unstated facet stays unstated.
 import type { AbilityScores, Spell } from '@/types/dnd';
 
 const ABILITY_NAMES: Record<string, keyof AbilityScores> = {
@@ -53,10 +46,7 @@ const BARE_SPELL_ATTACK_PATTERN = /\bspell\s+attack\s+roll\b|\bmake\s+a\s+spell\
 const SAVING_THROW_PATTERN =
   /\b(strength|dexterity|constitution|intelligence|wisdom|charisma)\s+saving\s+throw\b/gi;
 
-/**
- * What the spell rolls: a spell attack, a saving throw, or both — Ice Knife makes an attack and
- * then asks for a Dexterity save.
- */
+/** Or both: Ice Knife makes an attack and then asks for a Dexterity save. */
 export function deriveSpellAttackOrSave(spell: Pick<Spell, 'description'>): SpellAttackOrSave[] {
   const text = spell.description ?? '';
   const facets: SpellAttackOrSave[] = [];
@@ -92,10 +82,7 @@ export interface SpellDamageOrEffect {
 
 const HEALING_PATTERN = /\bregains?\s+(?:a\s+number\s+of\s+)?hit\s+points\b/gi;
 
-/**
- * Chill Touch says "the target can't regain hit points", which is the opposite of healing — the
- * clause has to be read with whatever negates it or half the necromancy list reports as healing.
- */
+/** A negated clause must be read with its negation, or necromancy reports as healing. */
 const HEALING_NEGATION = /(?:cannot|can't|doesn't|won't|does not|unable to)\s*$/i;
 
 function statesHealing(text: string): boolean {
@@ -111,10 +98,7 @@ function statesHealing(text: string): boolean {
 const DAMAGE_TYPE_PATTERN =
   /\b(acid|bludgeoning|cold|fire|force|lightning|necrotic|piercing|poison|psychic|radiant|slashing|thunder)\s+damage\b/gi;
 
-/**
- * Every damage type the spell names, plus healing when it restores hit points. A type is only read
- * where the text actually says "<type> damage" — "a fire burns" is prose, not a damage line.
- */
+/** Only where the text says "<type> damage": "a fire burns" is prose. */
 export function deriveSpellDamageOrEffect(
   spell: Pick<Spell, 'description' | 'higherLevels'>
 ): SpellDamageOrEffect[] {
@@ -167,21 +151,14 @@ export interface SpellScaling {
   upcast?: SpellUpcastStep;
 }
 
-/**
- * Both printings put the new dice in parentheses after the level that grants them — "5th level
- * (2d6)" in 2014, "levels 5 (2d10), 11 (3d10)" in 2024 — so the level is whatever number the text
- * states last before the bracket, and only one pattern is needed for the two wordings.
- */
+/** The level is the last number before the bracket, so one pattern covers both wordings. */
 // Toll the Dead's brackets carry two dice ("2d8 and 2d12"), one per branch of its own condition, so
 // the bracket may say more than the die — the leading one is the throw, and the text has the rest.
 const TIER_DICE_PATTERN = /\((\d*d\d+)(?:\s[^)]*)?\)/g;
 const TIER_SENTENCE_PATTERN = /\bincreases?\b|\bwhen you reach\b/i;
 const isDigit = (value: string, index: number) => value[index] >= '0' && value[index] <= '9';
 
-/**
- * The level a tier's bracket belongs to: the last number the text states before it. Scanned rather
- * than matched, because an anchored `$` pattern over arbitrary prose backtracks (Sonar S8786).
- */
+/** Scanned, not anchored: a `$` pattern over arbitrary prose backtracks (S8786). */
 export function trailingLevel(before: string): number | null {
   let end = before.length;
   while (end > 0 && !isDigit(before, end - 1)) end -= 1;
@@ -204,12 +181,7 @@ const firstDice = (text: string) => {
   return dice ? normalizeDice(dice) : undefined;
 };
 
-/**
- * What a spell's own text says its dice do as the caster grows.
- *
- * Read from the sentences the books print, exactly as `deriveSpellAttackOrSave` is — a spell an
- * imported pack adds scales for free, and one that states no table simply has no tiers.
- */
+/** Read from the spell's sentences, so a pack's spell scales for free. */
 export function deriveSpellScaling(spell: Pick<Spell, 'description' | 'higherLevels'>): SpellScaling {
   const description = spell.description ?? '';
   const tiers: SpellDamageTier[] = [];
@@ -253,15 +225,7 @@ export interface SpellDiceContext {
   slotLevel?: number;
 }
 
-/**
- * What a cast of this spell actually rolls.
- *
- * A cantrip's damage table and a levelled spell's upcast line are both stated in the spell's own
- * text, so both are applied rather than being left for the player to work out — printing the
- * written-at-1st-level dice on a 17th-level caster's sheet is the bug this closes. Anything the
- * text does not state in dice — Eldritch Blast's extra beams — stays in the description the player
- * is already reading.
- */
+/** Both the cantrip table and the upcast line apply; what is not in dice stays in the text. */
 export function deriveSpellDice(
   spell: Pick<Spell, 'description' | 'higherLevels' | 'level'>,
   context: SpellDiceContext = {}

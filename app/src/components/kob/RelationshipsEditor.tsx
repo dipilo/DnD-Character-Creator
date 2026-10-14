@@ -41,10 +41,7 @@ export function RelationshipsEditor({ character, onChange }: Readonly<Relationsh
     });
   };
 
-  /**
-   * The rules pick a question by rolling against the list, so the tray throws the die the list is
-   * as long as and the result selects the entry — the number on screen is the one that chose it.
-   */
+  /** The tray throws a die the length of the list, so the number on screen chose the entry. */
   const rollQuestion = async (entry: KobRelationship) => {
     const list = questionsFor(entry.kind);
     if (list.length === 0) return;

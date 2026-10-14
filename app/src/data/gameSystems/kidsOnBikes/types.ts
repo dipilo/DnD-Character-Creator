@@ -1,9 +1,4 @@
-/**
- * The shape of the Kids on Bikes content pack.
- *
- * `generated.ts` is written by `scripts/import-kids-on-bikes.mjs` and typed against this file, so
- * a parser that stops finding a field fails the build rather than shipping an empty screen.
- */
+/** `generated.ts` is typed against this, so a parser that stops finding a field fails the build. */
 
 export type KobAge = 'child' | 'teen' | 'adult';
 
@@ -172,10 +167,7 @@ export interface KobPreGameList {
   prompt: string;
 }
 
-/**
- * Appendix A and Appendix B, which the form asks for together: the four lists, and the picklist
- * of themes the first of them says to reference.
- */
+/** The four lists, plus the themes picklist the first of them references. */
 export interface KobPreGameForm {
   title: string;
   intro: string;
@@ -190,10 +182,7 @@ export interface KobAspectEntry {
   text: string;
 }
 
-/**
- * One numbered table under a prompt. Most have a single unlabelled list; the Powers table has two,
- * headed "Heads" and "Tails", because it is rolled with a coin as well as a die.
- */
+/** The Powers table has two lists, because it is rolled with a coin as well as a die. */
 export interface KobAspectVariant {
   label: string;
   entries: KobAspectEntry[];
@@ -220,13 +209,7 @@ export interface KobPoweredCharacterAspects {
   sections: KobAspectSection[];
 }
 
-/**
- * Chapter 5, the Powered Character: the co-controlled character the GM introduces.
- *
- * `powerTokens` and `aspectsPerPlayer` are the two counts the chapter states in a sentence, read
- * from its own text rather than written into the app. Null means the sentence was not found, and
- * `meta.warnings` says so.
- */
+/** The two counts are read from the chapter's own text; null means the sentence was not found. */
 /** One step of a difficulty: "Low: +1 (e.g., sending a wave of force in all directions...)". */
 export interface KobPowerCheckOption {
   id: string;

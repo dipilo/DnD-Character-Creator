@@ -1,6 +1,4 @@
-// "Add something from the library" — the one control the sheet needs so equipment and spells can
-// be changed without reopening the builder. A search box over a list, in a dialog, because the
-// catalogues run to hundreds of entries.
+// Adds from the library, so equipment and spells change without reopening the builder.
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {

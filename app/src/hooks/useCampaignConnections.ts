@@ -3,15 +3,7 @@ import { listCampaignCharacters, listCharacters, listGroups, listPlayers } from 
 import type { Group, Player } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 
-/**
- * Everyone this character shares a table with: the other characters seated at its campaign, and
- * the seats nobody has built a character for yet.
- *
- * A relationship can point at a character (`characterId`, the pointer CLAUDE.md describes) or name
- * a person who has no character in the app — a seat is exactly that case, so it is offered as a
- * name to fill in rather than as a pointer to store. Group membership rides along so the list can
- * put the people this character actually plays with first.
- */
+/** A seat with no character is offered as a name to fill in, not a pointer to store. */
 export interface CampaignConnection {
   /** Stable option value. A character's own id, or `seat:<playerId>` for a seat. */
   key: string;

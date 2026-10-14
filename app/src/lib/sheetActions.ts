@@ -1,18 +1,4 @@
-/**
- * Everything this character can do in a round, as rows of one table.
- *
- * D&D Beyond's Actions tab is a single filtered list — All / Attack / Action / Bonus Action /
- * Reaction / Other / Limited Use — over an attack table with fixed columns, and ours was a card per
- * weapon beside an accordion of features. This module is the row model behind both: a weapon, a
- * spell and a feature all resolve to the same shape, so the table renders one kind of thing.
- *
- * Nothing here is a list of actions written in the app. A weapon's row comes from the equipment, a
- * spell's from the spell's own statblock and sentences, and a feature's from the sentence that says
- * when it is used — `detectActionTiming`, exactly as the turn list already read it. A feature that
- * states no timing and spends no pool appears in no row rather than being guessed into one. Even
- * Dodge and Disengage are imported: each printing labels its own list, and `combatActions` carries
- * it.
- */
+// One row model for weapons, spells and features; a feature stating no timing has no row.
 import {
   deriveFeatureSaves,
   deriveFeatureThrows,
@@ -71,12 +57,7 @@ export const SHEET_ACTION_GROUP_ORDER: readonly SheetActionGroup[] = [
   'other'
 ];
 
-/**
- * One line of the Damage column.
- *
- * A weapon with Versatile states two of them, and which one is thrown is the player's choice as
- * they swing — so they are two buttons, not one label reading "1d6+1 (1d8+1)".
- */
+/** Versatile states two, and the choice is made as you swing, so they are two buttons. */
 export interface SheetActionDamage {
   /** What a click throws. Absent where the row states an effect rather than dice. */
   notation?: string;
@@ -115,10 +96,6 @@ export interface SheetActionEntry {
   concentration?: boolean;
 }
 
-/* -------------------------------------------------------------------------- *
- * Weapons
- * -------------------------------------------------------------------------- */
-
 /** A melee weapon states no range band; saying so beats printing an em dash in the Range column. */
 const attackRange = (attack: DerivedAttack) =>
   attack.range ?? (attack.kind.startsWith('Melee') ? 'Melee' : undefined);
@@ -143,10 +120,6 @@ function weaponRows(attacks: readonly DerivedAttack[]): SheetActionEntry[] {
     notes: [attack.proficient ? '' : 'Not proficient', ...attack.properties].filter(Boolean).join(', ') || undefined
   }));
 }
-
-/* -------------------------------------------------------------------------- *
- * Spells
- * -------------------------------------------------------------------------- */
 
 /** One spell as the sheet holds it. The panel's own entry shape is a superset of this. */
 export interface SpellActionSource {
@@ -176,12 +149,7 @@ const saveLabel = (
 ) =>
   save?.ability && castingStat ? `DC ${castingStat.saveDc} ${ABILITY_ABBREVIATIONS[save.ability]}` : undefined;
 
-/**
- * The letters, not the shopping list: the material's parenthetical belongs to the statblock.
- *
- * Only V, S and M count, because a material list is comma-separated prose and every source splits
- * it into entries of its own — Animate Dead arrives as five components and read as "V/S/M/a/and".
- */
+/** Only V, S and M: a material list is prose, and Animate Dead arrived as five components. */
 const componentLetters = (components: readonly string[]) =>
   [...new Set(components.map((component) => component.split(' ')[0]))]
     .filter((letter) => letter === 'V' || letter === 'S' || letter === 'M')
@@ -201,10 +169,7 @@ function spellMeta(spell: Spell, level: number, grantedBy?: string): string {
   return [printed, spell.school, grantedBy].filter(Boolean).join(' · ');
 }
 
-/**
- * A spell's row, for the spells this character attacks with. The bonus is the caster's and the save
- * is the caster's, both read from the spell's own sentences.
- */
+/** Bonus and save are the caster's, read from the spell's own sentences. */
 function spellRows(
   spells: readonly SpellActionSource[],
   castingStat: DerivedSpellcastingStats | undefined,
@@ -222,9 +187,7 @@ function spellRows(
     const dice = deriveSpellDice(spell, { characterLevel, slotLevel: spell.level });
     const effects = deriveSpellDamageOrEffect(spell).map((effect) => effect.label);
 
-    // This table is the attack table. A spell that rolls no attack is read and cast on the Spells
-    // tab, which prints the same columns plus Time — listing it here as well made the Actions tab a
-    // second copy of that tab, under a heading that says these are the things you attack with.
+    // A spell that rolls no attack is cast on the Spells tab, not listed here twice.
     if (!makesAttack) continue;
 
     const damageLabel = [dice, effects.join(', ')].filter(Boolean).join(' ');
@@ -253,23 +216,13 @@ function spellRows(
   return rows;
 }
 
-/* -------------------------------------------------------------------------- *
- * Features
- * -------------------------------------------------------------------------- */
-
 const TIMING_TIME_LABELS: Record<ActionTiming, string> = {
   action: 'Action',
   'bonus-action': 'Bonus Action',
   reaction: 'Reaction'
 };
 
-/**
- * A feature's row.
- *
- * A feature earns one by saying when it is used, or by owning a pool — a Lay on Hands with 20
- * points in it is something a player uses in a fight whether or not the sentence names an action.
- * Everything else stays in the Features tab.
- */
+/** Earned by stating a timing or owning a pool; everything else stays in Features. */
 /** What the Notes column carries for a feature row: what a failed save does, then the recharge. */
 function featureNotes(
   save: FeatureSave | undefined,
@@ -320,14 +273,7 @@ function featureRows(
   return rows;
 }
 
-/* -------------------------------------------------------------------------- *
- * Actions in Combat
- * -------------------------------------------------------------------------- */
-
-/**
- * The actions everybody has, in the group the book's own label puts them in. They are the same row
- * shape as everything else — a name, and the rule behind it — so they print in the same table.
- */
+/** The same row shape as everything else, so they print in the same table. */
 function combatActionRows(actions: readonly CombatAction[]): SheetActionEntry[] {
   return actions.map((action) => ({
     id: `combat-action-${action.id}`,
@@ -343,10 +289,6 @@ function combatActionRows(actions: readonly CombatAction[]): SheetActionEntry[] 
     description: action.description
   }));
 }
-
-/* -------------------------------------------------------------------------- *
- * The list
- * -------------------------------------------------------------------------- */
 
 export interface SheetActionsInput {
   attacks: readonly DerivedAttack[];

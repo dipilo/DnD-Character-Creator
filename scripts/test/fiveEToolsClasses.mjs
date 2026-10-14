@@ -1,9 +1,4 @@
-// What a 5etools class entry is read to mean.
-//
-// This fails silently in the same way the document importers do: a shape the adapter stops
-// recognising does not error, the class just arrives with no pool, no die column or no slot table,
-// and a class nobody can build looks like a content gap rather than a parser one. The fixture below
-// is in the published shape (`schema/site/class/class.json`), not a book's text.
+// A shape the adapter stops recognising reads as a content gap, not a parser one.
 //
 //   node scripts/test/fiveEToolsClasses.mjs      (npm run test:5etools-classes)
 
@@ -22,7 +17,8 @@ function check(name, run) {
 
 const EMPTY = {
   spell: [], monster: [], race: [], subrace: [], background: [], feat: [], item: [], baseitem: [],
-  subclass: [], subclassFeature: [], class: [], classFeature: [], classFluff: []
+  subclass: [], subclassFeature: [], class: [], classFeature: [], classFluff: [],
+  optionalfeature: [], language: [], action: []
 };
 
 const build = (overrides) => buildCanonicalContentFrom5eTools(
@@ -275,6 +271,146 @@ check('an item referenced from another book still resolves, because items are no
     baseitem: [{ name: 'Greataxe', source: 'PHB', type: 'M', weaponCategory: 'martial', dmg1: '1d12' }]
   });
   assert.deepEqual(content.classes[0].equipmentOptions[0][0], { name: 'Greataxe', type: 'weapon' });
+});
+
+const warlock = (overrides = {}) => ({
+  name: 'Warlock',
+  source: 'FIX',
+  hd: { number: 1, faces: 8 },
+  proficiency: ['wis', 'cha'],
+  classFeatures: ['Eldritch Invocations|Warlock|FIX|2'],
+  optionalfeatureProgression: [
+    { name: 'Eldritch Invocations', featureType: ['EI'], progression: { 2: 2, 5: 3, 7: 4 } }
+  ],
+  ...overrides
+});
+
+const warlockFeatures = [classFeature('Eldritch Invocations', 'Warlock', 2, 'You have learned fragments of forbidden knowledge.')];
+
+const invocation = (name, extra = {}) => ({
+  name, source: 'FIX', featureType: ['EI'], entries: [`${name} does something.`], ...extra
+});
+
+const invocationPool = (cls, optionalfeature) =>
+  build({ class: [cls], classFeature: warlockFeatures, optionalfeature }).classes[0]
+    .features.find((feature) => feature.name === 'Eldritch Invocations');
+
+check('a progression turns the feature it names into a selector', () => {
+  const pool = invocationPool(warlock(), [invocation('Agonizing Blast'), invocation('Devil’s Sight')]);
+  assert.equal(pool.requiresChoice, true);
+  // The count is the progression's own first entry, not a number written here.
+  assert.equal(pool.chooseCount, 2);
+  assert.deepEqual(pool.options.map((option) => option.id), ['agonizing-blast', 'devil-s-sight']);
+  assert.equal(pool.description, 'You have learned fragments of forbidden knowledge.');
+});
+
+check('an option only of another featureType is not offered', () => {
+  const pool = invocationPool(warlock(), [invocation('Agonizing Blast'), { name: 'Careful Spell', source: 'FIX', featureType: ['MM'], entries: ['Careful Spell does something.'] }]);
+  assert.deepEqual(pool.options.map((option) => option.name), ['Agonizing Blast']);
+});
+
+check('a progression whose feature the class never names is still granted', () => {
+  const cls = warlock({ classFeatures: [], optionalfeatureProgression: [{ name: 'Eldritch Invocations', featureType: ['EI'], progression: { 2: 2 } }] });
+  const pool = build({ class: [cls], classFeature: warlockFeatures, optionalfeature: [invocation('Agonizing Blast')] })
+    .classes[0].features.find((feature) => feature.name === 'Eldritch Invocations');
+  assert.equal(pool.level, 2);
+  assert.equal(pool.chooseCount, 2);
+});
+
+check('an option states its own gate, read from the structured prerequisite', () => {
+  const pool = invocationPool(warlock(), [
+    invocation('Agonizing Blast', { prerequisite: [{ spell: ['eldritch blast#c'] }] }),
+    invocation('Chain Master', { prerequisite: [{ level: { level: 9 }, pact: 'Chain' }] })
+  ]);
+  const [blast, chain] = pool.options;
+  assert.deepEqual(blast.prerequisites.requiredSpellIds, ['eldritch-blast']);
+  assert.equal(blast.prerequisites.text, 'Eldritch Blast cantrip');
+  assert.equal(chain.prerequisites.minimumLevel, 9);
+  assert.deepEqual(chain.prerequisites.requiredOptionIds, ['pact-of-the-chain']);
+});
+
+check('an option with no prerequisite carries no gate at all', () => {
+  const pool = invocationPool(warlock(), [invocation('Agonizing Blast')]);
+  assert.equal(pool.options[0].prerequisites, undefined);
+});
+
+// Options are shared between books by matching ids, so a prefix here would stop a supplement's
+// invocations merging onto the core feature.
+check('an option id is the plain slug of its name, not source-prefixed', () => {
+  const pool = invocationPool(warlock(), [invocation('Agonizing Blast')]);
+  assert.equal(pool.options[0].id, 'agonizing-blast');
+});
+
+check('a subclass progression is read the same way', () => {
+  const content = build({
+    subclass: [{
+      name: 'Fiend', shortName: 'Fiend', className: 'Warlock', source: 'FIX',
+      optionalfeatureProgression: [{ name: 'Metamagic', featureType: ['MM'], progression: { 3: 2 } }]
+    }],
+    subclassFeature: [{ name: 'Dark One’s Blessing', subclassShortName: 'Fiend', className: 'Warlock', source: 'FIX', level: 1, entries: ['You gain temporary hit points.'] }],
+    optionalfeature: [{ name: 'Careful Spell', source: 'FIX', featureType: ['MM'], entries: ['Careful Spell does something.'] }]
+  });
+  const pool = content.subclasses[0].features.find((feature) => feature.name === 'Metamagic');
+  assert.equal(pool.chooseCount, 2);
+  assert.deepEqual(pool.options.map((option) => option.id), ['careful-spell']);
+});
+
+check('a feature with no progression is left exactly as it was', () => {
+  const feature = onlyClass(barbarian()).features.find((entry) => entry.name === 'Rage');
+  assert.equal(feature.requiresChoice, undefined);
+  assert.equal(feature.options, undefined);
+});
+
+const onlyFeat = (feat) => build({ feat: [feat] }).feats[0];
+
+check('a feat’s structured ability block wins over its prose', () => {
+  const out = onlyFeat({
+    name: 'Resilient', source: 'FIX',
+    ability: [{ choose: { from: ['str', 'dex'] } }],
+    entries: ['Choose one ability score. You gain proficiency in saving throws using it.']
+  });
+  assert.deepEqual(out.abilityScoreIncreases, [{ ability: 'choose', amount: 1, chooseCount: 1, chooseFrom: ['strength', 'dexterity'] }]);
+});
+
+// Nothing errored before this: the feat simply arrived granting no spell.
+check('a spell a feat grants is read out of its benefit lines', () => {
+  const out = onlyFeat({
+    name: 'Fey Touched', source: 'FIX',
+    ability: [{ choose: { from: ['int', 'wis', 'cha'] } }],
+    entries: ['You learn the misty step spell and one 1st-level spell of your choice.']
+  });
+  assert.ok((out.grantedSpells?.length ?? 0) > 0 || (out.spellChoices?.length ?? 0) > 0);
+});
+
+check('a feat’s named benefit lines become its features', () => {
+  const out = onlyFeat({
+    name: 'Chef', source: 'FIX',
+    entries: ['You gain the following benefits.', { type: 'entries', name: 'Cook’s Utensils', entries: ['You gain proficiency with cook’s utensils.'] }]
+  });
+  assert.deepEqual(out.features.map((feature) => feature.name), ['Cook’s Utensils']);
+});
+
+check('a language carries the table it was printed in, not the book’s word for it', () => {
+  const content = build({ language: [
+    { name: 'Dwarvish', source: 'FIX', type: 'standard', script: 'Dwarvish', typicalSpeakers: ['Dwarves'] },
+    { name: 'Deep Speech', source: 'FIX', type: 'exotic' }
+  ] });
+  assert.deepEqual(content.languages.map((entry) => [entry.name, entry.rarity]), [['Dwarvish', 'standard'], ['Deep Speech', 'rare']]);
+  assert.equal(content.languages[0].origin, 'Dwarves');
+  assert.equal(content.languages[1].script, undefined);
+});
+
+check('an action’s timing is read from its own time block, and absence means an action', () => {
+  const content = build({ action: [
+    { name: 'Dash', source: 'FIX', time: [{ number: 1, unit: 'action' }], entries: ['You move.'] },
+    { name: 'Dodge', source: 'FIX', entries: ['You focus on avoiding attacks.'] },
+    { name: 'Opportunity Attack', source: 'FIX', time: ['reaction'], entries: ['You strike back.'] },
+    { name: 'Two-Weapon Fighting', source: 'FIX', time: [{ number: 1, unit: 'bonus' }], entries: ['You attack with your off hand.'] }
+  ] });
+  assert.deepEqual(
+    content.combatActions.map((entry) => [entry.name, entry.timing]),
+    [['Dash', 'action'], ['Dodge', 'action'], ['Opportunity Attack', 'reaction'], ['Two-Weapon Fighting', 'bonus-action']]
+  );
 });
 
 for (const entry of checks) {

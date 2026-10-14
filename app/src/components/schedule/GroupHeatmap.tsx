@@ -21,11 +21,7 @@ function startOfToday(): Date {
   return now;
 }
 
-/**
- * How many of `memberIds` are free in the hour beginning at `cellStart`. An interval's
- * `player_ids` covers the whole campaign, so it is intersected with the group rather than trusted
- * as a count — a group of three inside a campaign of ten must never read as ten.
- */
+/** Intersected with the group: `player_ids` covers the whole campaign. */
 function countForCell(intervals: AggregateInterval[], memberIds: number[], cellStart: number): number {
   const cellEnd = cellStart + HOUR_MS;
   let best = 0;
@@ -39,14 +35,9 @@ function countForCell(intervals: AggregateInterval[], memberIds: number[], cellS
   return best;
 }
 
-/**
- * A thumbnail of when a group can meet: days across, hours down, darker where more of the group
- * is free. Deliberately small and unlabelled — it is a glance beside a group card, not a view.
- */
+/** Small and unlabelled: a glance beside a group card, not a view. */
 export function GroupHeatmap({ campaignId, memberIds, days = 7, showWindows = false }: Readonly<GroupHeatmapProps>) {
-  // `memberKey` is the identity of the request: a fresh array holding the same ids must not
-  // refetch, and a result tagged with an older key is stale rather than something to clear from
-  // the effect body (CLAUDE.md's rule against setState in an effect).
+  // `memberKey` identifies the request, so a fresh array of the same ids does not refetch.
   const memberKey = memberIds.join(',');
   const [loaded, setLoaded] = useState<{ key: string; intervals: AggregateInterval[] } | null>(null);
 

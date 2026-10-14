@@ -1,11 +1,5 @@
-// What `deriveFeatureThrows` reads out of a feature's own sentences.
-//
-// The sheet used to take the first `NdN` in the text, which is wrong in both directions: Supreme
-// Healing's worked example became a roll button and Land's Aid's healing never did. Every input
-// below is a feature's text as one of the packs carries it, because this fails silently — a missed
-// wording costs a button nobody notices is gone, and a wrong one is a die nobody notices is wrong.
-//
-// Run with `npm run test:feature-throws` from the workspace root.
+// What `deriveFeatureThrows` reads from a feature's sentences; a missed wording is silent.
+// Run with `npm run test:feature-throws`.
 import assert from 'node:assert/strict';
 
 const { deriveFeatureSaves, deriveFeatureThrows } = await import('@/lib/featureFacets');
@@ -31,10 +25,6 @@ function check(name, run) {
     checks.push({ name, ok: false, detail: e.message.split('\n')[0] });
   }
 }
-
-/* -------------------------------------------------------------------------- *
- * Dice that are not a throw
- * -------------------------------------------------------------------------- */
 
 check('a worked example is not a throw (Supreme Healing)', () => {
   assert.deepEqual(
@@ -92,20 +82,12 @@ check('another feature’s die is not a throw (Foe Slayer)', () => {
   assert.deepEqual(notations('The damage die of your Hunter’s Mark is a d10 rather than a d6.'), []);
 });
 
-/* -------------------------------------------------------------------------- *
- * A die the text states without a count
- * -------------------------------------------------------------------------- */
-
 check('a bare die is a throw, and the sheet prints the count (Martial Arts)', () => {
   assert.deepEqual(
     notations('You can roll a d4 in place of the normal damage of your unarmed strike or monk weapon.'),
     ['1d4']
   );
 });
-
-/* -------------------------------------------------------------------------- *
- * What the level does to it
- * -------------------------------------------------------------------------- */
 
 check('a die that changes with the level (2014 Bardic Inspiration)', () => {
   const text =
@@ -185,10 +167,6 @@ check('a die restated only to say it grows is the throw (Improved Blessed Strike
   );
 });
 
-/* -------------------------------------------------------------------------- *
- * What the character adds to it
- * -------------------------------------------------------------------------- */
-
 check('a class level (Second Wind)', () => {
   const entry = read('you can use it to regain Hit Points equal to 1d10 plus your Fighter level.')[0];
   assert.equal(entry.notation, '1d10+20');
@@ -239,10 +217,6 @@ check('a term this character cannot resolve leaves the throw bare', () => {
   assert.equal(entry.detail, '1d6 plus your Wisdom modifier');
 });
 
-/* -------------------------------------------------------------------------- *
- * What the throw is for
- * -------------------------------------------------------------------------- */
-
 check('a damage type is read only where the throw deals damage (Steel Defender Repair)', () => {
   const [attack, repair] = read(
     'Force-Empowered Rend. Melee Weapon Attack: Hit: 1d8 + PB force damage. Repair (3/Day). The ' +
@@ -271,10 +245,6 @@ check('a feature that states both keeps the roll it asks for (Tactical Mind)', (
 check('a feature that states no dice has no throw', () => {
   assert.deepEqual(notations('You can attack twice, instead of once, when you take the Attack action.'), []);
 });
-
-/* -------------------------------------------------------------------------- *
- * The die a class table states
- * -------------------------------------------------------------------------- */
 
 const MARTIAL_ARTS_2014 = [
   '1d4', '1d4', '1d4', '1d4', '1d6', '1d6', '1d6', '1d6', '1d6', '1d6',
@@ -325,10 +295,6 @@ check('the table beats what the prose restates (2024 Bardic Inspiration)', () =>
   // The prose states the same steps, so the two readings must not disagree about one character.
   assert.deepEqual(withColumn(text, 'Bardic Inspiration', perLevel, 7), ['1d8']);
 });
-
-/* -------------------------------------------------------------------------- *
- * The save a feature calls for
- * -------------------------------------------------------------------------- */
 
 const saves = (description, overrides) =>
   deriveFeatureSaves({ description }, { ...context, ...overrides }).map((entry) => entry.label);
@@ -386,10 +352,6 @@ check('a save the feature forces (Hammering Horns)', () => {
     ['DC 17 STR']
   );
 });
-
-/* -------------------------------------------------------------------------- *
- * A DC a sibling feature states
- * -------------------------------------------------------------------------- */
 
 const MONKS_FOCUS = {
   name: 'Monk’s Focus',
@@ -535,10 +497,6 @@ check('Tasha’s writes the summed formula the other way round (Infectious Fury)
   );
 });
 
-/* -------------------------------------------------------------------------- *
- * What a success does to the damage
- * -------------------------------------------------------------------------- */
-
 const LANDS_AID =
   'Each creature of your choice in the Sphere must make a Constitution saving throw against your ' +
   'spell save DC, taking 2d6 Necrotic damage on a failed save or half as much damage on a ' +
@@ -607,10 +565,6 @@ check('Evasion is about somebody else’s effect, not a save this feature impose
     []
   );
 });
-
-/* -------------------------------------------------------------------------- *
- * What a failed save does
- * -------------------------------------------------------------------------- */
 
 const saveEntries = (description, overrides) =>
   deriveFeatureSaves({ description }, { ...context, ...overrides });

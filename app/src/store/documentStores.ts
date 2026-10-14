@@ -1,14 +1,4 @@
-/**
- * One adapter per system's document cache, so the sync pass can reconcile both without knowing
- * either one's shape.
- *
- * `/api/characters` is a single collection per account — it does not partition by game — so a
- * sync pass necessarily sees Kids on Bikes documents next to D&D ones and has to route each record
- * to the store that owns it. `systemId` on the document is that routing key, which is exactly why
- * `KobCharacter` carries one.
- *
- * Direction still holds: this module imports the stores and no store imports it.
- */
+/** `/api/characters` is one collection, so `systemId` routes each record home. */
 import { DEFAULT_GAME_SYSTEM_ID, type GameSystemId } from '@/data/gameSystems';
 import { fullName } from '@/data/gameSystems/kidsOnBikes/identity';
 import { useCharacterStore } from '@/store/characterStore';
@@ -35,14 +25,7 @@ export interface DocumentStoreAdapter<T extends StoredDocument = StoredDocument>
   setPendingSeat: (id: string, seat: PendingSeat | null) => void;
   /** The row's `name` column, which is what a list falls back to when there is no summary. */
   nameOf: (document: T) => string;
-  /**
-   * The denormalised display line the party view lists by.
-   *
-   * Async because resolving a D&D character's species and class names needs the whole content
-   * library, and a static import of it here put all 23 source packs — 5.75 MB — into the boot
-   * graph: `main.tsx` starts the sync watcher, which imports this module. Every page paid for it,
-   * including the ones with no D&D content on them at all. Both call sites already await.
-   */
+  /** Async: a static content-library import would put 5.75 MB into the boot graph. */
   describe: (document: T) => Promise<string>;
   /** The document as the server should store it: the row's id wins over whatever the copy carried. */
   withId: (document: T, id: string) => T;

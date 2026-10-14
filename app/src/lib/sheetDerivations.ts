@@ -5,15 +5,7 @@ import type { AbilityScores, Character } from '@/types/dnd';
 import { ABILITY_ORDER, abilityModifier, deriveSpellcastingStats, type DerivedSpellcastingStats, type ResolvedClassLike } from '@/lib/sheetMath';
 import type { DerivedCharacterProficiencies } from '@/lib/builderRules';
 
-/**
- * The numbers a play-facing sheet leads with — skills, saving throws, initiative, the passive
- * scores, spell save DC — none of which the sheet showed before.
- *
- * All of it is derived. Nothing here is state: a value a player *changes* during play (current hit
- * points, death saves, spent slots) lives on the `Character` document and is manipulated by
- * `lib/sheetPlayState.ts`. Keep the two apart — a derivation that reads spent slots, or a tracker
- * that recomputes a modifier, is how the two halves start disagreeing.
- */
+/** All derived: play state lives on the document and in `lib/sheetPlayState.ts`. */
 
 export const ABILITY_ABBREVIATIONS: Record<keyof AbilityScores, string> = {
   strength: 'STR',
@@ -24,10 +16,7 @@ export const ABILITY_ABBREVIATIONS: Record<keyof AbilityScores, string> = {
   charisma: 'CHA',
 };
 
-/**
- * Which ability each skill keys off. Fixed in both the 2014 and 2024 rules and identical between
- * them, so it lives beside `skillNames` in the same shape rather than being read per source.
- */
+/** Identical in both printings, so it sits beside `skillNames` rather than per source. */
 export const SKILL_ABILITIES: Record<string, keyof AbilityScores> = {
   Acrobatics: 'dexterity',
   'Animal Handling': 'wisdom',
@@ -76,11 +65,7 @@ export interface DerivedSave {
   modifier: number;
 }
 
-/**
- * A proficiency list carries entries the sheet cannot score — "One skill of your choice" if a
- * pending choice ever leaks through, or a tool name. Matching on the canonical skill list keeps
- * those out of the skill table instead of scoring them at +0.
- */
+/** Matched on the canonical skill list, so a tool or a placeholder is not scored at +0. */
 function proficientSkillSet(proficiencies: DerivedCharacterProficiencies): Set<string> {
   const normalised = new Set(proficiencies.skills.map((skill) => skill.trim().toLowerCase()));
   return new Set(skillNames.filter((name) => normalised.has(name.toLowerCase())));
@@ -186,17 +171,11 @@ export function deriveSheetVitals({
   /** The species' walking speed; 30 is the fallback when no species is chosen yet. */
   speed: number;
   totalLevel: number;
-  /**
-   * Read from the features by `deriveSenses`, and passed in rather than derived here: this module
-   * is what `sheetCombat` reads its modifiers from, so importing it back would be a cycle.
-   */
+  /** Passed in: `sheetCombat` reads its modifiers from here, so importing back is a cycle. */
   senses?: DerivedSense[];
   /** Read from the features by `resolveCharacterRollEffects`, and passed in for the same reason. */
   rollEffects?: readonly ResolvedRollEffect[];
-  /**
-   * Read from the features by `resolveCharacterExpertise` and passed in for the same reason the
-   * senses are: this module must not reach back into the content library.
-   */
+  /** Passed in for the same reason: this module must not reach into the content library. */
   expertiseKeys?: ReadonlySet<string>;
 }): SheetVitals {
   const proficiencyBonus = getCharacterProficiencyBonus(totalLevel);

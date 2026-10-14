@@ -95,17 +95,7 @@ const ADD_BUTTONS: ReadonlyArray<{ kind: KobBackpackNodeKind; label: string; ico
   { kind: 'group', label: 'Frame', icon: Frame },
 ];
 
-/**
- * The backpack as a board rather than a paragraph.
- *
- * "What items are you never without? The backpack is also a good place to list advantages that you
- * have over other people and the more intangible resources you have at your disposal." — a list of
- * things, some of which are pictures, which is what this is for.
- *
- * A picture is either a link or a file re-encoded small enough to hold inline in the character
- * document; the caps live in `lib/kob/backpackCanvas.ts` and the reason they exist is that the
- * document is one JSON blob.
- */
+/** A list of things, some of them pictures; the size caps are in `lib/kob/backpackCanvas.ts`. */
 export function BackpackCanvasDialog(props: Readonly<BackpackCanvasDialogProps>) {
   return (
     <Dialog open={props.open} onOpenChange={props.onOpenChange}>
@@ -205,10 +195,7 @@ function Board({ canvas, onChange, prompt, readOnly = false }: Readonly<Backpack
     }
   };
 
-  /**
-   * Select a card, or add it to the selection when shift is held. A drag then moves everything
-   * selected, which is what makes a marquee worth having.
-   */
+  /** A drag then moves the whole selection, which is what makes a marquee worth having. */
   const selectNode = (node: KobBackpackNode) => (event: React.PointerEvent) => {
     setSelectedEdgeId(null);
     setSelectedIds((current) => {
@@ -583,10 +570,7 @@ function SelectionBar({ selected, edge, onColour, onLabel, onDelete }: Selection
   );
 }
 
-/**
- * Ctrl+Z, Ctrl+Shift+Z and Delete, ignored while a field has focus so undoing a typo in a note
- * stays the textarea's own job.
- */
+/** Ignored while a field has focus, so undoing a typo stays the textarea's job. */
 function useCanvasShortcuts({
   readOnly,
   history,
@@ -614,11 +598,7 @@ function useCanvasShortcuts({
   }, [history, onDelete, readOnly]);
 }
 
-/**
- * The cards one drag moves: the whole selection when the grabbed card is part of it, a frame's
- * contents when a frame is grabbed, and otherwise just the card itself. A resize never moves more
- * than the one card it was started on.
- */
+/** A resize never moves more than the card it started on. */
 function movingWith(
   node: KobBackpackNode,
   selectedIds: string[],

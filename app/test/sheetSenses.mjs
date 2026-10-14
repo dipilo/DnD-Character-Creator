@@ -1,14 +1,5 @@
-// What a feature's own text says this character can see with.
-//
-// This fails the way `spellScaling` fails: silently. A sense the parser misses is simply absent
-// from the rail, and nothing errors — a `\b` that reached the source as a backspace character
-// rather than a word boundary matched nothing at all, and the only symptom was an Elf with no
-// Darkvision. Every string below is one a pack actually carries, in both printings' wording.
-//
-// The function is pure and imports only a type, so the source is stripped of types and imported
-// directly rather than dragged in through Vite's alias graph.
-//
-// Run with `npm run test:senses` from the workspace root.
+// A missed sense is simply absent from the rail, and nothing errors.
+// Run with `npm run test:senses`.
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 

@@ -8,23 +8,73 @@ There is no network access in any of these scripts — you supply the source fil
 
 ### 1. 5etools JSON (recommended — most complete)
 
-[5etools](https://5e.tools) publishes clean, structured JSON for every book. Download the data
-files you own into a local folder, then convert one book at a time, filtered by its 5etools
-source abbreviation:
+[5etools](https://5e.tools) publishes clean, structured JSON for every book. Convert one book at a
+time, filtered by its 5etools source abbreviation, from a local folder or from a URL:
 
 ```
 npm run import:5etools -- --dir ./5etools-data --id tashas \
   --label "Tasha's Cauldron of Everything" --source TCE --category supplement
+
+npm run import:5etools -- --url https://5e.tools/book.html#scc --id strixhaven \
+  --label "Strixhaven: A Curriculum of Chaos" --category expansion
 ```
 
 - `--dir` is searched recursively for `spells/*.json`, `bestiary/*.json`, `races.json`,
-  `backgrounds.json`, `feats.json`, `items*.json`, and `class/class-*.json`.
+  `backgrounds.json`, `feats.json`, `items*.json`, `class/class-*.json`, `optionalfeatures.json`,
+  `languages.json` and `actions.json`.
 - `--source` keeps only entries whose 5etools `source` matches (e.g. `TCE`, `XGE`, `XPHB`, `MM`,
-  `XDMG`). Omit it to keep everything in the folder.
+  `XDMG`, `SCC`, `GGR`). Omit it to keep everything in the folder.
+- `--include-other-sources` also keeps an entry whose `otherSources` names the book. A book
+  5etools credits to its reprint needs this: Elemental Evil's spells sit under XGE with `EEPC` in
+  `otherSources`, so a strict match imports its species and none of its 43 spells.
 - Writes `imports/<id>.canonical.json` and `app/src/data/sourceFiles/<id>.ts`.
 
-Covers species (+lineages as variants), subclasses, backgrounds, spells, equipment, feats, and
-monsters. Full class tables are not imported (5etools models them as feature graphs).
+#### Importing from a URL
+
+`--url` takes either a 5e.tools page or a data tree, downloads the tree into `--cache`
+(default `.cache/5etools-data`, gitignored) and imports from there:
+
+- `https://5e.tools/book.html#scc` — a page that fetches its data at runtime, so the default
+  mirror is used and the hash supplies `--source` when `--source` is absent.
+- `https://raw.githubusercontent.com/<owner>/<repo>/<ref>/data` — a data tree directly. A
+  `github.com/.../tree/...` URL is rewritten to its raw form, and a repo root gets `/data`.
+
+The file list comes from the `index.json` each split directory publishes, so no directory listing
+is needed and any mirror laid out like 5etools works. A cached file is reused; `--refresh`
+re-downloads. A body that is not valid JSON never lands in the cache, and a failed download fails
+the import rather than shipping a partial book. The cache is ~27 MB across ~185 files, downloaded
+once and shared by every later import; keeping it out of the repo keeps licensed content out of
+version control.
+
+Every book in the tree is read even when `--source` names one: features, items and choice pools
+are resolved across all of it, a reprint copies the book it reprints, and a lineage of another
+book's race needs that race.
+
+Covers species (+lineages as variants, their structured proficiencies, size options, language
+slots and granted spells), classes with their level tables, subclasses, backgrounds (skills,
+tool families, language slots, equipment, suggested characteristics and the feat they grant),
+spells, equipment (tool families, foci, versatile dice, Strength requirements), feats (benefits,
+granted and open spells, structured prerequisites), monsters (saves, skills, resistances, senses),
+languages and combat actions.
+
+Pointers are resolved before anything is mapped: `_copy` is filled in from the entry it copies —
+across every book in the folder, since a reprint copies the book it reprints — with its `_mod`
+operations applied, and each `_versions` variant becomes an entry of its own. A pointer that
+cannot be resolved is warned about and the entry ships with only what it states itself.
+
+A lineage whose race the filtered book did not print (MToF's Eladrin, Eberron's dragonmarks,
+SCAG's Ghostwise Halfling) is adopted: the base race is folded into it by the rules 5etools itself
+renders it with, and it ships as a species of its own named `Race (Lineage)`. Without that, a
+source filter drops every one of them — MToF prints one race and fourteen lineages.
+
+Not covered, and warned about rather than dropped silently: a spell list a subclass or patron
+*expands* (`additionalSpells.expanded`), and spells a background grants in its own right — the
+app has no field for either, and a background's spells normally arrive through the feat it grants.
+
+Choice pools — Eldritch Invocations, Metamagic, Fighting Styles, Infusions, Pact Boons, Maneuvers —
+come from `optionalfeatures.json`, matched to the feature that offers them by the
+`optionalfeatureProgression` the class or subclass states. Options are read across every book in the
+folder, not just `--source`, because a supplement's class draws on the core book's pool.
 
 ### 2. D&D Beyond HTML export
 

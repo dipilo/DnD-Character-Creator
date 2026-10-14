@@ -20,11 +20,7 @@ function normalizeMinScore(value) {
   return Number.isNaN(parsed) || parsed < 1 ? 200 : parsed;
 }
 
-/**
- * What an invite grants whoever joins on it. `null` is "no opinion" — the campaign's own default
- * applies — so an invite that means to grant nothing has to store an explicit empty object rather
- * than falling back to NULL, which is why this does not reuse `normalisePermissions` verbatim.
- */
+/** `null` defers to the campaign default, so "grant nothing" stores an empty object. */
 function normalizeInvitePermissions(value) {
   if (value === null || value === undefined || value === '') return null;
   const normalised = normalisePermissions(value);
@@ -103,9 +99,7 @@ router.post('/api/invites/join', optionalAuth, async (req, res) => {
       inviteChallengePassTokens.delete(String(passToken));
     }
 
-    // A `discord_id` in the body used to create-or-find a user with that Discord identity and
-    // join it to the campaign — an anonymous caller could add any Discord user to any campaign
-    // they held an invite for. Identity now comes from the session or not at all.
+    // Identity comes from the session or not at all; a body `discord_id` added any user.
     const user = req.user;
 
     // What the joiner is granted: the invite's own blob when it has one, the campaign's default
@@ -114,9 +108,7 @@ router.post('/api/invites/join', optionalAuth, async (req, res) => {
     const granted = resolveJoinPermissions(campaign, inv);
     const grantedBlob = Object.keys(granted).length > 0 ? JSON.stringify(granted) : null;
 
-    // The joiner's own answer to `campaigns.requests_character_edit`, asked on the landing page and
-    // answered here so the ask and the arrival are one step. Absent means no, and it stays theirs
-    // to change afterwards — the owner can never write it.
+    // Asked on the landing page so the ask and the arrival are one step; absent means no.
     const consent = req.body?.character_edit_consent ? 1 : 0;
 
     await db.transaction(async (trx) => {

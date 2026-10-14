@@ -1,16 +1,4 @@
-/**
- * What a feat's benefit lines actually grant, read out of the sentences the books print.
- *
- * A feat states its benefits in prose — "Increase your Intelligence, Wisdom, or Charisma score by
- * 1", "You learn the misty step spell and one 1st-level spell of your choice", "you learn one
- * Eldritch Invocation option of your choice from the warlock class". Without structure the builder
- * can only print those sentences, so the ability score is never applied and the two spells are
- * never chosen. Every shape below is one the sources state; nothing is invented for a feat whose
- * text does not say it.
- *
- * Shared by `generate-free-core-sources.mjs` (the SRD packs) and `canonical-content.mjs` (the
- * document imports) so the two cannot drift.
- */
+// What a feat's benefit lines grant; shared by the SRD and document importers.
 
 const ABILITY_NAMES = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 const ABILITY_PATTERN = /strength|dexterity|constitution|intelligence|wisdom|charisma/gi;
@@ -38,10 +26,6 @@ const toSentences = (text) => String(text ?? '')
   .split(/(?<=[.!?])\s+(?=[A-Z“"])/)
   .map((entry) => entry.trim())
   .filter(Boolean);
-
-/* -------------------------------------------------------------------------- *
- * Ability score increases
- * -------------------------------------------------------------------------- */
 
 const readAbilities = (fragment) => {
   const matches = String(fragment).match(ABILITY_PATTERN) ?? [];
@@ -77,10 +61,7 @@ const readMaximum = (clause, text) => {
 // class is closed rather than open (Sonar S8786).
 const NAMED_INCREASE_PATTERN = /increase\s+your\s+((?:[a-z]+[ ,]+){1,8}?)(?:scores?\s+)?by\s+(\d+)/i;
 
-/**
- * One "increase ..." clause. Both printings occur: the named form ("Increase your Strength or
- * Dexterity score by 1") and the open one ("Increase one ability score of your choice by 2").
- */
+/** Both the named form and the open "one ability score of your choice" occur. */
 const parseIncreaseClause = (clause, maximum) => {
   const openMatch = /increase\s+(a|an|one|two|three|\d+)\s+ability\s+scores?\s+of\s+your\s+choice\s+by\s+(\d+)/i.exec(clause);
   if (openMatch) {
@@ -98,13 +79,7 @@ const parseIncreaseClause = (clause, maximum) => {
   return null;
 };
 
-/**
- * The increases a benefit line states.
- *
- * The 2024 Ability Score Improvement feat states two alternatives in one sentence ("Increase one
- * ability score of your choice by 2, or increase two ability scores of your choice by 1"), which
- * is a choice the player makes rather than two grants — so it comes back as `alternatives`.
- */
+/** Two alternatives in one sentence are a choice, so they come back as `alternatives`. */
 export const parseFeatAbilityScoreIncreases = (texts) => {
   for (const text of texts) {
     for (const sentence of toSentences(text)) {
@@ -124,10 +99,6 @@ export const parseFeatAbilityScoreIncreases = (texts) => {
 
   return { increases: undefined, alternatives: undefined };
 };
-
-/* -------------------------------------------------------------------------- *
- * Spells
- * -------------------------------------------------------------------------- */
 
 // A spell's name is at most five lowercase words, each followed by a space, so the name class and
 // whatever follows it cannot overlap (Sonar S8786).
@@ -225,11 +196,7 @@ const matchAllIn = (pattern, clause) => {
   return matches;
 };
 
-/**
- * The spells a feat leaves the player to pick, with what the line narrows them to: a level, a
- * class list, or a school. "From the same list" and "from that list" point at the pick before
- * them, which is how Magic Initiate's level 1 spell stays on the list its cantrips came from.
- */
+/** "From that list" points at the pick before it, which Magic Initiate needs. */
 export const parseFeatSpellChoices = (featId, texts) => {
   const choices = [];
   const seen = new Set();
@@ -261,19 +228,12 @@ export const parseFeatSpellChoices = (featId, texts) => {
   return choices;
 };
 
-/* -------------------------------------------------------------------------- *
- * Options borrowed from another class
- * -------------------------------------------------------------------------- */
-
 const classOptionPattern = new RegExp(
   String.raw`\b(\w+)\s((?:[A-Z][A-Za-z]*\s){1,3})options?\sof\syour\schoice\sfrom\sthe\s([a-z]+)\sclass`,
   'g'
 );
 
-/**
- * "one Eldritch Invocation option of your choice from the warlock class" — the pool is that
- * class's own feature, so the feat names where to look rather than carrying a copy of the list.
- */
+/** The pool is that class's own feature, so the feat names where to look. */
 export const parseFeatOptionChoices = (featId, texts) => {
   const choices = [];
   const seen = new Set();
@@ -305,14 +265,7 @@ export const parseFeatOptionChoices = (featId, texts) => {
   return choices;
 };
 
-/* -------------------------------------------------------------------------- *
- * One feat
- * -------------------------------------------------------------------------- */
-
-/**
- * Every structured grant a feat's own text states. `texts` is the feat's description plus each
- * benefit line, because the sources split the same sentence across the two shapes.
- */
+/** `texts` is the description plus each benefit line: the sources split sentences. */
 export const extractFeatBenefitStructures = (featId, texts) => {
   const lines = texts.map((entry) => String(entry ?? '')).filter(Boolean);
   const { increases, alternatives } = parseFeatAbilityScoreIncreases(lines);

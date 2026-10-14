@@ -1,10 +1,4 @@
-/**
- * Whether a character meets a feat's prerequisite line.
- *
- * The structured fields only ever capture part of what the book prints, so the source's own
- * `text` is read alongside them rather than instead of them — Eldritch Adept states "Spellcasting
- * or Pact Magic feature" and lands only `pactMagic`, which on its own would refuse every Wizard.
- */
+/** The source's own `text` is read alongside the structured fields, never instead. */
 import type { AbilityScores, Feat, Species, SpeciesVariant } from '@/types/dnd';
 
 export interface FeatPrerequisiteContext {
@@ -27,10 +21,7 @@ export interface FeatPrerequisiteResult {
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 const normalize = (value: string) => value.toLowerCase().replaceAll(/[^a-z0-9]+/g, ' ').trim();
 
-/**
- * A lineage name matches when either side contains the other: the books' prerequisite is "Elf"
- * and the species entry a character holds may be "Elf" or the variant "High Elf".
- */
+/** Either side may contain the other: the book says "Elf", the species may be "High Elf". */
 const lineageMatches = (required: string, candidate: string | undefined) => {
   if (!candidate) return false;
   const left = normalize(required);

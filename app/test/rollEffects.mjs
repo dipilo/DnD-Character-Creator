@@ -1,10 +1,5 @@
-// What `deriveRollEffects` reads out of a feature's own sentences, and what it refuses to read.
-//
-// Every input below is a feature's text as one of the packs carries it. A clause that names no d20
-// test is dropped rather than applied to every roll — which is the silent half: nothing errors, the
-// character simply rolls with an advantage no printing gives them.
-//
-// Run with `npm run test:roll-effects` from the workspace root.
+// What `deriveRollEffects` reads, and refuses to read; a scopeless clause is dropped.
+// Run with `npm run test:roll-effects`.
 import assert from 'node:assert/strict';
 
 const { deriveRollEffects, applyRollEffects, resolveCharacterRollEffects } = await import('@/lib/rollEffects');
@@ -21,10 +16,6 @@ function check(name, run) {
     checks.push({ name, ok: false, detail: e.message.split('\n')[0] });
   }
 }
-
-/* -------------------------------------------------------------------------- *
- * The floor
- * -------------------------------------------------------------------------- */
 
 check('Silver Tongue floors the two Charisma skills it names', () => {
   const [effect] = read(
@@ -63,10 +54,6 @@ check("the 2024 Reliable Talent's wording reads the same way", () => {
   assert.equal(effect.scope.requiresProficiency, true);
 });
 
-/* -------------------------------------------------------------------------- *
- * Advantage and disadvantage
- * -------------------------------------------------------------------------- */
-
 check('Brave carries the condition it states rather than dropping it', () => {
   const [effect] = read('You have advantage on saving throws against being frightened.');
   assert.equal(effect.kind, 'advantage');
@@ -103,10 +90,6 @@ check('a clause naming no d20 test grants nothing', () => {
 check('a feature stating nothing about a roll gets no effect', () => {
   assert.equal(read('You can speak, read, and write Common and one other language.').length, 0);
 });
-
-/* -------------------------------------------------------------------------- *
- * Reading them against one roll
- * -------------------------------------------------------------------------- */
 
 const silverTongue = {
   id: 'silver-tongue',
@@ -154,10 +137,6 @@ check("Rage's advantage does not reach a Dexterity check", () => {
   const effects = resolveCharacterRollEffects([rage]);
   assert.equal(applyRollEffects(effects, { kind: 'check', ability: 'dexterity' }).advantage, false);
 });
-
-/* -------------------------------------------------------------------------- *
- * A flat bonus
- * -------------------------------------------------------------------------- */
 
 const jackOfAllTrades = {
   id: 'joat',
@@ -237,10 +216,6 @@ check('a clause adding a die is a throw, not a bonus', () => {
   );
 });
 
-/* -------------------------------------------------------------------------- *
- * A clause the sheet cannot check
- * -------------------------------------------------------------------------- */
-
 const expertDuplication = {
   id: 'kenku-expert-duplication',
   name: 'Expert Duplication',
@@ -279,10 +254,6 @@ check('an unconditional clause still applies, and reports no condition', () => {
   assert.equal(strength.advantage, true);
   assert.deepEqual(strength.conditional, []);
 });
-
-/* -------------------------------------------------------------------------- *
- * Report
- * -------------------------------------------------------------------------- */
 
 for (const entry of checks) {
   console.log(`${entry.ok ? 'ok  ' : 'FAIL'} ${entry.name}${entry.ok ? '' : ` — ${entry.detail}`}`);

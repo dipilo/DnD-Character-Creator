@@ -1,13 +1,4 @@
-// One character's sheet, read from the server rather than the local cache (MERGE_PLAN.md Phase 5).
-//
-// This is the page that makes the party view worth having: a DM opens any character seated at their
-// campaign and gets the real sheet, rendered by the same views the owner sees. The server allows
-// the read because the character is attached to a campaign both accounts belong to.
-//
-// It is also where a *granted* editor works. A GM whose players consented, or anyone the owner
-// named with edit access, holds no local copy of the sheet — so edits go straight back through
-// `useRemoteCharacter` rather than through `characterStore`, which is only ever the owner's own
-// cache. Without a grant the page is exactly what it was: read-only.
+// A granted editor has no local copy, so edits go through `useRemoteCharacter`.
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, FileDown, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
@@ -75,12 +66,7 @@ export function CampaignCharacterPage() {
   const systemId = isKobDocument(document) ? 'kids-on-bikes' : DEFAULT_GAME_SYSTEM_ID;
   const mayOpenBuilder = mayEdit && record !== null;
 
-  // Two builders, two write paths. The D&D wizard saves from its Review step, so it is handed the
-  // document and the version to push; the Kids on Bikes one writes as you type and gets its own
-  // route, which reads the character back from the server for itself.
-  //
-  // `document` rather than `record.data`: an inline edit made on this page may not have been
-  // pushed yet, and the builder must open what is on screen.
+  // `document`, not `record.data`: an inline edit here may not have been pushed yet.
   const openBuilderAt = (path: string) => {
     if (!record) return;
     if (systemId === 'kids-on-bikes') {

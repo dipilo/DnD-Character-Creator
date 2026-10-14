@@ -19,11 +19,7 @@ export interface DiceSceneHandle {
   clear: () => void;
   isReady: () => boolean;
   roll: (notation: string) => Promise<DiceSceneResult[]>;
-  /**
-   * Throw one die that is already on the surface again. dice-box identifies a die by the `rollId`
-   * it hands back, so only a result object it produced can be rerolled — a die picked out of the
-   * log after a reload cannot.
-   */
+  /** Only a result object dice-box produced can be rerolled, so not one out of the log. */
   reroll: (die: DiceSceneResult) => Promise<DiceSceneResult[]>;
 }
 
@@ -118,9 +114,7 @@ interface DiceSceneProps {
   onReadyChange?: (ready: boolean) => void;
 }
 
-// BASE_URL is absolute in both dev and prod now that the Vite base is '/', so these runtime-fetched
-// dice-box files resolve the same on /builder as on /. It must stay absolute: a relative base makes
-// this follow the client route and 404.
+// Must stay absolute, or these runtime-fetched files follow the client route and 404.
 const getAssetPath = () => `${import.meta.env.BASE_URL}assets/`;
 
 export const DiceScene = forwardRef<DiceSceneHandle, DiceSceneProps>(function DiceScene({
@@ -143,9 +137,7 @@ export const DiceScene = forwardRef<DiceSceneHandle, DiceSceneProps>(function Di
   const [ready, setReady] = useState(false);
   const resolvedTheme = getResolvedTheme(theme);
 
-  // Latest tuning values, read at init time so that changing size/color/force
-  // updates the live scene via updateConfig instead of tearing it down. Kept in
-  // sync via an effect that runs before the init effect below.
+  // Read at init so tuning updates the live scene instead of tearing it down.
   const tuningRef = useRef({ scale, spinForce, themeColor, throwForce });
   useEffect(() => {
     tuningRef.current = { scale, spinForce, themeColor, throwForce };
@@ -217,12 +209,7 @@ export const DiceScene = forwardRef<DiceSceneHandle, DiceSceneProps>(function Di
     let localDiceBox: DiceBox | null = null;
     const canvasId = `${containerId}-canvas-${(diceInstanceCounter += 1)}`;
 
-    // dice-box has no dispose API, so we manually remove the canvas it appends
-    // to the container. Without this, React's mount/cleanup/mount cycle (Strict
-    // Mode, or navigating away and back) stacks multiple canvases and physics
-    // worlds in the same container, and no dice ever render. Each instance owns a
-    // uniquely-identified canvas so teardown never removes a live sibling created
-    // by a concurrent remount.
+    // No dispose API: without removing the canvas, a remount stacks physics worlds.
     const teardown = () => {
       try {
         localDiceBox?.clear();

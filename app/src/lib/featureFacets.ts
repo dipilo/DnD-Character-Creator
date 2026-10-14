@@ -1,11 +1,4 @@
-/**
- * What a feature throws, read from the feature's own sentences.
- *
- * The sheet used to take the first `NdN` in the text, which is wrong in both directions: Supreme
- * Healing's "for example, instead of restoring 2d6 Hit Points" is not a throw, and Land's Aid
- * states two. Nothing here is a per-feature table — a feature an imported pack adds is read exactly
- * as `deriveSpellAttackOrSave` reads a spell, and one that states no throw gets none.
- */
+// What a feature throws, from its own sentences; one that states none gets none.
 import { CONDITION_NAMES } from '@/lib/sheetPlayState';
 import { DAMAGE_TYPES, trailingLevel, type SpellDamageType } from '@/lib/spellFacets';
 import type { AbilityScores, Feature } from '@/types/dnd';
@@ -32,11 +25,7 @@ export interface FeatureThrow {
   detail: string;
 }
 
-/**
- * What the character brings to a throw the feature states in words: "plus your Fighter level",
- * "+ your Dexterity modifier", "+ PB". A value this does not carry leaves the modifier unresolved
- * and the throw bare, which is what the sheet already did.
- */
+/** What the character adds, in words; an unrecognised term leaves the throw bare. */
 export interface FeatureContext {
   /** The level a "when you reach 14th level" clause is measured against. */
   level?: number;
@@ -48,21 +37,14 @@ export interface FeatureContext {
   spellSaveDc?: number;
   /** The class table's dice columns, by lower-case feature name. */
   tableDice?: Readonly<Record<string, FeatureTableDice>>;
-  /**
-   * The character's other features, for a save whose DC a sibling states: Stunning Strike leaves
-   * it to Monk's Focus and Devious Strikes to Cunning Strike.
-   */
+  /** Other features, for a save whose DC a sibling states (Stunning Strike). */
   siblingFeatures?: readonly SiblingFeature[];
 }
 
 /** A feature read only for what it says about its siblings' saves. */
 export type SiblingFeature = Pick<Feature, 'name' | 'description'>;
 
-/**
- * A die a class table states per level, for a feature whose own text prints only its first value
- * and then points at the column: the Monk's Martial Arts die, the Rogue's Sneak Attack, the 2024
- * Bard's Bardic die. Without it a level-20 Monk still read 1d4.
- */
+/** A per-level column die; without it a level-20 Monk reads 1d4. */
 export interface FeatureTableDice {
   /** One entry per class level, index 0 being level 1; `null` where the table prints none. */
   perLevel: readonly (string | null)[];
@@ -76,15 +58,7 @@ const DICE_FACE = /d(\d+)/;
 /** "d10" and "1d10" are the same throw; the sheet prints the second. */
 const normalizeDice = (dice: string) => (dice.startsWith('d') ? `1${dice}` : dice);
 
-/* -------------------------------------------------------------------------- *
- * What is not a throw
- * -------------------------------------------------------------------------- */
-
-/**
- * Every shape the books use for dice that are not rolled here: a Cunning Strike's die cost, a cap,
- * the dice a Sneak Attack gives up, another feature's die, a count of rests, and a per-slot step.
- * Each is read forwards, so nothing has to match against the end of arbitrary prose (Sonar S8786).
- */
+/** Dice that are not thrown: a cost, a cap, a count. Read forwards (Sonar S8786). */
 const NOT_A_THROW = [
   /\bCost:\s*(\d*d\d+)/gi,
   /\bmaximum of\s+(\d*d\d+)/gi,
@@ -134,10 +108,6 @@ function sentenceEnd(text: string, index: number): number {
 
 const EXAMPLE_PATTERN = /\bfor example\b/i;
 
-/* -------------------------------------------------------------------------- *
- * What is a restatement of a throw already made
- * -------------------------------------------------------------------------- */
-
 interface FeatureTier {
   level: number;
   dice: string;
@@ -170,11 +140,7 @@ interface TierMention {
   kinds: FeatureThrowKind[];
 }
 
-/**
- * What a restatement says is growing, read from the clause it stands in. Only a subject naming
- * more than one thing is used — Land's Aid's "The damage and healing increase by 1d6" restates one
- * die for two throws, and the nearest-throw rule alone gave the second die to the healing only.
- */
+/** Only a subject naming more than one thing grows more than one throw. */
 const TIER_SUBJECTS: ReadonlyArray<{ pattern: RegExp; kind: FeatureThrowKind }> = [
   { pattern: /\btemporary hit points\b/i, kind: 'temporary-hit-points' },
   { pattern: /\bheal(?:ing|s)?\b|\bhit points\b/i, kind: 'healing' },
@@ -187,12 +153,7 @@ function readTierSubjects(clause: string): FeatureThrowKind[] {
   return kinds.includes('temporary-hit-points') ? kinds.filter((kind) => kind !== 'healing') : kinds;
 }
 
-/**
- * Where the text restates a throw it has already made, and at which level.
- *
- * A `level` of `null` is a restatement with no level in it — Divine Smite's "the damage increases
- * by 1d8 if the target is an undead" — which is neither a tier nor a throw of its own.
- */
+/** Where the text restates a throw; a null level is neither a tier nor a throw. */
 function collectTiers(text: string): Map<number, TierMention> {
   const tiers = new Map<number, TierMention>();
   const record = (index: number, level: number | null, clauseStart = sentenceStart(text, index)) => {
@@ -214,10 +175,6 @@ function collectTiers(text: string): Map<number, TierMention> {
   return tiers;
 }
 
-/* -------------------------------------------------------------------------- *
- * What the throw is for
- * -------------------------------------------------------------------------- */
-
 const TYPED_DAMAGE = new RegExp(`\\b(${DAMAGE_TYPES.join('|')})\\s+damage\\b`, 'i');
 const TEMPORARY_HIT_POINTS = /\btemporary hit points\b/i;
 const REDUCTION = /\b(?:reduce[sd]?|reduction)\b/i;
@@ -226,13 +183,7 @@ const HIT_POINTS = /\bhit points\b/i;
 const DAMAGE = /\bdamage\b/i;
 const BONUS = /\badd (?:the number rolled|it)\b|\bto (?:your|the|an|one) (?:roll|total)\b/i;
 
-/**
- * What the feature has the dice rolled for. The clause that says so sits against the dice, so each
- * is read from a short tail — Quivering Palm's "it is reduced to 0 hit points" two sentences
- * earlier otherwise makes its 10d12 a damage reduction. Bonus is read before healing because
- * Tactical Mind states both: "Rather than regaining Hit Points, you roll 1d10 and add the number
- * rolled to the ability check".
- */
+/** What the dice are for, read from a short tail so a distant clause cannot vote. */
 function readKind(before: string, after: string): FeatureThrowKind {
   const lead = before.slice(-40);
   const window = `${before} ${after}`;
@@ -260,10 +211,6 @@ const KIND_WORDS: Record<FeatureThrowKind, string> = {
   bonus: '',
   other: ''
 };
-
-/* -------------------------------------------------------------------------- *
- * What the character adds to it
- * -------------------------------------------------------------------------- */
 
 const ABILITY_TERM =
   /^\s*(?:\+|plus|and)\s+(?:add\s+)?(?:your\s+)?(strength|dexterity|constitution|intelligence|wisdom|charisma)\s+modifier/i;
@@ -306,11 +253,7 @@ interface FeatureModifier {
   phrase: string;
 }
 
-/**
- * The chain of terms the text adds to the dice — "+ your Dexterity modifier + your monk level" —
- * stopping at the first thing it does not recognise. One unresolved term leaves the whole modifier
- * unresolved and the throw bare: a wrong number is worse than no number.
- */
+/** Stops at the first unrecognised term: a wrong number is worse than none. */
 function readModifier(after: string, context: FeatureContext): FeatureModifier {
   let rest = after;
   let total = 0;
@@ -334,10 +277,6 @@ function readModifier(after: string, context: FeatureContext): FeatureModifier {
   if (!resolved || phrases.length === 0) return { phrase };
   return { bonus: total, phrase };
 }
-
-/* -------------------------------------------------------------------------- *
- * The reading
- * -------------------------------------------------------------------------- */
 
 interface ThrowDraft {
   /** Where the dice were read, so a save in the same sentence can say it halves this. */
@@ -373,11 +312,7 @@ function draftAt(text: string, index: number, dice: string, context: FeatureCont
   };
 }
 
-/**
- * Which throws a tier belongs to: the nearest one already made in the same die, else the nearest
- * of any die — unless the clause names more than one thing, in which case it says so outright and
- * every throw it names in that die grows ("The damage and healing increase by 1d6").
- */
+/** The nearest throw in the same die, unless the clause names more than one thing. */
 function tierTargets(drafts: readonly ThrowDraft[], face: string, kinds: readonly FeatureThrowKind[]): ThrowDraft[] {
   const inFace = drafts.filter((draft) => draft.face === face);
   const named = inFace.filter((draft) => kinds.includes(draft.kind));
@@ -465,22 +400,13 @@ function readColumn(table: FeatureTableDice | undefined): ColumnDice | null {
   return { base: normalizeDice(base.toLowerCase()), reached: normalizeDice(reached.toLowerCase()) };
 }
 
-/**
- * The die a class table states for this feature, laid onto the throw the text prints at 1st level.
- * Matching on that printed value rather than on position is what keeps a feature stating dice of
- * its own — the Monk's Martial Arts states three — from taking the column by accident.
- */
+/** Matched on the printed 1st-level value, not position, so a stated die keeps its own. */
 function applyColumnDice(drafts: readonly ThrowDraft[], column: ColumnDice): void {
   const target = drafts.find((draft) => draft.dice === column.base);
   if (target) target.tableDice = column.reached;
 }
 
-/**
- * Every throw a feature states, already scaled to the level the context gives.
- *
- * Two throws with the same notation and the same purpose are the book saying one thing twice —
- * Divine Strike restates its die under each option — so the list is deduped on what it prints.
- */
+/** Every throw, scaled, deduped on what it prints: a book says one thing twice. */
 export function deriveFeatureThrows(
   feature: Pick<Feature, 'description'> & { name?: string },
   context: FeatureContext = {}
@@ -521,10 +447,6 @@ function readThrows(
   return reads;
 }
 
-/* -------------------------------------------------------------------------- *
- * What the feature makes somebody else roll
- * -------------------------------------------------------------------------- */
-
 /** A saving throw a feature imposes, at this character's own DC where the feature states one. */
 export interface FeatureSave {
   /** Stable within the feature, so a list can key on it. */
@@ -546,11 +468,7 @@ export interface FeatureSave {
 
 const ABILITY_WORDS = 'strength|dexterity|constitution|intelligence|wisdom|charisma';
 
-/**
- * A save the feature *imposes*. "You have advantage on Dexterity saving throws" and "you gain
- * proficiency in Wisdom saving throws" name the same words about the opposite thing, so the clause
- * that calls for one is what is matched — forwards, never against the tail before it (S8786).
- */
+/** A save the feature *imposes*, matched forwards on the clause calling for it (S8786). */
 const IMPOSED_SAVE = new RegExp(
   String.raw`\b(?:must (?:succeed on|make)|unless it succeeds on|succeeds on)\s+an?\s+(${ABILITY_WORDS})\s+saving\s+throw`,
   'gi'
@@ -561,11 +479,7 @@ const FORCED_SAVE = new RegExp(
   'gi'
 );
 
-/**
- * 2014 sums the two terms and 2024 spells them out; neither number is written in the app. Tasha's
- * writes 2014's terms in the opposite order — "8 + your Constitution modifier + your proficiency
- * bonus" — which is a third wording, not a third rule.
- */
+/** Three wordings, one rule; neither number is written in the app. */
 const DC_FORMULA_SUMMED = new RegExp(
   String.raw`\b8\s*\+\s*(?:your proficiency bonus\s*\+\s*your (${ABILITY_WORDS}) modifier`
     + String.raw`|your (${ABILITY_WORDS}) modifier\s*\+\s*your proficiency bonus)`,
@@ -580,11 +494,7 @@ const DC_SPELL_SAVE = /\bspell save DC\b/i;
 /** A DC the feature simply prints. */
 const DC_STATED = /\bDC\s+(\d+)\b/i;
 
-/**
- * The DC the feature states, resolved against this character. A feature that states none — Stunning
- * Strike leaves the DC to the class's own feature — gets no number here rather than a guessed one,
- * exactly as an unstated spell facet stays unstated.
- */
+/** A feature that states no DC gets no number, not a guessed one. */
 function readSaveDc(text: string, context: FeatureContext): number | undefined {
   const formula = DC_FORMULA_SUMMED.exec(text) ?? DC_FORMULA_2024.exec(text);
   if (formula) {
@@ -600,15 +510,7 @@ function readSaveDc(text: string, context: FeatureContext): number | undefined {
   return DC_SPELL_SAVE.test(text) ? context.spellSaveDc : undefined;
 }
 
-/* -------------------------------------------------------------------------- *
- * A DC a sibling feature states
- * -------------------------------------------------------------------------- */
-
-/**
- * The sentence that makes a feature the DC source for its siblings: "Some features that use Focus
- * Points require your target to make a saving throw", "If a Cunning Strike effect requires a
- * saving throw". A feature that merely imposes one says "must succeed on" instead.
- */
+/** A feature that merely imposes a save says "must succeed on" instead. */
 const DECLARES_SIBLING_SAVE = /\brequires?\b[^.]{0,60}?\bsaving\s+throws?\b/i;
 
 /** Both printings list what a pool fuels the same way, and Open Hand Technique names one of them. */
@@ -619,11 +521,7 @@ const POSSESSIVE_PREFIX = /^[A-Za-z]+'s\s+/;
 
 const escapeForPattern = (value: string) => value.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
-/**
- * What the books capitalise is what they are naming, so a term of two or more capitalised words in
- * the declaring clause is the thing that clause covers: "Some **Channel Divinity** effects require
- * saving throws". The clause's own first word is dropped — it starts the sentence.
- */
+/** Two or more capitalised words in the declaring clause are what it covers. */
 const NAMED_TERM = /\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+/g;
 
 /** Every name a sibling's dependants use for it: its own, what it covers, and what it fuels. */
@@ -639,22 +537,13 @@ function referenceNames(sibling: SiblingFeature, clause: string): string[] {
   return names.filter((value) => value.length > 1);
 }
 
-/**
- * Whether the text names one of them. The bounds are lookarounds rather than `\b`, which asserts
- * nothing after a name ending in punctuation and would match "ki" inside "taking" without them.
- */
+/** Lookarounds, not `\b`: a name ending in punctuation asserts nothing after it. */
 const namedIn = (text: string, names: readonly string[]) =>
   names.some((name) =>
     new RegExp(String.raw`(?<![A-Za-z0-9])${escapeForPattern(name)}(?![A-Za-z0-9])`, 'i').test(text)
   );
 
-/**
- * The DC a sibling states for this feature.
- *
- * Both books put it on the feature that owns the pool rather than on every feature that spends it,
- * and both cross-reference it by name — which is the same link `findResourceFeature` follows for a
- * class table's columns, so nothing about which feature owns which DC is written here.
- */
+/** Both books put the DC on the pool's owner and cross-reference it by name. */
 function siblingSaveDc(text: string, context: FeatureContext): number | undefined {
   for (const sibling of context.siblingFeatures ?? []) {
     const description = (sibling.description ?? '').replaceAll('’', "'");
@@ -672,23 +561,12 @@ function siblingSaveDc(text: string, context: FeatureContext): number | undefine
   return undefined;
 }
 
-/* -------------------------------------------------------------------------- *
- * What a success does to the damage
- * -------------------------------------------------------------------------- */
-
-/**
- * The books' fixed phrase for a save that mitigates rather than negates. "only half damage" and
- * "half the cantrip's damage" are Evasion and its cousins talking about somebody else's effect, so
- * the phrase is matched whole.
- */
+/** Matched whole: Evasion's "only half damage" is about somebody else's effect. */
 const HALVED_ON_SAVE = /\bhalf as much damage\b/i;
 
 const abbreviate = (ability: keyof AbilityScores) => ability.slice(0, 3).toUpperCase();
 
-/**
- * The tray's line under a throw: the book's own phrase, plus what a save against it does. A throw
- * no save mitigates reads exactly as it did.
- */
+/** The tray's line: the book's phrase plus what a save against it does. */
 export function describeFeatureThrow(entry: FeatureThrow, saves: readonly FeatureSave[]): string {
   const save = saves.find((candidate) => candidate.throwId === entry.id);
   return save ? `${entry.detail} · half on a successful ${abbreviate(save.ability)} save` : entry.detail;
@@ -699,15 +577,7 @@ export function describeFeatureSave(save: FeatureSave): string {
   return save.conditions?.length ? `${save.label} → ${save.conditions.join(', ')}` : save.label;
 }
 
-/* -------------------------------------------------------------------------- *
- * What a failure does
- * -------------------------------------------------------------------------- */
-
-/**
- * The four ways both printings word a failure. The `or` clause has to be anchored to the save it
- * belongs to, and it skips the mitigation phrase: "on a failed save or half as much damage" is the
- * `halvesDamage` reading, not an effect.
- */
+/** The `or` clause is anchored to its save and skips the mitigation phrase. */
 const FAILURE_CLAUSES = [
   /^[^.•]*?\bsaving\s+throw\b[^.•]*?,?\s+\bor\s+(?!half as much)/i,
   /\bon a (?:failed (?:save|saving throw)|failure),\s+(?!or\b)/i,
@@ -715,11 +585,7 @@ const FAILURE_CLAUSES = [
   /\bunless the save succeeds,\s+/i
 ];
 
-/**
- * A part of the clause that says nothing but how much damage. The subject has to lead it — "it is
- * turned for 1 minute or until it takes any damage" is an effect that mentions damage, not a damage
- * phrase.
- */
+/** The subject has to lead it, or an effect mentioning damage reads as one. */
 const DAMAGE_PART = /^(?:(?:it|a creature|the (?:target|creature|attacker))\s+)?(?:takes?|taking)\b.*\bdamage\b/i;
 
 /** The damage is already a throw, so what is left of the clause is what the save does. */
@@ -731,12 +597,7 @@ function withoutDamage(clause: string): string | undefined {
   return effect && !effect.endsWith(':') ? effect : undefined;
 }
 
-/**
- * What a failed save does. 2014 writes "or be stunned until the end of your next turn" and 2024
- * puts it in a sentence of its own, which can be two sentences down: Shadow Lore states what a
- * success does first. The window a caller passes ends at the next save, so a feature with two never
- * reads one's clause for the other.
- */
+/** The caller's window ends at the next save, so two never read each other's clause. */
 function readFailureEffect(window: string): string | undefined {
   for (const pattern of FAILURE_CLAUSES) {
     const match = pattern.exec(window);
@@ -780,16 +641,7 @@ function readSaves(text: string): Array<{ ability: keyof AbilityScores; at: numb
   return dropRestatedSaves(text, found);
 }
 
-/**
- * The same ability twice is not always the same save.
- *
- * A feature restates the throw it just called for all the time ("on a failed Constitution saving
- * throw, …"), and counting that twice puts two identical rows on the sheet. But Wild Surge's
- * table imposes a Constitution save on its first effect and a different one, "or be blinded", on
- * its eighth, and deduping on the ability folded the second into the first and lost the condition.
- * So the clause is what is compared: a repeat that says nothing the earlier one did not is the
- * same save said again.
- */
+/** Deduped on the clause, not the ability: Wild Surge imposes two Constitution saves. */
 function dropRestatedSaves(
   text: string,
   found: Array<{ ability: keyof AbilityScores; at: number }>
@@ -809,13 +661,7 @@ function dropRestatedSaves(
   });
 }
 
-/**
- * Every saving throw a feature calls for, in the order it names them.
- *
- * The other half of `deriveSpellAttackOrSave` for features. There is no attack half: no feature in
- * either printing rolls an attack of its own — the ones that mention one are talking about the
- * attack the character was already making.
- */
+/** No attack half: no feature in either printing rolls an attack of its own. */
 export function deriveFeatureSaves(
   feature: Pick<Feature, 'description'> & { name?: string },
   context: FeatureContext = {}

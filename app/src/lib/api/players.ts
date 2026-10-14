@@ -1,10 +1,7 @@
 import { api } from './client';
 import type { Player, PlayerWritePayload } from './types';
 
-/**
- * Campaign seats. `campaign_id` is required on the list route — a request without one used to
- * mean "every player on the server", which is the cross-campaign leak the server now refuses.
- */
+/** `campaign_id` is required: without one this meant every player on the server. */
 export async function listPlayers(campaignId: number): Promise<Player[]> {
   return await api.get<Player[]>(`/api/players?campaign_id=${encodeURIComponent(campaignId)}`);
 }

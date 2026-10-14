@@ -1,13 +1,4 @@
-// The Kids on Bikes export: the publisher's own sheet with the character's answers drawn onto it.
-//
-// The PDF is a flat scan with no AcroForm fields, so `pdf-lib` writes text at points on the page
-// rather than filling anything. Everything below the coordinate table is positions — what goes in
-// each blank comes from `generated.ts` and the character, never from a list written here.
-//
-// The geometry: the line-art layer is placed by the page's own content stream as
-// `q 430.65 0 0 637.49 10.77 21.28 cm /I5 Do Q`, so a pixel of that 1574 x 2330 image maps to
-// `x = 10.77 + px * 430.65/1574` and `y = 21.28 + (2330 - py) * 637.49/2330`. Every rule and every
-// checkbox in the table was measured off the image's alpha channel at those numbers.
+// A flat scan with no AcroForm, so text is drawn at measured points. See docs/rules/kids-on-bikes.md.
 import {
   freeStrengthForAge,
   fullName,
@@ -77,11 +68,7 @@ const STRENGTH_BOXES: Record<string, { x: number; y: number }> = {
   wealthy: { x: 156.6, y: 157.7 },
 };
 
-/**
- * The standard fonts encode WinAnsi, and a codepoint outside it makes `drawText` throw — which
- * would fail the whole export over one character somebody typed. Curly punctuation is inside it
- * and survives; anything else is dropped.
- */
+/** A codepoint outside WinAnsi would throw and fail the whole export, so it is dropped. */
 const winAnsi = (value: string) =>
   [...value]
     .filter((ch) => {
@@ -120,10 +107,7 @@ const checkedStrengthIds = (character: KobCharacter) => {
 
 const bikeLabel = (character: KobCharacter) => character.bike.name.trim();
 
-/**
- * Greedy wrap across the lines a field was given. Anything past the last line is dropped: the
- * sheet is a fixed page, and a value that will not fit is the player's to shorten.
- */
+/** Past the last line is dropped: the page is fixed, so an overlong value is the player's. */
 function wrapAcross(
   text: string,
   lines: readonly SheetLine[],

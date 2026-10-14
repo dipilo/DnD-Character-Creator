@@ -1,10 +1,5 @@
 #!/usr/bin/env node
-// Database backup and migration utility.
-//
-// Runs through the same libsql client the server uses (MERGE_PLAN.md §5.5: there is one DB code
-// path, not two). That matters for the SQL dump — it now dumps whatever database the server
-// actually talks to, including a remote Turso one, where the old better-sqlite3 version could
-// only ever read a local file that production does not have.
+// Uses the server's own libsql client, so a dump reaches a remote Turso database too.
 const fs = require('node:fs');
 const path = require('node:path');
 const { createClient } = require('@libsql/client');

@@ -3,12 +3,7 @@ const db = require('../db');
 
 const router = express.Router();
 
-// Health check endpoint for monitoring.
-//
-// Mounted at `/api/health` as well because that is the only prefix the client can reach: Vercel
-// rewrites `/api/*` and `/auth/*` to this host and nothing else, so a browser asking for `/health`
-// gets the SPA's index.html back. The keep-alive ping uses it to hold a free-tier host awake
-// (`.github/workflows/keepalive.yml`, `store/backendKeepAlive.ts`), so it touches no database.
+// Also at `/api/health`: only `/api/*` and `/auth/*` reach this host. Touches no database.
 const health = (req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json({
@@ -21,11 +16,7 @@ const health = (req, res) => {
 router.get('/health', health);
 router.get('/api/health', health);
 
-  // Lightweight DB diagnostics, gated on DIAG_TOKEN.
-  //
-  // This answers with the database URL and every table's schema, so an unset token used to mean
-  // "publish it": the route was live and unauthenticated on the deployed host. Absent or wrong
-  // both read as 404 rather than 403, for the same reason a character id does.
+  // Gated on DIAG_TOKEN; absent or wrong both read as 404, as a character id does.
   router.get('/diag/db', async (req, res) => {
     try {
       const token = process.env.DIAG_TOKEN || process.env.DIAGNOSTIC_TOKEN;

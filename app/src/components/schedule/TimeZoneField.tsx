@@ -17,14 +17,7 @@ const LOCAL_OPTION: ComboboxSuggestion = {
   keywords: ['device', 'browser', 'here'],
 };
 
-/**
- * Pick an IANA zone by the name people actually use for it. The list is searched by abbreviation
- * and offset as well as by id, so "CST", "-06" and "Chicago" all reach America/Chicago, and the
- * offset is shown under each option because the id alone does not say what it means.
- *
- * Free text still saves: the server stores whatever it is given, and an unrecognised zone is a
- * problem to surface rather than a value to refuse mid-typing.
- */
+/** Searched by abbreviation and offset too; free text still saves, to be surfaced not refused. */
 export function TimeZoneField({ id, value, onChange, placeholder, allowLocal = false }: TimeZoneFieldProps) {
   // Offsets are seasonal, so the clock is read once per mount rather than during a render.
   const options = useMemo(() => {

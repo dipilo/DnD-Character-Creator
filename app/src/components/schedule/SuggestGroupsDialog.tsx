@@ -27,14 +27,7 @@ function toDateInputValue(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
-/**
- * Propose a split of the roster across a date window.
- *
- * The server's algorithm is a greedy round-robin over how much availability each player has in the
- * window — good enough to start from, not good enough to apply unseen. So the proposal is shown
- * first and only written when it is accepted, and players with no availability at all in the
- * window are called out, because they are the ones the algorithm places arbitrarily.
- */
+/** Shown before it is written; players with no availability are called out. */
 export function SuggestGroupsDialog({ campaignId, open, onOpenChange, onSaved }: Readonly<SuggestGroupsDialogProps>) {
   const today = new Date();
   const [numGroups, setNumGroups] = useState('2');

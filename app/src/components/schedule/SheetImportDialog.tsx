@@ -33,14 +33,7 @@ interface SheetImportDialogProps {
   onImported: () => void;
 }
 
-/**
- * Google's own "make a copy" URL, which only exists for a document's *own* id.
- *
- * A published form (`/forms/d/e/<token>/viewform`) and a `forms.gle` short link both carry a
- * response token rather than the document id, so neither can become a `/copy`. The suffix swap
- * this replaced silently returned those unchanged, sending the DM to fill in the deployment's
- * live form instead of copying it. They link through as-is and the button says so.
- */
+/** A published form carries a response token, not a document id, so it has no `/copy`. */
 function toCopyUrl(url: string): { href: string; copyable: boolean } {
   const match = /^(https:\/\/docs\.google\.com\/(?:spreadsheets|forms|document)\/d\/)(?!e\/)([\w-]{20,})/.exec(url);
   if (!match) return { href: url, copyable: false };
@@ -146,13 +139,7 @@ function PlanSummary({ preview }: Readonly<{ preview: SheetPreview }>) {
   );
 }
 
-/**
- * Copy a template, paste the sheet, check the mapping, look at what it will do, then do it.
- *
- * The preview step is not decoration. The importer this replaced wrote immediately and keyed seats
- * off the sheet's row index, so a mistake was discovered by finding someone else's roster gone.
- * Nothing here writes until the DM has seen a plan naming every seat it would touch.
- */
+/** Nothing writes until the DM has seen a plan naming every seat it would touch. */
 export function SheetImportDialog({ campaignId, open, onOpenChange, onImported }: Readonly<SheetImportDialogProps>) {
   const [template, setTemplate] = useState<SheetIntakeTemplate | null>(null);
   const [sheetUrl, setSheetUrl] = useState('');

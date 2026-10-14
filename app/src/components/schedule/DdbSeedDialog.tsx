@@ -1,9 +1,4 @@
-// Seed a builder character from a seat's legacy D&D Beyond blob (MERGE_PLAN.md Phase 5).
-//
-// `players.ddb_json` was the scheduler's character storage. Phase 5 replaces it with a real link to
-// a builder character, so this is the way out for the blobs that already exist: read what can be
-// matched, say plainly what cannot, and hand the rest to the builder. It never writes a character —
-// it starts one, which is the difference between seeding and converting.
+// Starts a character rather than converting one: unmatched content is said plainly.
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, X } from 'lucide-react';

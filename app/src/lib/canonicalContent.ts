@@ -204,9 +204,12 @@ export const backgroundSchema: z.ZodType<Background> = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
   skillProficiencies: z.array(z.string().min(1)),
+  skillChoices: z.array(z.string().min(1)).optional(),
+  skillChoiceCount: z.number().int().nonnegative().optional(),
   toolProficiencies: z.array(z.string().min(1)).optional(),
   languageCount: z.number().int().nonnegative().optional(),
   abilityScoreIncreases: z.array(abilityScoreIncreaseSchema).optional(),
+  grantedFeatNames: z.array(z.string().min(1)).optional(),
   equipment: z.array(equipmentOptionSchema),
   feature: z.object({
     name: z.string().min(1),

@@ -1,26 +1,10 @@
-/**
- * Text out of a PDF, with the coordinates intact.
- *
- * The Kids on Bikes rulebook is the second source document beside the Obsidian vault: the vault
- * has no note for the appendices, and they are what the Pre-Game Form and the Powered Character
- * need. Its `/Encrypt` dictionary is an owner password only (`/V 4 /R 4`), so pdf.js opens it with
- * the empty user password like any other reader — the "incorrect header check" a hand-rolled
- * `zlib.inflateSync` reports is the standard security handler on that file and `DCTDecode` image
- * streams on the three sheet PDFs, never a password nobody has.
- *
- * Coordinates matter because the appendices are set in two columns and every one of them numbers
- * 1-6 down the left and 7-12 down the right. Reading a page as a stream of lines interleaves the
- * two, so a table read that way mis-assigns half its entries and nothing errors.
- */
+// PDF text with coordinates: the appendices are two-column, so lines alone interleave.
 import fs from 'node:fs';
 
 /** Items closer than this on the y axis are the same line. Body text here is set on ~11pt leading. */
 const LINE_TOLERANCE = 2.5;
 
-/**
- * A gap this wide is a space. It is deliberately small: the typesetter breaks words across items
- * ("a rela" + "tionship with"), and inserting a space at every item boundary is what splits them.
- */
+/** Deliberately small: the typesetter breaks words across items ("a rela" + "tionship"). */
 const SPACE_GAP = 1.2;
 
 export async function readPdf(file) {
@@ -61,10 +45,7 @@ export async function readAllPages(file) {
   return await readPages(doc, 1, doc.numPages);
 }
 
-/**
- * Group positioned runs into lines, top to bottom. `text` is joined on the measured gap rather
- * than on the item boundary, so a word the typesetter split across two runs stays one word.
- */
+/** Joined on the measured gap, so a word split across runs stays one word. */
 export function toLines(items) {
   const rows = [];
   for (const item of [...items].sort((a, b) => b.y - a.y || a.x - b.x)) {
@@ -85,17 +66,7 @@ export function toLines(items) {
   }).filter((line) => line.text !== '');
 }
 
-/**
- * Split a page down a vertical rule and read each side on its own.
- *
- * A run belongs to the column it *starts* in, never the one its midpoint lands in. Left-column
- * text is set right up to the gutter — the soft hyphen ending "deck manipu-" sits at x=197.6 on a
- * 442.8pt page — and a heading that spans both columns starts in the left one, which is where a
- * reader takes it from.
- *
- * `splitX` is a page coordinate, not a fraction, because these pages are not set on a centred
- * gutter: Appendix K's second column starts well right of the middle.
- */
+/** A run belongs to the column it *starts* in; `splitX` is a coordinate, not a fraction. */
 export function toColumns(items, splitX) {
   return [
     toLines(items.filter((item) => item.x < splitX)),
@@ -106,13 +77,7 @@ export function toColumns(items, splitX) {
 /** How far left of the right column the split sits. One em at the body size these pages use. */
 const GUTTER_MARGIN = 10;
 
-/**
- * Where the gutter is, measured from the runs rather than assumed.
- *
- * `starts` are the x positions of runs that are known to begin a column's rows — a bullet, a
- * number. The widest gap between two of them is the gutter, and the split sits just left of the
- * right column so that a left-column run reaching towards it still lands on its own side.
- */
+/** The widest gap between row-opening runs, split just left of the right column. */
 export function splitBetweenColumns(starts, fallback) {
   const sorted = [...new Set(starts)].sort((a, b) => a - b);
   if (sorted.length < 2) return fallback;

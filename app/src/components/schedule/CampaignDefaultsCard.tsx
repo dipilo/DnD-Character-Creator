@@ -30,18 +30,10 @@ interface CampaignDefaultsCardProps {
   readonly onCampaignChange: (campaign: Campaign) => void;
 }
 
-/**
- * The two things a table decides once and applies to everyone who arrives afterwards: which game
- * it plays, and what a new member is allowed to do.
- *
- * Defaults apply *on the way in*, never retroactively — changing them cannot silently re-grant or
- * revoke anything for people already at the table, whose rows the Members grid edits directly.
- */
+/** Defaults apply on the way in, never retroactively. */
 function DefaultsForm({ campaign, canEdit, onCampaignChange }: Readonly<CampaignDefaultsCardProps & { campaign: Campaign }>) {
   const [systemId, setSystemId] = useState<GameSystemId>(getGameSystem(campaign.system_id).id);
-  // A campaign that has never said reads as the built-in default here, not as nothing: toggles
-  // shown all-off next to a server floor that grants three rights is how an owner "saves" the
-  // defaults and silently revokes them.
+  // Shown as the built-in default, or an owner "saves" toggles the server floor grants.
   const [memberDefaults, setMemberDefaults] = useState<CampaignPermissions>(
     () => (campaign.default_member_permissions
       ? parsePermissionBlob(campaign.default_member_permissions)

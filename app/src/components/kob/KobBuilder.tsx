@@ -1,8 +1,4 @@
-// The Kids on Bikes creation screens, with no idea where the character is stored.
-//
-// Extracted from `KobBuilderPage` for the reason `KobSheetView` was extracted from `KobSheetPage`:
-// a GM editing a player's character holds no local copy, so the same screens have to write through
-// `useRemoteCharacter` instead of the store. Every edit is one `onChange` patch, as on the sheet.
+// Store-agnostic, so a GM editing someone else's character uses the same screens.
 import type { ReactNode } from 'react';
 import { Info } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

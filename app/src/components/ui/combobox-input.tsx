@@ -26,9 +26,7 @@ interface ComboboxInputProps extends Readonly<Omit<ComponentProps<typeof Input>,
   readonly value: string
   readonly onChange: (value: string) => void
   readonly suggestions: readonly ComboboxSuggestion[]
-  // When true (default), value is treated as a comma-separated list and
-  // suggestions filter/insert against the segment currently being typed.
-  // When false, suggestions match and replace the entire value.
+  // True treats the value as a comma list and matches the segment being typed; false, the whole.
   readonly multiValue?: boolean
   readonly maxSuggestions?: number
   // Overrides the default commit behavior (CSV append / whole-value replace)
@@ -48,11 +46,7 @@ interface ListPlacement {
 
 const DEFAULT_PLACEMENT: ListPlacement = { above: false, maxHeight: MAX_LIST_HEIGHT }
 
-/**
- * Where the suggestion list fits, read from the *visual* viewport — the one an on-screen keyboard
- * shrinks. Sizing it to a constant put most of the list behind the keyboard on a phone, which
- * reads as a list that cannot be scrolled rather than one that was never on screen.
- */
+/** From the *visual* viewport: a constant put the list behind the on-screen keyboard. */
 function placementFor(anchor: HTMLElement | null): ListPlacement {
   if (!anchor) return DEFAULT_PLACEMENT
   const rect = anchor.getBoundingClientRect()

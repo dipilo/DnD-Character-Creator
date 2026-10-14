@@ -1,12 +1,4 @@
-// What a level-up has granted and nobody has chosen yet, with a link straight to the step that
-// chooses it.
-//
-// Shown on the sheet and at the top of the builder, from one derivation, so raising a level in
-// either place says the same thing about what is now outstanding.
-//
-// It opens closed once there is more than a handful: a fifth-level Warlock with nothing chosen has
-// eleven of these, and a card that long is the whole first screen of the sheet — the count in the
-// summary line is the part that has to be seen.
+// One derivation for the sheet and the builder; opens closed past a handful.
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,10 +11,7 @@ const ALWAYS_OPEN_UP_TO = 3;
 
 interface AdvancementTasksProps {
   readonly tasks: readonly AdvancementTask[];
-  /**
-   * How a link is followed. The sheet has to load the character into the builder first, so it
-   * passes a handler; the builder is already there and gets a plain link.
-   */
+  /** The sheet passes a handler, since it must load the character first; the builder links. */
   readonly onOpen?: (href: string) => void;
   readonly title?: string;
 }

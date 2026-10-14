@@ -1,13 +1,4 @@
-/**
- * The Powered Character (Kids on Bikes, chapter 5): the character the GM introduces and the whole
- * table co-controls.
- *
- * Two things make this a server concern rather than another client document. The GM "will also
- * secretly establish at least one Fear... placing it face down in the center of the table", and
- * may hold Aspects back "for the element of surprise" — so what a player is allowed to see is a
- * boundary, and `redactForPlayers` is where it lives. And "any player may activate any Aspect",
- * so every member writes the play state while only the campaign's owner writes the document.
- */
+/** A server concern: what a player may see is a boundary, and every member writes play state. */
 
 const ID = /^[A-Za-z0-9_-]{1,64}$/;
 
@@ -33,10 +24,7 @@ function wholeNumber(value, fallback = 0) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-/**
- * The six stats and their dice. The stat ids and the die faces are the client's — they come out of
- * the imported content — so the shape is bounded here and the values are not interpreted.
- */
+/** The ids and faces are the client's, so the shape is bounded and the values are not read. */
 function normaliseStats(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
   const stats = {};
@@ -109,13 +97,7 @@ function parseDocument(row) {
   }
 }
 
-/**
- * What a player at the table may see.
- *
- * A hidden Aspect and an unrevealed Fear are removed rather than flagged, because a flag carrying
- * the text is not hidden at all. The counts stay, because the table knows a face-down card is
- * there — that is what putting it in the middle of the table means.
- */
+/** Hidden cards are removed, not flagged; the counts stay, because the table sees them. */
 function redactForPlayers(document) {
   const aspects = document.aspects.filter((aspect) => !aspect.hidden);
   const revealed = document.fears.filter((fear) => fear.revealed);
@@ -140,13 +122,7 @@ function publicPoweredCharacter(row, isOwner) {
   };
 }
 
-/**
- * Apply a player's move to the stored document: how many Power Tokens the table has spent, and
- * which Aspects are turned sideways and in front of whom.
- *
- * Only these fields, and only on Aspects that already exist. Everything else — the text, the
- * stats, what is hidden — is the GM's, and a play patch naming one silently changes nothing.
- */
+/** Only these fields, and only on existing Aspects; everything else is the GM's. */
 function applyPlayPatch(document, patch) {
   if (!patch || typeof patch !== 'object' || Array.isArray(patch)) return { error: 'patch_must_be_an_object' };
   const next = { ...document, aspects: document.aspects.map((aspect) => ({ ...aspect })) };

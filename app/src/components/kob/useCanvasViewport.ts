@@ -17,14 +17,7 @@ interface PointerState {
   clientY: number;
 }
 
-/**
- * Pan and zoom for the backpack board.
- *
- * One finger on the background pans, two pinch, the wheel zooms about the cursor. It is pointer
- * events throughout rather than separate mouse and touch paths, because CLAUDE.md's rule about
- * touch having no hover and no modifiers applies here as much as anywhere: the same gesture has to
- * work with a thumb and with a trackpad, and a phone in landscape gets no second control strip.
- */
+/** Pointer events throughout, so one gesture works with a thumb and a trackpad alike. */
 export function useCanvasViewport(surface: React.RefObject<HTMLElement | null>) {
   const [viewport, setViewport] = useState<Viewport>({ x: 0, y: 0, scale: 1 });
   const pointers = useRef(new Map<number, PointerState>());

@@ -1,15 +1,4 @@
-// A character read straight from the server rather than out of a local cache, and written back
-// the same way.
-//
-// The owner's own sheets do not come through here: they live in `characterStore`, and
-// `characterSync` is what pushes them. This is the other case sharing created — a GM or a
-// party-mate who was granted edit access holds no local copy at all, so the document *is* the
-// server's and every edit is a `PUT` against the version last seen.
-//
-// Writes are coalesced. A spell-slot row is a dozen clicks in a few seconds and each one is a
-// whole-document write, so a patch renders at once and is pushed after a pause. The bookkeeping
-// (id, version, whether anything is owed) sits in a ref because it is not what the screen shows;
-// what the screen shows is `draft`, which is ordinary state.
+// For a granted editor, who holds no local copy: every edit is a `PUT`, coalesced.
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getCharacter, getSharedCharacter, isConflict, updateCharacter } from '@/lib/api';
 import type { CharacterRecord, StoredCharacterDocument } from '@/lib/api';
@@ -25,10 +14,7 @@ export interface RemoteCharacterState {
   error: string | null;
   loading: boolean;
   saving: boolean;
-  /**
-   * Apply a sheet patch. Handing this to a sheet view is what makes it editable, so a caller that
-   * may only read simply does not pass it on.
-   */
+  /** Passing this is what makes a sheet editable, so a reader simply does not get it. */
   applyPatch: (patch: Partial<StoredCharacterDocument>) => void;
   /** Set when the server refused a write because someone else saved. The edit is still held. */
   conflict: RemoteCharacterConflict | null;
@@ -58,17 +44,12 @@ interface SyncState {
   version: number;
   document: StoredCharacterDocument;
   dirty: boolean;
-  /**
-   * The document as the server last had it at `version`. It is what makes a merge possible: without
-   * it, "what did I change" is unanswerable and every conflict is a choice between two whole sheets.
-   */
+  /** What makes a merge possible: without it "what did I change" is unanswerable. */
   base: StoredCharacterDocument;
 }
 
 export function useRemoteCharacter(source: RemoteCharacterSource): RemoteCharacterState {
-  // Destructured to primitives on purpose. A caller passes an object literal, so depending on
-  // `source` itself re-ran the load effect on *every* render — which cleared the pending edit and
-  // refetched the document a moment after each click, so nothing was ever pushed.
+  // Depending on `source` itself re-ran the load on every render and cleared the edit.
   const kind = source.kind;
   const locator = source.kind === 'id' ? source.id : source.token;
   const key = `${kind}:${locator}`;
@@ -105,9 +86,7 @@ export function useRemoteCharacter(source: RemoteCharacterSource): RemoteCharact
       }
       setLoaded((current) => (current?.record ? { ...current, record: { ...current.record, ...saved }, error: null } : current));
     } catch (e) {
-      // A 409 means the sheet was written somewhere else since it was read. The local edit stays
-      // owed and nothing retries on its own: which version wins is the player's answer to give,
-      // and the refusal carries the other writer's copy to show them.
+      // Nothing retries: which version wins is the player's answer, and 409 carries the other.
       const theirs = conflictingRecord(e);
       if (theirs) {
         // Two people spending slots on one sheet is not a disagreement, so a conflict confined to

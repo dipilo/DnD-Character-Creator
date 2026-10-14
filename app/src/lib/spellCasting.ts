@@ -1,9 +1,4 @@
-/**
- * Which slot a cast can come out of, and which class it is cast as.
- *
- * Lifted out of `SheetSpellsPanel` when the Actions table started casting too: two screens deciding
- * separately what "the lowest slot that can carry this spell" means is two answers to one question.
- */
+/** One answer to "the lowest slot that can carry this", for both screens that ask. */
 import { getSlotsUsed, setPactSlotsUsed, setSpellSlotsUsed, startConcentration } from '@/lib/sheetPlayState';
 import { deriveSpellAttackOrSave } from '@/lib/spellFacets';
 import { rollD20 } from '@/lib/d20Rolls';
@@ -42,11 +37,7 @@ export function castableSlots(
   return slots;
 }
 
-/**
- * The class a spell is cast as. `character.spells` records no class, so a multiclass caster has no
- * stored answer: the strongest attack bonus is used and the roll is labelled with the class it came
- * from, which keeps the choice visible rather than silent.
- */
+/** No stored answer, so the strongest bonus is used and the roll says which class. */
 export function primaryCastingStat(castingStats: readonly DerivedSpellcastingStats[]) {
   return castingStats.reduce<DerivedSpellcastingStats | undefined>(
     (best, stat) => (best && best.attackBonus >= stat.attackBonus ? best : stat),
@@ -68,11 +59,7 @@ export function spendSlot(
     : setSpellSlotsUsed(character, slot.level, used, total);
 }
 
-/**
- * Casting is the slot and the throw together: spending a slot without rolling the attack the spell
- * states leaves the player hunting for the number elsewhere on the sheet. A spell that makes no
- * attack throws nothing here, which is why Magic Missile only spends its slot.
- */
+/** A spell that makes no attack throws nothing, so Magic Missile only spends its slot. */
 export function rollSpellAttack(spell: Spell, castingStat: DerivedSpellcastingStats | undefined): void {
   const attack = deriveSpellAttackOrSave(spell).find((facet) => facet.kind === 'attack');
   if (!attack || !castingStat) return;
@@ -83,13 +70,7 @@ export function rollSpellAttack(spell: Spell, castingStat: DerivedSpellcastingSt
   });
 }
 
-/**
- * Everything a cast writes: the slot it spends, and the concentration it takes up.
- *
- * A character concentrates on one spell, so casting a second replaces the first — which is a rule
- * about casting rather than about either spell, and belongs here with the rest of them. A cantrip
- * spends no slot and can still hold concentration, which is why the slot is optional.
- */
+/** Casting a second concentration spell replaces the first; a cantrip spends no slot. */
 export function castPatch(
   character: Character,
   spell: Pick<Spell, 'id' | 'name' | 'concentration'> | undefined,

@@ -1,6 +1,4 @@
-// The content the Discord bot may look up: the SRD-derived Basic Rules packs only. The book
-// dumps under imports/ (Tasha's, Xanathar's, MotM) are the owner's own scans for their own
-// builder and are not served to arbitrary Discord servers through this surface.
+// SRD packs only: the book dumps under imports/ are not served to Discord servers.
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -92,10 +90,7 @@ function summary(kind, entry) {
   };
 }
 
-/**
- * Read the allowed packs once. A pack that is missing or unreadable is skipped rather than
- * fatal — the route then answers from whatever loaded, and an empty library is an empty result.
- */
+/** A missing or unreadable pack is skipped rather than fatal. */
 function loadLibrary() {
   if (library) return library;
   const byKind = Object.fromEntries(Object.keys(KINDS).map((kind) => [kind, []]));
@@ -127,10 +122,7 @@ function rank(key, query) {
   return -1;
 }
 
-/**
- * Name search. Exact beats prefix beats word-prefix beats substring; ties go to the newer
- * edition, then alphabetically. Both editions of a name are returned unless one is asked for.
- */
+/** Ties go to the newer edition, then alphabetically; both editions unless one is asked. */
 function searchContent(kind, query, { limit = MAX_RESULTS, edition = '' } = {}) {
   const rows = loadLibrary()[kind];
   if (!rows) return null;

@@ -1,12 +1,4 @@
-/**
- * Expertise, read from the feature's own sentences.
- *
- * Both printings say the same thing four ways — 2014 doubles the proficiency bonus, 2024 names a
- * glossary term — and three features double the bonus without granting Expertise at all: the 2014
- * Ranger's favoured terrain, Draconic Ancestry's dragons and the Dwarf's stonework. A feature that
- * states a condition grants nothing here, exactly as a feature stating no timing lands in no
- * action group.
- */
+// Expertise from the feature's sentences; a conditional doubling grants none.
 import type { Feature } from '@/types/dnd';
 
 /** A single grant, which a character resolves into picks. */
@@ -19,10 +11,7 @@ export interface ExpertiseGrant {
   level: number;
   /** Whether the feature lets one pick be a tool ("or your proficiency with thieves' tools"). */
   allowsTools: boolean;
-  /**
-   * The skills the feature names, where it names any. A grant with a list is chosen from that
-   * list; one without is chosen from the character's own skill proficiencies.
-   */
+  /** With a list, chosen from it; without, from the character's own proficiencies. */
   optionSkills?: readonly string[];
   /** Named outright rather than chosen — the Scout's Nature and Survival. */
   fixed?: readonly string[];
@@ -75,10 +64,7 @@ const NUMBER_WORDS: Readonly<Record<string, number>> = {
   four: 4,
 };
 
-/**
- * A clause that limits the doubling to some checks is not Expertise. The books write the limit as
- * a "when/while/whenever … related to" clause next to the doubling, never as a bare sentence.
- */
+/** The books write the limit beside the doubling, never as a bare sentence. */
 const CONDITIONAL_PATTERNS: readonly RegExp[] = [
   /\b(?:when|whenever|while)\b[^.]*\b(?:proficiency bonus is doubled|double your proficiency bonus|add double)/i,
   /\bproficiency bonus is doubled\b[^.]*\b(?:if you are using|if it applies|related to)\b/i,
@@ -88,12 +74,7 @@ const CONDITIONAL_PATTERNS: readonly RegExp[] = [
 /** The 2024 wording, which names the glossary term, and the 2014 one, which states the maths. */
 const GRANTS_EXPERTISE = /\bgain(?:s)? expertise\b|\byou have expertise\b|\bproficiency bonus is (?:now )?doubled\b/i;
 
-/**
- * "choose two of your skill proficiencies", "gain Expertise (see the rules glossary) in two of
- * your skill proficiencies". The 2014 Rogue's second grant writes "two more of your proficiencies
- * (in skills or with thieves' tools)", so the word "skill" is not always on the noun — the
- * sentence has to name skills somewhere, which is what keeps a tool-only grant out.
- */
+/** The sentence has to name skills somewhere, which keeps a tool-only grant out. */
 const OPEN_CHOICE = /(?:choose|gain(?:s)? expertise(?:\s*\([^)]*\))?\s+in)\s+(one|two|three|four|another)\b[^.]*?\b(?:skill )?proficiencies?\b/gi;
 
 const MENTIONS_SKILL = /\bskills?\b/i;
@@ -121,10 +102,7 @@ function parseCount(word: string): number {
   return NUMBER_WORDS[word.toLowerCase()] ?? 1;
 }
 
-/**
- * "another two" and "two more" are the same grant restated at a later level, so the count comes
- * from the number beside the word rather than from the word itself.
- */
+/** A restatement at a later level, so the count comes from the number beside the word. */
 function countFrom(sentence: string, word: string): number {
   const pair = /\b(?:another|more)\s+(one|two|three|four)\b|\b(one|two|three|four)\s+more\b/i.exec(sentence);
   if (pair) {
@@ -155,10 +133,7 @@ export function isConditionalDoubling(text: string): boolean {
   return CONDITIONAL_PATTERNS.some((pattern) => pattern.test(text));
 }
 
-/**
- * Every Expertise grant a feature states. A feature that only doubles the bonus under a condition
- * returns none, and so does one that never mentions Expertise.
- */
+/** None for a conditional doubling, and none for a feature never mentioning Expertise. */
 export function deriveExpertiseGrants(feature: Pick<Feature, 'id' | 'name' | 'description' | 'level'>): ExpertiseGrant[] {
   const text = feature.description ?? '';
   if (!text.trim()) {
@@ -236,13 +211,7 @@ export function deriveExpertiseGrants(feature: Pick<Feature, 'id' | 'name' | 'de
 
 const fold = (value: string) => value.trim().toLowerCase();
 
-/**
- * Every grant the character has reached, with what they picked and what they may still pick.
- *
- * A grant below the level held is left out rather than offered early, and a pick is dropped when
- * the character stops being proficient in it — Expertise doubles a proficiency, so a pick that
- * names one they no longer hold doubles nothing.
- */
+/** A grant below the level held is not offered; a pick they no longer hold is dropped. */
 export function resolveCharacterExpertise(
   sources: readonly ExpertiseSource[],
   proficiencies: ExpertiseProficiencies,
@@ -326,10 +295,7 @@ export interface ExpertiseClassLike {
   level: number;
 }
 
-/**
- * Every feature that could state Expertise, with the level it is measured against. A subclass
- * feature is held at its class's level, because that is the level its own clauses count.
- */
+/** A subclass feature is held at its class's level, which its own clauses count. */
 export function collectExpertiseSources(classes: readonly ExpertiseClassLike[]): ExpertiseSource[] {
   const sources: ExpertiseSource[] = [];
   for (const entry of classes) {

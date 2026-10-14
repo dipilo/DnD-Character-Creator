@@ -211,10 +211,7 @@ export function ReviewPage() {
     try {
       const imageDataUrl = await readFileAsDataUrl(file);
       if (target === 'portrait') {
-        // `avatar` predates `portrait` and every reader falls back to it, so a document that has
-        // a portrait must not carry a second copy of the same data URL. Writing both doubled the
-        // stored sheet to 217 KB, which is what put the document read past the database's
-        // statement deadline and 500'd every character with a picture on it.
+        // `avatar` is the fallback, so writing both doubled the sheet and stalled the read.
         updateIdentityField({
           portrait: { ...character.portrait, imageDataUrl },
           avatar: undefined
@@ -289,9 +286,7 @@ export function ReviewPage() {
 
     addCharacter(nextCharacter);
 
-    // Started from a campaign, so it takes that seat as soon as the server has it. The seat is
-    // recorded as an intent rather than written now: the character has only just been created
-    // locally and may not have synced yet, and the builder has to work signed out (Phase 5).
+    // Recorded as an intent: the character may not have synced, and the builder works offline.
     const { forCampaignId, forPlayerId, forCampaignName } = builderState;
     if (forCampaignId) {
       setPendingSeat(nextCharacter.id, { campaignId: forCampaignId, playerId: forPlayerId ?? null });
@@ -362,6 +357,7 @@ export function ReviewPage() {
       abilityScoreChoiceModes: character.abilityScoreChoiceModes,
       abilityScoreChoiceSelections: character.abilityScoreChoiceSelections,
       backgroundLanguageSelections: character.backgroundLanguageSelections,
+      backgroundSkillSelections: character.backgroundSkillSelections,
       speciesLanguageSelections: character.speciesLanguageSelections,
       toolProficiencySelections: character.toolProficiencySelections,
       multiclassSkillSelections: character.multiclassSkillSelections,

@@ -1,15 +1,4 @@
-/**
- * The Kids on Bikes appendices the Obsidian vault has no note for.
- *
- * Appendices C-J are in the vault and are read from there; A, B and K are not, and they are what
- * the Pre-Game Form and the Powered Character need. The rulebook PDF is the source document for
- * those three, on the same terms as the vault: nothing here is transcribed, a gap is reported
- * rather than filled in, and a defect in the book is reported rather than corrected.
- *
- * Every one of these pages is set in two columns, and each numbered table runs 1-n down the left
- * and the rest down the right. Read as a stream of lines the two interleave, which mis-assigns
- * half of every table and errors nowhere, so the split is made on the runs' own x positions.
- */
+// Appendices A, B and K from the rulebook PDF; split by run x, since the pages are two-column.
 import { toLines, toColumns, splitBetweenColumns } from './pdfText.mjs';
 
 /** Anything below this is the page number and the watermark the publisher stamps on every page. */
@@ -27,12 +16,7 @@ const LIST_HEADING = /^(.+?\bList)\s*\S?$/;
 
 const RULE_LINE = /^_+$/;
 
-/**
- * A printed book navigates by page and the app has none, so "the Content Warning list on the next
- * page" points at nothing — the list is a control on the same screen. Only the locator goes: the
- * sentence still names something the reader can find, which is what separates this from
- * `dropSectionPointers` cutting a sentence whose target does not exist at all.
- */
+/** Only the locator goes: the sentence still names something the reader can find. */
 const PAGE_POINTER = /\s+on (?:the (?:next|previous|opposite|following) page|pages? \d+(?: and \d+)?)/gi;
 
 function slug(text) {
@@ -49,10 +33,7 @@ function bodyLines(page) {
   return toLines(page.items.filter((item) => item.y > FOOTER_Y));
 }
 
-/**
- * Where each appendix starts and ends, read from the headings rather than from page numbers. The
- * printed numbers run six behind the PDF's, and an edition that repaginates would move them again.
- */
+/** From the headings: the printed page numbers run six behind the PDF's. */
 function findAppendices(pages) {
   const found = [];
   for (const page of pages) {
@@ -67,10 +48,7 @@ function findAppendices(pages) {
   }));
 }
 
-/**
- * Appendix A. Four lists, each a heading, a prompt of one or two lines, and ruled writing space.
- * The rules are the printed form's; what the app needs is the question each list asks.
- */
+/** Appendix A: what the app needs is the question each of the four lists asks. */
 function parsePreGameForm(page, warn) {
   const lines = bodyLines(page).filter((line) => !RULE_LINE.test(line.text));
   const intro = [];
@@ -93,12 +71,7 @@ function parsePreGameForm(page, warn) {
   return { intro: intro.join(' ').replaceAll(PAGE_POINTER, '').trim(), lists };
 }
 
-/**
- * Appendix B. Two columns of `~ Entry`, then a prompt and blank rules for the table's own.
- *
- * An entry that wraps ("Harm to children and young" / "adults") continues on the next line of its
- * own column, which is the whole reason this is read by column and not by line.
- */
+/** Appendix B: a wrapped entry continues in its own column, so read by column. */
 function parseContentWarnings(page, warn) {
   const items = page.items.filter((item) => item.y > FOOTER_Y);
   const bullets = items.filter((item) => item.text.trim() === '~').map((item) => item.x);
@@ -129,27 +102,13 @@ function parseContentWarnings(page, warn) {
   return { entries, additionalPrompt };
 }
 
-/**
- * Where the two columns part, measured from the runs that open a numbered row.
- *
- * It has to be the *runs*, not the assembled lines: a line already spans both columns, so its x is
- * always the left one's and the split comes out at the left margin. A fraction of the page width
- * does not work either — the soft hyphen ending "deck manipu-" sits at x=197.6 on a 442.8pt page,
- * and a split at 45% files it under the right column, which loses the hyphen from its own entry
- * and buries the right column's next number inside it.
- */
+/** From the runs, not the lines: a line spans both columns, and a fraction misfiles a hyphen. */
 function columnSplit(items, page) {
   const starts = items.filter((item) => NUMBERED.test(item.text)).map((item) => item.x);
   return splitBetweenColumns(starts, page.width * 0.45);
 }
 
-/**
- * Fold a group's two columns into what the book prints.
- *
- * Most tables run one list of 1-12 down both columns; the Powers table runs a *separate* 1-12
- * under each, headed "Heads" and "Tails". The numbering says which: a right column that starts
- * again at 1 is a second list, not the back half of the first.
- */
+/** A right column that restarts at 1 is a second list, not the first's back half. */
 function settleGroup(group, warn) {
   const [left, right] = [group.left, group.right];
   const byRoll = (a, b) => a.roll - b.roll;
@@ -174,14 +133,7 @@ function settleGroup(group, warn) {
   delete group.page;
 }
 
-/**
- * Appendix K. Sections ("Fill in the Blanks - Good (d12 to randomize)"), each a run of prompts
- * with a numbered table under it.
- *
- * A table's numbers do not split evenly between the columns, and one runs 1-7 down the left, so an
- * entry keeps the number the book gave it rather than its position. The right column carries no
- * prompts at all: its entries belong to the last prompt above them on the same page.
- */
+/** Appendix K: an entry keeps the book's number, and the right column has no prompts. */
 function parseAspects(pages, warn) {
   const sections = [];
   let group = null;
@@ -207,11 +159,7 @@ function parseAspects(pages, warn) {
     sections[sections.length - 1].groups.push(group);
   };
 
-  /**
-   * An unnumbered line is one of three things, and which one is decided by where it sits: flush
-   * left it is the next prompt, before a column's first entry it is that column's heading
-   * ("Heads", "Tails"), and anywhere else it is the previous entry running on.
-   */
+  /** Flush left it is a prompt, before a first entry a heading, otherwise a run-on. */
   const addLine = (owner, side, line, promptX) => {
     if (!owner) { warn(`Appendix K: "${line.text}" has no prompt above it.`); return; }
     const column = owner[side];
@@ -258,12 +206,7 @@ function parseAspects(pages, warn) {
   return sections;
 }
 
-/**
- * Read Appendices A, B and K out of the rulebook's pages.
- *
- * `warn` is the importer's own, so a gap here lands in `meta.warnings` beside the vault's and is
- * surfaced in the UI rather than filled in.
- */
+/** `warn` is the importer's, so a gap lands in `meta.warnings` and is surfaced. */
 export function readRulebookAppendices(pages, warn) {
   const appendices = findAppendices(pages);
   const find = (letter) => appendices.find((entry) => entry.letter === letter) ?? null;

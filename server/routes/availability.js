@@ -69,9 +69,7 @@ router.post('/api/availability/preview', requireAuth, async (req, res) => {
   }
 });
 
-// GET /api/availability/aggregate?start=2025-09-13T00:00:00Z&end=2025-09-20T00:00:00Z
-// Campaign scoping used to be optional here, and so did authentication: omitting campaign_id
-// aggregated every availability row in the database for any caller. Both are required now.
+// Both required now: omitting campaign_id aggregated the whole database for any caller.
 router.get('/api/availability/aggregate', requireAuth, async (req, res) => {
   try {
     const start = req.query.start;

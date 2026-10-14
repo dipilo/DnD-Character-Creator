@@ -1,12 +1,4 @@
-// A character somebody granted this account, opened by its id rather than by a share link.
-//
-// The party page already opens a shared sheet where the campaign's other screens are, but a grant
-// does not have to come with a table: the owner can name an account directly. That character had
-// nowhere to be read, which is the other half of "nobody is told they were granted access".
-//
-// Editing follows the grant, exactly as it does on the party sheet: `applyPatch` is handed to the
-// sheet only when the server said this reader may write, and its absence is what makes the view
-// read-only.
+// A grant need not come with a table, so a named account needs somewhere to read it.
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { SaveConflictAlert } from '@/components/character/SaveConflictAlert';

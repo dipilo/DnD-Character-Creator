@@ -26,14 +26,7 @@ function withList(data: PreGameFormData, id: string, list: PreGameFormList): Pre
   return { lists: { ...data.lists, [id]: list } };
 }
 
-/**
- * The Pre-Game Form, from Appendix A of the rulebook.
- *
- * Three views of the same answers, and which of them a member sees is the point of the screen:
- * their own form, the table's compiled answers with no names on them, and — for whoever runs the
- * campaign — each person's form as they wrote it. The merge is assembled by the server, so the
- * first two never carry anybody else's document.
- */
+/** Three views; the merge is the server's, so no view carries anybody else's document. */
 export function PreGameFormPage() {
   const campaignId = useCampaignId();
   const { membership } = useCampaignStore();
@@ -101,11 +94,7 @@ interface MyFormProps {
   onSaved: () => void;
 }
 
-/**
- * The editor is mounted only once its answers have arrived, and it is keyed on the campaign, so
- * the loaded form seeds `useState` directly. Copying it in from an effect would be mirroring props
- * into state, which is the rule the rest of the campaign pages already follow.
- */
+/** Mounted after the load and keyed on the campaign, so `useState` seeds directly. */
 function MyForm({ campaignId, state, onSaved }: Readonly<MyFormProps>) {
   if (state.loading) return <LoadingCard label="Loading your form..." />;
   if (state.error) return <ErrorCard message={state.error} onRetry={state.reload} />;

@@ -1,11 +1,4 @@
-/**
- * What a feat actually gives the character, resolved against the content library.
- *
- * The importer reads a feat's benefit lines into structure (`scripts/lib/featBenefits.mjs`); this
- * turns that structure into the things the builder and the sheet need — the spells the feat names,
- * the candidates for the spells it leaves open, and the option pool it borrows from another class.
- * Nothing here names a feat: every restriction comes from the line the source printed.
- */
+// Nothing here names a feat: every restriction comes from the line the source printed.
 import type {
   Class,
   Feat,
@@ -26,11 +19,7 @@ const featureNameMatches = (featureName: string, wanted: string) => {
   return left === right || left === `${right}s` || `${left}s` === right;
 };
 
-/**
- * The spell a feat names, resolved by name in the edition the character is playing. Names rather
- * than ids because a feat printed in one book grants a spell printed in another, and the id it
- * would have to point at differs per pack.
- */
+/** By name, not id: a feat in one book grants a spell printed in another. */
 export function findSpellByName(
   spells: readonly Spell[],
   name: string,
@@ -57,11 +46,7 @@ export function resolveGrantedFeatSpells(
   }));
 }
 
-/**
- * The spells a choice may be filled with. A line that states no class list and no school leaves
- * every spell of that level open, which is what "one 1st-level spell of your choice" means when
- * the next sentence does not narrow it.
- */
+/** No class list and no school leaves every spell of that level open. */
 export function resolveFeatSpellChoiceCandidates(
   choice: FeatSpellChoice,
   spells: readonly Spell[],
@@ -84,11 +69,7 @@ export function resolveFeatSpellChoiceCandidates(
     .sort((left, right) => left.name.localeCompare(right.name));
 }
 
-/**
- * The options a borrowed pool offers, taken from the class's own feature. The class knows its own
- * invocations, fighting styles and metamagic, so the feat needs no copy of the list — the same
- * rule as `resolveOpenSkillChoices` for a class's skill list.
- */
+/** The class knows its own options, so the feat carries no copy of the list. */
 export function resolveFeatOptionChoicePool(
   choice: FeatOptionChoice,
   classes: readonly Class[],
@@ -126,11 +107,7 @@ export interface FeatSpellEntry {
   featName: string;
 }
 
-/**
- * Every spell a character has from its feats — the ones the feat names outright and the ones the
- * player picked for its own lines. These are not class spells: they do not count against a known
- * or prepared limit, which is why they live outside `character.spells`.
- */
+/** Outside `character.spells`: they count against no known or prepared limit. */
 export function resolveFeatSpellEntries(
   feats: readonly Feat[],
   featSpellSelections: Record<string, string[]> | undefined,

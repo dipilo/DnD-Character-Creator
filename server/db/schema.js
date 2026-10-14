@@ -1,12 +1,7 @@
 // server/init_schema.js
 // Ensure the database schema exists and reconcile legacy tables by adding missing columns.
 
-// Columns added to these tables after their first release. A deployment that predates one gets it
-// back by ALTER; a fresh database already has it from the CREATE above and skips.
-//
-// This is a table rather than one `if (!cols.has(...))` block per column for the reason CLAUDE.md
-// gives for the same shape in the route handlers: the branches were the whole of this function's
-// cognitive complexity, and a list of columns is what the code actually is.
+// A table, not a branch per column: the branches were this function's whole complexity.
 const LEGACY_COLUMNS = {
   users: [
     ['discord_id', 'TEXT'],
@@ -160,20 +155,7 @@ async function ensureSchema(db) {
     FOREIGN KEY(user_id) REFERENCES users(id)
   )`);
 
-  // `allowed_source_ids` is a JSON array of content-source ids (MERGE_PLAN.md Phase 5). It is the
-  // table's content agreement — what the builder offers when a character is started for this
-  // campaign — and the server keeps it opaque: the source manifest is the client's, not the API's.
-  // Empty or null means "no restriction", which is also what the builder's own filter means.
-  //
-  // `system_id` names the game this table plays, on the same terms: the registry that defines a
-  // system lives in the client (`app/src/data/gameSystems.ts`), so the server bounds the shape of
-  // the string and interprets nothing. NULL means a campaign that predates the column, which the
-  // client reads as its default system.
-  //
-  // `default_member_permissions` and `default_invite_permissions` are JSON permission blobs applied
-  // when someone joins — the first for any join, the second only to people arriving on an invite
-  // that carries no permissions of its own. NULL means "grant nothing", which is what joining did
-  // before the columns existed.
+  // The client owns the source manifest and system registry; the server bounds the shape only.
   await db.run(`CREATE TABLE IF NOT EXISTS campaigns (
     id INTEGER PRIMARY KEY,
     name TEXT,
@@ -198,24 +180,7 @@ async function ensureSchema(db) {
     notes TEXT
   )`);
 
-  // Builder characters (MERGE_PLAN.md Phase 2). Created after `players` because it references it:
-  // a CREATE TABLE naming a table that does not exist yet is only an error once foreign keys are
-  // enforced, which is exactly the kind of difference between two deployments worth not having.
-  //
-  // `visibility` is who may read the sheet: 'private', 'campaign' (the members of the campaign it
-  // is attached to) or 'public' (anyone holding the link, signed in or not). NULL is a row written
-  // before the column, which read as campaign-visible the moment it was attached — so NULL is
-  // 'campaign', not 'private', or attaching would silently stop sharing. `share_token` is minted on
-  // demand and rotating it is what revokes every link already handed out.
-  //
-  // The id is the uuid the builder already mints client-side, so a character keeps one identity
-  // across localStorage and the server. `name` and `summary` ("Level 5 Elf Wizard 5") are
-  // denormalised out of the document so a list needs no parsing — `summary` is written by the
-  // client because resolving species and class ids to names needs the content library, which is
-  // the client's. `data` is the whole `Character` object as JSON,
-  // deliberately not mapped to columns: CLAUDE.md requires a saved character to read back into the
-  // builder, and that needs every choice-mode and selection field intact. `version` is bumped on
-  // each write so a stale client gets a 409 rather than clobbering a sheet edited elsewhere.
+  // `data` stays one document so a saved character reads back into the builder intact.
   await db.run(`CREATE TABLE IF NOT EXISTS characters (
     id TEXT PRIMARY KEY,
     user_id INTEGER NOT NULL,
@@ -236,16 +201,7 @@ async function ensureSchema(db) {
     FOREIGN KEY(player_id) REFERENCES players(id)
   )`);
 
-  // Who else may open or edit one character, granted by its owner and revocable by them alone.
-  //
-  // `subject_type` says what `subject_id` names: 'user' is one account, 'campaign_owner' is
-  // whoever runs that campaign (a seat, not a person — the grant survives the campaign changing
-  // hands). A campaign-wide consent is deliberately *not* stored here: it applies to every
-  // character its holder seats at that table, including ones built later, so it lives on
-  // `campaign_members.character_edit_consent` instead.
-  //
-  // `access` is 'view' or 'edit'. An edit grant is over the *document* only — the seat, the
-  // visibility, the grants themselves and deletion stay the owner's.
+  // `subject_type` names a user or a campaign seat; an edit grant covers the document alone.
   await db.run(`CREATE TABLE IF NOT EXISTS character_grants (
     id INTEGER PRIMARY KEY,
     character_id TEXT NOT NULL,
@@ -257,9 +213,7 @@ async function ensureSchema(db) {
     FOREIGN KEY(character_id) REFERENCES characters(id)
   )`);
 
-  // The Powered Character (Kids on Bikes, chapter 5). It belongs to a campaign rather than to a
-  // user, because the whole table co-controls it — which is also why `version` is here: the GM
-  // edits the document while players spend Power Tokens against the same row.
+  // Belongs to a campaign, not a user, so it carries `version`: the whole table edits it.
   await db.run(`CREATE TABLE IF NOT EXISTS powered_characters (
     id INTEGER PRIMARY KEY,
     campaign_id INTEGER NOT NULL,
@@ -270,10 +224,7 @@ async function ensureSchema(db) {
     FOREIGN KEY(campaign_id) REFERENCES campaigns(id)
   )`);
 
-  // The Pre-Game Form (Kids on Bikes, Appendix A). One row per member per campaign, holding that
-  // member's own answers as one JSON document — the same posture as `characters.data`, except that
-  // `server/lib/preGameForm.js` reads inside it, because the compiled merge the rest of the table
-  // sees is a privacy boundary and cannot be assembled by a client that was never sent the forms.
+  // The server reads inside this one, because the compiled merge is a privacy boundary.
   await db.run(`CREATE TABLE IF NOT EXISTS pre_game_forms (
     id INTEGER PRIMARY KEY,
     campaign_id INTEGER NOT NULL,
@@ -286,12 +237,7 @@ async function ensureSchema(db) {
     FOREIGN KEY(user_id) REFERENCES users(id)
   )`);
 
-  // A play session at one table, and the rolls made during it.
-  //
-  // `sessions` is already the auth cookie's table, so these are `game_sessions`. A session belongs
-  // to a campaign and optionally to one of its groups, because a campaign with several tables runs
-  // several games. Only one may be open per campaign at a time — `ended_at` being NULL is what
-  // "open" means, and the route enforces the one.
+  // `sessions` is the cookie's table, so these are `game_sessions`; NULL `ended_at` is open.
   await db.run(`CREATE TABLE IF NOT EXISTS game_sessions (
     id INTEGER PRIMARY KEY,
     campaign_id INTEGER NOT NULL,
@@ -349,15 +295,7 @@ async function ensureSchema(db) {
     FOREIGN KEY(player_id) REFERENCES players(id)
   )`);
 
-  // `auto_claim_override` is the owner's word on whether a seat this member creates becomes theirs
-  // and `auto_claim_preference` is the member's own; NULL on either is "no opinion" and falls
-  // through to the campaign's `default_auto_claim_seats`, then to the built-in default
-  // (`server/lib/seatClaim.js`). Two columns because the owner may not write a member's preference
-  // and the member may not clear the owner's override.
-  //
-  // `permissions` is the blob granted to whoever joins on this link, overriding the campaign's own
-  // default for arrivals. NULL means "use the campaign's default", not "grant nothing" — the two
-  // have to stay distinguishable or an invite could never opt out of a default.
+  // Two columns: the owner may not write a preference, nor the member an override.
   await db.run(`CREATE TABLE IF NOT EXISTS invites (
     id INTEGER PRIMARY KEY,
     token TEXT,
@@ -414,9 +352,7 @@ async function ensureSchema(db) {
     result_json TEXT
   )`);
 
-  // 2) Reconcile columns for legacy tables by adding missing columns.
-  // An ALTER that fails has already been applied by another process racing this boot, which is the
-  // only way it fails here — the column list is static and every entry is nullable.
+  // An ALTER only fails when another booting process already applied it.
   for (const [table, columns] of Object.entries(LEGACY_COLUMNS)) {
     const cols = await getColumns(table);
     for (const [name, type] of columns) {

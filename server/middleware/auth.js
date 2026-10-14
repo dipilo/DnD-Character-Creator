@@ -2,10 +2,7 @@ const db = require('../db');
 const { readMembership } = require('../lib/membership');
 const { getSessionUser } = require('../lib/sessions');
 
-// Identity comes from the session cookie and nowhere else. The `X-User-Id` header and
-// `?user_id=` query fallback this module used to accept were client-asserted: any caller could
-// name themselves any user on the system (MERGE_PLAN.md §3). Both are gone as of Phase 1b, so a
-// forged header now resolves to no user at all.
+// Cookie only: the old `X-User-Id` header and `?user_id=` were client-asserted.
 
 /** Attach req.user when the caller has a valid session; leave it null and continue when not. */
 async function optionalAuth(req, res, next) {
@@ -79,21 +76,14 @@ function memberHasPermission(memberRow, ...flags) {
   }
 }
 
-/**
- * Whether this user holds that seat. Putting their own character in it is not editing it, so this
- * is what seating checks — the seat row is untouched, only the character's `player_id` moves.
- */
+/** Seating is not editing: the seat row is untouched, only the character's `player_id`. */
 async function holdsPlayerSeat(user, campaignId, playerId) {
   if (!user) return false;
   const memberRow = await readMembership(db, campaignId, user.id);
   return memberRow?.player_id != null && Number(memberRow.player_id) === Number(playerId);
 }
 
-/**
- * Editing a seat is the campaign owner's right, or `can_edit_self` on the seat you hold. Holding
- * it was enough on its own until the flag was enforced, which left the switch in the Members grid
- * doing nothing at all.
- */
+/** Holding the seat was enough until `can_edit_self` was enforced. */
 async function canUserModifyPlayer(user, campaignId, playerId) {
   if (!user) return false;
   if (await isCampaignOwner(user.id, campaignId)) return true;

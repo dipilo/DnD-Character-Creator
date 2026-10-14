@@ -1,11 +1,5 @@
-// What `resolveClassResources` says a pool's maximum is, and what sized it.
-//
-// A pool sized by an ability or the proficiency bonus resolves to a bare number, so the tracker
-// used to read "3" with nothing on the sheet saying why — and a wrong `maximumSource` is silent in
-// exactly the same way. `sheetPlayState.ts` sits behind Vite's `@/` alias and holds only type
-// imports, so this loads it through Node's own type stripping with `aliasLoader.mjs`.
-//
-// Run with `npm run test:class-resources:maximums` from the workspace root.
+// A bare maximum says nothing about what sized it, and a wrong source is silent.
+// Run with `npm run test:class-resources:maximums`.
 import assert from 'node:assert/strict';
 
 const { resolveClassResources } = await import('@/lib/sheetPlayState');
@@ -110,6 +104,56 @@ check('Font of Inspiration moves the rest without touching the maximum', () => {
   })]);
   assert.equal(out.resetsOn, 'short');
   assert.equal(out.maximumSource, 'Charisma modifier, minimum 1');
+});
+
+// `resolve`/`one` pass no features, so `activatable` reads false there whatever the wording.
+const withFeature = (resourceId, description) =>
+  resolveClassResources(
+    { classes: [{ classId: 'wizard', level: 5 }], classResourcesUsed: {}, activeEffects: [] },
+    () => ({
+      id: 'wizard',
+      name: 'Wizard',
+      features: [{ id: resourceId, name: resourceId, description, level: 1 }],
+      resources: [pool(resourceId, { featureName: resourceId })],
+      subclasses: []
+    }),
+    scaling
+  )[0];
+
+check('Rage’s own wording is still read', () => {
+  assert.equal(withFeature('Rage', 'On your turn, you can enter a rage as a bonus action.').activatable, true);
+});
+
+check('Bladesong’s "while it is active" phrasing is read as entering a pool', () => {
+  assert.equal(withFeature(
+    'Bladesong',
+    'You can use a bonus action to start the Bladesong, which lasts for 1 minute. While your '
+      + 'Bladesong is active, you have advantage on Dexterity (Acrobatics) checks.',
+  ).activatable, true);
+});
+
+check('Innate Sorcery’s "during which you gain" phrasing is read the same way', () => {
+  assert.equal(withFeature(
+    'Innate Sorcery',
+    'As a Bonus Action, you can unleash that magic for 1 minute, during which you gain the '
+      + 'following benefits: you have Advantage on the attack rolls of Sorcerer spells you cast.',
+  ).activatable, true);
+});
+
+check('Giant’s Might’s "which last for" phrasing is read the same way', () => {
+  assert.equal(withFeature(
+    'Giant’s Might',
+    'As a bonus action, you magically gain the following benefits, which last for 1 minute: you '
+      + 'have advantage on Strength checks and Strength saving throws.',
+  ).activatable, true);
+});
+
+check('a reaction you merely spend is not a pool you enter', () => {
+  assert.equal(withFeature(
+    'Runic Shield',
+    'When another creature you can see within 60 feet of you is hit by an attack roll, you can '
+      + 'use your reaction to force the attacker to reroll the d20 and use the new roll.',
+  ).activatable, false);
 });
 
 for (const entry of checks) {

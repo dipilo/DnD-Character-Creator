@@ -1,10 +1,5 @@
-// What `deriveExpertiseGrants` reads out of a feature's own sentences.
-//
-// Every input below is a feature's text as one of the packs carries it. Three of them double the
-// proficiency bonus without granting Expertise, and reading those as a pick would put two choices
-// on the sheet that no printing offers — which is silent, because nothing errors.
-//
-// Run with `npm run test:expertise` from the workspace root.
+// What `deriveExpertiseGrants` reads; three features double the bonus without granting it.
+// Run with `npm run test:expertise`.
 import assert from 'node:assert/strict';
 
 const { deriveExpertiseGrants, isConditionalDoubling } = await import('@/lib/expertise');
@@ -21,10 +16,6 @@ function check(name, run) {
     checks.push({ name, ok: false, detail: e.message.split('\n')[0] });
   }
 }
-
-/* -------------------------------------------------------------------------- *
- * Doubling that is not Expertise
- * -------------------------------------------------------------------------- */
 
 check('the 2014 Ranger\'s favoured terrain is not Expertise', () => {
   assert.deepEqual(
@@ -66,10 +57,6 @@ check('Stonecunning doubles the bonus only on stonework', () => {
 check('a feature that says nothing about Expertise grants none', () => {
   assert.deepEqual(read('You regain all expended uses on a short rest.', { name: 'Font of Inspiration' }), []);
 });
-
-/* -------------------------------------------------------------------------- *
- * The open choice, in both printings
- * -------------------------------------------------------------------------- */
 
 check('the 2014 Bard states two grants, at 3rd and 10th level', () => {
   const grants = read(
@@ -132,10 +119,6 @@ check('the 2024 Ranger\'s own Expertise grants two at the level it is gained', (
   assert.deepEqual(grants.map((g) => [g.level, g.count]), [[9, 2]]);
 });
 
-/* -------------------------------------------------------------------------- *
- * A choice from a list, and skills named outright
- * -------------------------------------------------------------------------- */
-
 check('the 2024 Wizard\'s Scholar chooses from the list it prints', () => {
   const grants = read(
     'While studying magic, you also specialized in another field of study. Choose one of the ' +
@@ -177,10 +160,6 @@ check('the Artificer\'s Tool Expertise names no skill, so it offers no skill pic
     []
   );
 });
-
-/* -------------------------------------------------------------------------- *
- * The condition test on its own
- * -------------------------------------------------------------------------- */
 
 check('isConditionalDoubling reads the limiting clause, not the doubling', () => {
   assert.equal(isConditionalDoubling('Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.'), false);

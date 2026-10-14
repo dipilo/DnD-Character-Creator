@@ -1,17 +1,4 @@
-/**
- * The sheet-intake schema and import planner (MERGE_PLAN.md §20).
- *
- * `POST /api/sync` cannot be driven by the smoke harness in any meaningful way: it fetches a real
- * Google spreadsheet, so every step a snapshot can reach stops at "invalid sheet id". The part
- * worth testing is the decision — which row becomes which seat — and that is pure, so it is
- * tested directly here with rows a Form would actually produce.
- *
- * The first case is the one that matters most. The importer this replaced keyed players off the
- * sheet's row index and wrote `INSERT OR REPLACE INTO players (id, ...)`, so importing five rows
- * overwrote players 1–5 across the whole database regardless of campaign. There is now no path
- * from a row to a player id at all; ids come from matching within the campaign, or from the
- * database on insert.
- */
+/** The decision is pure, so it is tested directly; `POST /api/sync` needs a real sheet. */
 
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -44,8 +31,6 @@ function equal(name, actual, expected) {
   check(name, a === b, `expected ${b}\n        got      ${a}`);
 }
 
-/* ---------- header matching ---------- */
-
 // The exact questions the template asks must map with no help from the DM.
 const formHeaders = ['Timestamp', ...INTAKE_FIELDS.map((f) => f.question)];
 {
@@ -74,12 +59,8 @@ const formHeaders = ['Timestamp', ...INTAKE_FIELDS.map((f) => f.question)];
   check('an explicit mapping wins over an alias match', values.name === 'Bran', `got ${values.name}`);
 }
 
-/* ---------- identity normalisation ---------- */
-
 check('discord handles compare without @ or case', normaliseIdentity('@Bran#1234') === normaliseIdentity('bran1234'));
 check('names compare without punctuation', normaliseIdentity("O'Brien-Smith") === normaliseIdentity('obriensmith'));
-
-/* ---------- the planner ---------- */
 
 const seats = [
   { id: 41, name: 'Bran', discord: 'bran#1234', timezone: 'EST', notes: 'weekends' },

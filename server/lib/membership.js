@@ -1,10 +1,4 @@
-/**
- * Joining and claiming a seat are two doors into one membership, and `campaign_members` has no
- * unique key to stop them being two rows. A member who joined by invite and then claimed a seat
- * ended up with the seat and the permissions on *different* rows, and every permission check reads
- * one row: the flags the claim granted were invisible, and the Members grid listed the person
- * twice.
- */
+/** No unique key, so the seat and the permissions could land on different rows. */
 
 /** The membership row that counts: a seated one wins, then the oldest. */
 async function readMembership(runner, campaignId, userId) {
@@ -15,10 +9,7 @@ async function readMembership(runner, campaignId, userId) {
   return rows[0] ?? null;
 }
 
-/**
- * Record a membership without ever making a second one. An existing row keeps its role and gains
- * the seat and any permissions the arrival grants; duplicates left by earlier joins are folded in.
- */
+/** An existing row keeps its role and gains the seat; earlier duplicates fold in. */
 async function upsertMembership(runner, { campaignId, userId, playerId = null, role = 'player', permissions = null }) {
   const rows = await runner.all(
     'SELECT * FROM campaign_members WHERE campaign_id = ? AND user_id = ? ORDER BY (player_id IS NULL), id',
@@ -45,12 +36,7 @@ async function upsertMembership(runner, { campaignId, userId, playerId = null, r
   );
 }
 
-/**
- * Deleting or releasing a seat gives the seat up, never the membership. Dropping the row evicted
- * the holder from the campaign — an owner who claimed a seat in the Roster and then deleted it
- * lost their own table. A campaign-scoped account (sheet import, no password) is the exception:
- * its membership only ever existed for the seat.
- */
+/** Dropping the row evicted the holder; a campaign-scoped account is the exception. */
 async function releaseSeat(runner, campaignId, playerId) {
   const rows = await runner.all(
     `SELECT cm.id, cm.user_id, u.password_hash

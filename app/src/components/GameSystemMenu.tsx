@@ -12,11 +12,7 @@ interface GameSystemMenuProps {
   readonly onNavigate?: () => void;
 }
 
-/**
- * Switches the game the app is being used for. Choosing a system records the preference *and*
- * goes to that system's home screen — leaving the nav pointing at another game's builder while
- * its pages are still open would say two different things at once.
- */
+/** Records the preference *and* navigates, or the nav says two things at once. */
 export function GameSystemMenu({ activeSystem, onNavigate }: GameSystemMenuProps) {
   const navigate = useNavigate();
   const setPreferredSystem = useGameSystemStore((state) => state.setPreferredSystem);

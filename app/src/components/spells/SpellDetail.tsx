@@ -1,12 +1,4 @@
-// One spell, in full: the statblock the books print above the description, then the description.
-//
-// Shared by every screen that shows a spell — the builder's Spells step, the sheet's spell list and
-// the spell's own page — so a spell reads the same wherever it is opened, and nothing has to
-// truncate it to fit a card.
-//
-// The statblock is the whole shape, level and school included: they are statblock items rather than
-// badges above it, so a caller that already names the spell's level in its own row is the only
-// place that says so twice.
+// Shared by every screen showing a spell; level and school are statblock items, not badges.
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { formatSpellLevel } from '@/components/spells/spellFormatting';
 import { deriveSpellAttackOrSave, deriveSpellDamageOrEffect } from '@/lib/spellFacets';
@@ -17,10 +9,7 @@ interface StatProps {
   readonly value: string;
 }
 
-/**
- * One statblock cell. The label sits on a fixed line of its own above the value, so eight cells of
- * wildly different lengths still line their labels up across the grid.
- */
+/** The label sits on its own line, so cells of any length line up across the grid. */
 function Stat({ label, value }: StatProps) {
   return (
     <div className="min-w-0">

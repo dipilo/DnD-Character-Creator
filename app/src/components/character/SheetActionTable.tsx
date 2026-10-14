@@ -1,23 +1,9 @@
-// The table every action row is printed in: what it is done with, then Name, Time, Range, Hit/DC,
-// Damage, Notes. The Actions tab drops Time — everything in it is taken on your turn — and the
-// Spells tab keeps it, because a casting time is the spell's own and varies.
-//
-// D&D Beyond's attack table has fixed columns and ours was a card per weapon, so the same six facts
-// sat in a different place on every row and a player had to read each card to find one number.
-//
-// One DOM, two layouts. Above `lg` it is a grid with a header row; below it each cell carries its
-// own label and the row stacks. The labels are the only thing a media query hides — rendering the
-// row twice would put two of every roll button on the sheet, which is the mistake `useSheetLayout`
-// exists to avoid on saves and skills.
+// One DOM, two layouts: only the labels are hidden, or every roll button would double.
 import { useState, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Cast / Use first, then Name, Time (where the table prints it), Range, Hit/DC, Damage, Notes.
-//
-// Every track is `minmax(0, …)`. A track with an intrinsic minimum is as wide as its widest child
-// insists on being, so one long damage line or one wide control group pushed the whole grid past
-// the card it sits in — which is what reads as text escaping its container.
+// Every track is `minmax(0, ...)`: an intrinsic minimum pushes the grid past its card.
 const GRID_WITH_TIME =
   'lg:grid-cols-[minmax(0,10rem)_minmax(0,2.2fr)_minmax(0,5.5rem)_minmax(0,5.5rem)_minmax(0,5.5rem)_minmax(0,1.4fr)_minmax(0,1fr)]';
 const GRID_WITHOUT_TIME =
@@ -44,13 +30,7 @@ export interface SheetActionTableRow {
   detail?: ReactNode;
 }
 
-/**
- * One cell, labelled where there are no column headings to label it.
- *
- * A cell with nothing in it is hidden below `lg` — an em dash on its own line is a line of nothing
- * on a phone — but it stays in the grid above it, because the columns are placed in order and a
- * missing child would shift every cell after it one column left.
- */
+/** An empty cell hides below `lg` but stays in the grid, or every later cell shifts. */
 function Cell({
   label,
   children,

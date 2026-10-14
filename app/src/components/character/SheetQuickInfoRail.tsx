@@ -1,12 +1,4 @@
-// The part of the sheet that never goes away.
-//
-// Checking a skill modifier while reading a spell used to mean leaving the spell: every number a
-// player consults *while doing something else* sat behind the Stats tab. This is that half of the
-// sheet, lifted out of the tabs — abilities, AC, hit points, proficiency, and (where there is a
-// column for it) initiative, speed, the passives, saves and skills.
-//
-// It writes nothing of its own. The hit-point panel hands its patches back through the single
-// optional `onChange`, and a roll goes to the shared dice tray, which changes no document.
+// The numbers consulted while doing something else, lifted out of the tabs.
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { effectiveModifier, rollD20 } from '@/lib/d20Rolls';
 import { applyRollEffects } from '@/lib/rollEffects';
@@ -31,10 +23,7 @@ interface SheetQuickInfoRailProps {
   proficiencyBonus: number;
   totalLevel: number;
   vitals: SheetVitals;
-  /**
-   * The rail has a column of its own, so saves and skills belong in it. Below that they are the
-   * subsection's leading Stats tab instead — a phone has no room for a pinned second column.
-   */
+  /** Below that they lead the Stats tab: a phone has no room for a pinned column. */
   railIsColumn: boolean;
   onChange?: (patch: Partial<Character>) => void;
 }

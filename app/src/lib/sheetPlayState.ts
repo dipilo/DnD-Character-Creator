@@ -1,10 +1,4 @@
-/**
- * The rules for the numbers a player changes during play.
- *
- * Kept out of the sheet component for the same reason the derivations are: `CharacterSheetView`
- * renders and never decides. Every function here takes the document and returns the patch to apply,
- * so the owner's page can persist it and the read-only party view can simply not pass a handler.
- */
+// Play-state rules: each function takes the document and returns a patch to apply.
 import type { AbilityScores, Character, CharacterClass, Class, ClassResource, CoinUnit, Subclass } from '@/types/dnd';
 
 export interface DeathSaves {
@@ -27,10 +21,7 @@ export const isDying = (character: Pick<Character, 'hp' | 'deathSaves'>): boolea
   return character.hp.current <= 0 && saves.successes < MAX_DEATH_SAVES && saves.failures < MAX_DEATH_SAVES;
 };
 
-/**
- * Damage eats temporary hit points first, and the two pools never mix — 5 damage against 3 temp
- * and 10 real leaves 0 temp and 8 real, not 8 of one pool.
- */
+/** Temp first, and the pools never mix: 5 against 3 temp and 10 real leaves 8 real. */
 export function applyDamage(character: Character, amount: number): Partial<Character> {
   const damage = Math.max(0, Math.trunc(amount));
   const absorbed = Math.min(character.hp.temporary, damage);
@@ -61,10 +52,7 @@ export function applyHealing(character: Character, amount: number): Partial<Char
   return patch;
 }
 
-/**
- * Set the temporary pool outright. Temporary hit points never stack — a second source replaces the
- * first rather than adding to it — so the control is a value the player types, not a +/-.
- */
+/** Temp hit points never stack, so this is a typed value, not a +/-. */
 export function setTemporaryHitPoints(character: Character, amount: number): Partial<Character> {
   return { hp: { ...character.hp, temporary: Math.max(0, Math.trunc(amount)) } };
 }
@@ -74,10 +62,7 @@ export function setDeathSave(character: Character, kind: keyof DeathSaves, count
   return { deathSaves: { ...saves, [kind]: clamp(count, 0, MAX_DEATH_SAVES) } };
 }
 
-/**
- * Record a rolled death save. A natural 20 is back on your feet with 1 hit point and a natural 1
- * costs two failures, so the roll cannot simply be turned into a `setDeathSave` by the caller.
- */
+/** A natural 20 restores 1 hit point and a natural 1 costs two failures. */
 export function applyDeathSaveRoll(character: Character, roll: number): Partial<Character> {
   const saves = getDeathSaves(character);
 
@@ -123,19 +108,13 @@ export function setPactSlotsUsed(character: Character, slotLevel: number, used: 
 
 export const getSlotsUsed = (used: number[] | undefined, slotLevel: number) => used?.[slotLevel - 1] ?? 0;
 
-/**
- * A short rest gets the pact slots back and nothing else. Hit dice are spent *during* a short rest
- * rather than restored by one, so this deliberately leaves them alone.
- */
+/** Hit dice are spent *during* a short rest, so this leaves them alone. */
 export function applyShortRest(character?: Character, resources: ResolvedClassResource[] = []): Partial<Character> {
   if (!character) return { pactSlotsUsed: [] };
   return { pactSlotsUsed: [], classResourcesUsed: restoreOnRest(character, resources, 'short') };
 }
 
-/**
- * A long rest: full hit points, every spell slot back, and half the character's total hit dice
- * (minimum one) recovered — spread across the classes that have spent any.
- */
+/** Half the total hit dice back, minimum one, spread across classes that spent any. */
 export function applyLongRest(character: Character, resources: ResolvedClassResource[] = []): Partial<Character> {
   const totalLevel = character.classes.reduce((sum, entry) => sum + entry.level, 0);
   let recoverable = Math.max(1, Math.floor(totalLevel / 2));
@@ -193,15 +172,7 @@ export function setExhaustion(level: number): Partial<Character> {
   return { exhaustion: clamp(Math.trunc(level), 0, MAX_EXHAUSTION) };
 }
 
-/* -------------------------------------------------------------------------- *
- * Concentration
- * -------------------------------------------------------------------------- */
-
-/**
- * Start concentrating. A character concentrates on one spell, so this replaces whatever they were
- * holding rather than adding to it — which is the whole reason the field is on the document and
- * not worked out from the spell list.
- */
+/** Replaces whatever was held, which is why the field is on the document. */
 export function startConcentration(
   spellId: string,
   spellName: string,
@@ -214,17 +185,10 @@ export function endConcentration(): Partial<Character> {
   return { concentration: undefined };
 }
 
-/**
- * The save damage imposes: DC 10, or half the damage taken when that is higher. Stated identically
- * in both printings, so it is one number rather than a per-edition lookup.
- */
+/** DC 10 or half the damage, whichever is higher; both printings state it identically. */
 export function concentrationSaveDc(damage: number): number {
   return Math.max(10, Math.floor(Math.max(0, damage) / 2));
 }
-
-/* -------------------------------------------------------------------------- *
- * The purse
- * -------------------------------------------------------------------------- */
 
 /** Smallest first, which is the order both printings print the coins in. */
 export const COIN_UNITS: readonly CoinUnit[] = ['cp', 'sp', 'ep', 'gp', 'pp'];
@@ -249,13 +213,7 @@ export function setCoins(character: Character, unit: CoinUnit, amount: number): 
   return { currency: Object.keys(next).length > 0 ? next : undefined };
 }
 
-/**
- * One class resource as this character holds it: the pool the class or subclass states, the
- * maximum at the level they have in that class, and how much of it is spent.
- *
- * The pool is the source's (`ClassResource`), so nothing here knows what a Rage or a Ki Point is —
- * a feature whose text states no pool simply produces no tracker.
- */
+/** The pool is the source's, so a feature whose text states none produces no tracker. */
 export interface ResolvedClassResource extends ClassResource {
   /** `<classId>::<resourceId>`, the key on the document. */
   key: string;
@@ -263,33 +221,24 @@ export interface ResolvedClassResource extends ClassResource {
   className: string;
   /** The level's entry in `perLevel`, or the ability's or proficiency's answer. Null is the book's "Unlimited". */
   maximum: number | null;
-  /**
-   * What sized the maximum, when the class table did not: a pool that grows with an ability or the
-   * proficiency bonus shows a bare number otherwise, and nothing on the sheet says why it is 3.
-   */
+  /** Says why the number is 3 when an ability or the proficiency bonus sized it. */
   maximumSource?: string;
   used: number;
-  /**
-   * Whether this is something you *enter* and stay in rather than simply spend. Read from the
-   * feature's own words — both printings of Rage say "you can enter", and no other class pool in
-   * either book does.
-   */
+  /** Whether this is a pool you enter and stay in rather than one you only spend. */
   activatable: boolean;
   /** Whether the character is in it right now. */
   active: boolean;
 }
 
-/** The phrase that separates a pool you enter from one you only spend. */
-const ENTERED_RESOURCE_PATTERN = /\byou can enter\b/i;
+/** Stance wording; a miss leaves the pool's benefits applying outside it. See docs/rules/sheet.md. */
+const ENTERED_RESOURCE_PATTERN =
+  /\byou can enter\b|\bwhich lasts? for\b|\bduring which you (?:gain|have)\b|\bfor the duration\b|\bwhich last for\b/i;
 
 export function classResourceKey(classId: string, resourceId: string): string {
   return `${classId}::${resourceId}`;
 }
 
-/**
- * The numbers a pool sized by the character rather than the class needs. Passed in rather than
- * derived here so this module stays free of `sheetMath`, which the bot loads separately.
- */
+/** Passed in, so this module stays free of `sheetMath`, which the bot loads separately. */
 export interface ResourceScaling {
   abilityModifier: (ability: keyof AbilityScores) => number;
   proficiencyBonus: number;
@@ -327,12 +276,7 @@ function resourceResetAt(resource: ClassResource, level: number): ClassResource[
   return resource.resetsOn;
 }
 
-/**
- * Every pool this character has, in class order — the class's own and its chosen subclass's.
- * `resolveClass` is passed in rather than imported so this module stays free of the content
- * library, exactly as the rest of it is; `resolveSubclass` defaults to the class's own list, which
- * is where the merged runtime library keeps them.
- */
+/** Resolvers are passed in, so this module stays free of the content library. */
 export function resolveClassResources(
   character: Pick<Character, 'classes' | 'classResourcesUsed' | 'activeEffects'>,
   resolveClass: (classId: string) => Class | undefined,
@@ -389,12 +333,7 @@ export function setClassResourceUsed(
   return { classResourcesUsed: current };
 }
 
-/**
- * Enter a resource, or come out of it.
- *
- * Entering spends a use, because that is what the pool counts; ending does not give it back, which
- * is also what the books say. A pool with nothing left cannot be entered.
- */
+/** Entering spends a use and ending does not give it back, as the books say. */
 export function toggleResourceActive(
   character: Character,
   resource: ResolvedClassResource,
@@ -416,11 +355,7 @@ export function toggleResourceActive(
   };
 }
 
-/**
- * What a rest gives back. A resource that comes back fully on this rest is cleared; one the 2024
- * books hand back a single use of on a short rest is reduced by that much instead, which is what
- * `shortRestRegain` carries. A resource whose source states no recovery is left alone.
- */
+/** `shortRestRegain` carries a partial; a resource stating no recovery is left alone. */
 function restoreOnRest(
   character: Character,
   resources: ResolvedClassResource[],

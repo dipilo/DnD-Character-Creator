@@ -6,11 +6,7 @@ import { useCharacterStore } from '@/store/characterStore';
 import { UploadCloud } from 'lucide-react';
 import { toast } from 'sonner';
 
-/**
- * The one-time upload offered when someone signs in with characters already in localStorage
- * (MERGE_PLAN.md Phase 2). Signing in never publishes them on its own — characters built before
- * an account existed are the user's to hand over, and anything built after sign-in syncs anyway.
- */
+/** Signing in publishes nothing: pre-account characters are the user's to hand over. */
 export function CharacterUploadOffer() {
   const status = useAuthStore((state) => state.status);
   const unsyncedIds = useCharacterSyncStore((state) => state.unsyncedIds);

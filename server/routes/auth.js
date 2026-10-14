@@ -18,8 +18,6 @@ const { optionalAuth, requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
-// ---------- Discord OAuth skeleton ----------
-// Configure in server/config.json: { discordClientId, discordClientSecret, discordRedirectUri }
 router.get('/auth/discord', (req, res) => {
   const state = genToken(12);
   const clientId = config.discordClientId;
@@ -37,11 +35,7 @@ router.get('/auth/discord', (req, res) => {
   res.redirect(url);
 });
 
-/**
- * Campaign seats that look like they belong to this Discord user but are not yet linked.
- * The old callback shipped these to the client through postMessage/localStorage alongside a raw
- * user id; now the browser is redirected with a session cookie and asks for them separately.
- */
+/** Fetched separately now; the old callback shipped these beside a raw user id. */
 async function findPotentialPlayerLinks(user, discordProfile) {
   const username = discordProfile?.username ?? user.username;
   const globalName = discordProfile?.global_name || username;
@@ -138,9 +132,7 @@ router.get('/auth/discord/callback', async (req, res) => {
       user = await db.get('SELECT * FROM users WHERE id = ?', info.lastInsertRowid);
     }
 
-    // The whole point of Phase 1b: the browser leaves this route holding an httpOnly session
-    // cookie, not a user id it was trusted to send back. Unlinked seats are fetched afterwards
-    // from /api/discord/potential-links, which requires that session.
+    // The browser leaves holding a cookie, not a user id it was trusted to send back.
     await createSession(req, res, user);
     return res.redirect(returnTo);
   } catch (e) {
@@ -232,11 +224,7 @@ router.post('/api/discord/confirm-link', requireAuth, async (req, res) => {
   }
 });
 
-/**
- * Resolve an invite_token in the request body to its campaign_id, or return an error code.
- * Shared by signup and login, which both accept an invite as a way to name the campaign a
- * passwordless account is scoped to.
- */
+/** Shared by signup and login, which both accept an invite as the campaign's name. */
 async function applyInviteToken(req) {
   const inviteToken = req.body?.invite_token;
   if (!inviteToken) return null;

@@ -1,12 +1,4 @@
-/**
- * The sheet's arithmetic that depends on nothing but the document and a resolved record: ability
- * modifiers, proficiency bonus, spell save DC and attack bonus, and the attack table.
- *
- * Kept apart from `sheetDerivations` so the Express server can run the same maths for the Discord
- * bot (`server/lib/botSheet.js` imports this file through Node's type stripping). That works only
- * while every import here is a `type` import — a value import of `@/lib/builderRules` or anything
- * behind Vite's alias graph breaks the server's load, and `npm run test:bot` is what catches it.
- */
+// Sheet arithmetic; every import must stay a `type` import or the bot's load breaks.
 import type { AbilityScores } from '@/types/dnd';
 
 export const ABILITY_ORDER: ReadonlyArray<keyof AbilityScores> = [
@@ -25,10 +17,7 @@ export const formatModifier = (modifier: number): string =>
 /** Both printings: +2 at 1st, +1 every four levels. */
 export const getCharacterProficiencyBonus = (totalLevel: number): number => Math.ceil(totalLevel / 4) + 1;
 
-/**
- * The shape this module needs out of `ResolvedCharacterClass` — the level lives on `entry`, not
- * on the class, because the class is the printing and the entry is this character's take on it.
- */
+/** The level lives on `entry`: the class is the printing, the entry this character's take. */
 export interface ResolvedClassLike {
   entry: { level: number };
   cls: { name: string; hitDie: number; spellcasting?: { ability?: string } | null };
@@ -41,10 +30,7 @@ export interface DerivedSpellcastingStats {
   attackBonus: number;
 }
 
-/**
- * Save DC and attack bonus per spellcasting class. Two casting classes have two of each, which is
- * why this is a list — a single "spell save DC" on the sheet is wrong for a multiclass caster.
- */
+/** A list: one "spell save DC" is wrong for a multiclass caster. */
 export function deriveSpellcastingStats(
   abilityScores: AbilityScores,
   proficiencyBonus: number,
@@ -67,15 +53,7 @@ export function deriveSpellcastingStats(
   return stats;
 }
 
-/* ------------------------------------------------------------------------- *
- * Unarmed Strike
- * ------------------------------------------------------------------------- */
-
-/**
- * The Unarmed Strike every character has. Both printings state the same damage — 1 plus the
- * Strength modifier, bludgeoning — and every character is proficient with it, so it is derived
- * rather than being an item somebody has to remember to add to their equipment.
- */
+/** Derived, not an item to remember: both printings state the same damage. */
 export function deriveUnarmedStrike(
   abilityScores: AbilityScores,
   proficiencyBonus: number
@@ -91,14 +69,6 @@ export function deriveUnarmedStrike(
     properties: []
   };
 }
-
-/* ------------------------------------------------------------------------- *
- * Attacks (NEXT_STEPS.md §5.4)
- *
- * Derivation, not new state: every input is already on the document or in the
- * equipment catalogue, so nothing here needs a schema change. Weapon *use* —
- * ammunition spent, a thrown dagger's whereabouts — is state and is not here.
- * ------------------------------------------------------------------------- */
 
 export interface DerivedAttack {
   name: string;
@@ -138,10 +108,7 @@ export interface ResolvedWeaponLike {
 const hasProperty = (properties: string[] | undefined, name: string) =>
   (properties ?? []).some((entry) => entry.toLowerCase().includes(name));
 
-/**
- * Which ability a weapon attacks with. Finesse is the only rule that lets the player choose, and
- * the choice is always "whichever is better", so it needs no stored decision.
- */
+/** Finesse is the only choice, and it is always "whichever is better", so nothing is stored. */
 function attackAbility(item: NonNullable<ResolvedWeaponLike['item']>, abilityScores: AbilityScores): keyof AbilityScores {
   const strength = abilityModifier(abilityScores.strength);
   const dexterity = abilityModifier(abilityScores.dexterity);
@@ -159,12 +126,7 @@ function damageLine(dice: string | undefined, modifier: number, damageType: stri
   return damageType ? `${withModifier} ${damageType.toLowerCase()}` : withModifier;
 }
 
-/**
- * Versatile's two-handed die. The SRD records it as `two_handed_damage` and the generator now
- * carries it through as `versatileDamage`; some imported HTML packs instead put it in the property
- * text ("Versatile (1d10)"). Both are read. Nothing is inferred from the one-handed die — a weapon
- * whose source never stated the larger die simply shows no two-handed line.
- */
+/** Both the structured field and the property text are read; nothing is inferred. */
 function versatileDice(item: NonNullable<ResolvedWeaponLike['item']>): string | undefined {
   if (item.versatileDamage?.trim()) return item.versatileDamage.trim();
   for (const property of item.properties ?? []) {
@@ -174,11 +136,7 @@ function versatileDice(item: NonNullable<ResolvedWeaponLike['item']>): string | 
   return undefined;
 }
 
-/**
- * Whether the character is proficient with a weapon. Class weapon proficiencies are printed as
- * categories ("Simple weapons", "Martial weapons") and as individual names ("Longsword"), so both
- * have to be matched — a Bard proficient in longswords by name is not proficient in martial ones.
- */
+/** Categories and individual names both have to match. */
 function isProficientWithWeapon(item: NonNullable<ResolvedWeaponLike['item']>, weaponProficiencies: string[]): boolean {
   const normalised = weaponProficiencies.map((entry) => entry.toLowerCase());
   const itemName = item.name.toLowerCase();
@@ -192,10 +150,7 @@ function formatRange(item: NonNullable<ResolvedWeaponLike['item']>): string | un
   return item.range.long ? `${item.range.normal}/${item.range.long} ft.` : `${item.range.normal} ft.`;
 }
 
-/**
- * One row per equipped weapon. Only equipped weapons: an attack panel listing the spare shortbow
- * in the pack is the thing that makes D&D Beyond's own panel hard to read.
- */
+/** Equipped only: listing the spare shortbow is what makes DDB's panel hard to read. */
 export function deriveAttacks({
   equipment,
   abilityScores,

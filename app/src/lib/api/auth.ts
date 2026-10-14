@@ -6,10 +6,7 @@ export interface Credentials {
   password: string;
 }
 
-/**
- * Who the cookie says we are, or null. The cookie is httpOnly, so this request is the only way the
- * client can learn its own identity — there is nothing in localStorage to read.
- */
+/** The cookie is httpOnly, so this request is the only way to learn our own identity. */
 export async function fetchCurrentUser(signal?: AbortSignal): Promise<AuthUser | null> {
   try {
     const body = await api.get<{ user: AuthUser }>('/api/me', { signal });
@@ -39,10 +36,7 @@ export async function logoutEverywhere(): Promise<void> {
   await api.post('/auth/logout-all');
 }
 
-/**
- * Discord sign-in is a full-page navigation, not a fetch: the callback establishes the session
- * server-side and redirects back, so no window messaging is involved any more (MERGE_PLAN.md §14).
- */
+/** A full-page navigation: the callback sets the session and redirects, so no messaging. */
 export function discordSignInUrl(returnTo: string = window.location.href): string {
   return `${import.meta.env.VITE_API_BASE ?? ''}/auth/discord?returnTo=${encodeURIComponent(returnTo)}`;
 }

@@ -1,13 +1,7 @@
 import { api } from './client';
 import type { PreGameForm, PreGameFormData, PreGameFormSummary } from './types';
 
-/**
- * The Pre-Game Form (Kids on Bikes, Appendix A). Three reads, and which one a screen may call is
- * the whole design: your own, the GM's view of everybody's, and the table's compiled merge.
- *
- * The merge is assembled by the server. A client that could build it would have had to be handed
- * the forms first, which is exactly what it exists to prevent.
- */
+/** Three reads; the merge is the server's, or a client would be handed the forms first. */
 export async function getMyPreGameForm(campaignId: number): Promise<PreGameForm | null> {
   const body = await api.get<{ form: PreGameForm | null }>(
     `/api/pre-game-form?campaign_id=${encodeURIComponent(campaignId)}`,

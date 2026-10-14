@@ -37,9 +37,7 @@ const mergeDynamicBucket = <T extends { id: string }>(baseEntries: T[], bucket: 
   return mergeCollectionsById(baseEntries, getStoreBucket(bucket) as T[]);
 };
 
-// The merged library is derived from module-level packs and the content store, so it can only
-// change when the store does. Recomputing per call put a full merge of every pack behind every
-// `getRuntimeSpellById`, and `useContentLibrary` did all eight of them on each render.
+// Memoized: recomputing put a full merge of every pack behind every lookup.
 const runtimeCache = new Map<string, unknown>();
 let cachedImportedPacks: unknown;
 let cachedHomebrewLibrary: unknown;
@@ -115,21 +113,12 @@ const choosePreferredText = (primary?: string, fallback?: string) => {
   return fallback;
 };
 const choosePreferredArray = <T,>(primary?: T[], fallback?: T[]) => (primary && primary.length > 0 ? primary : (fallback ?? []));
-/**
- * The same, for a progression table neither printing may state. An absent table has to stay absent:
- * `spellsKnown: []` is truthy, so every prepared caster read its own limit off an empty column and
- * the builder offered a Cleric 0 spells.
- */
+/** An absent table stays absent: `spellsKnown: []` is truthy and offered a Cleric 0 spells. */
 const choosePreferredTable = <T,>(primary?: T[], fallback?: T[]): T[] | undefined => {
   if (primary && primary.length > 0) return primary;
   return fallback && fallback.length > 0 ? fallback : undefined;
 };
-/**
- * The same rule as `choosePreferredCount`, one level up: a `spellcasting` object that parsed no
- * slot table is not a reason to drop one that did. Taking the whole object from whichever candidate
- * won left the 2014 Bard, Sorcerer, Wizard and Ranger with no spell slots at all — the parsed pack
- * states their casting ability and stops, and `??` kept the one without the table.
- */
+/** Merge field by field: `??` on the whole object left four 2014 casters with no slots. */
 const choosePreferredSpellcasting = (primary?: SpellcastingProgression, fallback?: SpellcastingProgression) => {
   if (!primary) return fallback;
   if (!fallback) return primary;
@@ -142,9 +131,7 @@ const choosePreferredSpellcasting = (primary?: SpellcastingProgression, fallback
   } satisfies SpellcastingProgression;
 };
 const choosePreferredNumber = (primary?: number, fallback?: number) => primary ?? fallback;
-// Counts are "unset" at 0, not at undefined: a source pack that parsed no skill choices reports
-// `skillCount: 0`, and `??` happily keeps that zero, which left the merged class offering
-// "Choose 0 from" a full skill list. Prefer the first positive value instead.
+// A count is unset at 0, not undefined, or a merged class offers "Choose 0 from".
 const choosePreferredCount = (primary?: number, fallback?: number) => {
   if (primary && primary > 0) {
     return primary;
@@ -782,11 +769,7 @@ const isSubclassTrackCompatible = (subclass: Subclass, targetTrack: SubclassComp
   return subclassTrack === 'shared' || subclassTrack === targetTrack;
 };
 
-/**
- * Resources are all-or-nothing per printing: a candidate either parsed the class table's pool
- * columns or parsed none, and mixing two printings' columns would offer a 2014 Barbarian the 2024
- * table's rage count. `choosePreferredArray` is the same rule the proficiency lists use.
- */
+/** All-or-nothing per printing, or a 2014 Barbarian gets the 2024 table's rage count. */
 const choosePreferredResources = (primary?: ClassResource[], fallback?: ClassResource[]) => {
   const chosen = choosePreferredArray(primary ?? [], fallback ?? []);
   return chosen.length > 0 ? chosen : undefined;
@@ -963,12 +946,7 @@ const applyOptionalFeatureSupplements = (cls: Class): Class => {
   };
 };
 
-// "You gain proficiency in one skill of your choice" is a pending choice, not a proficiency, and it
-// has no inline list for the importer to turn into options — the list is the class's own. Features
-// that name the class's list ("from the list of skills available to barbarians at 1st level", as
-// Primal Knowledge does) resolve against `skillChoices`; an unrestricted choice resolves against
-// every skill. Deriving both from the class the feature is merged onto keeps this out of a
-// per-feature lookup table.
+// An open choice's options come from the merged class's own `skillChoices`.
 const openSkillChoicePattern = /\bproficienc(?:y|ies)\s+(?:in|with)\s+(one|two|three|four|another|an additional)\s+(?:other\s+|additional\s+)?skills?\s+of your choice\b(?!\s*(?:from the following|:))/i;
 const classSkillListPattern = /\b(?:list of skills|skill list) available to\b/i;
 const skillChoiceCountWords: Record<string, number> = {
@@ -1133,10 +1111,7 @@ const enrichClass = (primary: Class, fallback?: Class): Class => {
   return sanitizeClass(applyClassSkillChoices(applyClassFeatureChoiceSupplements(applyOptionalFeatureSupplements(enriched))));
 };
 
-// Which candidate wins `primary` depends on how much a source pack happened to parse, so letting
-// it decide the merged id makes class ids move whenever the importer improves — breaking saved
-// characters and bookmarked /builder/class/<id> URLs. Built-in ids are the stable ones, so they
-// name the merged class whenever a built-in printing exists.
+// A built-in id names the merged class, or class ids move whenever the importer improves.
 const getStableClassId = (candidates: Class[]) => {
   const builtIn = candidates.find((candidate) => !candidate.sourceId);
   if (builtIn) {
@@ -1185,10 +1160,7 @@ const mergeClassCandidates = (candidates: Class[]) => {
   return { ...merged, id: stableId } satisfies Class;
 };
 
-// Built-in subclasses carry no source metadata of their own, so their compatibility track
-// resolves to 'shared' and they leak across rules editions (e.g. the 2014 Draconic Bloodline
-// and Wild Magic surfacing under the 2024 Sorcerer). Inherit the owning class's source before
-// any merging so track filtering can scope them to that class's edition.
+// Inherit the class's source first, or a built-in subclass leaks across editions.
 const withInheritedSubclassSources = (cls: Class): Class => ({
   ...cls,
   subclasses: cls.subclasses.map((subclass) => ({
@@ -1257,10 +1229,7 @@ const enrichEquipment = (primary: Equipment, fallback?: Equipment): Equipment =>
 const selectPreferredSubclass = (subclasses: Subclass[], targetClass: Class) => {
   const targetTrack = getSubclassCompatibilityTrack(targetClass.sourceId, targetClass.source);
   const grouped = subclasses.reduce<Map<string, Subclass[]>>((entries, subclass) => {
-    // Candidates here are already scoped to a single class, so dedupe by subclass name only.
-    // Using the classId-based canonical key would leave a built-in subclass (no classId, e.g.
-    // "The Fiend" from the static class list) ungrouped from the same subclass imported from a
-    // source pack (classId set), causing it to appear twice.
+    // Scoped to one class already, so dedupe by name: a built-in has no `classId`.
     const key = normalizeIdentifier(subclass.name);
     const collection = entries.get(key);
     if (collection) {
@@ -1364,9 +1333,7 @@ const mergeSubclassCollections = (classes: Class[], subclasses: Subclass[]) => {
   });
 };
 
-// Fallback enrichment must never cross rules editions: keying by name alone let the 2014
-// Dwarf's longer description and 2014-only traits (e.g. Tool Proficiency) leak into the
-// 2024 Dwarf, so the fallback key pairs the canonical name with the entry's edition.
+// Key the fallback by canonical name *plus* edition, or the 2014 Dwarf leaks into 2024.
 const getSpeciesFallbackLookupKey = (species: Species) => {
   return `${getCanonicalSpeciesKey(species)}::${getRulesEdition(species.sourceId, species.source)}`;
 };
@@ -1419,9 +1386,7 @@ export const getRuntimeClasses = memoizeRuntime('classes', () => {
     return groups;
   }, {});
   const enrichedClasses = mergedClasses.map((cls) => enrichClass(cls, fallbackClasses[getClassFallbackLookupKey(cls)]));
-  // A real class always has a positive hit die. Sources that reprint optional class features
-  // (e.g. Tasha's Sorcerer/Warlock feature pages) can be misparsed into placeholder classes with
-  // a zero hit die; drop those so they never appear as broken, unbuildable options.
+  // A real class has a positive hit die, so drop the placeholders a reprint parses into.
   const buildableClasses = enrichedClasses.filter((cls) => cls.hitDie > 0);
   return mergeSubclassCollections(buildableClasses, getRuntimeSubclasses());
 });
@@ -1461,21 +1426,14 @@ export const getRuntimeEquipment = memoizeRuntime('equipment', () => {
 
 export const getRuntimeMonsters = memoizeRuntime('monsters', () => mergeDynamicBucket(staticMonsters(), 'monsters').map(sanitizeMonster));
 
-/**
- * The actions every character can take, as each printing lists them. Not a `ContentBucketKey`:
- * nobody picks one, so it has no store bucket and an imported pack contributes through its own
- * optional field.
- */
+/** Not a `ContentBucketKey`: nobody picks one, so a pack contributes via its own field. */
 export const getRuntimeCombatActions = memoizeRuntime('combat-actions', () => {
   const { importedPacks } = useContentStore.getState();
   const imported = importedPacks.flatMap((pack) => pack.content.combatActions ?? []);
   return mergeCollectionsById(staticCombatActions(), imported);
 });
 
-/**
- * The languages each printing tabulates. Not a `ContentBucketKey` for the same reason
- * `combatActions` is not, so an imported pack contributes through its own optional field.
- */
+/** Not a `ContentBucketKey` either, for the same reason `combatActions` is not. */
 export const getRuntimeLanguages = memoizeRuntime('languages', () => {
   const { importedPacks } = useContentStore.getState();
   const imported = importedPacks.flatMap((pack) => pack.content.languages ?? []);
@@ -1486,12 +1444,7 @@ export const getRuntimeLanguages = memoizeRuntime('languages', () => {
 // name is normalised by nothing, so the two would read as two languages.
 const getLanguageNameKey = (name: string) => name.toLowerCase().replaceAll(/['’]/g, '\'').replaceAll(/\s+/g, ' ').trim();
 
-/**
- * The names a language slot may be filled with. `defaultLanguageOptions` leads the union because a
- * pack generated before the tables were extracted carries none, because 2014 states Primordial's
- * four dialects in prose rather than in its table, and because a selection already stored under its
- * spelling has to keep matching the option offered.
- */
+/** Defaults lead the union, so a spelling already stored keeps matching its option. */
 export const getRuntimeLanguageNames = memoizeRuntime('languages:names', () => {
   const namesByKey = new Map<string, string>();
   for (const name of [...defaultLanguageOptions, ...getRuntimeLanguages().map((language) => language.name)]) {
@@ -1510,16 +1463,10 @@ export const getRuntimeSpeciesVariant = (speciesId: string, variantId: string) =
   return getRuntimeSpeciesById(speciesId)?.variants?.find((variant) => variant.id === variantId);
 };
 
-// Characters store a class id, and merged class ids can move as source packs improve. Resolve a
-// stored id canonically (name plus the edition its prefix implies) so an older id still opens the
-// same class instead of dropping the character's class entirely.
+// Resolve a stored id canonically, or an older id drops the character's class.
 const getEditionFromClassId = (id: string) => (/^(basic-rules|phb)-2024-/.test(id) ? '2024' : '2014');
 
-/**
- * The same resolution against a caller-supplied list, for pages that already hold the class list
- * from `useContentLibrary` — they get the canonical lookup without having to name a second,
- * invisible dependency on the content store.
- */
+/** For a caller that already holds the list, so it names no second dependency. */
 export const resolveClassById = (classes: Class[], id: string) => {
   const exactMatch = classes.find((entry) => entry.id === id);
   if (exactMatch) {
@@ -1553,10 +1500,7 @@ export const getRuntimeEquipmentById = memoizeRuntimeIndex('equipment:index', ge
 
 export const getRuntimeMonsterById = memoizeRuntimeIndex('monsters:index', getRuntimeMonsters);
 
-/**
- * The whole library as one memoized object, so a consumer's `useMemo` on `equipment` or
- * `backgrounds` survives a re-render that changed only the character.
- */
+/** One memoized object, so a consumer's `useMemo` survives an unrelated re-render. */
 const getRuntimeLibrary = memoizeRuntime('library', () => ({
   species: getRuntimeSpecies(),
   classes: getRuntimeClasses(),

@@ -1,26 +1,9 @@
-/**
- * Who may read or edit one character.
- *
- * Before sharing there was one rule — a row belongs to one user — and one widening: attaching a
- * character to a campaign let that campaign's members read it. Three things widen it now, and all
- * three are the owner's own act:
- *
- *   - `characters.visibility`, the D&D Beyond-shaped choice between private, campaign and public;
- *   - `character_grants`, one row per account or campaign owner the sheet was handed to;
- *   - `campaign_members.character_edit_consent`, a table-wide "the GM may edit my sheets here".
- *
- * Invisible still means **404 rather than 403** (a 403 confirms the id exists), and an edit grant
- * is over the *document* only: the seat, the visibility, the grant list and deletion stay with the
- * owner. That is why `resolveCharacterAccess` reports `isOwner` separately from `canEdit`.
- */
+/** Invisible means 404, not 403, and an edit grant covers the document alone. */
 const db = require('../db');
 
 const VISIBILITIES = ['private', 'campaign', 'public'];
 
-/**
- * A row written before the column read as campaign-visible the moment it was attached, so NULL is
- * 'campaign'. Defaulting it to 'private' would silently un-share every existing party view.
- */
+/** NULL is 'campaign': defaulting to 'private' would un-share every existing party view. */
 function characterVisibility(row) {
   const stored = typeof row?.visibility === 'string' ? row.visibility : '';
   return VISIBILITIES.includes(stored) ? stored : 'campaign';
@@ -36,13 +19,7 @@ async function listGrants(characterId) {
   return await db.all('SELECT * FROM character_grants WHERE character_id = ? ORDER BY id', characterId);
 }
 
-/**
- * The facts a decision needs, fetched once for a whole list rather than once per row.
- *
- * The party view resolves every character at a table. Doing that a row at a time cost four round
- * trips each against a remote database, so a table of six paid twenty-four; this is three,
- * whatever the party size.
- */
+/** Three round trips whatever the party size; a row at a time cost four each. */
 async function loadAccessContext(user, rows) {
   const context = { ownedCampaigns: new Set(), grants: new Map(), memberships: new Map() };
   const live = rows.filter((row) => row && !row.deleted_at);
@@ -72,10 +49,7 @@ async function loadAccessContext(user, rows) {
   return context;
 }
 
-/**
- * Both remaining questions are about one campaign's membership rows: whether the caller belongs to
- * the table a character is shared at, and whether that character's owner consented there.
- */
+/** Both remaining questions are about one campaign's membership rows. */
 async function loadMemberships(user, rows, context) {
   const wanted = new Map();
   for (const row of rows) {
@@ -122,23 +96,14 @@ function grantedAccess(user, row, context) {
   return best;
 }
 
-/**
- * The consent a member gave the campaign they play at: the GM may edit anything they seat there,
- * including characters built after the consent was given. It lives on the membership row and not
- * in `character_grants` for that reason.
- */
+/** Covers characters built after it was given, which is why it is on the membership row. */
 function hasCampaignEditConsent(user, row, context) {
   if (!user || row.campaign_id == null) return false;
   if (!context.ownedCampaigns.has(Number(row.campaign_id))) return false;
   return Boolean(membershipIn(context, row.campaign_id, row.user_id)?.character_edit_consent);
 }
 
-/**
- * Resolve what `user` (null for an anonymous caller) may do with `row`, given facts already read.
- *
- * Returns null when the character should read as absent. `canEdit` never implies the owner's
- * rights — check `isOwner` for anything that is not the document itself.
- */
+/** Null means the character reads as absent; `canEdit` never implies the owner's rights. */
 function decideAccess(user, row, context) {
   if (!row || row.deleted_at) return null;
   const visibility = characterVisibility(row);

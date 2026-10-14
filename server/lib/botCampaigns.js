@@ -1,7 +1,4 @@
-// The Discord bot's view of a campaign's table: who sits at it, when they are free, and one way
-// for a member to say so in the words they would use in chat. The availability text goes through
-// the same parser the site's own form uses (`lib/availability.js`), so "Mon Wed 7-11pm" means the
-// same thing from Discord as from the browser.
+// Availability goes through the site's own parser, so Discord and the browser agree.
 const db = require('../db');
 const { buildRangesFromText, mergeInsertAvailability, tzFromAbbrev } = require('./availability');
 const { readMembership } = require('./membership');
@@ -50,11 +47,7 @@ async function campaignMembers(campaignId) {
   }));
 }
 
-/**
- * The seat this member's availability is written against. An owner who never took a seat has
- * none, and a DM's free evenings matter as much as anyone's, so one is made the way `add-self`
- * makes it rather than answering "you have no seat".
- */
+/** An owner with no seat gets one made, rather than being told they have none. */
 async function ensureSeat(campaignId, user, membership) {
   if (membership.player_id) return Number(membership.player_id);
   const info = await db.run(
@@ -65,10 +58,7 @@ async function ensureSeat(campaignId, user, membership) {
   return Number(info.lastInsertRowid);
 }
 
-/**
- * Overlap of the table's availability inside [start, end): one interval per stretch where the
- * same set of players is free. Shared by the browser's aggregate route and the bot's.
- */
+/** One interval per stretch where the same players are free; shared with the browser route. */
 async function aggregateAvailability(campaignId, startIso, endIso, playerIds = null) {
   let rows;
   if (Array.isArray(playerIds) && playerIds.length > 0) {
@@ -104,11 +94,7 @@ async function aggregateAvailability(campaignId, startIso, endIso, playerIds = n
   return intervals;
 }
 
-/**
- * Parse the text the way the form does and merge each block onto the seat. A zone given with the
- * text is remembered on the seat, so the next message need not repeat it; none given reads the
- * seat's. An unknown zone name is refused rather than silently read as UTC.
- */
+/** A given zone is remembered on the seat; an unknown one is refused, not read as UTC. */
 async function writeAvailabilityFromText(playerId, campaignId, text, timezone, daysAhead) {
   const seat = await db.get('SELECT timezone FROM players WHERE id = ?', playerId);
   let zone = seat?.timezone || '';

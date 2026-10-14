@@ -1,11 +1,6 @@
 import type { AutoClaimMode, Campaign, CampaignMember } from '@/lib/api';
 
-/**
- * Whether a seat someone creates becomes theirs. The resolution order mirrors
- * `server/lib/seatClaim.js` exactly: the owner's per-member override, then the member's own
- * preference, then the campaign's default, then the built-in answer. Null at any level is "no
- * opinion" and falls through, the same way it does on the permission defaults.
- */
+/** Mirrors `server/lib/seatClaim.js`: null at any level falls through. */
 export const AUTO_CLAIM_MODES = [
   { value: 'never', label: 'Never', hint: 'Seats they make stay unclaimed for someone else to take' },
   { value: 'first', label: 'First seat', hint: 'Takes a new seat only while they hold none' },

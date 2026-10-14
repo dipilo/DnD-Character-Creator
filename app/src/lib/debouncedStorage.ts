@@ -1,17 +1,6 @@
 import type { PersistStorage, StorageValue } from 'zustand/middleware';
 
-/**
- * zustand's `persist` middleware calls `setItem` synchronously inside the same `set()` that drives
- * the click that triggered it — `JSON.stringify` plus `localStorage.setItem` on a document full of
- * spells and equipment runs long enough to be felt as the button itself being slow. Debouncing the
- * write lets the state update (and the paint it produces) finish first; the write still lands within
- * a keystroke of the edit; and coalescing rapid edits (a slot toggled twice) avoids writing the
- * middle state at all.
- *
- * The delay is only safe because every pending write is flushed when the page is hidden. A phone
- * browser freezes a backgrounded tab without running its timers, so an edit made in the last
- * quarter-second before the user switched apps was simply lost.
- */
+/** Debounced so the paint lands first, and flushed on hide: a frozen tab runs no timers. */
 export function createDebouncedLocalStorage<T>(delayMs = 250): PersistStorage<T> {
   const timers = new Map<string, ReturnType<typeof setTimeout>>();
   const queued = new Map<string, StorageValue<T>>();

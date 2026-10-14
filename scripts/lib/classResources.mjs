@@ -1,18 +1,4 @@
-/**
- * A limited-use feature stated in prose, read into the same `ClassResource` shape a class table's
- * column produces.
- *
- * The 2014 tables state only three pools (Rages, Ki Points, Sorcery Points); everything else —
- * Second Wind, Action Surge, Channel Divinity, Wild Shape, Bardic Inspiration — is a sentence:
- * "Once you use this feature, you must finish a short or long rest before you can use it again",
- * "You can use this feature twice", "a number of times equal to your Charisma modifier (a minimum
- * of once)", "Beginning at 6th level, you can use your Channel Divinity twice between rests". Each
- * shape below is one a source prints; a feature whose text states no count, or no rest that
- * returns the uses, is not a pool and gets no tracker.
- *
- * Shared with the table reader in `canonical-content.mjs`, so a column and a sentence cannot
- * disagree about what "you regain all expended uses when you finish a Long Rest" means.
- */
+// A pool stated in prose; shared with the table reader so the two cannot disagree.
 
 const ABILITY_NAMES = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 const MAX_LEVEL = 20;
@@ -45,10 +31,7 @@ const RESET_PATTERNS = [
 /** "You regain one expended use when you finish a Short Rest" — a partial, not the full reset. */
 const SHORT_REST_PARTIAL = /regain(?:s)? (one|two|three|\d+) (?:of (?:its|your) )?expended[^.]{0,60}?finish (?:a |an )?short rest/i;
 
-/**
- * Which rest returns every use, read from the feature's own prose. Null means the text states no
- * recovery, which is what disqualifies a column or a sentence from being a pool at all.
- */
+/** Null means no stated recovery, which disqualifies a column or sentence as a pool. */
 export const parseResourceReset = (text) => {
   let resetsOn = null;
   for (const pattern of RESET_PATTERNS) {
@@ -153,10 +136,7 @@ const perLevelFrom = (fromLevel, steps) => {
 
 const slug = (value) => value.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-').replaceAll(/^-+|-+$/g, '');
 
-/**
- * The pool one feature states, or null. `level` is the class level the feature is gained at; below
- * it `perLevel` is 0, which is what keeps a level-1 Cleric from seeing a Channel Divinity tracker.
- */
+/** Below `level`, `perLevel` is 0, which keeps a level-1 Cleric off the tracker. */
 export const readProseResource = (feature) => {
   const text = feature?.description ?? '';
   const level = Number(feature?.level) || 1;
@@ -189,9 +169,7 @@ export const readProseResource = (feature) => {
   return resource;
 };
 
-// A later feature that changes when an earlier pool comes back: "Beginning when you reach 5th
-// level, you regain all of your expended uses of Bardic Inspiration when you finish a short or
-// long rest."
+// A later feature can change when an earlier pool comes back.
 const SHORT_REST_UPGRADE = /regain all (?:of )?your expended uses of ([A-Z][\w’']*(?: [A-Z][\w’']*)*) when you finish a short or long rest/i;
 
 const applyShortRestUpgrades = (resources, features) => {
@@ -205,11 +183,7 @@ const applyShortRestUpgrades = (resources, features) => {
   }
 };
 
-/**
- * Every pool a feature list states in prose, added after the ones the table already produced. A
- * feature a column belongs to is the column's — 2024's Second Wind says "You can use this feature
- * twice" and has a column too — so it is skipped here.
- */
+/** A feature that owns a column is the column's, so it is skipped here. */
 export const extractProseResources = (features, tableResources = []) => {
   const claimed = new Set(tableResources.map((resource) => resource.featureName).filter(Boolean));
   const resources = [...tableResources];

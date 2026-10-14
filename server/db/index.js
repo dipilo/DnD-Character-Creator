@@ -1,11 +1,4 @@
-// server/db/index.js
-// Async DB access using Turso (libsql) with a small helper API.
-//
-// Two things here are not incidental, and both exist because a statement that never comes back
-// looks exactly like a sleeping host from the client's side (`REQUEST_TIMEOUT_MS`, 45 s):
-//
-//   - the transport is HTTP, not the WebSocket a `libsql:` URL selects, and
-//   - every statement has a deadline.
+// Turso over HTTP, not the WebSocket a `libsql:` URL picks, and every statement has a deadline.
 const { createClient } = require('@libsql/client');
 
 const configuredUrl = process.env.TURSO_DATABASE_URL || process.env.LIBSQL_URL || process.env.DATABASE_URL;
@@ -25,21 +18,10 @@ function envInt(name, fallback) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
-/**
- * How long a single statement may take before it is abandoned.
- *
- * Turso answers in tens of milliseconds; anything past a few seconds is a connection that is not
- * going to answer at all. Generous enough for a cold libsql instance, far under the client's 45 s.
- */
+/** Past a few seconds is a connection that will not answer; well under the client's 45 s. */
 const STATEMENT_TIMEOUT_MS = envInt('DB_TIMEOUT_MS', 15_000);
 
-/**
- * `libsql:` selects the hrana WebSocket transport, which holds one long-lived socket and has no
- * per-request timeout. When that socket dies without a close frame — an idle NAT timeout is the
- * usual way — the client never learns, so it writes the next statement into a dead connection and
- * the promise simply never settles. Turso serves the same host over HTTP, where every statement is
- * its own request. Set `LIBSQL_TRANSPORT=ws` to go back.
- */
+/** A dead hrana socket never settles the next statement; `LIBSQL_TRANSPORT=ws` goes back. */
 function resolveUrl(url) {
   if (process.env.LIBSQL_TRANSPORT === 'ws') return url;
   if (!url.startsWith('libsql://')) return url;
@@ -49,36 +31,18 @@ function resolveUrl(url) {
 
 const url = resolveUrl(configuredUrl);
 
-/**
- * How long one HTTP request to Turso may take. Longer than the statement's own deadline so the
- * error a caller sees stays `db_timeout`; this bound exists to hang up, not to report.
- */
+/** Longer than the statement deadline, so a caller still sees `db_timeout`. */
 const HTTP_TIMEOUT_MS = STATEMENT_TIMEOUT_MS + 1_000;
 
-/**
- * The deadline for the handful of statements that read `characters.data`.
- *
- * That column is a whole character sheet and a portrait is stored inline, so a row is routinely
- * hundreds of kilobytes. The short deadline above exists to notice a dead socket quickly, not to
- * bound a large transfer, so a document read gets its own. What actually stalled such a read was
- * the fetch below, not the transfer; this bound is the margin, not the fix.
- */
+/** `characters.data` is a sheet with a portrait inline, so it gets its own deadline. */
 const DOCUMENT_TIMEOUT_MS = envInt('DB_DOCUMENT_TIMEOUT_MS', 60_000);
 
-/**
- * The driver's fetch, with a deadline of its own. The platform's `fetch` is the one to hand it:
- * `@libsql/isomorphic-fetch` never settles `json()` on a body over 64 KiB, which is every character
- * carrying a portrait, and nothing in the driver has a timeout of its own.
- */
+/** The platform `fetch`: the isomorphic one never settles `json()` over 64 KiB. */
 function timedFetch(input, init) {
   return globalThis.fetch(input, { ...init, signal: AbortSignal.timeout(HTTP_TIMEOUT_MS) });
 }
 
-/**
- * The same, for a document read. One `fetch` is shared by every statement a client sends, so the
- * longer deadline needs a client of its own: raising `HTTP_TIMEOUT_MS` globally would leave a dead
- * socket on the ordinary path hanging for three quarters of a minute instead of sixteen seconds.
- */
+/** Its own client, or raising the global timeout would hang the ordinary path too. */
 function timedDocumentFetch(input, init) {
   return globalThis.fetch(input, { ...init, signal: AbortSignal.timeout(DOCUMENT_TIMEOUT_MS + 1_000) });
 }
@@ -86,11 +50,7 @@ function timedDocumentFetch(input, init) {
 let client = createClient({ url, authToken, fetch: timedFetch });
 let documentClient = createClient({ url, authToken, fetch: timedDocumentFetch });
 
-/**
- * Replace the connection after a statement was abandoned. The old one is closed best-effort: it is
- * already suspect, and a client that fails to close must not stop the next request from getting a
- * working one.
- */
+/** Closed best-effort: a client that cannot close must not block the next request. */
 function recycleClient() {
   const stale = client;
   client = createClient({ url, authToken, fetch: timedFetch });
@@ -135,11 +95,7 @@ function deadline(promise, sql, timeoutMs = STATEMENT_TIMEOUT_MS) {
   return Promise.race([promise, expiry]).finally(() => clearTimeout(timer));
 }
 
-/**
- * Run one statement under the deadline. A read is sent once more on a fresh connection, because
- * the overwhelmingly likely cause is a connection that died between requests; a write is not,
- * because the server cannot tell a lost request from a lost answer.
- */
+/** A read retries once on a fresh connection; a write cannot, lost request or lost answer. */
 async function execute(sql, params = []) {
   try {
     return await deadline(client.execute({ sql, args: params }), sql);
@@ -152,19 +108,7 @@ async function execute(sql, params = []) {
   }
 }
 
-/**
- * One row from a statement that reads `characters.data`, under `DOCUMENT_TIMEOUT_MS`.
- *
- * Reserved for exactly that: a caller who does not need the document must select the columns it
- * needs and use `get`, or a dead connection takes a minute to be noticed on a read that had no
- * reason to be slow.
- *
- * Unlike `execute`, a timeout here is **not** retried. The retry there exists because a short
- * deadline most likely means a connection that died between requests; at a minute the likelier
- * cause is the transfer itself, and sending it again would put the answer past the client's own
- * 90 s budget and turn a slow sheet into no sheet. The connection is still recycled, so the next
- * request does not inherit a suspect socket.
- */
+/** Not retried: at a minute the likely cause is the transfer, and a resend blows the budget. */
 async function getDocument(sql, ...args) {
   try {
     const res = await deadline(documentClient.execute({ sql, args: normParams(args) }), sql, DOCUMENT_TIMEOUT_MS);

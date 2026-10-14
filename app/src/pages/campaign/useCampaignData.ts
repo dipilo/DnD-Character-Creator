@@ -9,14 +9,7 @@ export function useCampaignId(): number {
   return Number(campaignId);
 }
 
-/**
- * What a load produced, tagged with the campaign and attempt it belongs to.
- *
- * Tagging is what lets `loading` be *derived* rather than stored: a result whose key does not
- * match the request in flight is by definition stale. That keeps every `setState` inside a
- * promise callback, which is the shape CLAUDE.md's rule against `setState` in an effect body
- * asks for — and it also stops one campaign's roster flashing up under another's heading.
- */
+/** Tagging makes `loading` derived, so every `setState` stays inside a promise callback. */
 interface RosterResult {
   key: string;
   players: Player[];
@@ -32,10 +25,7 @@ interface RosterState {
   replacePlayer: (player: Player) => void;
 }
 
-/**
- * The campaign roster. Held per page rather than in a store: it is server state with no offline
- * story, unlike characters, and a stale roster shown from a cache is worse than a brief spinner.
- */
+/** Server state with no offline story: a stale roster is worse than a brief spinner. */
 export function useRoster(campaignId: number): RosterState {
   const [attempt, setAttempt] = useState(0);
   const [result, setResult] = useState<RosterResult | null>(null);
@@ -94,11 +84,7 @@ interface PartyState {
   characterForPlayer: (playerId: number) => CampaignCharacterSummary | undefined;
 }
 
-/**
- * Every character seated at this campaign, whoever owns it. Held per page for the same reason as
- * the roster: which seat a character sits in is the server's to state, and a stale party list read
- * from a cache is worse than a brief spinner.
- */
+/** Per page for the same reason: the seat is the server's to state. */
 export function useCampaignCharacters(campaignId: number): PartyState {
   const [attempt, setAttempt] = useState(0);
   const [result, setResult] = useState<PartyResult | null>(null);

@@ -215,10 +215,7 @@ const splitCsv = (value: string) => {
     .filter(Boolean);
 };
 
-/**
- * Components, where a comma inside the material's parenthetical is part of the material and not a
- * separator: "V, S, M (six objects, each worth at least 10,000 gp)" is three components, not five.
- */
+/** A comma inside the material's parenthetical is part of it, not a separator. */
 const splitComponents = (value: string) => {
   const entries: string[] = [];
   let depth = 0;
@@ -402,10 +399,7 @@ const FieldHeading = ({ children }: Readonly<{ children: string }>) => {
   return <p className="text-sm font-medium">{children}</p>;
 };
 
-// Search-to-insert helper placed under a line-oriented Textarea: picking a
-// suggestion appends one formatted line rather than editing the raw text,
-// since these fields use a "name | type" / "name: description" line syntax
-// that plain CSV autocomplete can't target.
+// Appends a formatted line: these fields use a line syntax CSV autocomplete cannot target.
 const QuickAddLine = ({
   suggestions,
   placeholder,

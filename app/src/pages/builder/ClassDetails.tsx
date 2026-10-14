@@ -37,10 +37,7 @@ export function ClassDetails() {
   const { builderState, updateBuilderCharacter } = useCharacterStore();
 
   const cls = classId ? getRuntimeClassById(classId) : undefined;
-  // The character stores whichever class id was current when it was saved, and the URL carries
-  // whichever id the class list is showing now. Matching on the raw id alone silently missed the
-  // entry, so the page fell back to level 1 and showed only 1st-level features next to a
-  // Subclasses tab that lists every level — resolve through the class the id actually points at.
+  // Resolve through the class the id points at; a raw match fell back to level 1.
   const classEntry = cls ? findCharacterClassEntry(builderState.character?.classes, cls.id, getRuntimeClassById) : undefined;
   const isSelected = !!classEntry;
   const selectedSubclass = classEntry?.subclassId ? getRuntimeSubclass(cls?.id ?? '', classEntry.subclassId) : undefined;
@@ -178,9 +175,7 @@ export function ClassDetails() {
       return;
     }
 
-    // Rewrite in place. Dropping the entry and pushing it back moved a multiclass character's
-    // first class to the end of the list, and the first entry is the one that gets a full hit die
-    // at 1st level — the max HP changed for nothing but opening this page.
+    // Rewrite in place: re-pushing moved the first class and changed its max HP.
     updateBuilderCharacter({
       classes: updateCharacterClassEntry(existing, cls.id, getRuntimeClassById, (entry) =>
         updater({ ...entry, classId: cls.id })

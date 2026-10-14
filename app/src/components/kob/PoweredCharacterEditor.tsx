@@ -24,13 +24,7 @@ function newId(): string {
   return crypto.randomUUID().slice(0, 8);
 }
 
-/**
- * The GM's side of the card: everything the chapter says they establish, including the parts they
- * establish secretly.
- *
- * An Aspect or a Fear marked face down is not sent to any player until the GM turns it over, so
- * this editor is the only screen either text ever appears on before then.
- */
+/** A face-down Aspect or Fear reaches no player, so this is the only screen it appears on. */
 export function PoweredCharacterEditor({ initial, saving, onSave, onCancel }: Readonly<PoweredCharacterEditorProps>) {
   const [draft, setDraft] = useState<PoweredCharacterData>(initial);
 

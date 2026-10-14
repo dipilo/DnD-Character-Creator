@@ -1,17 +1,5 @@
-// Character round-trip check (MERGE_PLAN.md Phase 2).
-//
-// The smoke harness proves the /api/characters routes answer correctly; this proves the one thing
-// a status-and-body snapshot cannot. CLAUDE.md: "a saved character is an editable document, not a
-// receipt" — anything the Review step writes has to read back into the builder, which needs
-// abilityScoreChoiceModes, abilityScoreChoiceSelections, backgroundLanguageSelections,
-// speciesLanguageSelections, toolProficiencySelections, abilityScoreMethod, rolledScores and
-// rolledScoreAssignments all intact. A lossy store breaks that silently, so the document below is
-// a full one and the assertion is byte equality.
-//
-// It also drives the Phase 2 gate end to end: two devices, one account, and a stale write that
-// must be refused rather than clobber the other device's edit.
-//
-//   node server/test/characterRoundTrip.mjs      (npm run test:characters)
+// Byte equality on a full document, plus the stale-write refusal.
+// Run with `npm run test:characters`.
 
 import { spawn } from 'node:child_process';
 import { mkdtempSync, rmSync } from 'node:fs';
@@ -71,11 +59,7 @@ const character = {
   updatedAt: '2026-08-13T10:00:00.000Z',
 };
 
-/**
- * A Kids on Bikes character. `/api/characters` is one collection per account rather than one per
- * game, so a second system's document has to survive the same trip byte for byte — that is the
- * whole reason a KoB character can hold a campaign seat. The server interprets neither shape.
- */
+/** A second system's document has to survive the same trip byte for byte. */
 const kobCharacter = {
   id: '6c2a1f77-11d4-4a8b-9f30-2b7c5e8a41d9',
   systemId: 'kids-on-bikes',

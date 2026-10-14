@@ -1,14 +1,4 @@
-/**
- * Hold the backend awake while a tab is open.
- *
- * The free host sleeps after 15 minutes with no request, so a tab left open over a long session
- * pays a cold start on its next save. This keeps that one host awake for as long as somebody is
- * actually looking at the app; waking a host that has already slept is the external uptime
- * pinger's job (`docs/keepalive.md`), which is the half that runs when no tab is open.
- *
- * A hidden tab pings nothing — a backgrounded phone browser freezes its timers anyway, and a
- * hundred idle tabs holding a host awake between them is not what this is for.
- */
+/** A hidden tab pings nothing; waking a slept host is the external pinger's job. */
 const INTERVAL_MS = 10 * 60 * 1000;
 const API_BASE = (import.meta.env.VITE_API_BASE ?? '').replace(/\/+$/, '');
 

@@ -1,13 +1,6 @@
 import type { AggregateInterval } from '@/lib/api';
 
-/**
- * When a group can actually meet, read out of the same aggregate the heatmap shades.
- *
- * The heatmap answers "roughly when", which is a glance and not a plan. This answers "these three
- * stretches, at these times", because a group card that cannot name a single date is what the
- * Groups tab was missing. Only the fullest stretches are reported: a window three of five can make
- * is not the same offer as one the whole table can.
- */
+/** Only the fullest stretches: a window three of five can make is a different offer. */
 export interface MeetingWindow {
   start: Date;
   end: Date;

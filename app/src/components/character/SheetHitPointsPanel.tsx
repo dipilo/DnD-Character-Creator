@@ -1,7 +1,4 @@
-// Hit points, death saves and the conditions a character is under — the part of the sheet that
-// changes every combat round. It writes nothing itself: every control hands a patch back through
-// `onChange`, which is absent on the read-only party view, and then the panel renders as it always
-// did (numbers, no buttons).
+// Writes nothing: every control hands a patch back through `onChange`.
 import { useState } from 'react';
 import { Dices } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -32,12 +29,7 @@ import { cn } from '@/lib/utils';
 import type { Character } from '@/types/dnd';
 
 interface SheetHitPointsPanelProps {
-  /**
-   * The character with its hit points already resolved — a document saved before the builder
-   * derived a maximum stores 0, and taking damage against a maximum of 0 clamps everything to 0.
-   * The patch this panel emits carries the resolved maximum, which repairs the document on the
-   * first hit taken.
-   */
+  /** A document saved with a maximum of 0 is repaired by the first patch this emits. */
   character: Character;
   /** The Constitution save, which is the only roll concentration ever asks for. */
   constitutionSave: number;

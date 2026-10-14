@@ -1,9 +1,4 @@
-// Campaign state for the scheduler (MERGE_PLAN.md Phase 4).
-//
-// Like `authStore`, this holds no identity of its own: what the caller may do is the server's
-// answer, read back from `campaign_members`. The store caches that answer so the UI can hide
-// controls the server would refuse, but hiding a button is a courtesy — the check that matters
-// happens on the route.
+// Caches the server's answer so the UI can hide refused controls; the route still checks.
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { listCampaignMembers, listCampaigns } from '@/lib/api';
@@ -30,10 +25,7 @@ export const DEFAULT_MEMBER_PERMISSIONS: CampaignPermissions = {
 
 export type CampaignPermissionFlag = (typeof CAMPAIGN_PERMISSION_FLAGS)[number]['key'];
 
-/**
- * Read a member's permission blob. The server stores it as a JSON string and tolerates junk, so a
- * client that parses it at nine call sites swallows nine different parse errors — do it once.
- */
+/** Parsed once: the server tolerates junk, and nine call sites swallow nine errors. */
 export function parsePermissions(member: Pick<CampaignMember, 'permissions'> | null | undefined): CampaignPermissions {
   if (!member?.permissions) return {};
   try {
@@ -46,11 +38,7 @@ export function parsePermissions(member: Pick<CampaignMember, 'permissions'> | n
   }
 }
 
-/**
- * `can_unclaim` is the older name for `players_self_delete` and rows written by the claim flow
- * carry it, so reading it as its own flag left the switch off for a right the member actually
- * holds. Writing back the canonical shape is what retires it.
- */
+/** An older alias the claim flow still writes; writing the canonical shape retires it. */
 function canonicalisePermissions(permissions: CampaignPermissions): CampaignPermissions {
   const { can_unclaim, ...rest } = permissions;
   return can_unclaim ? { ...rest, players_self_delete: true } : rest;

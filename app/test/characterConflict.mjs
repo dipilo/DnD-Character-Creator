@@ -1,12 +1,5 @@
-// Exercises `mergeTrackerEdits` against the shapes a real 409 produces.
-//
-// The app has no test runner, and this is the only client rule worth one: which fields a version
-// conflict may settle on its own decides whether a co-op session loses a click. The function is
-// pure and imports nothing, so its source is stripped of types and imported directly rather than
-// dragged in through Vite's alias graph. A source change that defeats the strip fails the import,
-// which is loud — it does not silently pass.
-//
-// Run with `npm run test:conflict` from the workspace root.
+// Which fields a conflict may settle decides whether a co-op session loses a click.
+// Run with `npm run test:conflict`.
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 

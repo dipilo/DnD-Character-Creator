@@ -1,12 +1,4 @@
-// The derived sheet the Discord bot rolls from: to-hit and damage per equipped weapon, spell save
-// DC and attack bonus per casting class, and each known spell's attack-or-save line and dice at
-// this character's level. Nothing here is a second copy of the sheet's maths — the functions are
-// the app's own (`app/src/lib/sheetMath.ts`, `spellFacets.ts`), loaded through Node's type
-// stripping, which is why those two files may import only types. The bot deliberately does not
-// reimplement any of it.
-//
-// Records resolve against every pack under imports/, not just the two the content routes serve:
-// only derived numbers leave here, never the record, so a Tasha's weapon still gets its row.
+// The app's own maths, loaded by type stripping; only derived numbers leave here.
 const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');

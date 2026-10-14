@@ -1,9 +1,4 @@
-// server/server.js
-//
-// Entry point. Everything below the middleware stack used to live in this file as ~3100 lines
-// of route handlers; MERGE_PLAN.md Phase 1a moved them into routes/, middleware/, lib/ and db/
-// without changing behaviour. Routers keep their full paths and are mounted at the root, so the
-// registration order here is the same order the routes were declared in before the split.
+// Entry point; routers keep their full paths and mount at the root in declaration order.
 const express = require('express');
 const cors = require('cors');
 const compression = require('compression');
@@ -107,14 +102,10 @@ app.use(compression()); // Enable gzip compression
 app.use(express.json({ limit: '10mb' })); // Increase payload limit
 for (const path of ['/auth/login', '/auth/signup', '/auth/discord']) app.use(path, authLimiter);
 
-// Mount order mirrors the original declaration order. Only /diag/oauth and / are reachable
-// through the SPA fallback's regex, so they must stay ahead of mountStaticClient; the /api and
-// /auth routers are excluded by that regex and can sit on either side of it.
+// Only /diag/oauth and / are reachable through the SPA fallback, so they stay ahead of it.
 app.use(authRoutes);
 app.use(systemRoutes);
-// /health and /diag/db used to be registered inside the listen callback, which put them behind
-// the SPA fallback below — they would have 404ed into index.html the moment a client build
-// existed. Phase 1a preserved that; Phase 1b moves them ahead of the fallback where they belong.
+// Ahead of the SPA fallback, or they 404 into index.html once a client build exists.
 app.use(runtimeRoutes);
 app.use(feedbackRoutes);
 app.use(syncRoutes);
@@ -135,9 +126,7 @@ app.use(gameSessionRoutes);
 
 const port = config.port || 3001;
 
-// Schema first, then listen. Ensuring it inside the listen callback meant the first requests
-// could race the `sessions` table into existence; a failure is still only a warning, because a
-// server that answers 500s is more debuggable than one that never binds a port.
+// Inside the listen callback, the first requests raced the `sessions` table into existence.
 async function start() {
   try {
     await ensureSchema(db);

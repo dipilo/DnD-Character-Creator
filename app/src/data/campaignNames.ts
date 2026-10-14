@@ -1,10 +1,4 @@
-/**
- * Word banks and templates for the campaign-name suggestion shown as placeholder text.
- *
- * This is flavour, not content: nothing here is book material, so it does not go through the
- * import pipeline. It stays a data table rather than a hardcoded string so the shape of a
- * suggestion can change without touching a component.
- */
+/** Flavour, not book content, so it skips the import pipeline. */
 
 const ADJECTIVES = [
   'Ashen', 'Bleeding', 'Broken', 'Buried', 'Burning', 'Crimson', 'Crooked', 'Dead',
@@ -57,10 +51,7 @@ function pick<T>(bank: readonly T[]): T {
   return bank[Math.floor(Math.random() * bank.length)];
 }
 
-/**
- * A single suggested campaign name. Flavour only — never persisted, never sent to the server;
- * it exists so the "Start a campaign" field suggests something different on each visit.
- */
+/** Never persisted or sent: it only makes the field suggest something each visit. */
 export function randomCampaignName(): string {
   const template = pick(TEMPLATES);
   return template.render(template.banks.map((bank) => pick(bank)));

@@ -4,11 +4,7 @@ import { ArrowRight, CalendarRange, Dices } from 'lucide-react';
 import type { GameSystemNavItem } from '@/data/gameSystems';
 import { resolveActiveGameSystem, useGameSystemStore } from '@/store/gameSystemStore';
 
-/**
- * Destinations that belong to no one game, so they are here rather than in the registry. Every
- * other card on this page comes from the active system — the page states no system's name, routes
- * or copy of its own.
- */
+/** The page states no system's name, routes or copy of its own. */
 const SHARED_SHORTCUTS: GameSystemNavItem[] = [
   {
     to: '/campaigns',

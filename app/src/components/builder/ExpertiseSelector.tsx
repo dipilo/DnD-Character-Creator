@@ -11,11 +11,7 @@ interface ExpertiseSelectorProps {
 
 const NONE = '__none__';
 
-/**
- * The picks an Expertise grant asks for. Options are the character's own proficiencies, because
- * that is what the books say the player chooses from, so a character with nothing to double gets
- * a line saying so rather than an empty select.
- */
+/** Options are the character's own proficiencies, as the books say. */
 export function ExpertiseSelector({ grants, onValueChange, disabled = false }: ExpertiseSelectorProps) {
   if (grants.length === 0) {
     return null;

@@ -1,13 +1,4 @@
-// The actions every character has, printed the way the books list them: a name per line of a
-// wrapped list under the timing that governs it, and the rule itself behind the name.
-//
-// They used to be rows of the attack table, which gave Dodge and Disengage a Range, a Hit/DC and a
-// Damage column that could never hold anything — and no button, because there is nothing here to
-// roll. A name that opens the rule is the whole interaction, so the list is names and the rule
-// arrives in a drawer beside it.
-//
-// Nothing here is a list of actions written in the app: `combatActions` is imported from whichever
-// printing this character plays.
+// Names under their timing, with the rule in a drawer: there is nothing here to roll.
 import { useState } from 'react';
 import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';

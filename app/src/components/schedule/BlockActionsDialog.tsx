@@ -28,13 +28,7 @@ function describeBlock(block: CalendarBlock): string {
   return `${dayFormat.format(block.start)}, ${timeFormat.format(block.start)} – ${timeFormat.format(block.end)}`;
 }
 
-/**
- * What a tap on an availability block offers.
- *
- * On a mouse the two actions are a click and a ctrl-click; a touch screen has neither a modifier
- * key nor a right button, so the same two actions need somewhere to be named. Buttons are
- * full-width and comfortably tall because this is the one dialog that only ever opens on a phone.
- */
+/** Touch has no modifier key, so the two click actions need somewhere to be named. */
 export function BlockActionsDialog({ block, onOpenChange, onDelete, onRepeat }: Readonly<BlockActionsDialogProps>) {
   return (
     <Dialog open={block !== null} onOpenChange={onOpenChange}>

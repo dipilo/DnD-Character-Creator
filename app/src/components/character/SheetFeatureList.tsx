@@ -1,15 +1,4 @@
-// Features as a player reads them at the table: the name and level in the row, the text behind a
-// disclosure, the options this character chose — and, where the feature can actually be used, the
-// control that uses it.
-//
-// A feature that offers options is only a sentence about a list until the picks are shown beside
-// it, which is why the two Eldritch Invocations a warlock chose appear as their own entries here
-// rather than being buried in the builder. The same argument applies to a feature that spends a
-// pool or throws dice: reading "you can expend one use" beside a counter you have to find on
-// another tab is the thing this list used to make a player do.
-//
-// Nothing here decides *what* a feature does. The pool is the class table's (`ResolvedClassResource`)
-// and the dice are the feature's own sentence, so a feature that states neither simply reads.
+// Picks and pools print beside the feature; what a feature *does* is decided elsewhere.
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { ContentReferenceText } from '@/components/ContentReferenceText';
@@ -32,16 +21,10 @@ interface SheetFeatureListProps {
   /** Distinguishes the accordion values when a sheet renders several of these lists. */
   readonly idPrefix: string;
   readonly emptyMessage?: string;
-  /**
-   * What this character can spend, so a feature that owns a pool gets its counter here. Omitted
-   * where the list is not about a character — the builder's previews, for instance.
-   */
+  /** Omitted where the list is not about a character, as in the builder's previews. */
   readonly character?: Character;
   readonly classResources?: readonly ResolvedClassResource[];
-  /**
-   * What this character brings to a throw a feature states in words. Omitted where the list is not
-   * about a character, which leaves every throw at what the book prints.
-   */
+  /** Omitted off a character, which leaves every throw at what the book prints. */
   readonly featureContext?: FeatureContext;
   /** Absent on a read-only sheet, which is what leaves the counts and takes the buttons. */
   readonly onChange?: (patch: Partial<Character>) => void;

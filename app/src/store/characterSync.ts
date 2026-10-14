@@ -1,17 +1,4 @@
-// Character sync (MERGE_PLAN.md Phase 2).
-//
-// The builder still works signed out and offline, so localStorage keeps every character — it just
-// stops being the record. This module reconciles that cache against the server: it pulls what
-// another device wrote, pushes what this one changed, honours deletions in both directions, and
-// never resolves a conflict by throwing an edit away.
-//
-// It imports the document stores and no store imports it. That direction is deliberate: a store
-// stays a plain document cache, and sync watches it from outside rather than being called from
-// inside every mutation.
-//
-// `/api/characters` is one collection per account rather than one per game, so a pass sees every
-// system's documents together and routes each to its own cache — that is what `documentStores.ts`
-// is for, and it is why a Kids on Bikes character can hold a campaign seat.
+// Reconciles the localStorage cache against the server, never discarding an edit.
 import { create } from 'zustand';
 import {
   ApiError,
@@ -43,12 +30,7 @@ interface CharacterSyncState {
   enabled: boolean;
   lastSyncedAt: string | null;
   error: string | null;
-  /**
-   * Characters that were already in localStorage when this session began and that the server has
-   * never seen. They are the one-time upload offer, and the one thing sync will not push on its
-   * own: signing in should not silently publish everything the browser happened to be holding.
-   * Anything created after sign-in is not on this list and uploads automatically.
-   */
+  /** The one-time upload offer: signing in publishes nothing on its own. */
   unsyncedIds: string[];
   /** Local edits kept aside as separate characters because the server's copy had moved on. */
   conflictIds: string[];
@@ -72,11 +54,7 @@ function localEntries(): Array<{ store: DocumentStoreAdapter; document: StoredDo
   return DOCUMENT_STORES.flatMap((store) => store.characters().map((document) => ({ store, document })));
 }
 
-/**
- * Turned on when a session is established and off when it ends; sign-out leaves the cache alone.
- * Enabling snapshots the characters the server has never seen, which is what separates "was here
- * before you signed in, so we ask" from "you made it while signed in, so it uploads".
- */
+/** Enabling snapshots what the server has never seen, so sign-out leaves the cache alone. */
 export function setSyncEnabled(enabled: boolean): void {
   if (!enabled) {
     setSyncState({ enabled: false, status: 'idle', unsyncedIds: [], error: null });
@@ -96,11 +74,7 @@ function describe(error: unknown): string {
   return typeof error === 'string' ? error : 'unknown_error';
 }
 
-/**
- * True when the local document is still the exact object a request started with. Store actions
- * replace the object rather than mutating it, so reference equality answers "was this edited while
- * the request was in flight?" — the window in which sync could otherwise lose an edit.
- */
+/** Store actions replace the object, so reference equality catches an edit in flight. */
 function unchangedSince(store: DocumentStoreAdapter, id: string, snapshot: StoredDocument | undefined): boolean {
   return store.find(id) === snapshot;
 }
@@ -122,10 +96,7 @@ async function pullCharacter(id: string): Promise<void> {
   store.applyRemote(store.withId(record.data, record.id), record.version);
 }
 
-/**
- * Both copies changed. The server's copy keeps the id, and the local edit is kept as a separate
- * character rather than discarded — the user decides which one to keep, not the sync layer.
- */
+/** The local edit is kept as a separate character; the user picks, not sync. */
 async function resolveConflict(store: DocumentStoreAdapter, id: string): Promise<void> {
   const local = store.find(id);
   const knownVersion = store.syncMeta()[id]?.version ?? null;
@@ -134,10 +105,7 @@ async function resolveConflict(store: DocumentStoreAdapter, id: string): Promise
     record = await getRemoteCharacter(id);
   } catch (e) {
     if (e instanceof ApiError && e.status === 404) {
-      // The id is taken but unreadable. If the server once gave us a version for it, it was ours
-      // and has since been deleted from another device, so drop the local copy. If it never did,
-      // the id belongs to somebody else — keep the character and let the pass report a failure.
-      // Deleting it here would destroy a sheet on the strength of a 404.
+      // A 404 deletes only what the server once gave us a version for.
       if (knownVersion != null) {
         store.forget(id);
         return;
@@ -165,16 +133,7 @@ async function resolveConflict(store: DocumentStoreAdapter, id: string): Promise
   }
 }
 
-/**
- * Take the seat a character was started for (MERGE_PLAN.md Phase 5). "New character for this
- * campaign" records the intent before the character exists server-side, so this runs once the
- * server has a copy — and only then, because the seat is row metadata on a row that has to exist.
- *
- * A refusal is not retried: the campaign or the seat is gone, or the player was never entitled to
- * it. Keeping the intent would re-attempt it on every pass forever. Going offline and losing the
- * session are the two exceptions — both are "not now" rather than "no", so the intent survives them
- * and the next pass tries again.
- */
+/** Runs once the server has a copy; a refusal is final, but offline is "not now". */
 async function applyPendingSeat(store: DocumentStoreAdapter, id: string): Promise<void> {
   const pending = store.pendingSeats()[id];
   if (!pending) return;
@@ -251,11 +210,7 @@ async function flushPendingDeletes(): Promise<boolean> {
   return true;
 }
 
-/**
- * Run one character's transfer. A failure on one character must not abandon the rest of the pass —
- * a single oversized document would otherwise stop every character after it in the list from ever
- * syncing. Going offline is not a per-character problem, so that one still stops the pass.
- */
+/** One character's failure must not abandon the pass; going offline still stops it. */
 async function attempt(id: string, action: () => Promise<unknown>, failures: string[]): Promise<void> {
   try {
     await action();
@@ -289,9 +244,7 @@ async function reconcile(): Promise<string[]> {
     }
     if (meta?.dirty) await attempt(document.id, () => pushCharacter(store, document.id), failures);
     else if (meta?.version !== record.version) await attempt(document.id, () => pullCharacter(document.id), failures);
-    // A seat recorded while offline, or against a character that was already in step with the
-    // server, has no push to ride along with. `pushCharacter` clears it, so this finds nothing when
-    // one of the branches above already ran.
+    // `pushCharacter` clears the seat, so this finds nothing when a branch above ran.
     if (store.pendingSeats()[document.id]) await attempt(document.id, () => applyPendingSeat(store, document.id), failures);
   }
 
@@ -304,11 +257,7 @@ async function reconcile(): Promise<string[]> {
   return failures;
 }
 
-/**
- * A local character with no counterpart on the server is one of three things: deleted from another
- * device, waiting for the upload offer, or new here and never sent. Only the first is destructive,
- * and it is the only one where the server has a version on record.
- */
+/** Only a deletion is destructive, and only it has a version on record. */
 async function reconcileMissingRemote(
   store: DocumentStoreAdapter,
   id: string,
@@ -335,10 +284,7 @@ function statusAfter(deletesDelivered: boolean, anyFailed: boolean): SyncStatus 
 
 let inFlight: Promise<void> | null = null;
 
-/**
- * Full reconcile. Safe to call whenever the app thinks something may have changed — concurrent
- * calls share the one in-flight pass.
- */
+/** Concurrent calls share the one in-flight pass. */
 export function syncCharacters(): Promise<void> {
   inFlight ??= runSync().finally(() => { inFlight = null; });
   return inFlight;
@@ -370,11 +316,7 @@ async function runSync(): Promise<void> {
   }
 }
 
-/**
- * The one-time upload offered when someone signs in with characters already in localStorage.
- * Import inserts at version 1 and skips ids the server already holds, so the follow-up sync is
- * what settles anything it declined to overwrite.
- */
+/** Inserts at version 1 and skips ids the server holds; the follow-up sync settles the rest. */
 export async function uploadLocalCharacters(): Promise<{ imported: number; skipped: number }> {
   const offered = new Set(useCharacterSyncStore.getState().unsyncedIds);
   const entries = localEntries().filter(({ document }) => offered.has(document.id));
@@ -396,9 +338,7 @@ export async function uploadLocalCharacters(): Promise<{ imported: number; skipp
       entry?.store.markSynced(id, 1, !unchangedSince(entry.store, id, entry.document));
       offered.delete(id);
     }
-    // Drop them from the offer immediately rather than waiting for the pass below to say so; the
-    // banner should go away the moment the upload lands. Nothing is dismissed on success — a later
-    // batch of local characters deserves to be offered again.
+    // The banner goes the moment the upload lands; a later batch is offered again.
     setSyncState({ unsyncedIds: [...offered] });
     await syncCharacters();
     return { imported: result.imported.length, skipped: result.skipped.length };
@@ -407,9 +347,7 @@ export async function uploadLocalCharacters(): Promise<{ imported: number; skipp
   }
 }
 
-// Pushing on every keystroke-sized store write would be one request per character per edit, so
-// changes are coalesced. The watcher is the only thing that reacts to local mutations; the stores
-// themselves know nothing about the network.
+// Coalesced: the watcher is the only thing reacting to local mutations.
 const PUSH_DEBOUNCE_MS = 1200;
 let pushTimer: ReturnType<typeof setTimeout> | null = null;
 

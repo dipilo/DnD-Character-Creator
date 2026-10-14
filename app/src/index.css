@@ -92,6 +92,13 @@
     overflow-wrap: anywhere;
   }
 
+  /* `anywhere` above breaks inside a word, digits included — a d20 total renders 2 over 5. Every
+     numeric display in the app carries `tabular-nums`, so that is the hook. */
+  .tabular-nums {
+    overflow-wrap: normal;
+    word-break: keep-all;
+  }
+
   /* Safari zooms the whole page when a focused field is under 16px, and never zooms back out.
      Only the base size needs lifting; the rendered size stays the design's on pointer devices. */
   @media (max-width: 767px) {

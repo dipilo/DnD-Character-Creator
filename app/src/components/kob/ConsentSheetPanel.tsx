@@ -1,6 +1,4 @@
-// The Consent Sheet (rulebook p. 16–18): what each player is comfortable their character doing
-// on the page. It is play state, not a creation-time answer — same posture as `KobSheetView`'s
-// Notes card, so it renders read-only when `onChange` is omitted and writes nothing on its own.
+// Play state, not a creation-time answer; read-only when `onChange` is omitted.
 import { useEffect, useState } from 'react';
 import { ChevronDown, TriangleAlert } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

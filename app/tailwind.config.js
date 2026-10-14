@@ -6,9 +6,7 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      // A landscape phone is wide but only ~390px tall, so every width breakpoint reads it as a
-      // tablet while the viewport has no vertical room at all. `short:` is how chrome (page
-      // titles, header height, hero padding) gets out of the way there.
+      // `short:` is how page chrome gets out of the way in landscape, where width tests fail.
       screens: {
         short: { raw: '(max-height: 500px)' },
         // Touch: 44px targets, and no hover to lean on. Declared last so it wins over `sm:`/`lg:`.

@@ -1,8 +1,4 @@
-// The purse and what it all weighs.
-//
-// Both halves are read from the loadout the Equipment tab already resolves: a catalogue entry
-// carries its own weight, and the coins weigh a fiftieth of a pound each. The only thing a player
-// types here is how many coins they have, which is the one part of an inventory no book derives.
+// Weight is read from the loadout; the coin count is the only thing typed here.
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

@@ -1,13 +1,5 @@
-// Scheduler flow check (MERGE_PLAN.md Phase 4).
-//
-// The smoke harness proves each scheduler route answers the same way it did before a refactor.
-// This proves something else: that the **sequence of calls the rewritten campaign pages make**
-// actually works, and that the response shapes the typed client in `app/src/lib/api/` declares are
-// the shapes the server sends. A page that reads `body.campaigns` off a route that answers a bare
-// array is a runtime failure a status snapshot cannot see.
-//
-// It walks one campaign end to end as two accounts — the DM who owns it and a player who joins by
-// invite — because the permission boundary only shows up when there are two of them.
+// Proves the sequence of calls the campaign pages make works, and the shapes match.
+// Walks one campaign as two accounts, because the boundary needs both.
 //
 //   node server/test/schedulerFlow.mjs      (npm run test:scheduler)
 
@@ -235,14 +227,7 @@ async function inviteFlow(campaignId, players) {
   check('a non-member cannot read the aggregate', strangerAggregate.status === 403, strangerAggregate.status);
 }
 
-/**
- * Claiming a seat, and the setting that does it for you.
- *
- * The regression this pins down is silent: releasing a seat stamps `players.unclaimed_at`, which
- * `is_claimed` is read from, and claiming it again never cleared it — so the Roster went on
- * offering a seat its holder had already taken. The response said "claimed" and the next list said
- * "unclaimed", which is the whole of "claiming a seat does not work".
- */
+/** Pins a silent one: a re-claimed seat never cleared `unclaimed_at`. */
 async function seatClaimingFlow(campaignId, players) {
   const seatOf = async (who, playerId) => {
     const roster = await call(who, 'GET', `/api/players?campaign_id=${campaignId}`);
@@ -317,10 +302,7 @@ async function seatClaimingFlow(campaignId, players) {
   check('the seat can be taken back', restored.status === 200, `${restored.status} ${JSON.stringify(restored.json)}`);
 }
 
-/**
- * Groups as tables rather than name lists: a colour, a size target, notes, and a create route that
- * honours `can_manage_groups` like every other write on the resource already did.
- */
+/** A colour, a size target, notes, and a create route honouring `can_manage_groups`. */
 async function groupObjectFlow(campaignId, players) {
   const created = await call('dm', 'POST', '/api/groups', { campaign_id: campaignId, name: 'Colourful table' });
   const groupId = created.json.group?.id;
@@ -358,11 +340,7 @@ async function groupObjectFlow(campaignId, players) {
   check('a non-member still cannot', byStranger.status === 403, `${byStranger.status} ${JSON.stringify(byStranger.json)}`);
 }
 
-/**
- * Phase 5 — the join between the two halves. Everything above this proves the scheduler works;
- * this proves a *builder character* can sit at one of its seats, be read by the table, and stay its
- * owner's alone. The permission boundary is the whole point, so it is driven from both sides.
- */
+/** Proves a builder character can sit at a seat and stay its owner's; driven both ways. */
 async function partyFlow(campaignId, players) {
   // The campaign's content agreement. Owner-only to write, readable by every member — the party
   // page seeds the builder's source filter from it.
@@ -405,10 +383,7 @@ async function partyFlow(campaignId, players) {
   const sheet = await call('dm', 'GET', '/api/characters/flow-char-bram');
   check('CampaignCharacterPage: the DM can read the seated sheet', sheet.status === 200 && sheet.json.character?.data?.name === 'Bram Ashvale', `${sheet.status} ${JSON.stringify(sheet.json).slice(0, 150)}`);
 
-  // ...but reading is all. A shared sheet is not a writable one until its owner says so, and this
-  // player has granted nothing — see `characterSharing.mjs` for the grant and consent paths. The
-  // refusal is 403 rather than 404 because the DM can already read the row: there is nothing left
-  // for a 404 to protect once the id is known to exist.
+  // 403, not 404: the DM can already read the row, so the id is known to exist.
   const clobber = await call('dm', 'PUT', '/api/characters/flow-char-bram', { version: 1, data: { name: 'DM edit' } });
   check('a shared sheet is still read-only to everyone but its owner', clobber.status === 403 && clobber.json.error === 'character_not_editable', `${clobber.status} ${JSON.stringify(clobber.json)}`);
 

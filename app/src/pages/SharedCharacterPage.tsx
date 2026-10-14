@@ -1,13 +1,4 @@
-// A character opened from a share link.
-//
-// One URL serves every visibility: what the link lets in is the character's own `visibility`
-// setting, resolved server-side. A public one opens signed out — that is the whole point of the
-// setting — a campaign-only one opens for members of its table, and a private one only for the
-// people its owner named. Anything else is a 404, because the alternative confirms the link is
-// real to whoever is holding it.
-//
-// Read-only, always. Editing a sheet you were granted happens where the rest of that campaign's
-// screens are, not down a link that a stranger might also be holding.
+// One URL, every visibility, resolved server-side; read-only always.
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { StoredCharacterSheet } from '@/components/character/StoredCharacterSheet';

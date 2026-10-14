@@ -7,14 +7,7 @@ import { createDebouncedLocalStorage } from '@/lib/debouncedStorage';
 import type { CharacterSyncMeta, PendingSeat } from '@/store/syncTypes';
 import { createNode, readCanvas } from '@/lib/kob/backpackCanvas';
 
-/**
- * Kids on Bikes characters, cached in localStorage.
- *
- * Deliberately the same posture as `characterStore`: a document cache that knows nothing about the
- * network, so the builder works signed out. `store/characterSync.ts` watches it from outside and
- * pushes what changed — the sync bookkeeping below is the half of that contract this store owns,
- * and it is the same shape the 5e store keeps for the same reasons.
- */
+/** A document cache that knows nothing about the network; `characterSync` watches it. */
 
 interface KobCharacterState {
   characters: KobCharacter[];
@@ -93,10 +86,7 @@ export function createEmptyKobCharacter(): KobCharacter {
   };
 }
 
-/**
- * A stored document may predate a field. Filling the gaps on read keeps every screen free of
- * `?? ''` and means an older character never renders as a half-empty sheet.
- */
+/** Filling gaps on read keeps every screen free of `?? ''`. */
 export function withKobDefaults(character: KobCharacter): KobCharacter {
   const base = createEmptyKobCharacter();
   const statDice = { ...base.statDice, ...(character.statDice ?? {}) };
@@ -119,14 +109,7 @@ export function withKobDefaults(character: KobCharacter): KobCharacter {
   };
 }
 
-/**
- * The Backpack was a text field before it was a board, and a saved character is a document rather
- * than a receipt — so what was typed becomes the first note on the board, once.
- *
- * Keyed on the field being *absent*, never on the board being empty: a player who deletes that
- * note must not have it put back the next time the character is read. `character.backpack` is left
- * alone, so nothing is destroyed by the migration either.
- */
+/** Keyed on the field being *absent*, so a deleted note is never put back. */
 function migrateBackpack(character: KobCharacter): KobBackpackCanvas {
   if (character.backpackCanvas !== undefined) return readCanvas(character.backpackCanvas);
   const text = typeof character.backpack === 'string' ? character.backpack.trim() : '';

@@ -1,9 +1,4 @@
-// Calendar appearance and view preferences (MERGE_PLAN.md Phase 4).
-//
-// This replaces the old ColorManager, which wrote `singleColor_v1` / `aggPalette_v1` into
-// localStorage by hand and told the calendars about it by dispatching CustomEvents on `window`.
-// A zustand store is the same persistence with a subscription the components already understand,
-// so nothing has to listen on the global object.
+// A store rather than hand-written localStorage plus CustomEvents on `window`.
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -13,10 +8,7 @@ export interface PaletteEntry {
   opacity: number;
 }
 
-/**
- * Colour by how many players overlap: one free player is the palest band, four or more the
- * strongest. Anything above the last entry keeps the last colour.
- */
+/** Anything above the last entry keeps the last colour. */
 const DEFAULT_AGGREGATE_PALETTE: PaletteEntry[] = [
   { color: '#4682b4', opacity: 0.45 },
   { color: '#228b22', opacity: 0.45 },
@@ -82,11 +74,7 @@ export function paletteEntryForCount(palette: PaletteEntry[], count: number): Pa
   return palette[index];
 }
 
-/**
- * What a band means, by its place in the ladder. The last entry absorbs every higher count, so it
- * is the one that reads "4+". Named here because the settings popover and the calendar's own
- * legend must not drift apart.
- */
+/** Named here so the settings popover and the calendar legend cannot drift. */
 export function paletteBandLabel(palette: PaletteEntry[], index: number): string {
   return index === palette.length - 1 ? `${index + 1}+ free` : `${index + 1} free`;
 }

@@ -1,11 +1,4 @@
-/**
- * What a character can actually do in a round, and what they shrug off.
- *
- * Both halves are read out of the features the character already has: a feature says when it is
- * used ("as a Bonus Action", "as a Reaction") and what it protects against ("you have Resistance to
- * Bludgeoning, Piercing, and Slashing damage"), so nothing here names a class, a species or a feat.
- * A feature whose text states neither simply appears in neither list.
- */
+// Timings and defences from the features held; nothing here names a class or feat.
 import type { Feature } from '@/types/dnd';
 import { deriveUnarmedStrike, formatModifier } from '@/lib/sheetMath';
 
@@ -26,10 +19,6 @@ export function detectActionTiming(text: string): ActionTiming | null {
   return TIMING_PATTERNS.find((entry) => entry.pattern.test(text))?.timing ?? null;
 }
 
-/* -------------------------------------------------------------------------- *
- * Attacks per Action
- * -------------------------------------------------------------------------- */
-
 const ATTACK_COUNT_WORDS: Record<string, number> = {
   twice: 2,
   'three times': 3,
@@ -40,13 +29,7 @@ const ATTACK_COUNT_WORDS: Record<string, number> = {
 const EXTRA_ATTACK_PATTERN = /\battack (twice|three times|four times|five times)\b/gi;
 const ATTACK_ACTION_PATTERN = /\bAttack action\b/i;
 
-/**
- * How many attacks the Attack action buys this character, read from the features they have.
- *
- * Both printings state it the same way — "you can attack twice, instead of once, whenever you take
- * the Attack action" — and the Fighter's later grants restate the sentence with a bigger number, so
- * the highest a feature states is the answer and a character with no such feature attacks once.
- */
+/** The highest a feature states wins, since later grants restate the sentence. */
 export function deriveAttacksPerAction(features: readonly Feature[]): number {
   let most = 1;
   for (const feature of features) {
@@ -57,10 +40,6 @@ export function deriveAttacksPerAction(features: readonly Feature[]): number {
   }
   return most;
 }
-
-/* -------------------------------------------------------------------------- *
- * Defences
- * -------------------------------------------------------------------------- */
 
 const DAMAGE_TYPES = [
   'acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic',
@@ -109,11 +88,7 @@ const DEFENCE_PATTERNS: Array<{ kind: DefenceKind; pattern: RegExp; vocabulary: 
   { kind: 'condition-immunity', pattern: /\bimmune to\b|\bcan(?:'|’)?t be\b|\bcannot be\b/i, vocabulary: CONDITIONS }
 ];
 
-/**
- * The defences a character's features state. One sentence can state two things — "you have
- * Resistance to Poison damage, and you have Advantage on saving throws against being Poisoned" —
- * so every pattern is tried against every sentence.
- */
+/** One sentence can state two things, so every pattern tries every sentence. */
 export function deriveDefences(features: readonly Feature[]): DerivedDefence[] {
   const defences: DerivedDefence[] = [];
 
@@ -147,10 +122,6 @@ export function groupDefences(defences: readonly DerivedDefence[]) {
 
 export { formatModifier };
 
-/* -------------------------------------------------------------------------- *
- * Senses
- * -------------------------------------------------------------------------- */
-
 const SENSE_NAMES = ['darkvision', 'blindsight', 'tremorsense', 'truesight'] as const;
 
 export type SenseName = (typeof SENSE_NAMES)[number];
@@ -171,15 +142,7 @@ const feetIn = (text: string): number | null => {
   return match ? Number.parseInt(match[1], 10) : null;
 };
 
-/**
- * The special senses a character's own features state.
- *
- * Both printings say it in their own way — 2024 writes "You have Darkvision with a range of 60
- * feet", 2014 titles the trait Darkvision and then says "You can see in dim light within 60 feet"
- * — so the sense is looked for in the feature's name as well as its sentences, and the range is
- * the first distance the naming sentence states. A feature that names a sense without a distance
- * grants nothing here rather than a guessed range.
- */
+/** Looked for in the name as well as the text; no distance grants nothing. */
 export function deriveSenses(features: readonly Feature[]): DerivedSense[] {
   const best = new Map<SenseName, DerivedSense>();
 

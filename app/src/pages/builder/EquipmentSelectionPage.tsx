@@ -124,9 +124,7 @@ const weaponClassificationByName: Record<string, { category: WeaponCategory; typ
 };
 
 const getEquipmentSearchText = (entry: EquipmentEntry) => `${entry.name} ${entry.description ?? ''}`.toLowerCase();
-// The family a source states outright always wins. The text tests behind it are the fallback for
-// packs parsed out of HTML, which carry no category field — the 2024 SRD's Lute and Crystal have
-// empty descriptions, so a description-only read tagged neither.
+// A stated family wins; the text tests are the fallback for HTML-parsed packs.
 const hasCategory = (entry: EquipmentEntry, pattern: RegExp) =>
   pattern.test(entry.toolCategory ?? '') || pattern.test(entry.gearCategory ?? '');
 const isMusicalInstrument = (entry: EquipmentEntry) =>
@@ -243,11 +241,7 @@ function dedupeEquipmentByName(
   return Array.from(preferredEntries.values());
 }
 
-/**
- * Everything the catalogue offers for one unresolved starting-equipment line — a weapon named by
- * category, or an item named by family. One function for both, because the class kit and the
- * background package print the same kinds of phrase and should offer the same lists.
- */
+/** One function for both: a class kit and a background print the same phrases. */
 function getChoiceCandidates(
   optionName: string,
   availableEquipment: EquipmentEntry[],
@@ -302,25 +296,13 @@ function getEmbeddedChoiceEquipmentOption(option: EquipmentOption) {
   return null;
 }
 
-/**
- * One line inside a starting-equipment option, and what it still leaves open.
- *
- * A 2014 line like "Leather armor, any simple weapon, and two daggers" now arrives as an option
- * with three `contents`; a 2024 kit always did. Either way each part becomes a slot, and a slot
- * whose text names a category or a family ("any simple weapon", "an arcane focus") carries the
- * candidates for it. `picks` is how many separate items the slot grants — "Two martial weapons" is
- * two choices, not one item twice.
- */
+/** Each part is a slot; `picks` is how many separate items the slot grants. */
 interface StartingEquipmentSlot {
   /** Stable within the option, so a stored selection survives a reordering of the group. */
   key: string;
   label: string;
   quantity: number;
-  /**
-   * The count to print in front of the label, which is only the one the source stated as a
-   * separate field. "Two daggers" already says two; prefixing the derived quantity as well
-   * rendered it as "2 Two daggers".
-   */
+  /** Only a separately stated count: "Two daggers" already says two. */
   displayCount?: number;
   picks: number;
   candidates: EquipmentEntry[];
@@ -416,11 +398,7 @@ function buildOptionSelections(
   );
 }
 
-/**
- * A group with a single option is a grant, not a choice, so it is written onto the character as
- * soon as the step opens. Any pick inside it stays unresolved until the player makes it — a
- * pending choice is still a grant.
- */
+/** Written on opening; a pending choice inside it is still a grant. */
 function getAutomaticStartingEquipmentSelections(
   selectedClasses: ClassEntry[],
   currentEquipment: EquipmentSelectionRecord[],
@@ -452,11 +430,7 @@ function getAutomaticStartingEquipmentSelections(
 
 type BackgroundEntry = NonNullable<ReturnType<typeof useContentLibrary>['backgrounds']>[number];
 
-/**
- * The background's fixed lines, granted the same way a single-option class group is. Before this
- * they were printed as prose and written nowhere, so a bedroll or a set of common clothes never
- * reached the loadout, the armour-class calculation or the attacks panel.
- */
+/** Granted like a single-option class group, or a bedroll reaches no loadout. */
 function getAutomaticBackgroundEquipmentSelections(
   background: BackgroundEntry | undefined,
   currentEquipment: EquipmentSelectionRecord[],

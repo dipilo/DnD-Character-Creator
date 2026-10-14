@@ -89,11 +89,7 @@ export interface SpellcastingRulesSummary {
   selectedCantrips: number;
   remainingCantrips: number;
   leveledSpellLimit?: number;
-  /**
-   * How many levelled spells may be prepared at once, summed across the classes that prepare
-   * them. Undefined for a character with no preparing class — a Sorcerer knows their spells and
-   * prepares nothing, so a limit there would be a rule they do not play under.
-   */
+  /** Undefined with no preparing class: a Sorcerer prepares nothing. */
   preparedSpellLimit?: number;
   selectedLeveledSpells: number;
   remainingLeveledSpells?: number;
@@ -157,6 +153,15 @@ const editionSourceIds = new Map<string, RulesEdition>([
   ['motm', '2014'],
   ['volos', '2014'],
   ['erlw', '2014'],
+  ['scag', '2014'],
+  ['ravnica', '2014'],
+  ['wildemount', '2014'],
+  ['theros', '2014'],
+  ['ravenloft', '2014'],
+  ['strixhaven', '2014'],
+  ['bigbys', '2014'],
+  ['book-of-many-things', '2014'],
+  ['elemental-evil', '2014'],
   ['phb-2024', '2024'],
   ['basic-rules-2024', '2024'],
   ['mm-2024', '2024']
@@ -312,9 +317,7 @@ const quantityWords = new Map<string, number>([
   ['twenty', 20]
 ]);
 const replaceEquipmentChoicePlaceholder = (label: string, resolvedName: string) => {
-  // "Any simple weapon" is the whole label, so splicing into it leaves the phrase the player was
-  // trying to replace. The picked weapon *is* the item — say so, and let the source label carry
-  // the provenance.
+  // The picked weapon *is* the item; the source label carries the provenance.
   if (isEquipmentChoiceOption(label)) {
     return resolvedName;
   }
@@ -332,11 +335,7 @@ const replaceEquipmentChoicePlaceholder = (label: string, resolvedName: string) 
   return `${label} (${resolvedName})`;
 };
 
-/**
- * The bundled part an id's fourth segment names. A slot that grants several picks appends
- * `--<n>` to its slug (the Equipment step's `PICK_SEPARATOR`), so match the bare slug too — the
- * two picks of "Two martial weapons" are the same line of the kit.
- */
+/** A multi-pick slot appends `--<n>`, so match the bare slug too. */
 const findBundledEquipmentOption = (
   option: { contents?: Array<{ name: string; type: string }> } | undefined,
   childSlug: string | undefined
@@ -415,9 +414,7 @@ const resolveReferencedEquipmentItem = ({
   getEquipmentById: (equipmentId: string) => Equipment | undefined;
   findEquipmentByName?: (equipmentName: string) => Equipment | undefined;
 }) => {
-  // The fourth id segment is a chosen equipment id for some shapes and a bundled part's slug for
-  // others, so a miss here is not a failure — fall through to the name lookup rather than
-  // returning nothing, which is what left every 2024 kit item unresolved (no AC, no attacks).
+  // A miss is not a failure: fall through to the name lookup, or 2024 kits go unresolved.
   if (resolvedItemId) {
     const byId = getEquipmentById(resolvedItemId);
     if (byId) {
@@ -453,13 +450,7 @@ const readLabelQuantity = (label: string) => {
   return word ? quantityWords.get(word[1].toLowerCase()) ?? 1 : 1;
 };
 
-/**
- * Whether a starting-equipment line says nothing but "how many of this item".
- *
- * "Two daggers" is two daggers, not an item called Two Daggers — the count belongs in the
- * quantity column and the name is the item's. A line that names several things ("Leather armor,
- * any simple weapon, and two daggers") is not this: it arrives as separate parts.
- */
+/** "Two daggers" is a count and a name, not an item called Two Daggers. */
 const labelNamesOnlyTheItem = (label: string, itemName: string) => {
   const stripped = stripQuantityPrefix(label);
   const candidates = [stripped, singularizeEquipmentCandidate(stripped)].map((entry) => normalizeName(entry));
@@ -479,11 +470,7 @@ const describeResolvedEquipment = (label: string | undefined, item: Equipment, s
 
 export const isChoicePlaceholderLabel = (value?: string) => Boolean(value && choicePlaceholderPattern.test(value));
 
-// Tool proficiencies are printed as an unresolved choice far more often than as a named tool:
-// "One type of gaming set", "Three musical instruments of your choice", "Choose one type of
-// artisan's tools or one musical instrument". Those are picks the character still has to make,
-// so they are matched to the tool families in the equipment catalogue (Equipment.toolCategory)
-// and offered as selectors instead of being written onto the sheet verbatim.
+// A tool phrase is usually an unmade choice, so match `Equipment.toolCategory` and offer it.
 const toolChoiceFamilyKeywords: Array<{ pattern: RegExp; category: RegExp }> = [
   { pattern: /artisan/i, category: /artisan/i },
   { pattern: /gaming set/i, category: /gaming/i },
@@ -509,11 +496,7 @@ export interface ToolProficiencyChoice {
   options: string[];
 }
 
-// The 2014 and 2024 books print the same tool under different names — "Dice Set" became "Dice",
-// "Playing Card Set" became "Playing Cards" — and a set keyed on the exact string offered both,
-// so "One type of gaming set" listed six options for four tools. Collapse the collection noun and
-// the plural so the two printings land on one key; distinct tools ("Dragonchess", "Three-Dragon
-// Ante") are untouched because only the trailing noun is dropped.
+// Collapse the collection noun and plural so both printings land on one key.
 const equipmentCollectionNouns = new Set(['set', 'sets', 'tools', 'supplies', 'utensils', 'kit', 'kits']);
 const singularizeWord = (word: string) => (word.length > 3 && word.endsWith('s') && !word.endsWith('ss') ? word.slice(0, -1) : word);
 
@@ -584,10 +567,7 @@ export const getClassProficiencyGrants = (cls: Class, classIndex: number): Class
   };
 };
 
-/**
- * The key is a class id and goes stale like `CharacterClass.classId` does, so a read tries the
- * stored pointer as well as the id the library resolves it to.
- */
+/** The key goes stale like `CharacterClass.classId`, so try the stored pointer too. */
 export const getMulticlassSkillSelections = (
   character: Pick<Character, 'multiclassSkillSelections'> | undefined,
   ...classIds: string[]
@@ -764,19 +744,14 @@ const toSortedSaves = (values: Iterable<keyof AbilityScores>) => {
 
 const addProficiencyEntries = (entries: Proficiency[] | undefined, type: Proficiency['type'], bucket: Set<string>) => {
   entries?.forEach((entry) => {
-    // "One skill of choice" describes a pick the player still owes, not a proficiency they have.
-    // The matching feature already offers a selector, so writing the placeholder onto the sheet
-    // just prints an unresolved choice next to real proficiencies.
+    // A placeholder is a pick the player still owes; the feature already offers a selector.
     if (entry.type === type && entry.name.trim() && !isChoicePlaceholderLabel(entry.name)) {
       bucket.add(entry.name.trim());
     }
   });
 };
 
-/**
- * One increase, clamped to the ceiling its own source states. A feat that states none is applied
- * whole, because no printing caps a score the source did not cap.
- */
+/** A feat stating no ceiling is applied whole; no printing caps what its source did not. */
 const addAbilityScoreBonus = (
   bonuses: Partial<Record<keyof AbilityScores, number>>,
   ability: keyof AbilityScores,
@@ -901,11 +876,7 @@ const getBackgroundAbilityScoreChoiceConfigs = (
 
 export const getFeatAbilityScoreModeKey = (feat: Feat) => `feat:${feat.id}:asi-mode`;
 
-/**
- * Which of a feat's alternative increases is in force. The 2024 Ability Score Improvement feat
- * states two ("one score by 2, or two scores by 1"); the player's pick is a mode, exactly as the
- * 2024 background's specialized/balanced split is.
- */
+/** The pick is a mode, like the 2024 background's specialized/balanced split. */
 export const getSelectedFeatAbilityScoreAlternative = (
   feat: Feat,
   abilityScoreChoiceModes?: Record<string, string>
@@ -1208,11 +1179,7 @@ export interface UnmetMulticlassPrerequisite {
   label: string;
 }
 
-/**
- * Both books say a character taking a new class must meet the minimums of the new class and of
- * every class they already have, so a class taken first is never checked and every class is
- * checked once a second one is picked. A class whose source states no minimum passes.
- */
+/** Every class is checked once a second is picked; a class taken first never is. */
 export const evaluateMulticlassPrerequisites = ({
   selectedClasses,
   candidateClass,
@@ -1270,12 +1237,28 @@ export const getClassFeatSelectionSources = (entry: SelectedClassWithLevel): Cla
 };
 
 export const resolveBackgroundGrantedFeat = (background: Background | undefined, feats: Feat[]) => {
+  // The source states the grant where it has one; the feature's name is the 2024 packs' way of
+  // saying the same thing, and the only one a document import can land.
+  for (const name of background?.grantedFeatNames ?? []) {
+    const granted = feats.find((feat) => normalizeName(feat.name) === normalizeName(name));
+    if (granted) {
+      return granted;
+    }
+  }
+
   if (!background?.feature?.name) {
     return undefined;
   }
 
   const normalizedFeatureName = normalizeName(background.feature.name);
   return feats.find((feat) => normalizeName(feat.name) === normalizedFeatureName);
+};
+
+/** What a background still owes: the skills it leaves to a choice, minus the ones already picked. */
+export const getBackgroundSkillChoice = (background: Background | undefined) => {
+  const count = background?.skillChoiceCount ?? 0;
+  const options = background?.skillChoices ?? [];
+  return count > 0 && options.length > 0 ? { count, options } : undefined;
 };
 
 export const getSpeciesFeatSelectionSources = ({
@@ -1340,14 +1323,7 @@ export const resolveCharacterClasses = ({
     .filter(isDefined);
 };
 
-/**
- * A character stores whichever class id was current when it was saved, and merged class ids move
- * as source packs improve — `getRuntimeClassById` is what resolves an older id back to the class
- * it names. Matching a stored entry on the raw string instead silently drops the class: the
- * Spells step reported "select a spellcasting class" for a level-4 Warlock and the Equipment step
- * counted "0 class kits", both for a character whose class the Class step resolved perfectly well.
- * Every read *and* write of a class entry goes through these.
- */
+/** A stored class id is a pointer that goes stale, so never match one with `===`. */
 export const matchesCharacterClassEntry = (
   entry: CharacterClass,
   classId: string,
@@ -1390,11 +1366,7 @@ export const updateCharacterClassEntry = (
   return next;
 };
 
-/**
- * Rewrite stored class ids to the ids the content library uses now. Nothing else in the document
- * changes, so a character still round-trips — this only repairs the pointer, which is what
- * `getStableClassId` exists to keep still in the first place.
- */
+/** Repairs the pointer only, so the character still round-trips. */
 export const normalizeCharacterClassIds = (
   classes: CharacterClass[] | undefined,
   getClassById: (classId: string) => Class | undefined
@@ -1516,7 +1488,13 @@ export const deriveCharacterProficiencies = ({
     }
   };
 
-  background?.skillProficiencies.forEach((skill) => skills.add(skill));
+  // A background's own skill choice is the player's pick, never the phrase that offers it.
+  background?.skillProficiencies.forEach((skill) => {
+    if (!isChoicePlaceholderLabel(skill)) {
+      skills.add(skill);
+    }
+  });
+  character.backgroundSkillSelections?.forEach((skill) => skills.add(skill));
   background?.toolProficiencies?.forEach(addToolProficiency(getToolChoiceIdPrefix('background', background.id)));
 
   addProficiencyEntries(species?.proficiencies, 'skill', skills);
@@ -1605,12 +1583,7 @@ const emptyCharacterProficiencies = (): Character['proficiencies'] => ({
   saves: []
 });
 
-/**
- * A saved character stores the merged proficiency list (picks plus everything species, background,
- * and class grant), but the builder's `character.proficiencies` holds only the player's own picks —
- * `ClassDetails` counts those against `skillCount`. Re-deriving the grants and subtracting them
- * recovers the pick layer so reopening a character does not present granted skills as class picks.
- */
+/** Recovers the pick layer, so granted skills do not read back as class picks. */
 export const extractSelectedProficiencies = ({
   character,
   resolvedClasses,
@@ -1653,11 +1626,7 @@ export const extractSelectedProficiencies = ({
   };
 };
 
-/**
- * Removes every class `shouldRemove` accepts. When the first class goes, the next one becomes the
- * starting class and its multiclass pick becomes the starting pick layer, capped at what a starting
- * class may choose — left where it was, nothing would read it and the sheet would ask again.
- */
+/** Promotes the next class's multiclass pick into the starting pick layer, capped. */
 export const removeCharacterClasses = (
   character: Partial<Character>,
   shouldRemove: (entry: CharacterClass) => boolean,
@@ -1683,12 +1652,7 @@ export const removeCharacterClasses = (
   };
 };
 
-/**
- * Every skill the character already holds from somewhere other than `cls`'s own picks, keyed to the
- * source that grants it. A class pick that duplicates one buys nothing — both books say to choose a
- * different skill instead — and the merged list a saved character stores cannot tell the two apart,
- * so the picker has to refuse it up front rather than lose it on the next read.
- */
+/** A class pick duplicating a grant is refused up front; the merged list cannot tell them apart. */
 export const deriveSkillsHeldElsewhere = ({
   character,
   cls,
@@ -1754,11 +1718,7 @@ export interface AbilityScoreEntryState {
   rolledScoreAssignments: Partial<Record<keyof AbilityScores, number>>;
 }
 
-/**
- * Restores the ability score entry mode for a saved character. Characters saved before the mode was
- * recorded are classified from their scores; anything that is neither the standard array nor a legal
- * point buy is treated as rolled, with the stored scores standing in for the rolled pool.
- */
+/** A character saved before the mode was recorded is classified from its scores. */
 export const resolveAbilityScoreEntryState = (character: Partial<Character>): AbilityScoreEntryState => {
   const scores = character.abilityScores;
 
@@ -1879,9 +1839,7 @@ export const resolveCharacterEquipment = ({
         : undefined;
       const bundledEntry = findBundledEquipmentOption(option, childSlug);
       const optionLabel = bundledEntry?.name ?? option?.name;
-      // Only a five-segment id — or the older four-segment shape on an option with no contents —
-      // carries an item the player picked. On an option that *has* contents the fourth segment is
-      // the part's own slug, and reading it as a pick relabelled every fixed grant.
+      // Only a five-segment id carries a pick; with contents the fourth segment is a slug.
       const chosenItemId = parts[4] ?? (option?.contents?.length ? undefined : parts[3]);
       const resolvedItem = resolveReferencedEquipmentItem({
         optionName: optionLabel,
@@ -2050,11 +2008,7 @@ export const getActiveFeatures = ({
   return features.filter((feature) => !replacedFeatureIds.has(feature.id) || Boolean(feature.replacesFeatureIds?.length));
 };
 
-/**
- * Which magic feature the character actually has, which is what a feat prerequisite asks about.
- * Pact Magic is the Warlock's separate pool, so a class contributing pact slots answers the second
- * question and not the first.
- */
+/** Pact Magic is its own pool, so pact slots answer the second question, not the first. */
 export const getMagicFeatureFlags = (selectedClasses: SelectedClassWithLevel[]) => {
   let hasSpellcasting = false;
   let hasPactMagic = false;
@@ -2093,11 +2047,7 @@ export const getSpellcastingRulesSummary = ({
       const cantripLimit = getProgressionValue(spellcasting.cantripsKnown, entry.level);
       const knownSpellLimit = getProgressionValue(spellcasting.spellsKnown, entry.level);
       const preparedSpellLimit = getPreparedSpellLimit(spellcasting, entry.level, abilityScores);
-      // How many this class may hold prepared. The two printings state it differently — 2014 gives
-      // the level-plus-modifier formula, 2024 prints a Prepared Spells column the importer stores
-      // as `spellsKnown` — so a class that prepares takes whichever of the two its source states.
-      // A column that parsed as zero is unstated rather than a limit of none, exactly as
-      // `choosePreferredCount` reads a class's skill count.
+      // Each printing states this its own way; a column parsing as zero is unstated, not none.
       const preparedLimit = spellcasting.spellPreparation
         ? (knownSpellLimit > 0 ? knownSpellLimit : preparedSpellLimit)
         : undefined;

@@ -1,11 +1,4 @@
-// What this character shrugs off.
-//
-// Read out of the features the character already has: a feature says what it protects against
-// ("you have Resistance to Bludgeoning, Piercing, and Slashing damage"), so nothing here names a
-// class, a species or a feat, and a feature whose text states nothing appears in no list.
-//
-// The turn list that used to sit beside this is now the Actions table, which groups weapons,
-// spells and features by the same timing this module used to read on its own.
+// Read from the features held, so nothing here names a class, species or feat.
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DEFENCE_KIND_LABELS, groupDefences, type DerivedDefence } from '@/lib/sheetCombat';

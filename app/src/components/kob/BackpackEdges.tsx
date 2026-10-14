@@ -12,12 +12,7 @@ interface BackpackEdgesProps {
   readonly pending: { path: string } | null;
 }
 
-/**
- * Every arrow on the board, in one SVG behind the cards.
- *
- * It is drawn in board coordinates inside the same transformed layer the cards live in, so the
- * viewport's pan and zoom apply to it for free and no line has to be re-projected on a drag.
- */
+/** In board coordinates inside the transformed layer, so pan and zoom apply for free. */
 export function BackpackEdges({ nodes, edges, selectedId, readOnly, onSelect, pending }: BackpackEdgesProps) {
   const byId = new Map(nodes.map((node) => [node.id, node]));
   const drawn = edges

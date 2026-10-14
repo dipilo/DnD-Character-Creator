@@ -1,11 +1,4 @@
-// The shared dice surface, mounted once by `Layout`.
-//
-// Every roll the app makes outside the roller page — a skill on the sheet, a Kids on Bikes stat
-// check, "roll a question" — goes through `rollOnScreen` and lands here, so one preference decides
-// whether it is thrown across the screen or resolved instantly.
-//
-// `DiceScene` is loaded lazily and only once a roll has actually been asked for: it statically
-// imports 2,667 KB of physics engine, and this component is in the boot graph of every route.
+// `DiceScene` loads lazily: it statically imports the physics engine.
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -190,10 +183,7 @@ function DiceOutcomeCard({ onDismiss }: Readonly<{ onDismiss: () => void }>) {
   );
 }
 
-/**
- * Throw the request, on the surface when there is one. A Lucky Break is a fresh throw of the same
- * die added to the running total, so it is a loop here rather than something the notation can say.
- */
+/** A Lucky Break is a loop here rather than something the notation can say. */
 async function resolveRoll(pending: PendingRoll, scene: DiceSceneHandle | null) {
   const { request } = pending;
   const modifier = parseDiceNotation(request.notation)?.modifier ?? 0;

@@ -1,10 +1,4 @@
-// Play sessions and the table's shared dice feed.
-//
-// The rules worth an end-to-end check are all refusals: only the DM (or a member the DM granted
-// `can_manage_sessions`) may start or end one, a campaign may have only one open at a time, a
-// closed session takes no more rolls, and nobody outside the campaign can read the feed or write
-// to it. Each of those fails silently in a way that looks like nothing at all — a second feed
-// nobody is reading, or a stranger quietly logging dice into someone else's game.
+// The rules worth checking are all refusals, and each fails silently.
 //
 //   node server/test/gameSessions.mjs      (npm run test:sessions)
 
@@ -87,7 +81,6 @@ async function setUpTable() {
 async function scenario() {
   const campaignId = await setUpTable();
 
-  // ---- who may start one --------------------------------------------------
   const strangerList = await call('stranger', 'GET', `/api/game-sessions?campaign_id=${campaignId}`);
   check('a non-member cannot list sessions', strangerList.status === 403, strangerList.status);
 
@@ -102,7 +95,6 @@ async function scenario() {
   check('a second open session is refused', second.status === 409 && second.json.error === 'session_already_open', `${second.status} ${second.json.error}`);
   check('the refusal carries the one already open', second.json.session?.id === sessionId, second.json.session?.id);
 
-  // ---- who may roll into it ----------------------------------------------
   const playerRoll = await call('player', 'POST', `/api/game-sessions/${sessionId}/rolls`, {
     ...roll('Stealth', 18),
     character_name: 'Nera',
@@ -120,7 +112,6 @@ async function scenario() {
 
   await call('gm', 'POST', `/api/game-sessions/${sessionId}/rolls`, roll('Initiative', 14));
 
-  // ---- the feed the whole table reads -------------------------------------
   const feed = await call('player', 'GET', `/api/game-sessions/${sessionId}/rolls`);
   check('the feed carries every roll', feed.json.rolls?.length === 2, feed.json.rolls?.length);
   check('the feed is oldest first', feed.json.rolls?.[0]?.label === 'Stealth', feed.json.rolls?.[0]?.label);
@@ -132,7 +123,6 @@ async function scenario() {
   const strangerFeed = await call('stranger', 'GET', `/api/game-sessions/${sessionId}/rolls`);
   check('a non-member cannot read the feed', strangerFeed.status === 403, strangerFeed.status);
 
-  // ---- a granted member runs the table ------------------------------------
   const members = await call('gm', 'GET', `/api/campaigns/${campaignId}/members`);
   const helperRow = members.json.members?.find((row) => row.user_name === 'sessions-helper');
   const granted = await call('gm', 'PATCH', `/api/campaigns/${campaignId}/members/${helperRow?.id}/permissions`, {
@@ -144,7 +134,6 @@ async function scenario() {
   check('a member granted session management can end one', helperEnd.status === 200, `${helperEnd.status} ${helperEnd.json.error}`);
   check('ending closes it', helperEnd.json.session?.is_open === false, helperEnd.json.session?.is_open);
 
-  // ---- a closed session is a record, not a place to write -----------------
   const afterEnd = await call('player', 'POST', `/api/game-sessions/${sessionId}/rolls`, roll('Too late', 3));
   check('a closed session takes no more rolls', afterEnd.status === 409 && afterEnd.json.error === 'session_closed', `${afterEnd.status} ${afterEnd.json.error}`);
 

@@ -1,16 +1,7 @@
-// Route-level smoke harness for the scheduler API.
+// Route-level smoke harness: boots the real server and diffs a normalised snapshot.
 //
-// There are no unit tests behind these ~60 routes, so Phase 1a of MERGE_PLAN.md (splitting
-// server.js into modules as a pure move) has nothing to prove it changed no behaviour. This
-// script boots the real server against a throwaway libsql file, drives a scripted scenario
-// across every resource, and writes a normalised snapshot of every status + response body.
-//
-//   node server/test/smoke.mjs --write    record the snapshot as the new baseline
-//   node server/test/smoke.mjs            replay and diff against the baseline (exit 1 on drift)
-//
-// Volatile values (timestamps, generated tokens, uptime) are redacted so two runs of the same
-// code compare equal. Ids are not redacted: the DB is fresh every run, so they are stable and
-// worth checking.
+//   node server/test/smoke.mjs --write    record a new baseline
+//   node server/test/smoke.mjs            replay and diff (exit 1 on drift)
 
 import { spawn } from 'node:child_process';
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -61,10 +52,7 @@ function blankPath(body, path) {
 
 const ctx = {};
 
-// Authentication is a session cookie now (MERGE_PLAN.md Phase 1b), so the harness keeps a jar
-// per named user instead of asserting an id in a header. A step's `jar` names the slot its
-// Set-Cookie lands in; logout responses clear the cookie and are deliberately not stored, so a
-// later request can replay the revoked cookie and prove the server killed it.
+// A cookie jar per named user; a logout response is not stored, so the cookie can replay.
 const cookieJar = {};
 const asUser = (name) => (cookieJar[name] ? { Cookie: cookieJar[name] } : {});
 
@@ -94,11 +82,7 @@ function normaliseSetCookie(line) {
 const masked = [];
 const mask = (s) => masked.reduce((acc, secret) => acc.replaceAll(secret, '<generated>'), s);
 
-/**
- * Steps run in order against one server process and one DB. `path`/`body` may be functions of
- * ctx so a step can use an id or token minted by an earlier step; `capture` stores values for
- * later steps from the *unredacted* response.
- */
+/** `path`/`body` may be functions of ctx; `capture` reads the *unredacted* response. */
 const steps = [
   { name: 'root', method: 'GET', path: '/' },
   { name: 'health', method: 'GET', path: '/health' },
@@ -196,9 +180,7 @@ const steps = [
   { name: 'grant-self-release', method: 'PATCH', path: () => `/api/campaigns/${ctx.camp}/members/${ctx.bob}/permissions`, headers: () => asUser('alice'), body: { permissions: { can_edit_self: true, players_self_delete: true } } },
   { name: 'unclaim-player', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/unclaim-player`, headers: () => asUser('bob'), body: () => ({ player_id: ctx.cora }) },
   { name: 'discord-confirm-link', method: 'POST', path: '/api/discord/confirm-link', headers: () => asUser('bob'), body: () => ({ player_id: ctx.cora }) },
-  // Releasing a seat is not leaving the table, so bob is still a member here and the leave
-  // succeeds. It used to answer not_a_member: unclaiming deleted the membership row along with the
-  // seat, which is the bug that evicted a campaign's owner for deleting a seat they had claimed.
+  // Unclaiming used to delete the membership row, which evicted a campaign's owner.
   { name: 'leave-campaign', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/leave`, headers: () => asUser('bob') },
   { name: 'owner-cannot-leave', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/leave`, headers: () => asUser('alice') },
   { name: 'delete-invite', method: 'DELETE', path: () => `/api/invites/${ctx.inviteId}`, headers: () => asUser('alice') },
@@ -211,9 +193,7 @@ const steps = [
   { name: 'sheet-template', method: 'GET', path: '/api/sheet-template', headers: () => asUser('alice') },
   { name: 'sync-without-campaign', method: 'POST', path: '/api/sync', headers: () => asUser('alice'), body: {} },
   { name: 'sync-invalid-sheet-id', method: 'POST', path: '/api/sync', headers: () => asUser('alice'), body: () => ({ campaign_id: ctx.camp, spreadsheetId: '///' }) },
-  // Importing rewrites the roster, so it is gated on can_create_players rather than membership.
-  // Dara joined alice's campaign by invite and is a plain member; the old route let any member
-  // import over every seat in the campaign.
+  // Gated on can_create_players: the old route let any member import over every seat.
   { name: 'sync-as-member-without-rights', method: 'POST', path: '/api/sync', headers: () => asUser('dara'), body: () => ({ campaign_id: ctx.camp, spreadsheetId: '///' }) },
   { name: 'rebuild-player', method: 'POST', path: () => `/api/rebuild/${ctx.bran}`, headers: () => asUser('alice') },
   { name: 'rebuild-missing-player', method: 'POST', path: '/api/rebuild/9999', headers: () => asUser('alice') },
@@ -226,9 +206,7 @@ const steps = [
   { name: 'claim-player-anonymous', method: 'POST', path: () => `/api/campaigns/${ctx.camp}/claim-player`, body: { name: 'Ellis' }, jar: 'ellis' },
   { name: 'me-as-anonymous-claimant', method: 'GET', path: '/api/me', headers: () => asUser('ellis') },
 
-  // Phase 2: builder characters. Private per-user documents, which is why they could not land
-  // before Phase 1b — every route is behind the session, and another user's id reads as 404 so the
-  // id space stays unwalkable.
+  // Every route is behind the session, and another user's id reads as 404.
   { name: 'characters-unauthenticated', method: 'GET', path: '/api/characters' },
   { name: 'characters-empty', method: 'GET', path: '/api/characters', headers: () => asUser('alice') },
   // `summary` is the denormalised display line a party view lists by. The client computes it —
@@ -261,9 +239,7 @@ const steps = [
   { name: 'recreate-deleted-character', method: 'POST', path: '/api/characters', headers: () => asUser('alice'), body: { id: 'char-miri', data: { name: 'Resurrected' } } },
   { name: 'characters-after-delete', method: 'GET', path: '/api/characters', headers: () => asUser('alice') },
 
-  // Phase 5: the seat link and the party view. Attaching a character to a campaign is what shares
-  // it with that campaign's members, so these steps are the read boundary in both directions —
-  // `ellis` is a member (they claimed a seat anonymously above), `bob` is not.
+  // The read boundary both ways: `ellis` is a member, `bob` is not.
   { name: 'campaign-characters-unauthenticated', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/characters` },
   { name: 'campaign-characters-as-non-member', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/characters`, headers: () => asUser('bob') },
   { name: 'campaign-characters', method: 'GET', path: () => `/api/campaigns/${ctx.camp}/characters`, headers: () => asUser('alice') },
@@ -334,9 +310,7 @@ const steps = [
   { name: 'pre-game-forms-as-member', method: 'GET', path: () => `/api/pre-game-forms?campaign_id=${ctx.camp2}`, headers: () => asUser('bob') },
   { name: 'pre-game-forms-as-owner', method: 'GET', path: () => `/api/pre-game-forms?campaign_id=${ctx.camp2}`, headers: () => asUser('alice') },
 
-  // The Powered Character. The GM owns the document; every member writes the play state; and what
-  // the GM held back never leaves the server — the counts do, because the table can see the cards
-  // are face down.
+  // What the GM held back never leaves the server; the counts do.
   { name: 'powered-character-create-as-member', method: 'POST', path: '/api/powered-characters', headers: () => asUser('bob'), body: () => ({ campaign_id: ctx.camp2, data: { name: 'Not yours' } }) },
   { name: 'powered-character-create', method: 'POST', path: '/api/powered-characters', headers: () => asUser('alice'), body: () => ({ campaign_id: ctx.camp2, data: { name: 'The Boy in the Wall', concept: 'Remembers a town that is not there', stats: { brains: 'd12', grit: 'd8' }, powerTokens: { pool: 7, spent: 0 }, aspects: [{ id: 'a1', text: 'Flinches at sirens' }, { id: 'a2', text: 'Can stop a clock', hidden: true }], fears: [{ id: 'f1', text: 'Running water' }] } }), capture: (j) => { ctx.pc = j.powered_character?.id; ctx.pcVersion = j.powered_character?.version; } },
   { name: 'powered-characters-as-owner', method: 'GET', path: () => `/api/powered-characters?campaign_id=${ctx.camp2}`, headers: () => asUser('alice') },
@@ -508,9 +482,7 @@ async function main() {
 
   let baseline;
   try {
-    // Normalised because git checks the snapshot out with CRLF wherever core.autocrlf=true, and a
-    // byte comparison then reports every line as drift on a tree that has not changed.
-    // .gitattributes pins eol=lf as well; this is the half that survives a mis-configured clone.
+    // Normalised: a mis-configured clone reports every line as drift otherwise.
     baseline = readFileSync(snapshotPath, 'utf8').replaceAll('\r\n', '\n');
   } catch {
     console.error(`no baseline at ${snapshotPath} — run with --write first`);

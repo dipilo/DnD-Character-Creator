@@ -1,8 +1,4 @@
-// What a feat's benefit lines are read to grant.
-//
-// This is the one piece of the feat work that fails *silently*: a sentence the parser stops
-// matching does not error, the feat just quietly gives less than the book says — no ability score,
-// no spell, no borrowed option. Every line below is one a source actually prints.
+// A sentence the parser stops matching makes the feat quietly grant less.
 //
 //   node scripts/test/featBenefits.mjs      (npm run test:feat-benefits)
 

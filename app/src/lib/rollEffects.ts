@@ -1,11 +1,4 @@
-/**
- * What a feature does to a d20 test, read from the feature's own sentences.
- *
- * Silver Tongue's floor, Reliable Talent's, Brave's advantage against being frightened: the books
- * state each as a scope and an effect in one clause, so nothing here is a per-feature table. A
- * clause whose scope cannot be read grants nothing, exactly as a feature stating no timing lands in
- * no action group.
- */
+// What a feature does to a d20 test; a clause whose scope cannot be read grants nothing.
 import { SKILL_ABILITIES } from '@/lib/sheetDerivations';
 import type { AbilityScores, Feature } from '@/types/dnd';
 
@@ -25,10 +18,7 @@ export interface RollScope {
   excludesProficiency?: boolean;
 }
 
-/**
- * How big a bonus is, as the book states it rather than as a number: the size is one of the
- * character's own figures and is resolved against them in `resolveCharacterRollEffects`.
- */
+/** The book's words, resolved against the character in `resolveCharacterRollEffects`. */
 export interface RollBonus {
   source: 'ability' | 'proficiency';
   ability?: keyof AbilityScores;
@@ -48,10 +38,7 @@ export interface RollEffect {
   /** `bonus` only: the figure the clause names, before it is placed against a character. */
   bonus?: RollBonus;
   scope: RollScope;
-  /**
-   * The words that narrow the clause, verbatim — "against being frightened", "to avoid or end the
-   * charmed condition". The sheet cannot tell whether they hold, so it prints them beside the roll.
-   */
+  /** Verbatim: the sheet cannot tell whether they hold, so it prints them beside the roll. */
   condition?: string;
   /** The clause as the book writes it, for the tray's detail line. */
   detail: string;
@@ -87,20 +74,13 @@ const ABILITY_NAMES: readonly (keyof AbilityScores)[] = [
   'charisma',
 ];
 
-/* -------------------------------------------------------------------------- *
- * Reading one clause
- * -------------------------------------------------------------------------- */
-
 /** "you can treat a d20 roll of 9 or lower as a 10" — the only shape either printing prints. */
 const FLOOR_PATTERN = /treat a d20 roll of (\d+) or lower as (?:an?\s+)?(\d+)/i;
 
 /** "You have advantage on …", "you gain disadvantage on …". The scope runs to the clause's end. */
 const SWING_PATTERN = /\byou (?:have|gain)\s+(advantage|disadvantage)\s+on\s+/gi;
 
-/**
- * Where the clause holding `index` ends. A comma is not a break: "Strength checks and Strength
- * saving throws" and "saving throws against poison, and you have resistance" both need the comma.
- */
+/** A comma is not a break: "Strength checks and Strength saving throws" needs it. */
 const CLAUSE_END = /[.;?!•]/;
 
 function clauseFrom(text: string, start: number): string {
@@ -119,11 +99,7 @@ function sentenceStart(text: string, index: number): number {
   return start;
 }
 
-/**
- * "add half your proficiency bonus, rounded down, to ...", "add your Charisma modifier to ...".
- * The size is closed to the character's own figures: a clause adding a die is a throw, which
- * `featureFacets` reads, and a number nobody can place is not a d20 effect.
- */
+/** Closed to the character's own figures; a clause adding a die is a throw. */
 const BONUS_PATTERN =
   /\badd (half )?your (strength|dexterity|constitution|intelligence|wisdom|charisma|proficiency) (?:modifier|bonus)\b([^.;]{0,40}?) to /gi;
 
@@ -140,10 +116,7 @@ const MINIMUM_BONUS = /minimum (?:bonus )?of \+?(\d+)/i;
 const PROFICIENCY_SCOPE =
   /\b(?:lets you add your proficiency bonus|uses one of your (?:skill|tool)|you(?:'re| are) proficient)/i;
 
-/**
- * The words that narrow a clause to a situation the sheet has no way of knowing about. "When you
- * make" is not among them: it is how both printings open a clause that states the scope.
- */
+/** "When you make" is not among them: both printings open a scope clause with it. */
 const CONDITION_PATTERN =
   /\b(?:against|while|unless|if you|to avoid|to end|to escape|to maintain|to track|to navigate|to influence|to produce|that rely on|that you can see|with that|made with)\b/i;
 
@@ -181,10 +154,7 @@ function readCondition(clause: string): string | undefined {
   return condition.length > 0 ? condition : undefined;
 }
 
-/**
- * The scope a clause states. `rolls` empty means the clause named no test at all, which is what
- * the caller drops on: a bonus the sheet cannot place is worse than no bonus.
- */
+/** Empty `rolls` means no test was named: a bonus the sheet cannot place is dropped. */
 function readScope(clause: string): RollScope {
   const abilities = readAbilities(clause);
   const skills = readSkills(clause);
@@ -287,11 +257,7 @@ export interface RollBonusContext {
   abilityModifiers?: Partial<Record<keyof AbilityScores, number>>;
 }
 
-/**
- * What a bonus clause comes to for this character. A figure that cannot be resolved leaves the
- * effect off rather than reporting a wrong number, exactly as an unreadable term does to a
- * feature's throw.
- */
+/** An unresolvable figure leaves the effect off rather than reporting a wrong number. */
 function resolveBonusAmount(bonus: RollBonus, context: RollBonusContext): number | undefined {
   const base = bonus.source === 'proficiency'
     ? context.proficiencyBonus
@@ -303,26 +269,14 @@ function resolveBonusAmount(bonus: RollBonus, context: RollBonusContext): number
   return bonus.minimum === undefined ? amount : Math.max(amount, bonus.minimum);
 }
 
-/* -------------------------------------------------------------------------- *
- * Placing them on a character
- * -------------------------------------------------------------------------- */
-
 export interface RollEffectOptions {
-  /**
-   * Features whose pool the character is *not* currently in, lower-cased. Rage states its advantage
-   * flatly because the whole feature is conditional on raging, and `activeEffects` already holds
-   * whether they are — so the one condition the document knows about is honoured rather than
-   * printed.
-   */
+  /** Rage states its advantage flatly, so `activeEffects` decides whether it applies. */
   dormantFeatureNames?: ReadonlySet<string>;
   /** What a bonus clause's figure comes to. Without it, bonus effects resolve to nothing. */
   bonusContext?: RollBonusContext;
 }
 
-/**
- * Every effect the character's features state. The list is the level-gated one `getActiveFeatures`
- * already builds, exactly as `deriveSenses` and `deriveDefences` take it.
- */
+/** Takes the level-gated list `getActiveFeatures` already builds. */
 export function resolveCharacterRollEffects(
   features: readonly Feature[],
   options: RollEffectOptions = {},
@@ -346,10 +300,6 @@ export function resolveCharacterRollEffects(
 
   return resolved;
 }
-
-/* -------------------------------------------------------------------------- *
- * Reading them against one roll
- * -------------------------------------------------------------------------- */
 
 function matchesScope(scope: RollScope, target: RollTarget): boolean {
   if (!scope.rolls.includes(target.kind)) return false;
@@ -381,22 +331,11 @@ export interface AppliedRollEffects {
   bonus?: number;
   /** Every effect that applied, for the roll's own detail line. */
   applied: readonly ResolvedRollEffect[];
-  /**
-   * Effects whose own words narrow them to a situation nothing on the sheet can check — the
-   * Kenku's "to produce an exact duplicate". They are named beside the roll, never folded into it.
-   */
+  /** Named beside the roll, never folded into it. */
   conditional: readonly ResolvedRollEffect[];
 }
 
-/**
- * What a roll carries once its features are read. Advantage and disadvantage are reported as the
- * books state them, both at once where both apply — 5e cancels them, which `rollD20` does, because
- * that is the dice rule rather than a fact about the features.
- *
- * A conditional effect changes nothing here. Expert Duplication's clause covers "any ability
- * checks", so counting it put an advantage arrow on all eighteen skills and rolled two dice for
- * each of them: a situational grant applied flatly is a wrong number, not a reminder.
- */
+/** Both arrows where both apply; `rollD20` cancels them, since that is the dice rule. */
 export function applyRollEffects(
   effects: readonly ResolvedRollEffect[],
   target: RollTarget,

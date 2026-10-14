@@ -4,24 +4,8 @@ import classicTheme from '@fullcalendar/react/themes/classic';
 import type { PluginInput } from '@fullcalendar/react';
 import './fullcalendar.css';
 
-/**
- * The FullCalendar 7 plugin set both scheduler calendars share.
- *
- * The theme is **two halves that must both be present**: this plugin, which is what emits the
- * `fc-classic-*` class names onto the rendered elements, and `fullcalendar.css`, which is what
- * gives those class names any meaning. Importing one without the other produces a calendar that
- * looks broken rather than one that errors — which is the trap v7's opt-in styling sets, since v6
- * shipped its stylesheet implicitly and needed no theme plugin at all.
- *
- * Plugins also stopped being separate packages in v7 (`@fullcalendar/timegrid` has no 7.x
- * release); they are subpath exports of the connector. MERGE_PLAN.md §5.1 recorded this upgrade as
- * a peer-dependency bump, which understated it.
- */
+/** The plugin and `fullcalendar.css` are both required; one alone looks broken, not errors. */
 export const timeGridPlugins: PluginInput[] = [classicTheme, timeGridPlugin];
 
-/**
- * The above plus the interaction plugin. The editable calendar needs it for drag, resize and range
- * selection; the read-only aggregate needs it for `dateClick`, because a background event sits
- * under the slot lanes and never receives a pointer at all.
- */
+/** The aggregate needs it for `dateClick`: a background event receives no pointer. */
 export const interactiveTimeGridPlugins: PluginInput[] = [classicTheme, timeGridPlugin, interactionPlugin];

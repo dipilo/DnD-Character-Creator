@@ -8,15 +8,7 @@ import {
   type GameSystemId,
 } from '@/data/gameSystems';
 
-/**
- * Which game the app is currently being used for.
- *
- * This is the *preference* only. Which system's screens are on display stays the router's fact —
- * `resolveActiveGameSystem` lets the path win whenever it belongs to a system, and falls back to
- * the preference on the screens that belong to no system (home, campaigns, dice). Pushing the
- * pathname in here would be state mirroring state, which is the rule `themeStore` already follows
- * for the palette.
- */
+/** The *preference* only: the path wins wherever it belongs to a system. */
 interface GameSystemState {
   preferredSystemId: GameSystemId;
   setPreferredSystem: (systemId: GameSystemId) => void;

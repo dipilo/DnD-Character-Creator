@@ -59,19 +59,14 @@ function computeLayout(): CalendarLayout {
     isTouch,
     initialView: showWeek ? 'timeGridWeek' : 'timeGridDay',
     headerToolbar: toolbar,
-    // A landscape phone is ~390px tall, so `height: 'auto'` rendered a full 24-hour grid the page
-    // had to scroll past. Sizing off the viewport keeps the scroll inside the calendar instead.
-    // Quantised so a drag-resize does not re-render the grid on every pixel.
+    // Sized off the viewport so the scroll stays inside the calendar; quantised for drags.
     height: clamp(Math.round((window.innerHeight * 0.72) / 20) * 20, MIN_CALENDAR_HEIGHT, MAX_CALENDAR_HEIGHT),
     selectLongPressDelay: isTouch ? TOUCH_LONG_PRESS_MS : 0,
     eventLongPressDelay: isTouch ? TOUCH_LONG_PRESS_MS : 0,
   };
 }
 
-/**
- * `useSyncExternalStore` compares snapshots with `Object.is`, so a fresh object every read would
- * loop forever. Cache one and replace it only when a field actually changes.
- */
+/** Cache the snapshot: a fresh object every read loops forever. */
 let cached: CalendarLayout | null = null;
 
 function readLayout(): CalendarLayout {
@@ -102,11 +97,7 @@ function subscribe(onChange: () => void): () => void {
   };
 }
 
-/**
- * The responsive layout the scheduler's calendars share. Read through `useSyncExternalStore`
- * rather than an effect that mirrors `matchMedia` into state — the media query *is* an external
- * store, and CLAUDE.md rules out the setState-in-effect shape.
- */
+/** Through `useSyncExternalStore`: the media query *is* an external store. */
 export function useCalendarLayout(): CalendarLayout {
   return useSyncExternalStore(subscribe, readLayout, () => SERVER_LAYOUT);
 }

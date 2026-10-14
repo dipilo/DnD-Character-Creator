@@ -1,10 +1,6 @@
 // Cache helper for frequently accessed but relatively static data
 
-/**
- * A list whose answer changes the moment somebody claims a seat is not a shared-cacheable one:
- * `public, max-age=30` let a browser keep showing the seat the caller had just taken. Private and
- * short is what these routes actually are.
- */
+/** Private and short: a shared cache kept showing the seat the caller had just taken. */
 function setCache(req, res, next) {
   if (req.method === 'GET') {
     res.set('Cache-Control', 'private, max-age=5');
@@ -47,11 +43,7 @@ async function getCachedQueryAsync(key, queryFn) {
   return data;
 }
 
-/**
- * Drop every entry whose key starts with `prefix`. A write that changes what a cached read answers
- * has to say so: claiming a seat left `unclaimed_players_<id>` standing for another 30 seconds, so
- * the seat the caller had just taken was still offered to them.
- */
+/** A write that changes a cached read has to say so, or the seat is offered again. */
 function invalidateCache(prefix) {
   for (const key of queryCache.keys()) {
     if (key.startsWith(prefix)) queryCache.delete(key);

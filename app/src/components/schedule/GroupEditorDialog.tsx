@@ -160,10 +160,7 @@ function EditorForm({ campaignId, group, onOpenChange, onSaved }: Readonly<Omit<
   );
 }
 
-/**
- * Everything about a group that is not its member list. Keyed on the group being edited so opening
- * it on another one remounts the form, rather than seeding fields from an effect.
- */
+/** Keyed on the group, so opening another remounts rather than seeding from an effect. */
 export function GroupEditorDialog({ open, group, ...rest }: Readonly<GroupEditorDialogProps>) {
   return (
     <Dialog open={open} onOpenChange={rest.onOpenChange}>

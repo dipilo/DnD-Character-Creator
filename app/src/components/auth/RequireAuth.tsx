@@ -10,15 +10,7 @@ interface RequireAuthProps {
   children: React.ReactNode;
 }
 
-/**
- * The route guard Phase 3 deferred until there was something campaign-scoped to guard
- * (MERGE_PLAN.md §8). It gates the campaign screens and nothing else — **the builder stays usable
- * signed out**, which is the whole reason `characterStore` knows nothing about the network.
- *
- * It guards the *view*, not the data: every campaign route on the server resolves membership for
- * itself. Rendering a sign-in prompt instead of redirecting keeps the URL intact, so signing in
- * lands on the page that was asked for rather than the campaign list.
- */
+/** Guards the campaign views only; the builder stays usable signed out. */
 export function RequireAuth({ children }: Readonly<RequireAuthProps>) {
   const status = useAuthStore((state) => state.status);
   const [dialogOpen, setDialogOpen] = useState(false);

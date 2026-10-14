@@ -1,16 +1,4 @@
-/**
- * Levelling up, and what a level-up leaves for the player to fill in.
- *
- * A level is a number on the document, so the sheet can raise it: `applyLevelUp` is the same write
- * the builder's Class step makes, through `updateCharacterClassEntry` so the first entry keeps its
- * place — it is the one that gets a full hit die at 1st level.
- *
- * What the new level *grants* is another matter. A subclass, an Ability Score Improvement, another
- * cantrip, a second Eldritch Invocation: none of those apply themselves, and before this nothing
- * said so. `deriveAdvancementTasks` reads them off the character's own classes, species and feats
- * and hands back a link to the step that resolves each one, so the same list can be shown on the
- * sheet and at the top of the builder.
- */
+// Levelling, plus the choices a new level grants; `deriveAdvancementTasks` reads them.
 import {
   canMixClassEditions,
   deriveCharacterHitPoints,
@@ -19,6 +7,7 @@ import {
   getClassProficiencyGrants,
   getMulticlassSkillSelections,
   getSpeciesFeatSelectionSources,
+  getBackgroundSkillChoice,
   getToolChoiceIdPrefix,
   isChoicePlaceholderLabel,
   isToolProficiencyChoiceLabel,
@@ -62,12 +51,7 @@ export interface AdvancementTask {
 export const totalCharacterLevel = (character: Pick<Character, 'classes'>) =>
   character.classes.reduce((sum, entry) => sum + entry.level, 0);
 
-/**
- * Raise one class by a level.
- *
- * Hit points follow, because the maximum is stored: `deriveCharacterHitPoints` carries the current
- * total forward by the same amount the maximum moved, so a wounded character stays wounded.
- */
+/** The maximum is stored, so a wounded character stays wounded. */
 export function applyLevelUp(
   character: Character,
   classId: string,
@@ -89,13 +73,7 @@ export function applyLevelUp(
   };
 }
 
-/**
- * Take a first level in a class the character does not hold.
- *
- * The entry goes on the end, so the first entry keeps its full first-level hit die, and the new
- * class's proficiency grants and skill pick follow from its position through
- * `getClassProficiencyGrants` and `deriveAdvancementTasks` without anything written here.
- */
+/** Appended, so the first entry keeps its full first-level hit die. */
 export function applyAddClass(
   character: Character,
   classId: string,
@@ -121,12 +99,7 @@ export interface MulticlassCandidate {
   unmet?: string;
 }
 
-/**
- * The classes a sheet may add, one printing per class, in the edition the character already plays.
- * The prerequisite check is the Class step's (`evaluateMulticlassPrerequisites`), read against the
- * scores the sheet displays; a class the character cannot take is listed with its reason rather
- * than hidden, and `multiclassPrerequisitesWaived` clears every reason.
- */
+/** One printing per class, in the edition the character already plays. */
 export function listMulticlassCandidates({
   character,
   resolvedClasses,
@@ -168,18 +141,7 @@ export function canLevelUp(character: Pick<Character, 'classes'>) {
   return totalCharacterLevel(character) < MAX_CHARACTER_LEVEL;
 }
 
-/**
- * Drop one class by a level.
- *
- * Levelling is a thing players try out, so it has to be reversible on the sheet that offers it —
- * and hit points move back by exactly what they gained, because `deriveCharacterHitPoints` carries
- * the current total by the difference in the maximum.
- *
- * Nothing the level granted is deleted. A subclass chosen at 3rd level survives a drop to 2nd and
- * takes effect again on the way back up, which is the rule a class entry already follows in the
- * builder; the last level of a class is the floor, because removing the entry would take its
- * choices with it and, for the first entry, move every other class's hit dice.
- */
+/** Reversible, and nothing granted is deleted: a parked subclass returns on the way up. */
 export function applyLevelDown(
   character: Character,
   classId: string,
@@ -218,6 +180,7 @@ export type AdvancementCharacter = Partial<
     | 'toolProficiencySelections'
     | 'multiclassSkillSelections'
     | 'backgroundLanguageSelections'
+    | 'backgroundSkillSelections'
     | 'speciesLanguageSelections'
     | 'expertiseSelections'
   >
@@ -225,10 +188,7 @@ export type AdvancementCharacter = Partial<
 
 export interface AdvancementContext {
   character: AdvancementCharacter;
-  /**
-   * The skills the player picked for their class: the builder's pick layer, never the merged list a
-   * saved character stores. The sheet recovers it with `extractSelectedProficiencies`.
-   */
+  /** The builder's pick layer, never the merged list a saved character stores. */
   selectedSkills: readonly string[];
   resolvedClasses: readonly ResolvedCharacterClass[];
   species?: Species;
@@ -239,17 +199,11 @@ export interface AdvancementContext {
   /** The feats this character holds, resolved. */
   feats: readonly Feat[];
   spellcastingRules: SpellcastingRulesSummary;
-  /**
-   * The proficiencies an Expertise pick may double. Passed in rather than derived, because the
-   * merged list needs the content library and this module stays pure.
-   */
+  /** Passed in, because the merged list needs the library and this module stays pure. */
   expertiseProficiencies?: ExpertiseProficiencies;
 }
 
-/**
- * Which feature owes the choice, so the Class step can unfold the card holding it. A pick inside a
- * collapsed accordion is one nobody finds.
- */
+/** A pick inside a collapsed accordion is one nobody finds. */
 const featurePointer = (featureId: string | undefined) => (featureId ? `&feature=${encodeURIComponent(featureId)}` : '');
 const classFeaturesPath = (classId: string, featureId?: string) => `/builder/class/${encodeURIComponent(classId)}?tab=features${featurePointer(featureId)}`;
 const classSubclassesPath = (classId: string) => `/builder/class/${encodeURIComponent(classId)}?tab=subclasses`;
@@ -257,11 +211,7 @@ const classProficienciesPath = (classId: string) => `/builder/class/${encodeURIC
 const speciesPath = (speciesId: string) => `/builder/species/${encodeURIComponent(speciesId)}`;
 const backgroundPath = (backgroundId: string) => `/builder/background/${encodeURIComponent(backgroundId)}`;
 
-/**
- * A tool line that names a family ("One type of gaming set") is a pick, keyed by the owner's prefix
- * and the line's index — the same id `ToolProficiencyChoices` writes and
- * `deriveCharacterProficiencies` reads.
- */
+/** Keyed by owner prefix and line index, the id `ToolProficiencyChoices` writes. */
 function collectToolTasks(
   labels: readonly string[] | undefined,
   idPrefix: string,
@@ -337,11 +287,25 @@ function skillTask(cls: Class, limit: number, chosen: number): AdvancementTask[]
   }];
 }
 
-/**
- * Expertise doubles a proficiency the character already holds, so an unmade pick is an unfinished
- * choice exactly as a subclass is. It is read from the feature's own text, so a pack that adds a
- * feature granting it is counted with nothing added here.
- */
+/** A background that states a skill choice rather than a pair of grants owes the pick. */
+function backgroundSkillTask(background: Background, character: AdvancementCharacter): AdvancementTask[] {
+  const choice = getBackgroundSkillChoice(background);
+  if (!choice) return [];
+
+  const chosen = character.backgroundSkillSelections?.length ?? 0;
+  const outstanding = Math.max(0, choice.count - chosen);
+  if (outstanding <= 0) return [];
+
+  return [{
+    id: `skills:background:${background.id}`,
+    label: outstanding === 1 ? 'Choose a skill' : `Choose ${outstanding} skills`,
+    detail: `${background.name} · ${Math.min(chosen, choice.count)} of ${choice.count} chosen`,
+    href: backgroundPath(background.id),
+    count: outstanding
+  }];
+}
+
+/** Read from the feature's own text, so a pack adding one is counted with nothing here. */
 function expertiseTasks(context: AdvancementContext): AdvancementTask[] {
   const proficiencies = context.expertiseProficiencies;
   if (!proficiencies) return [];
@@ -542,14 +506,12 @@ function collectBackgroundTasks(context: AdvancementContext): AdvancementTask[] 
       character,
       backgroundPath(background.id),
       background.name
-    )
+    ),
+    ...backgroundSkillTask(background, character)
   ];
 }
 
-/**
- * Everything this character has earned and not chosen, in the order a player would work through it:
- * the class first, because a subclass changes what the rest of the list says.
- */
+/** Class first: a subclass changes what the rest of the list says. */
 export function deriveAdvancementTasks(context: AdvancementContext): AdvancementTask[] {
   return [
     ...collectClassTasks(context),

@@ -1,8 +1,4 @@
-// Hit dice and class resources. Spell slots live with the spells they cast, and the two rests sit
-// in the sheet header, where they are reachable from every tab.
-//
-// Same posture as the hit-point panel: no store, no writes — `onChange` is the whole write
-// surface, and its absence is what makes the party view read-only.
+// No store and no writes: `onChange` absent is what makes the party view read-only.
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,10 +24,7 @@ export interface HitDicePool {
 interface SheetResourcesPanelProps {
   character: Character;
   hitDice: HitDicePool[];
-  /**
-   * Slots per level, indexed by level - 1. Read only to decide whether this panel has anything to
-   * show; the slots themselves are spent on the Spells tab, beside the spells they cast.
-   */
+  /** Read only to decide whether this panel shows; slots are spent on the Spells tab. */
   slotsByLevel: number[];
   pactSlotsByLevel: number[];
   /** Rages, Ki Points, Channel Divinity: whatever this character's class tables state. */
@@ -41,10 +34,7 @@ interface SheetResourcesPanelProps {
   onChange?: (patch: Partial<Character>) => void;
 }
 
-/**
- * One class pool. Pips like a spell slot's, because it is spent the same way — except where the
- * book says "Unlimited", which is the 2014 Barbarian at level 20 and is not a thing to count.
- */
+/** Pips, as a slot is spent, except "Unlimited", which is not a thing to count. */
 function ResourceRow({
   resource,
   onSetUsed,
@@ -111,9 +101,7 @@ export function SheetResourcesPanel({
   constitutionModifier = 0,
   onChange
 }: Readonly<SheetResourcesPanelProps>) {
-  // Spending a hit die is spending it *to roll it*, so the die goes to the tray with the same
-  // click that marks it used. The healing itself stays the player's to apply: the rules let a
-  // short rest be interrupted, and the panel does not know whether this one finished.
+  // The healing stays the player's to apply: a short rest can be interrupted.
   const spendHitDie = (pool: HitDicePool) => {
     onChange?.(adjustHitDice(character, pool.classId, 1));
     const sides = parseDiceNotation(pool.die)?.groups[0]?.sides;

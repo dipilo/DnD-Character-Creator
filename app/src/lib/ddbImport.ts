@@ -1,14 +1,4 @@
-// D&D Beyond character JSON as a *seed* (MERGE_PLAN.md Phase 5).
-//
-// The scheduler stored a D&D Beyond blob on the campaign seat (`players.ddb_json`) and rendered it
-// as the character sheet. Phase 5 replaces that with a real link to a builder character, which
-// leaves the existing blobs needing a way out: this reads one and produces a *starting point* for
-// the builder. It is deliberately not a converter — the blob is a different game object with its
-// own ids, and pretending otherwise would silently invent content.
-//
-// So it fills in only what can be matched with confidence — name, ability scores, species, classes
-// and background, by name against the runtime content — and reports everything it could not place,
-// so the player finishes the job in the builder rather than trusting a half-built sheet.
+// A seed, not a converter: it fills only confident matches and reports the rest.
 import { getRuntimeBackgrounds, getRuntimeClasses, getRuntimeSpecies, getRuntimeSubclasses } from '@/data';
 import type { AbilityScores, Character } from '@/types/dnd';
 
@@ -49,11 +39,7 @@ function readNumber(value: unknown): number | null {
   return null;
 }
 
-/**
- * Find a content entry whose name matches. Exact first, then a containment match, because D&D
- * Beyond writes "Hill Dwarf" where the builder has "Dwarf" with a Hill variant — a near match is
- * worth offering, and the builder is where it gets confirmed either way.
- */
+/** Exact, then containment: DDB writes "Hill Dwarf" where the builder has a variant. */
 function matchByName<T extends { id: string; name: string }>(entries: T[], rawName: string): T | undefined {
   const wanted = normalise(rawName);
   if (!wanted) return undefined;
@@ -171,11 +157,7 @@ function seedBackground(character: Record<string, unknown>, result: DdbSeedResul
   }
 }
 
-/**
- * Read a stored `players.ddb_json` blob. Returns null only when it is not JSON at all — a blob that
- * parses but matches nothing still comes back, with everything listed as unmatched, because "we
- * read it and none of it fits your sources" is a more useful answer than a silent failure.
- */
+/** Null only for non-JSON: a blob matching nothing still returns, all unmatched. */
 export function seedCharacterFromDdbJson(raw: string | null | undefined): DdbSeedResult | null {
   if (!raw?.trim()) return null;
   let parsed: unknown;

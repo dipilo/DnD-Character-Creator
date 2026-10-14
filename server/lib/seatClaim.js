@@ -1,14 +1,4 @@
-/**
- * Whether creating a seat also claims it.
- *
- * Three modes: 'never', 'first' (claim only while the creator holds no seat, so it covers both the
- * literal first seat and the one made after deleting a previous), and 'always' (the newest seat
- * becomes theirs). A membership row holds one `player_id`, so 'always' moves the seat rather than
- * adding a second.
- *
- * The owner writes `auto_claim_override` and the member writes `auto_claim_preference`; NULL on
- * either is "no opinion" and falls through, exactly as NULL does on the permission defaults.
- */
+/** 'always' moves the seat, since a membership row holds one `player_id`; NULL falls through. */
 const AUTO_CLAIM_MODES = ['never', 'first', 'always'];
 const AUTO_CLAIM_MODE_SET = new Set(AUTO_CLAIM_MODES);
 

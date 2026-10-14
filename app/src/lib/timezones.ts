@@ -1,11 +1,4 @@
-/**
- * The timezone picker's data. A zone is stored as its IANA id, but nobody thinks in those: they
- * think in "CST" and "six hours behind", so every option carries its current UTC offset and both
- * of its abbreviations as search keywords.
- *
- * Abbreviations are read from the platform rather than tabulated — `Intl` names the zone in
- * January and in July, which is what separates EST from EDT without a hardcoded list.
- */
+/** Abbreviations come from `Intl` in January and July, not a hardcoded list. */
 
 /** A zone as the combobox shows it: the id, its offset line, and everything it answers to. */
 export interface TimeZoneOption {
@@ -84,18 +77,12 @@ function keywordsFor(zone: string, abbreviations: string[], offset: string): str
   return [...new Set([...abbreviations, offset, offset.replace('UTC', 'GMT'), ...place])];
 }
 
-/**
- * One line under the id: what the zone is offset by right now, and what it is called. Winter and
- * summer names are both shown when they differ, so a search for either one reads as a match.
- */
+/** Both seasonal names show when they differ, so a search for either matches. */
 function describe(offset: string, abbreviations: string[]): string {
   return abbreviations.length > 0 ? `${offset} \u00b7 ${abbreviations.join(' / ')}` : offset;
 }
 
-/**
- * Every zone the platform knows, sorted west to east and labelled with its offset. Reads the clock
- * once — offsets are seasonal, so the caller decides when that is (a `useMemo`, never a render).
- */
+/** Reads the clock once; offsets are seasonal, so the caller picks when (a `useMemo`). */
 export function timeZoneOptions(now: Date = new Date()): TimeZoneOption[] {
   const year = now.getUTCFullYear();
   const january = new Date(Date.UTC(year, 0, 15));

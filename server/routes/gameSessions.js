@@ -1,8 +1,4 @@
-// Play sessions and their shared dice feed.
-//
-// Starting one is the DM's act — or a member's, when the owner has granted `can_manage_sessions`,
-// which is why the flag exists rather than ownership being the only answer. *Rolling* is every
-// member's: the point of the feed is that the table sees each other's dice.
+// Starting one needs `can_manage_sessions`; rolling into it is every member's.
 const express = require('express');
 const db = require('../db');
 const { normaliseRoll, publicRoll, publicSession } = require('../lib/gameSessions');
@@ -42,10 +38,7 @@ async function resolveAccess(req, res, campaignId) {
   };
 }
 
-/**
- * One session and the caller's rights over it. A session in a campaign they are not in reads as
- * absent, so the id space is not walkable — the same rule as the Powered Character routes.
- */
+/** A session in a campaign they are not in reads as absent. */
 async function loadForCaller(req, res) {
   const id = parseId(req.params.id);
   const row = id ? await db.get('SELECT * FROM game_sessions WHERE id = ?', id) : null;

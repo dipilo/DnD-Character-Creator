@@ -38,26 +38,12 @@ function subscribe(onChange: () => void): () => void {
   };
 }
 
-/**
- * Whether the sheet's quick-info rail has a column of its own. Read as an external store rather
- * than mirrored into state from an effect, and used to place saves and skills in exactly one
- * place — a rail at desktop width, a leading Stats tab below it.
- */
+/** An external store, so saves and skills are placed in exactly one spot. */
 export function useSheetLayout(): SheetLayout {
   return useSyncExternalStore(subscribe, readLayout, () => SERVER_LAYOUT);
 }
 
-/**
- * Whether an element is short enough to pin without a scrollbar of its own.
- *
- * A sticky column taller than the viewport needs `overflow-y: auto` to reach its own bottom, and
- * that is a second scrolling surface stacked on the page's: getting to the end of one column then
- * means scrolling two things, which is what the rail felt like. A column that does not fit is not
- * pinned at all and scrolls with the page, so there is only ever one surface to move.
- *
- * The measurement lands in the observer's callback rather than in the effect body, which is what
- * keeps it clear of `react-hooks/set-state-in-effect`.
- */
+/** A column that does not fit is not pinned, so there is only ever one scroll surface. */
 export function useFitsViewport(reservedPx: number) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [fits, setFits] = useState(true);

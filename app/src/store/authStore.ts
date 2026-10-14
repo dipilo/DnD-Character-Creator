@@ -1,9 +1,4 @@
-// Account state (MERGE_PLAN.md Phase 3).
-//
-// Deliberately **not** persisted: the httpOnly session cookie is the source of truth and script
-// cannot read it, so anything cached here would only be a second, stale opinion about who you are.
-// The store is hydrated once from `GET /api/me` — see `hydrateAuth`, which `main.tsx` calls at
-// boot rather than a component calling `setState` inside an effect (CLAUDE.md).
+// Not persisted: the httpOnly cookie is the record, so a cache would be a stale opinion.
 import { create } from 'zustand';
 import { ApiError, fetchCurrentUser, login, logout, logoutEverywhere, signup } from '@/lib/api';
 import type { AuthUser, Credentials } from '@/lib/api';
@@ -26,10 +21,7 @@ interface AuthState {
   clearError: () => void;
 }
 
-/**
- * Signing in and out is also the boundary the character cache syncs across: a session means the
- * server holds the record, and no session means localStorage is all there is.
- */
+/** A session means the server holds the record; none means localStorage is all there is. */
 function applyIdentity(user: AuthUser | null): void {
   setSyncEnabled(Boolean(user));
   if (user) void syncCharacters();
@@ -100,10 +92,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
 
 let hydration: Promise<void> | null = null;
 
-/**
- * Ask the server who the cookie belongs to. Runs once at boot; a failed request leaves the status
- * at `anonymous` rather than blocking the app, because the builder works signed out.
- */
+/** Once at boot; a failure leaves `anonymous`, because the builder works signed out. */
 export function hydrateAuth(): Promise<void> {
   hydration ??= (async () => {
     useAuthStore.setState({ status: 'unknown', error: null });

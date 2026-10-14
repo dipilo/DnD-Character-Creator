@@ -1,14 +1,4 @@
-/**
- * Free-text availability parsing, asserted against the phrasings players actually write.
- *
- * MERGE_PLAN.md §13 left this as "the heuristics themselves are loose ... it should be judged
- * against real player notes rather than guessed at". This is that judgement, written down: each
- * case states the weekdays and the local wall-clock window the note should produce, so the next
- * change to the parser has something to fail against.
- *
- * Assertions are structural — weekday set, start/end clock times, block count per week — never
- * absolute dates, because the parser projects forward from "now" and a snapshot would rot daily.
- */
+/** Structural assertions only: the parser projects from "now", so a snapshot would rot. */
 
 import { mkdtempSync } from 'node:fs';
 import { createRequire } from 'node:module';

@@ -1,12 +1,4 @@
-// Editing a Kids on Bikes character you do not hold a copy of.
-//
-// The D&D builder is a wizard whose Review step performs the write, so a granted editor opens it
-// through `loadDocumentIntoBuilder` and it pushes on save. The Kids on Bikes builder has no save
-// step — every control writes a patch as it is touched — so the remote case is the same screens
-// with `useRemoteCharacter.applyPatch` in place of the store's `updateCharacter`.
-//
-// Without this the Edit button simply did not appear for a Kids on Bikes sheet, whatever the GM
-// had been granted.
+// The KoB builder has no save step, so the remote case swaps in `applyPatch`.
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, FileText } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';

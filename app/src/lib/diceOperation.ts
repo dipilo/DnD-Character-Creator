@@ -1,10 +1,6 @@
 // dice-box drops pending roll promises on clear(), so scene teardown must settle our own wait.
 
-/**
- * The surface went away under a throw that had not landed. Turning 3D dice off mid-roll unmounts
- * the scene, which is a request rather than a fault: a caller that reports this as an error leaves
- * a red banner on screen for a roll the player themselves cancelled.
- */
+/** A request, not a fault: the player turned 3D dice off mid-roll. */
 export class DiceRollCancelledError extends Error {
   constructor() {
     super('The 3D roll was cancelled. You can roll again.');

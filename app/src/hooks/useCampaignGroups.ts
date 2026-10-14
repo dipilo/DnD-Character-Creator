@@ -3,13 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { listGroups } from '@/lib/api';
 import type { Group } from '@/lib/api';
 
-/**
- * A campaign's groups, and the one a `?group=` link is asking for.
- *
- * The Groups tab links into Schedule and Party this way, so a table can be looked at as a table
- * rather than as a slice of the whole campaign. A group id that no longer resolves reads as "no
- * filter" instead of an empty page.
- */
+/** A `?group=` id that no longer resolves reads as "no filter", not an empty page. */
 export function useCampaignGroups(campaignId: number) {
   const [groups, setGroups] = useState<Group[] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();

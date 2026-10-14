@@ -28,14 +28,7 @@ interface PoweredCharacterCardProps {
 /** Radix rejects an empty string as a value, so "in the middle of the table" needs one of its own. */
 const NO_SEAT = 'table';
 
-/**
- * The Powered Character as the table sees it: the stat card, the Power Token pool, and the Aspects
- * face up in front of whoever holds them.
- *
- * Every control here is one the book gives to *any* player — "any player may activate any Aspect at
- * the table, even one in front of another player" — so nothing on this card is gated on running the
- * campaign. What the GM held back is not here at all; only the count of face-down cards is.
- */
+/** Every control here is one the book gives any player, so none is gated on the GM. */
 export function PoweredCharacterCard({ character, seats, busy, onSpend, onMoveAspect }: Readonly<PoweredCharacterCardProps>) {
   const { data } = character;
   const remaining = data.powerTokens.pool - data.powerTokens.spent;
@@ -157,10 +150,7 @@ interface PowerTokensProps {
   onSpend: (spent: number) => void;
 }
 
-/**
- * The shared pool. Spending past it is deliberately allowed: the chapter has a section on exerting
- * "past bounds of Power Tokens", and a counter that refuses would be a rule the book does not have.
- */
+/** Spending past the pool is allowed: the chapter has a section on exerting past bounds. */
 function PowerTokens({ pool, spent, remaining, busy, onSpend }: Readonly<PowerTokensProps>) {
   return (
     <div className="space-y-2">
@@ -214,10 +204,7 @@ interface AspectCardProps {
   onMove: (change: { active?: boolean; holder?: number | null }) => void;
 }
 
-/**
- * One Aspect. Turning it sideways is the book's own gesture, so the card rotates rather than
- * lighting up; the seat picker is what "place it in front of you" means here.
- */
+/** Rotating is the book's own gesture; the seat picker is "place it in front of you". */
 function AspectCard({ aspect, seats, busy, onMove }: Readonly<AspectCardProps>) {
   const holderValue = aspect.holder === null ? NO_SEAT : String(aspect.holder);
   return (
@@ -260,12 +247,7 @@ interface AspectRollerProps {
   onRolled: (text: string) => void;
 }
 
-/**
- * Roll one of Appendix K's tables for an Aspect.
- *
- * It goes through the shared tray rather than `Math.random()`, so the number that produced the
- * answer is on screen and in the roll log like every other roll at the table.
- */
+/** Through the shared tray, so the number is on screen and in the log. */
 export function AspectRoller({ onRolled }: Readonly<AspectRollerProps>) {
   const [busy, setBusy] = useState(false);
   const groups = useAspectGroups();
@@ -317,10 +299,7 @@ interface AspectGroupOption {
   entries: { roll: number; text: string }[];
 }
 
-/**
- * Appendix K flattened for a picker. A table with more than one list — the Powers table is rolled
- * with a coin as well as a die — becomes one option per list, which is what the coin decides.
- */
+/** A table with more than one list becomes one option per list, which the coin decides. */
 function useAspectGroups(): AspectGroupOption[] {
   return useMemo(
     () =>

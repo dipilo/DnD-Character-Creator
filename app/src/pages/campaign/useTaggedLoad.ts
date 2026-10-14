@@ -1,12 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-/**
- * One campaign-scoped load, tagged with the request it answers.
- *
- * Tagging is what keeps `loading` derived rather than set from an effect body, the shape the rest
- * of the campaign pages use (`useCampaignData.ts`), and it also stops one campaign's data
- * rendering under another's heading while a switch is in flight.
- */
+/** Tagging keeps `loading` derived and stops one campaign rendering under another. */
 interface Tagged<T> {
   key: string;
   data: T;
@@ -26,13 +20,7 @@ function message(e: unknown, fallback: string): string {
   return e instanceof Error ? e.message : fallback;
 }
 
-/**
- * `enabled` is false for a read the caller may not make — the GM's view of everybody's Pre-Game
- * Forms — so a page does not fire a request it already knows will 403.
- *
- * `load` must be stable (wrap it in `useCallback`): it is in the effect's dependency list, and an
- * inline arrow would refetch on every render.
- */
+/** `enabled` skips a read that would 403; `load` must be stable or it refetches. */
 export function useTaggedLoad<T>(
   campaignId: number,
   enabled: boolean,

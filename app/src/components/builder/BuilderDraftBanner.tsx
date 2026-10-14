@@ -7,16 +7,7 @@ import { builderStepName, builderStepPath } from '@/lib/builderSteps';
 import { cn } from '@/lib/utils';
 import { useCharacterStore } from '@/store/characterStore';
 
-/**
- * The character that was being built when the page last went away.
- *
- * The builder's state is persisted now, so the draft is already loaded and the player's choices
- * are where they left them. This says so: a recovered draft that nobody announces reads as the
- * builder having gone wrong, and a player who wanted a fresh character needs somewhere to say so.
- *
- * `variant` is which half of the job it is doing. Inside the builder the draft is already on
- * screen, so it offers the step it was left on; from My Characters it is an offer to go back to it.
- */
+/** An unannounced recovered draft reads as the builder having gone wrong. */
 export function BuilderDraftBanner({ className, variant }: Readonly<{ className?: string; variant: 'builder' | 'library' }>) {
   const navigate = useNavigate();
   const builderState = useCharacterStore((state) => state.builderState);

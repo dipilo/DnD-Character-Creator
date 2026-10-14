@@ -1,9 +1,4 @@
-// The Discord bot's read surface (/api/bot/*): the key gates it, the Discord id picks the user,
-// and character visibility is the same decision the browser routes make.
-//
-// There is no route that links a Discord id to a password account without a real OAuth
-// round-trip, so the link is written into the test database directly — the same column
-// /auth/discord/callback writes.
+// The Discord link is written straight into the test database, as the callback does.
 //
 //   node server/test/botApi.mjs      (npm run test:bot)
 
@@ -102,7 +97,6 @@ async function scenario(dbUrl) {
   const foreignId = foreign.json?.character?.id;
   check('another account has one too', foreign.status === 201 && Boolean(foreignId), foreign.status);
 
-  // ---- the key is the whole gate ------------------------------------------
   const noKey = await bot('/api/bot/me', { key: null });
   check('no key is 401', noKey.status === 401, noKey.status);
   const wrongKey = await bot('/api/bot/me', { key: 'nope' });
@@ -112,7 +106,6 @@ async function scenario(dbUrl) {
   const unlinked = await bot('/api/bot/me', { discordId: STRANGER_DISCORD });
   check('an unlinked Discord id is 403 discord_not_linked', unlinked.status === 403 && unlinked.json?.error === 'discord_not_linked', `${unlinked.status} ${unlinked.json?.error}`);
 
-  // ---- a linked user reads their own things --------------------------------
   const me = await bot('/api/bot/me');
   check('a linked id resolves to its account', me.status === 200 && me.json?.user?.username === 'bot-player', JSON.stringify(me.json));
   const list = await bot('/api/bot/characters');
@@ -122,7 +115,6 @@ async function scenario(dbUrl) {
   check('the document comes back whole', show.json?.character?.data?.abilityScores?.dexterity === 16, JSON.stringify(show.json).slice(0, 200));
   check('the owner is told so', show.json?.character?.is_owner === true);
 
-  // ---- the derived sheet: the app's maths, run here ---------------------------
   const derived = await bot(`/api/bot/characters/${sheet.id}/sheet`);
   check('the derived sheet comes back', derived.status === 200 && derived.json?.sheet?.level === 5, `${derived.status} ${JSON.stringify(derived.json).slice(0, 200)}`);
   const d = derived.json?.sheet ?? {};
@@ -176,13 +168,11 @@ async function scenario(dbUrl) {
   const foreignPlay = await play(foreignId, { action: 'heal', amount: 1 });
   check('writing to a character the caller cannot see is 404', foreignPlay.status === 404, foreignPlay.status);
 
-  // ---- and nobody else's -----------------------------------------------------
   const other = await bot(`/api/bot/characters/${foreignId}`);
   check('another account\'s private character is 404, not 403', other.status === 404, other.status);
   const junk = await bot('/api/bot/characters/not%20an%20id!');
   check('a malformed id is 404', junk.status === 404, junk.status);
 
-  // ---- campaigns: the table's calendar, as the member ------------------------
   const noCampaigns = await bot('/api/bot/campaigns');
   check('a member of nothing has an empty campaign list', noCampaigns.status === 200 && noCampaigns.json?.campaigns?.length === 0, JSON.stringify(noCampaigns.json));
   const table = await call('other', 'POST', '/api/campaigns', { name: 'Bot Table' });
@@ -226,7 +216,6 @@ async function scenario(dbUrl) {
   const ownerListed = await bot('/api/bot/campaigns', { discordId: STRANGER_DISCORD });
   check('and the seat sticks to the membership', ownerListed.json?.campaigns?.[0]?.player_id === ownerWrote.json.player_id, JSON.stringify(ownerListed.json));
 
-  // ---- the content library: keyed, but nobody's ----------------------------
   const contentNoKey = await bot('/api/bot/content/spell?q=fireball', { key: null });
   check('content without a key is 401', contentNoKey.status === 401, contentNoKey.status);
   const fireball = await bot('/api/bot/content/spell?q=fireball', { discordId: null });

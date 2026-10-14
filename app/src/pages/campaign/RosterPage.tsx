@@ -26,11 +26,7 @@ import { describeTimeZone } from '@/lib/timezones';
 import { isCampaignOwner, memberCan, membershipPlayerId, useCampaignStore } from '@/store/campaignStore';
 import { playerLabel, useCampaignCharacters, useCampaignId, useRoster } from '@/pages/campaign/useCampaignData';
 
-/**
- * What an empty seat says. A seat carrying a legacy `ddb_json` blob gets a way out of it — that
- * import was the scheduler's character storage, and Phase 5 replaces it with a real builder
- * character rather than continuing to render the blob as a sheet.
- */
+/** A legacy `ddb_json` seat gets a way out rather than rendering the blob as a sheet. */
 function EmptySeatNote({ player, onSeed }: Readonly<{ player: Player; onSeed: () => void }>) {
   if (!player.ddb_json) {
     return <p className="text-xs text-muted-foreground">No character in this seat yet.</p>;

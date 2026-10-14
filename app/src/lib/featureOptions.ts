@@ -41,13 +41,7 @@ export const updateFeatureOptionSelections = (
 
 export const getFeatureOptionRequirementText = (option: FeatureOption) => option.prerequisites?.text;
 
-/**
- * The options this character actually chose for a feature, in the order they were chosen.
- *
- * A feature that offers options is a stub without them — "Eldritch Invocations" reads as a
- * sentence about a list, and the two invocations the player picked are the thing they need on the
- * sheet.
- */
+/** A feature offering options is a stub without the picks printed beside it. */
 export const getChosenFeatureOptions = (
   feature: Pick<Feature, 'id' | 'options'>,
   selectedFeatureChoices: CharacterFeatureSelection[] | undefined
@@ -63,13 +57,7 @@ export const getChosenFeatureOptions = (
     .filter((option): option is FeatureOption => Boolean(option));
 };
 
-/**
- * The options this feature offers that another feature has already spent.
- *
- * Two features share a pool when they offer the same option — "Additional Eldritch Invocation" is
- * the same list as "Eldritch Invocations" — so nothing has to name a pool for the exclusion to
- * hold, and a pool added by a supplement is covered the moment its options reach both features.
- */
+/** Shared by matching option ids, so nothing has to name a pool. */
 export const getPoolBlockedOptionIds = (
   siblingFeatures: ReadonlyArray<Pick<Feature, 'id' | 'options'>>,
   featureId: string,

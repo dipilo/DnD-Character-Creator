@@ -1,14 +1,5 @@
-// What a spell's own text says its dice do as the caster grows.
-//
-// This fails the way `featBenefits` fails: silently. A cantrip whose table stops being read prints
-// the die it was written at and nothing errors — an 11th-level wizard's Fire Bolt just quietly says
-// 1d10. Every string below is one a source actually prints, in both printings' wording.
-//
-// The functions are pure and import only a type, so the source is stripped of types and imported
-// directly rather than dragged in through Vite's alias graph. A source change that defeats the
-// strip fails the import, which is loud.
-//
-// Run with `npm run test:spell-scaling` from the workspace root.
+// A cantrip whose table stops being read prints its 1st-level die, silently.
+// Run with `npm run test:spell-scaling`.
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 

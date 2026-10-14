@@ -1,17 +1,4 @@
-/**
- * The canonical player-intake schema, and the pure logic that turns sheet rows into seat writes.
- *
- * This is the single source of truth for what a campaign intake form asks and which `players`
- * column each answer lands in. It used to live as ten hardcoded `readMappedOrVariants(...)` alias
- * lists inside `POST /api/sync` — one per field, invented alongside a Google Form nobody had
- * written down. The Form questions below *are* those aliases, so the template a DM copies and the
- * importer that reads it can no longer drift apart. `GET /api/sheet-template` serves this to the
- * client so the mapping UI and the copy-this-template card are generated from it too.
- *
- * Everything here is pure. The planner takes rows and the campaign's existing seats and returns
- * what it *would* write; the route does the writing. That is what makes it testable without a
- * network round trip to Google (`npm run test:sheet-intake`).
- */
+/** The single definition of the intake form, so the template and importer cannot drift. */
 
 /**
  * @typedef {object} IntakeField
@@ -139,10 +126,7 @@ const INTAKE_FIELDS = [
 /** Columns a sheet import must never write over a seat someone has already claimed. */
 const IDENTITY_COLUMNS = ['name', 'discord'];
 
-/**
- * Google Forms decorates its response headers ("Timestamp", trailing spaces, smart punctuation)
- * and DMs retype questions by hand, so headers are compared on letters and digits alone.
- */
+/** Headers are compared on letters and digits alone: Forms decorates, and DMs retype. */
 function normaliseHeader(value) {
   return String(value ?? '')
     .toLowerCase()
@@ -172,13 +156,7 @@ function intakeFields() {
   return INTAKE_FIELDS;
 }
 
-/**
- * Auto-maps a sheet's headers onto the schema. A header matching no field is reported rather than
- * dropped silently — a DM who renamed "What is your name?" needs to be told, not to watch the
- * import produce blank seats.
- *
- * @returns {{ mapping: Record<string,string>, unmatchedHeaders: string[], missingRequired: string[] }}
- */
+/** An unmatched header is reported, not dropped: blank seats say nothing. */
 function matchHeaders(headers = []) {
   const mapping = {};
   const unmatchedHeaders = [];
@@ -217,11 +195,7 @@ function readRow(row, mapping) {
   return values;
 }
 
-/**
- * Finds the seat a row belongs to, **within the campaign only**. Discord wins over name because it
- * is the stabler handle: a player who changes their display name should update their seat, not
- * grow a second one.
- */
+/** Discord wins over name: a renamed player should update a seat, not grow a second. */
 function findExistingSeat(values, seats) {
   const discord = normaliseIdentity(values.discord);
   if (discord) {
@@ -235,13 +209,7 @@ function findExistingSeat(values, seats) {
 }
 
 /**
- * Decides what a sync would do, without doing any of it.
- *
- * The route this replaced derived a player id from the sheet's **row index** and then wrote
- * `INSERT OR REPLACE INTO players (id, ...)`. Importing a five-row sheet therefore overwrote
- * players 1–5 *in the whole database*, whichever campaigns they belonged to, and blanked columns
- * the sheet had no opinion about. Matching happens inside `seats` — the campaign's own roster —
- * and a row that matches nothing becomes a new seat with a server-assigned id.
+ * Decides what a sync would do, without doing any of it; matching stays inside the campaign.
  *
  * @param {object} input
  * @param {object[]} input.rows            parsed sheet rows
@@ -281,9 +249,7 @@ function planSheetImport({ rows = [], seats = [], mapping = null, claimedSeatIds
       // A claimed seat's owner has a name and a handle of their own; the sheet does not get to
       // rewrite who they are, only what they said about playing.
       if (isClaimed && IDENTITY_COLUMNS.includes(field.column)) continue;
-      // An answer identical to what the seat already holds is not a change. Counting it as one
-      // would tell a DM "4 seats updated" after a re-import that altered nothing, and re-parsing
-      // availability that did not move would drop hand-edited blocks for no reason.
+      // An unchanged answer is not an update, or a re-import reports edits it did not make.
       if (String(candidate[field.column] ?? '') === values[field.key]) continue;
       columns[field.column] = values[field.key];
     }

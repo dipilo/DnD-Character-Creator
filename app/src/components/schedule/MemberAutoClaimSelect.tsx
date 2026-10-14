@@ -12,10 +12,7 @@ interface MemberAutoClaimSelectProps {
   readonly onChange: (mode: AutoClaimMode | null) => void;
 }
 
-/**
- * The owner's override for one member. Leaving it unset is what hands the decision back to that
- * member, so the placeholder names the answer they would get rather than reading as "off".
- */
+/** Unset hands the decision back, so the placeholder names the answer they would get. */
 export function MemberAutoClaimSelect({ campaign, member, memberName, onChange }: MemberAutoClaimSelectProps) {
   const theirs = resolveAutoClaimMode(campaign, { ...member, auto_claim_override: null });
 

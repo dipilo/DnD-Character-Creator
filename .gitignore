@@ -52,3 +52,6 @@ app/info.md
 *.md
 *.txt
 /!README.md
+
+# Downloaded 5etools data tree (licensed content stays out of the repo)
+.cache/

@@ -45,11 +45,7 @@ const TEXT_FIELDS = [
 
 type FormState = Record<string, string>;
 
-/**
- * What a brand-new seat starts with. A seat is almost always the person creating it, so their own
- * device's timezone and — when they signed in with Discord, where the username *is* the handle —
- * their handle are filled in. Both are ordinary editable fields: a guess, not a fact.
- */
+/** Prefilled from the creator's own device and handle: a guess, not a fact. */
 function seatDefaults(user: { username: string | null; discord_id: string | null } | null): Partial<FormState> {
   return {
     timezone: browserTimeZone(),
@@ -81,14 +77,7 @@ function formatBlock(block: AvailabilityBlock): string {
   return `${day}, ${time(start)} – ${time(end)}`;
 }
 
-/**
- * Edit one campaign seat.
- *
- * The notes field is also the availability source: the server can parse free text like
- * "Tuesdays and Thursdays after 7pm" into blocks. Those heuristics are loose (MERGE_PLAN.md §13),
- * so the parse is shown as a preview the player confirms rather than something that happens
- * silently on save — nothing is written unless "use these blocks" is ticked.
- */
+/** The notes parse is shown as a preview; nothing is written unless it is ticked. */
 export function PlayerEditorDialog({ open, onOpenChange, ...rest }: Readonly<PlayerEditorDialogProps>) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -255,11 +244,7 @@ interface PlayerPickerProps {
   onChange: (value: string) => void;
 }
 
-/**
- * Names as a comma-separated list, toggled from the roster. The server resolves the text back to
- * ids (`resolveNamesToPlayerIds`), so offering the real names is what makes that resolution land —
- * the old client asked for free text and let it miss.
- */
+/** Offering the real names is what makes `resolveNamesToPlayerIds` land. */
 function PlayerPicker({ id, label, hint, value, options, onChange }: Readonly<PlayerPickerProps>) {
   const selected = useMemo(
     () => new Set(value.split(',').map((name) => name.trim().toLowerCase()).filter(Boolean)),

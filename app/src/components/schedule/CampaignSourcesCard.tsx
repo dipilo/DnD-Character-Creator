@@ -1,12 +1,4 @@
-// A campaign's content agreement (MERGE_PLAN.md Phase 5).
-//
-// "Which books are we playing with" used to be something a table settled in chat and every player
-// had to remember while building. It is a campaign property now, and "New character for this
-// campaign" seeds the builder's own source filter from it — which is the only reason this is worth
-// storing rather than writing in the campaign description.
-//
-// The server keeps the list opaque: these ids belong to the client's source manifest, and nothing
-// server-side interprets them.
+// The ids are the client's manifest; the server keeps the list opaque.
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { parseAllowedSourceIds, setCampaignSources } from '@/lib/api';
@@ -26,16 +18,12 @@ interface CampaignSourcesCardProps {
 
 export function CampaignSourcesCard({ campaign, canEdit }: Readonly<CampaignSourcesCardProps>) {
   const upsertCampaign = useCampaignStore((state) => state.upsertCampaign);
-  // null means "not edited", so the card follows the campaign until someone touches it — the same
-  // shape the rename field uses, and for the same reason: mirroring a prop into state from an
-  // effect would fight every change that lands from elsewhere.
+  // null is "not edited", so the card follows the campaign until someone touches it.
   const [draft, setDraft] = useState<string[] | null>(null);
   const [saving, setSaving] = useState(false);
 
   if (!campaign) return null;
-  // A campaign belongs to one game, and only some games have a library to choose from. Kids on
-  // Bikes is a single core rulebook, so this card offered a D&D book list on a table that can
-  // never use one. The registry answers it, so a third system does not need this file edited.
+  // The registry answers whether this game has a library, so no file edit per system.
   if (!getGameSystem(campaign.system_id).hasSelectableSources) return null;
 
   const stored = parseAllowedSourceIds(campaign);

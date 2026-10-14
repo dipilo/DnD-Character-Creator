@@ -17,6 +17,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { buildCanonicalContentFrom5eTools, load5eToolsData } from './5etools-adapter.mjs';
+import { fetchRemote5eToolsData, resolveRemoteDataUrl } from './lib/fiveEToolsRemote.mjs';
 import {
   coerceToCanonicalSourcePackage,
   countContentEntries,
@@ -36,28 +37,50 @@ const getArg = (name, fallback) => {
   return value && !value.startsWith('--') ? value : fallback;
 };
 
+const hasFlag = (name) => args.includes(name);
+
 const dir = getArg('--dir');
+const url = getArg('--url');
+const cache = getArg('--cache');
+const refresh = hasFlag('--refresh');
+const includeOtherSources = hasFlag('--include-other-sources');
 const sourceId = getArg('--id');
 const label = getArg('--label');
-const sourceAbbr = getArg('--source');
+let sourceAbbr = getArg('--source');
 const category = getArg('--category', 'supplement');
 const output = getArg('--output');
 const jsonOutput = getArg('--json-output');
 
-if (!dir || !sourceId || !label) {
-  console.error('Usage: node scripts/import-5etools.mjs --dir ./5etools-data --id <sourceId> --label "<Label>" [--source <ABBR>] [--category supplement]');
+if ((!dir && !url) || !sourceId || !label) {
+  console.error('Usage: node scripts/import-5etools.mjs (--dir ./5etools-data | --url <5etools data or 5e.tools URL>) --id <sourceId> --label "<Label>" [--source <ABBR>] [--category supplement] [--cache <dir>] [--refresh] [--include-other-sources]');
   process.exit(1);
 }
 
-const resolvedDir = path.resolve(process.cwd(), dir);
+let resolvedDir;
+if (dir) {
+  resolvedDir = path.resolve(process.cwd(), dir);
+} else {
+  const { dataUrl, sourceAbbr: urlSourceAbbr } = resolveRemoteDataUrl(url);
+  if (!sourceAbbr && urlSourceAbbr) {
+    sourceAbbr = urlSourceAbbr;
+    console.log(`Using source "${sourceAbbr}" from the URL.`);
+  }
+  resolvedDir = path.resolve(process.cwd(), cache ?? path.join(workspaceRoot, '.cache', '5etools-data'));
+  const result = await fetchRemote5eToolsData(dataUrl, resolvedDir, { refresh, log: (line) => console.log(line) });
+  if (result.failures.length > 0) {
+    console.error(`Failed to download ${result.failures.length} data file(s); the import would be incomplete:`);
+    result.failures.forEach((failure) => console.error(`- ${failure}`));
+    process.exit(1);
+  }
+}
 const raw = await load5eToolsData(resolvedDir);
 const totalRead = Object.values(raw).reduce((total, list) => total + list.length, 0);
 if (totalRead === 0) {
-  console.error(`No 5etools JSON entries found under ${resolvedDir}. Expected files like spells/spells-*.json, bestiary/bestiary-*.json, races.json, backgrounds.json, feats.json, items.json, class/class-*.json.`);
+  console.error(`No 5etools JSON entries found under ${resolvedDir}. Expected files like spells/spells-*.json, bestiary/bestiary-*.json, races.json, backgrounds.json, feats.json, items.json, class/class-*.json, optionalfeatures.json, languages.json, actions.json.`);
   process.exit(1);
 }
 
-const content = buildCanonicalContentFrom5eTools(raw, { sourceId, label, sourceAbbr });
+const content = buildCanonicalContentFrom5eTools(raw, { sourceId, label, sourceAbbr, includeOtherSources });
 
 const coerced = coerceToCanonicalSourcePackage(
   {
@@ -70,7 +93,10 @@ const coerced = coerceToCanonicalSourcePackage(
       origin: 'imported-json',
       parser: '5etools-adapter'
     },
-    notes: [`Converted from local 5etools JSON${sourceAbbr ? ` filtered to source "${sourceAbbr}"` : ''}.`]
+    notes: [
+      `Converted from 5etools JSON${sourceAbbr ? ` filtered to source "${sourceAbbr}"` : ''}${url ? ` downloaded from ${url}` : ''}.`,
+      ...(includeOtherSources ? ['Includes entries this book reprints from another printing (5etools `otherSources`).'] : [])
+    ]
   },
   { sourceId, label, category }
 );

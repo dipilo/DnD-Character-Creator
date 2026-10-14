@@ -29,10 +29,7 @@ function optimisticId(): string {
   return `tmp_${globalThis.crypto.randomUUID()}`;
 }
 
-/**
- * A selection dragged across several days means "these hours, each of those days", not one block
- * running from the first morning to the last evening — which is what a single range would store.
- */
+/** "These hours, each of those days" — not one block from first morning to last evening. */
 function splitSelectionByDay(startStr: string, endStr: string): { start: Date; end: Date }[] {
   const selectionStart = new Date(startStr);
   const selectionEnd = new Date(endStr);
@@ -54,13 +51,7 @@ function splitSelectionByDay(startStr: string, endStr: string): { start: Date; e
   return blocks;
 }
 
-/**
- * The editable calendar for one seat's availability.
- *
- * Writes are queued and flushed as one `/api/availability/batch` request: the server merges
- * overlapping blocks per operation, so a drag that produces seven blocks used to be seven round
- * trips racing each other's merges.
- */
+/** Flushed as one batch: the server merges per operation, so seven blocks raced. */
 export function AvailabilityCalendar({ player, campaignId, editable = true }: Readonly<AvailabilityCalendarProps>) {
   const calendarRef = useRef<CalendarRef>(null);
   const pendingOps = useRef<AvailabilityOp[]>([]);

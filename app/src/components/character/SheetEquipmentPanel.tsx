@@ -1,10 +1,4 @@
-// The loadout, editable in place: equip and unequip, change a quantity, drop an item, add one from
-// the library. Before this the only way to unequip a shield was to reopen the builder and walk back
-// to the Equipment step.
-//
-// Starting-equipment selections keep their compound ids (`class::group::option::…`), so removing one
-// removes that grant from the character — which is what a player who sold it means. Adding an item
-// stores a plain equipment id, exactly as the builder's "extra equipment" list does.
+// Starting-equipment ids keep their compound shape, so removing one removes the grant.
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

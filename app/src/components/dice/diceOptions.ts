@@ -1,10 +1,4 @@
-/**
- * Dice options that are not the physics surface.
- *
- * These live apart from `DiceScene` because `DiceScene` statically imports `@3d-dice/dice-box`
- * (2,667 KB): anything reading a preference would otherwise drag the engine into its chunk, and the
- * dice tray is mounted by `Layout` on every route. See CLAUDE.md, "Boot Cost and the Bundle Graph".
- */
+/** Apart from `DiceScene`, or reading a preference drags the physics engine into the chunk. */
 
 export const AVAILABLE_DICE_THEMES = ['default'] as const;
 

@@ -14,10 +14,7 @@ interface OwnAutoClaimFieldProps {
   readonly membership: CampaignMember | null;
 }
 
-/**
- * The caller's own answer to "does a seat I make become mine?". Written by its holder alone, the
- * way `character_edit_consent` is; the owner's override sits above it and locks the control.
- */
+/** Written by its holder alone; the owner's override sits above and locks it. */
 export function OwnAutoClaimField({ campaignId, campaign, membership }: OwnAutoClaimFieldProps) {
   const [busy, setBusy] = useState(false);
   if (!membership) return null;

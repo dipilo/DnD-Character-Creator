@@ -9,11 +9,7 @@ interface DicePreferencesState {
   fullyRandomColors: boolean;
   soundEnabled: boolean;
   diceScale: number;
-  /**
-   * Off skips the physics surface entirely: the roll resolves in the same tick instead of waiting
-   * for dice to settle, which is what makes re-rolling fast. The scene is unmounted rather than
-   * hidden, so the WebGL context and its ~2s asset load go away with it.
-   */
+  /** Off resolves in the same tick and unmounts the scene, so the WebGL context goes too. */
   show3dDice: boolean;
   setTheme: (theme: string) => void;
   setDiceColor: (color: string) => void;

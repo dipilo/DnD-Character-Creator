@@ -1,16 +1,4 @@
-/**
- * Suggested names for a Kids on Bikes bike, shown as the field's placeholder.
- *
- * Flavour, not book content, so it stays out of the import pipeline — the same call
- * `campaignNames.ts` makes for the campaign-name suggestion. What *is* book content is the half
- * that makes the suggestion fit the bike: every colour and every upgrade the vault defines carries
- * its own adjective ("Rusty" is Tough, "Tassels" are a Getaway Ride), so the templates draw those
- * straight off the chosen options rather than restating them here.
- *
- * The generator is pure. A seed comes from the caller, which keeps `Math.random()` out of a render
- * body and means the suggestion holds still while the player types and only changes when the bike
- * — or the page — does.
- */
+/** Flavour, so it stays out of the import pipeline; the adjectives come from the vault. */
 
 import type { KobBikeOption } from './types';
 
@@ -27,10 +15,7 @@ const NICKNAMES = [
   'Two Wheels', 'The Hand-Me-Down', 'Spokes', 'Handlebars',
 ];
 
-/**
- * A tiny deterministic generator. `Math.random()` cannot be called while rendering, and a seeded
- * sequence gives the same practical result: a different name per visit, stable within one.
- */
+/** Seeded, because `Math.random()` cannot be called while rendering. */
 function makePicker(seed: number) {
   let state = (seed >>> 0) || 1;
   return <T,>(bank: readonly T[]): T => {
@@ -78,10 +63,7 @@ const COMBINED_TEMPLATES: Template[] = [
   (_pick, color, upgrade) => `${color!.adjective} ${upgradeNoun(upgrade!)}`,
 ];
 
-/**
- * One suggested bike name. Draws on whichever halves of the bike have been chosen; with neither,
- * it falls back to a nickname so the field still suggests something.
- */
+/** Falls back to a nickname, so the field still suggests something. */
 export function suggestBikeName(
   color: KobBikeOption | null | undefined,
   upgrade: KobBikeOption | null | undefined,

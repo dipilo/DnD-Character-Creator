@@ -44,11 +44,7 @@ export interface CharacterFeatureSelection {
   optionId?: string;
 }
 
-/**
- * One of the actions every character can take, as the book lists them: the 2024 rules glossary
- * labels each with its own timing ("Dodge [Action]"), and the 2014 combat chapter collects them
- * under "Actions in Combat". Nothing about them is written in the app.
- */
+/** Each book labels these its own way; nothing about them is written in the app. */
 export interface CombatAction {
   id: string;
   name: string;
@@ -162,18 +158,9 @@ export interface Class {
   toolProficiencies?: string[];
   skillChoices: string[];
   skillCount: number;
-  /**
-   * What the class grants when it is not the character's first, read from the book's own
-   * statement (the 2014 Multiclassing Proficiencies table; 2024's "As a Multiclass <Class>").
-   * Absent when the source states nothing, in which case the starting proficiencies apply.
-   */
+  /** Absent when the source states nothing, in which case the starting proficiencies apply. */
   multiclassProficiencies?: MulticlassProficiencies;
-  /**
-   * Who may take the class after their first: alternatives, each every ability it names at its
-   * minimum (Fighter: Strength 13 or Dexterity 13; Monk: Dexterity 13 and Wisdom 13). Read from
-   * the 2014 table, 2024's primary-ability rule, or Tasha's sentence; absent when a source states
-   * none.
-   */
+  /** Alternatives, each every ability it names at its minimum; absent when unstated. */
   multiclassPrerequisites?: AbilityScoreRequirement[];
   features: ClassFeature[];
   subclasses: Subclass[];
@@ -200,20 +187,12 @@ export interface MulticlassProficiencies {
   skillCount: number;
 }
 
-/**
- * A pool a class or subclass states, read by the importer from a table column
- * (`extractClassResources`) or from the feature's own sentences (`scripts/lib/classResources.mjs`).
- * Nothing about these is written in the app: a feature whose text states no count, or no rest that
- * returns the uses, simply has no tracker.
- */
+/** A feature stating no count, or no rest that returns the uses, has no tracker. */
 export interface ClassResource {
   id: string;
   /** The column heading or the feature's name, which is what the tracker is labelled. */
   name: string;
-  /**
-   * One entry per class level, index 0 being level 1. `null` is the book's "Unlimited". For a pool
-   * sized by an ability or the proficiency bonus the entry only says whether it exists yet.
-   */
+  /** Index 0 is level 1; `null` is the book's "Unlimited". */
   perLevel: (number | null)[];
   /** The rest that returns every use. Null when the source states no recovery. */
   resetsOn: 'short' | 'long' | null;
@@ -229,16 +208,12 @@ export interface ClassResource {
   featureName?: string;
 }
 
-/**
- * A die a class table states per level, read by the importer from the column
- * (`extractClassFeatureDice`). The feature's own sentences state only what it rolls at 1st level
- * and then point at the column, so without this a level-20 Monk's Martial Arts still read 1d4.
- */
+/** Without this a level-20 Monk's Martial Arts reads 1d4. */
 export interface ClassFeatureDice {
   id: string;
   /** The column heading. */
   name: string;
-  /** One entry per class level, index 0 being level 1; `null` where the table prints a dash. */
+  /** Index 0 is level 1; `null` is the book's "Unlimited". */
   perLevel: (string | null)[];
   /** The feature the column belongs to, by the book's own cross-reference. */
   featureName: string;
@@ -257,9 +232,14 @@ export interface Background {
   name: string;
   description: string;
   skillProficiencies: string[];
+  /** What a background's own skill choice draws from; the pick is `backgroundSkillSelections`. */
+  skillChoices?: string[];
+  skillChoiceCount?: number;
   toolProficiencies?: string[];
   languageCount?: number;
   abilityScoreIncreases?: AbilityScoreIncrease[];
+  /** Feats the background grants outright, by name so they resolve in whichever printing is in use. */
+  grantedFeatNames?: string[];
   equipment: EquipmentOption[];
   feature: {
     name: string;
@@ -292,10 +272,7 @@ export interface Spell {
   sourceId?: string;
 }
 
-/**
- * A spell the feat leaves the player to pick, narrowed by whatever its own line states — a level,
- * a class's spell list, a school. Read out of the source by `scripts/lib/featBenefits.mjs`.
- */
+/** Narrowed by whatever the feat's own line states; read by `lib/featBenefits.mjs`. */
 export interface FeatSpellChoice {
   id: string;
   count: number;
@@ -332,11 +309,7 @@ export interface Feat {
     text?: string;
   };
   abilityScoreIncreases?: AbilityScoreIncrease[];
-  /**
-   * Alternative increases the feat states as an either/or ("Increase one ability score by 2, or
-   * increase two ability scores by 1"). The player picks which applies; `abilityScoreChoiceModes`
-   * records it.
-   */
+  /** A mode, not two grants; `abilityScoreChoiceModes` records the pick. */
   abilityScoreIncreaseAlternatives?: AbilityScoreIncrease[][];
   /** Spells the feat names outright, by name so they resolve in whichever edition is in use. */
   grantedSpells?: string[];
@@ -365,11 +338,7 @@ export interface Equipment {
   // Tool properties: which family a "one type of <x>" proficiency choice draws from,
   // e.g. "Artisan's Tools", "Gaming Sets", "Musical Instruments".
   toolCategory?: string;
-  /**
-   * The gear family a starting-equipment line can name instead of an item — "Arcane Foci",
-   * "Druidic Foci", "Holy Symbols". 2014 states it as `gear_category`, 2024 lists it among
-   * `equipment_categories`; without it "an arcane focus" has no candidates to offer.
-   */
+  /** Without it "an arcane focus" has no candidates to offer. */
   gearCategory?: string;
   damage?: string;
   damageType?: string;
@@ -474,28 +443,19 @@ export interface Character {
   abilityScoreChoiceModes?: Record<string, string>;
   abilityScoreChoiceSelections?: Record<string, (keyof AbilityScores)[]>;
   backgroundLanguageSelections?: string[];
+  /** The skills picked for a background that states a choice rather than a pair of grants. */
+  backgroundSkillSelections?: string[];
   speciesLanguageSelections?: string[];
   // Tool proficiencies granted as a choice ("One type of gaming set"), keyed by the choice's
   // stable slot id so background and class grants stay independent.
   toolProficiencySelections?: Record<string, string[]>;
-  /**
-   * The skill picked for a class taken after the first ("one skill from the class's skill list"),
-   * keyed by class id. `proficiencies.skills` stays the starting class's picks.
-   */
+  /** `proficiencies.skills` stays the starting class's picks. */
   multiclassSkillSelections?: Record<string, string[]>;
   /** The table has waived the multiclassing ability score minimums for this character. */
   multiclassPrerequisitesWaived?: boolean;
-  /**
-   * The spells picked for a feat's own spell lines ("one 1st-level spell of your choice"), keyed
-   * by `FeatSpellChoice.id`. Kept apart from `spells` because these are the feat's, not the
-   * class's: they do not count against a class's known or prepared limits.
-   */
+  /** The feat's, not a class's, so they count against no known or prepared limit. */
   featSpellSelections?: Record<string, string[]>;
-  /**
-   * The proficiencies a feature's Expertise covers, keyed by `ExpertiseGrant.id`. Kept apart from
-   * `proficiencies.skills` because Expertise doubles a proficiency the character already holds:
-   * folding it in would read as a second grant of the skill itself.
-   */
+  /** Apart from `proficiencies.skills`, or Expertise reads as a second grant. */
   expertiseSelections?: Record<string, string[]>;
   proficiencies: {
     skills: string[];
@@ -514,38 +474,20 @@ export interface Character {
     maximum: number;
     temporary: number;
   };
-  /*
-   * Play state — what a player changes at the table rather than in the builder. It lives on the
-   * document like everything else, so it round-trips through `loadCharacterIntoBuilder` and the
-   * server, and a campaign-mate opening the sheet sees the same numbers.
-   */
+  /** Play state: lives on the document, so it round-trips through the builder and server. */
   deathSaves?: { successes: number; failures: number };
   inspiration?: boolean;
   /** 0–6; the 2014 and 2024 rules disagree on what a level does, not on how many there are. */
   exhaustion?: number;
   conditions?: string[];
-  /**
-   * Slots spent, indexed by slot level - 1 to match `slotsByLevel`. Character-level rather than
-   * per class because a multiclass caster has one shared pool — which is exactly what
-   * `getSpellcastingRulesSummary` computes. Pact slots are the separate pool the Warlock keeps.
-   */
+  /** Character-level, not per class: a multiclass caster has one shared pool. */
   spellSlotsUsed?: number[];
   pactSlotsUsed?: number[];
-  /**
-   * How much of each class resource is spent, keyed `<classId>::<resourceId>`. Play state, so the
-   * sheet writes it and `buildReviewCharacter` has to carry it.
-   */
+  /** Keyed `<classId>::<resourceId>`; play state, so `buildReviewCharacter` must carry it. */
   classResourcesUsed?: Record<string, number>;
-  /**
-   * Class resources the character is currently *in* rather than merely has left — a Barbarian's
-   * Rage. Keyed the same way as `classResourcesUsed`. Whether a pool can be entered at all is read
-   * from its feature's own text, so nothing here names a class feature.
-   */
+  /** Whether a pool can be entered is read from its feature's text, never named here. */
   activeEffects?: string[];
-  /**
-   * The spell this character is concentrating on. One at a time, which is the rule the field
-   * exists to keep: starting a second ends the first.
-   */
+  /** One at a time: starting a second ends the first. */
   concentration?: { spellId: string; spellName: string; slotLevel: number };
   /** The purse, by coin. Absent means none of that coin, so a new character carries nothing. */
   currency?: Partial<Record<CoinUnit, number>>;
@@ -621,17 +563,9 @@ export interface BuilderState {
   character: Partial<Character>;
   // Set while the builder is editing a saved character; saving updates that character in place.
   editingCharacterId?: string;
-  /**
-   * Set instead when the builder is editing someone else's character on a grant. There is no local
-   * copy to write, so Review pushes a `PUT` against the version it read rather than going through
-   * `characterStore`.
-   */
+  /** No local copy to write, so Review `PUT`s against the version it read. */
   remoteEditing?: RemoteEditTarget;
-  /**
-   * The campaign this character is being built for (MERGE_PLAN.md Phase 5). Set by "new character
-   * for this campaign", which also seeds `selectedSourceIds` from that campaign's allowed sources.
-   * Saving records the seat as pending; the sync layer takes it once the server has the character.
-   */
+  /** Seeds `selectedSourceIds`; saving records the seat as pending for the sync layer. */
   forCampaignId?: number;
   forPlayerId?: number;
   forCampaignName?: string;

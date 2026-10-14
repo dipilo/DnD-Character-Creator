@@ -1,12 +1,4 @@
-// The play state the Discord bot reads and writes: hit points, death saves, slots, hit dice,
-// conditions, class resources, the purse and the pack. The rules are the app's own —
-// `app/src/lib/sheetPlayState.ts` decides what damage does to temporary hit points and what a
-// long rest gives back, `spellSlots.ts` says how many slots a multiclass caster has — loaded the
-// way `botSheet.js` loads the sheet maths, so both files may hold only `type` imports. Every
-// action here is one of those functions applied to the stored document; nothing is re-derived.
-//
-// `ACTIONS` is the whole write surface: one shared key reaches the bot routes, so the allowlist is
-// this table, and an action it does not name is 400 rather than a document write.
+// The app's own rules applied to the document; `ACTIONS` is the whole write surface.
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { abilityScores, loadIndex, loadMaths, resolveClass, resolveSubclass, findEquipment } = require('./botSheet');
@@ -300,9 +292,7 @@ const ACTIONS = {
     else lines.push({ equipmentId, quantity, equipped });
     return { equipment: lines };
   },
-  // Casting is the slot and the concentration together (`spellCasting.ts` says the same); the
-  // bot rolls the dice, this records what the cast cost. A cantrip costs nothing and still may
-  // take up concentration.
+  // A cantrip costs no slot and may still take up concentration.
   cast: (m, doc, args) => {
     const { spells } = loadIndex();
     const wanted = String(args.spellId ?? args.spell ?? '').trim();
@@ -353,10 +343,7 @@ const ACTIONS = {
   },
 };
 
-/**
- * Apply one action to a document. Returns `{ doc }` with the patched copy, or `{ error, detail }`
- * naming what was wrong with the request; the caller decides whether anything is written.
- */
+/** `{ doc }` with the patched copy, or `{ error, detail }`; the caller decides to write. */
 async function applyPlayAction(rawDoc, action, args = {}) {
   const maths = await loadPlayMaths();
   const handler = Object.hasOwn(ACTIONS, String(action ?? '')) ? ACTIONS[action] : null;

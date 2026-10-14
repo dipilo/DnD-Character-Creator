@@ -10,11 +10,7 @@ import { exportCharacterToFillablePdf } from '@/lib/characterPdf';
 import { useRollAttribution } from '@/hooks/useRollAttribution';
 import type { Character } from '@/types/dnd';
 
-/**
- * One of your own characters, out of the local cache. The sheet itself is `CharacterSheetView`,
- * shared with the campaign party view (MERGE_PLAN.md Phase 5) — this page is the lookup, the
- * actions that only the owner gets, and the one place the sheet's edits are written.
- */
+/** The lookup, the owner-only actions, and the one place the sheet's edits are written. */
 export function CharacterSheetPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -60,11 +56,7 @@ export function CharacterSheetPage() {
     }
   };
 
-  /**
-   * The sheet's write path. Every tracker and every equipment or spell edit arrives as a patch,
-   * which is applied to the stored document — so `syncMeta` marks it dirty and the sync layer
-   * pushes it, exactly as a save from the builder would.
-   */
+  /** A patch applied to the stored document, so the sync layer pushes it. */
   const handleChange = (patch: Partial<Character>) => {
     updateCharacter({ ...character, ...patch, updatedAt: new Date().toISOString() });
   };

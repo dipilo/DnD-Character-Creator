@@ -1,7 +1,4 @@
-// What the Discord bot may do on a linked user's behalf. Every per-user route is `requireBotAuth`,
-// and every character decision goes through `lib/characterAccess.js` exactly as the browser routes
-// do, so a sheet the site would 404 for this user 404s for the bot too. The one write is the play
-// state (`POST .../play`): a fixed table of actions applied server-side, never a document upload.
+// Every route is `requireBotAuth` and reads through `lib/characterAccess.js` as the browser does.
 const express = require('express');
 const db = require('../db');
 const { resolveCharacterAccess } = require('../lib/characterAccess');
@@ -51,9 +48,7 @@ router.get('/api/bot/characters/:id', requireBotAuth, async (req, res) => {
   }
 });
 
-// The derived sheet — attacks, spell DCs, each known spell's dice — computed here with the app's
-// own maths so the bot never carries a copy. 501 means this Node cannot load the app's TypeScript
-// (type stripping needs 22.18+), which is the operator's problem and is said so in the body.
+// Computed with the app's own maths; 501 means this Node cannot strip its types.
 router.get('/api/bot/characters/:id/sheet', requireBotAuth, async (req, res) => {
   try {
     if (!ID_PATTERN.test(req.params.id)) return res.status(404).json({ error: 'character_not_found' });
@@ -108,9 +103,7 @@ router.get('/api/bot/characters/:id/play', requireBotAuth, async (req, res) => {
   }
 });
 
-// One action from `botPlayState.ACTIONS`, applied to the stored document and written back under
-// the row's version, so a browser edit landing in between is a retry here rather than a clobber.
-// `can_edit` is the same grant the PUT route honours; a reader who may not write gets 403.
+// Written under the row's version, so a browser edit in between retries rather than clobbers.
 router.post('/api/bot/characters/:id/play', requireBotAuth, async (req, res) => {
   try {
     const body = req.body && typeof req.body === 'object' ? req.body : {};
@@ -145,10 +138,7 @@ router.post('/api/bot/characters/:id/play', requireBotAuth, async (req, res) => 
   }
 });
 
-// ---- campaigns: the table's calendar, read and written as the member -----------------------------
-// A campaign the caller is not in reads as absent, like a character they cannot see. Availability is
-// written only against the caller's own seat; the aggregate is the same computation the site's
-// scheduler page runs, so the bot and the browser agree on when the table is free.
+// A campaign the caller is not in reads as absent; availability writes only their own seat.
 
 const CAMPAIGN_ID_PATTERN = /^\d{1,12}$/;
 const AVAILABILITY_TEXT_MAX = 500;

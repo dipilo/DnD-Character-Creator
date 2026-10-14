@@ -11,11 +11,7 @@ interface PermissionTogglesProps {
   readonly idPrefix: string;
 }
 
-/**
- * The grantable-permission grid, in one component because it now appears three times: the
- * campaign's default for anyone joining, its default for invite links, and a link's own override.
- * `CAMPAIGN_PERMISSION_FLAGS` stays the single list — this only decides how it is rendered.
- */
+/** `CAMPAIGN_PERMISSION_FLAGS` stays the single list; this only renders it. */
 export function PermissionToggles({ value, onChange, disabled = false, idPrefix }: PermissionTogglesProps) {
   return (
     <div className="space-y-2">

@@ -1,13 +1,7 @@
 import { useRef, useState } from 'react';
 import type { KobBackpackCanvas } from '@/types/kob';
 
-/**
- * Undo and redo for the backpack board.
- *
- * The board is a controlled value written straight onto the character document, so there is no
- * store to roll back: history is the previous canvases, kept for as long as the dialog is open.
- * It is deliberately not persisted — the document holds the board, not how it got there.
- */
+/** Not persisted: the document holds the board, not how it got there. */
 const LIMIT = 60;
 
 /** Typing is one change, not one per keystroke, so a repeated key coalesces for this long. */

@@ -1,12 +1,4 @@
-// The one-line description of a character (MERGE_PLAN.md Phase 5).
-//
-// It lives here rather than in a component because two very different callers need it: the sheet
-// header, and the sync layer, which sends it to the server as a denormalised column so a campaign's
-// party view can list "Level 5 Elf Wizard 5 (Evocation)" without fetching everyone's document.
-//
-// Resolving ids to names needs the content library, which only the client has — so the client is
-// what computes this line, and the server stores it verbatim without interpreting it. A row written
-// by a client that did not send one simply lists by name.
+// Computed by the client, which has the library; the server stores it verbatim.
 import { getRuntimeClassById, getRuntimeSpeciesById, getRuntimeSubclass } from '@/data';
 import { resolveCharacterClasses } from '@/lib/builderRules';
 import type { Character } from '@/types/dnd';

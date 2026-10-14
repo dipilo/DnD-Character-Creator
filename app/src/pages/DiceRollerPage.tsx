@@ -57,11 +57,7 @@ export function DiceRollerPage() {
     ? 'Enter dice notation and roll across the screen.'
     : 'Enter dice notation and get the result straight away.';
 
-  // The 3D surface resolves each settled die without the notation's modifier, so `+3` has to be
-  // added back from the notation itself. Both roll paths total the same way for that reason.
-  //
-  // This page throws on its own surface rather than through `rollOnScreen`, so it logs the outcome
-  // itself — one history covers the roller and every sheet.
+  // The modifier is added back from the notation; this page logs its own outcome.
   const finish = (nextResults: DiceSceneResult[], nextNotation: string, live: boolean, luckyBreaks = 0) => {
     const modifier = parseDiceNotation(nextNotation)?.modifier ?? 0;
     const id = recordRoll(
@@ -71,10 +67,7 @@ export function DiceRollerPage() {
     setLiveEntryId(live ? id : null);
   };
 
-  /**
-   * A die on its maximum is thrown again and added, as many times as it keeps landing there. It is
-   * a loop rather than something the notation can say, exactly as in the tray.
-   */
+  /** A loop rather than something the notation can say, exactly as in the tray. */
   const explodeOnSurface = async (scene: DiceSceneHandle, settled: DiceSceneResult[]) => {
     const results = [...settled];
     let luckyBreaks = 0;
@@ -138,11 +131,7 @@ export function DiceRollerPage() {
     setLiveEntryId(null);
   };
 
-  /**
-   * Throw one settled die again, in place. dice-box has no picking or dragging of its own, so this
-   * is as close as its API gets to handling a die: `reroll` names one by the `rollId` it handed
-   * back, removes that mesh and drops a replacement onto the same surface.
-   */
+  /** `reroll` names a die by its `rollId` and drops a replacement on the same surface. */
   const handleRerollDie = async (index: number) => {
     const scene = diceSceneRef.current;
     const entry = useDiceTrayStore.getState().log.find((item) => item.id === liveEntryId);

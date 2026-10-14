@@ -1,13 +1,4 @@
-// Saving throws and skills, in six blocks — one per ability, with that ability's skills under it.
-//
-// They used to be two cards: a six-row Saving Throws list and an eighteen-row Skills list, each
-// repeating the ability every row ("Strength" in the save, "STR" beside Athletics). D&D Beyond's
-// own sheet groups them, and the `layout_v2` module of the extension `SHEET_LAYOUT_PLAN.md` names
-// rebuilds that whole area the same way. Grouping drops two card headers and every repeated ability
-// name, and it puts a skill next to the save it shares a modifier with.
-//
-// The ability *check* is not here: the score boxes above the blocks are the check button, and
-// rendering it twice would put two of the same roll on one sheet.
+// One block per ability; the check button is the score box, so it is not repeated here.
 import { Asterisk, ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { effectiveModifier, rollD20 } from '@/lib/d20Rolls';
@@ -30,10 +21,7 @@ import type { AbilityScores } from '@/types/dnd';
 
 const abilityLabel = (ability: keyof AbilityScores) => ability.charAt(0).toUpperCase() + ability.slice(1);
 
-/**
- * The filled dot every proficient row carries, in the saves and the skills alike. Expertise rings
- * it rather than taking a column of its own: it is the same proficiency, counted twice.
- */
+/** Expertise rings the dot rather than taking a column: one proficiency, counted twice. */
 function ProficiencyDot({ proficient, expertise = false }: Readonly<{ proficient: boolean; expertise?: boolean }>) {
   return (
     <span
@@ -47,10 +35,7 @@ function ProficiencyDot({ proficient, expertise = false }: Readonly<{ proficient
   );
 }
 
-/**
- * What a feature does to this row, marked on the row itself. The tray's detail line names the
- * feature; this is only the sign that the number about to be rolled is not the bare one.
- */
+/** Only the sign that the number about to be rolled is not the bare one. */
 export function RollEffectMark({ effects }: Readonly<{ effects: AppliedRollEffects }>) {
   const { advantage, disadvantage, floor, bonus, applied, conditional } = effects;
   if (applied.length === 0 && conditional.length === 0) return null;

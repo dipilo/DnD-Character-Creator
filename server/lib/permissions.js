@@ -1,11 +1,4 @@
-/**
- * Campaign member permissions: the one place the server states which flags exist.
- *
- * The client has its own ordered list for the editor UI (`CAMPAIGN_PERMISSION_FLAGS` in
- * `store/campaignStore.ts`) because it also carries labels and hints. What the server owns is what
- * it will *store* — anything outside this set is dropped rather than persisted, so a typo in a
- * client payload cannot become a permission nobody can see or revoke.
- */
+/** What the server will *store*: anything outside this set is dropped, not persisted. */
 const GRANTABLE_PERMISSIONS = [
   'can_create_players',
   'can_delete_players',
@@ -20,25 +13,13 @@ const GRANTABLE_PERMISSIONS = [
 
 const GRANTABLE_PERMISSION_SET = new Set(GRANTABLE_PERMISSIONS);
 
-/**
- * The floor a seat-holder always gets, whatever the campaign's defaults say. A member who can
- * change nothing on their own row cannot correct their own timezone.
- */
+/** A member who can change nothing on their own row cannot fix their own timezone. */
 const SELF_SERVICE_PERMISSIONS = Object.freeze({ can_edit_self: true, players_self_delete: true });
 
-/**
- * What a campaign grants arrivals when it has no opinion of its own. Seats are what a player joins
- * to make: without `can_create_players` an invited player landed on a roster with no Add button and
- * nothing to claim, so every campaign had to grant it by hand before anyone could play.
- */
+/** Without `can_create_players` an invited player had no seat to make or claim. */
 const DEFAULT_MEMBER_PERMISSIONS = Object.freeze({ ...SELF_SERVICE_PERMISSIONS, can_create_players: true });
 
-/**
- * Normalise a permissions object from a request body.
- *
- * Returns `{ value }` with a JSON string (or null when nothing is granted, which is how "no
- * permissions" has always been stored), or `{ error }` for a shape that is not an object.
- */
+/** `{ value }` with a JSON string, null when nothing is granted, or `{ error }`. */
 function normalisePermissions(value) {
   if (value === null || value === undefined || value === '') return { value: null };
   if (typeof value !== 'object' || Array.isArray(value)) return { error: 'permissions_must_be_an_object' };
@@ -67,12 +48,7 @@ function parsePermissions(stored) {
   }
 }
 
-/**
- * What a new member gets. An invite's own blob wins when it has one; otherwise the campaign's
- * default applies, and a campaign with no opinion falls back to the self-service floor. NULL and
- * `{}` differ on both columns for that reason — "no opinion" and "grant nothing" are not the same
- * answer.
- */
+/** NULL and `{}` differ: "no opinion" is not "grant nothing". */
 function resolveJoinPermissions(campaign, invite = null) {
   if (invite && invite.permissions !== null && invite.permissions !== undefined) {
     return parsePermissions(invite.permissions);
@@ -88,10 +64,7 @@ function joinPermissionsBlob(campaign, invite = null, extra = null) {
   return Object.keys(granted).length > 0 ? JSON.stringify(granted) : null;
 }
 
-/**
- * A campaign default keeps the empty object an owner explicitly saved, so "grant nothing" can be
- * said out loud. `normalisePermissions` collapses it to NULL, which here would read as no opinion.
- */
+/** Kept, so "grant nothing" can be said out loud rather than collapsing to NULL. */
 function normaliseDefaultPermissions(value) {
   if (value === null || value === undefined || value === '') return { value: null };
   const normalised = normalisePermissions(value);

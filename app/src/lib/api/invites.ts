@@ -7,11 +7,7 @@ export interface InviteWritePayload {
   max_uses?: number | string | null;
   challenge_enabled?: boolean;
   challenge_min_score?: number;
-  /**
-   * What this link grants whoever joins on it. Omit the field entirely to leave the server's
-   * inheritance alone — on create that means "take the campaign's invite default", and sending an
-   * empty object instead is an explicit "grant nothing".
-   */
+  /** Omitted takes the campaign's default; an empty object is an explicit "grant nothing". */
   permissions?: CampaignPermissions;
 }
 
@@ -39,11 +35,7 @@ export async function previewInvite(token: string): Promise<InvitePreview> {
   return await api.get<InvitePreview>(`/api/invites/${encodeURIComponent(token)}`);
 }
 
-/**
- * Redeem an invite. Membership is only recorded when the caller has a session — the server used to
- * accept a `discord_id` in the body, which let an anonymous caller join any Discord user to the
- * campaign, so identity now comes from the cookie or not at all.
- */
+/** Identity comes from the cookie: a body `discord_id` let anyone join any user. */
 export async function joinWithInvite(token: string, characterEditConsent = false): Promise<InviteJoinResult> {
   return await api.post<InviteJoinResult>('/api/invites/join', {
     token,

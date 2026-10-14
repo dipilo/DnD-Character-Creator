@@ -19,12 +19,7 @@ const joinErrors: Record<string, string> = {
   challenge_required: 'This invite is gated behind a challenge that this app cannot show yet.',
 };
 
-/**
- * The invite landing page. It is deliberately **not** behind `RequireAuth`: an invite is a link
- * sent to someone who may not have an account yet, so the campaign is named first and the sign-in
- * prompt comes only when they choose to join. Membership itself still requires a session — the
- * server records nothing for an anonymous caller.
- */
+/** Not behind `RequireAuth`: the campaign is named before the sign-in prompt. */
 export function InviteLandingPage() {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();

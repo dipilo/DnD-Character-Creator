@@ -52,10 +52,7 @@ export async function reorderGroups(ids: number[]): Promise<void> {
   await api.post('/api/groups/reorder', { ids });
 }
 
-/**
- * Propose a split of the roster. The server sorts by how much availability each player has inside
- * the window and deals them round-robin, so the result is a starting point to edit, not an answer.
- */
+/** A greedy round-robin: a starting point to edit, not an answer. */
 export async function suggestGroups(
   campaignId: number,
   numGroups: number,

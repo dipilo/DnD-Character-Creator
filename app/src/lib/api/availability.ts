@@ -7,20 +7,13 @@ export async function listAvailability(playerId: number, campaignId: number): Pr
   return await api.get<AvailabilityRow[]>(`/api/availability?${query}`);
 }
 
-/**
- * Coalesced writes. The calendar queues creates, updates and deletes during a drag and flushes
- * them in one request, because the server merges overlapping blocks per operation and doing that
- * one HTTP round trip at a time made a drag look like it was fighting the user.
- */
+/** Coalesced: the server merges per operation, so one round trip at a time fought the drag. */
 export async function applyAvailabilityOps(campaignId: number, operations: AvailabilityOp[]): Promise<void> {
   if (operations.length === 0) return;
   await api.post('/api/availability/batch', { campaign_id: campaignId, operations });
 }
 
-/**
- * How many players are free across a window, sliced at every block boundary. Used by both the
- * aggregate calendar and the group heatmap.
- */
+/** Used by both the aggregate calendar and the group heatmap. */
 export async function fetchAggregate(
   campaignId: number,
   startIso: string,
@@ -37,11 +30,7 @@ export async function fetchAggregate(
   return body.intervals ?? [];
 }
 
-/**
- * Parse free-text notes into blocks without saving anything. The heuristics behind this are
- * loose (MERGE_PLAN.md §13), which is exactly why the player confirms the result before it is
- * written rather than the server rebuilding silently on save.
- */
+/** The heuristics are loose, so the player confirms before anything is written. */
 export async function previewAvailabilityFromText(
   text: string,
   timezone: string,

@@ -28,10 +28,7 @@ const SIDES: ReadonlyArray<{ side: KobBackpackSide; className: string }> = [
   { side: 'left', className: 'left-0 top-1/2 -translate-x-1/2 -translate-y-1/2' },
 ];
 
-/**
- * The four points an arrow can be dragged out of. They are only on the selected card: four handles
- * per card on a full board would leave nothing to aim a drag at.
- */
+/** Only on the selected card: four handles per card leaves nothing to aim a drag at. */
 function ConnectHandles({ onConnectStart }: Readonly<Pick<BackpackNodeProps, 'onConnectStart'>>) {
   return (
     <>
@@ -52,10 +49,7 @@ function ConnectHandles({ onConnectStart }: Readonly<Pick<BackpackNodeProps, 'on
   );
 }
 
-/**
- * A frame: a labelled rectangle that carries the cards inside it. It is drawn behind them and is
- * grabbed by its title bar alone, so a drag started anywhere inside still reaches the card there.
- */
+/** Grabbed by its title bar alone, so a drag inside still reaches the card there. */
 function GroupFrame({ node, selected, readOnly, onChange, onRemove, onDragStart, onResizeStart }: BackpackNodeProps) {
   const color = groupColor(node.color);
   return (
@@ -185,13 +179,7 @@ function LinkBody({ node, readOnly, onChange }: BodyProps) {
   );
 }
 
-/**
- * One card on the backpack board.
- *
- * The whole card is not draggable: the body holds the fields the player types into, so the grip in
- * the header is what moves it. That is also what makes it work with a thumb, where a drag started
- * on a textarea is indistinguishable from a scroll.
- */
+/** The header grip moves it: on a textarea, a drag is indistinguishable from a scroll. */
 export function BackpackNode(props: BackpackNodeProps) {
   const { node, selected, readOnly, onSelect, onChange, onRemove, onDragStart, onResizeStart, onConnectStart } = props;
   const color = groupColor(node.color);

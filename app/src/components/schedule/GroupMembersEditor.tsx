@@ -18,13 +18,7 @@ interface GroupMembersEditorProps {
   readonly onChange: (memberIds: number[]) => void;
 }
 
-/**
- * A group's members as removable chips plus one "Add" menu.
- *
- * The checkbox wall this replaces rendered the whole roster inside every card, so a campaign of
- * twelve drew twelve checkboxes per group and nothing said who was in two tables at once — or in
- * none. It also could not be used with a thumb: the labels wrapped into an unreadable block.
- */
+/** The checkbox wall it replaces drew the whole roster per card and wrapped unreadably. */
 export function GroupMembersEditor({ group, roster, placedElsewhere, onChange }: GroupMembersEditorProps) {
   const memberIds = group.members.map((member) => member.id);
   const inGroup = new Set(memberIds);

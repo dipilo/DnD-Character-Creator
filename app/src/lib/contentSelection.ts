@@ -57,9 +57,7 @@ export const dedupeCanonicalContent = <T extends NamedContentEntry>(entries: T[]
   return entries.filter((entry) => preferredByKey.get(getCanonicalContentKey(entry))?.id === entry.id);
 };
 
-// Collapse entries that share a name but come from different editions (e.g. the 2014 and
-// 2024 printings of Fireball), keeping the printing that matches the preferred edition.
-// Entries whose names are unique always survive, so single-edition content is unaffected.
+// Keeps the printing matching the preferred edition; a unique name always survives.
 export const dedupeByNamePreferringEdition = <T extends NamedContentEntry>(
   entries: T[],
   preferredEdition: RulesEdition

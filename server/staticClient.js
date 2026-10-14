@@ -1,15 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 
-// -------- Serve built client (SPA) --------
-// When deployed together, serve the Vite-built frontend from ../client/dist
-// This allows GET / to load the UI instead of returning 404 "Cannot GET /".
-//
-// Note for the merge: the SPA now lives in app/, so ../client/dist never exists here and this
-// mount is a no-op. MERGE_PLAN.md Phase 6 (Vercel rewrites) decides whether it is repointed or
-// deleted. Its position in server.js is load-bearing until then: the fallback regex swallows
-// every path that does not start with /api or /auth, so routes like /health and /diag/db must
-// stay registered after it, exactly as they were.
+// A no-op since the SPA moved to app/; its position is load-bearing for the fallback regex.
 function mountStaticClient(app) {
   try {
     const path = require('path');

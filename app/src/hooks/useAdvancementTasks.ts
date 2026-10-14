@@ -1,9 +1,4 @@
-// The builder's half of the unfinished-choice list.
-//
-// The sheet already derives its classes, species and spellcasting rules for its own panels and
-// hands them straight to `deriveAdvancementTasks`; the builder derives none of that at the shell
-// level, so this hook does it once for the step rail. Both end at the same pure function, which is
-// what keeps the two lists from disagreeing.
+// Both lists end at `deriveAdvancementTasks`, which is what stops them disagreeing.
 import { useMemo } from 'react';
 import {
   getRuntimeClassById,

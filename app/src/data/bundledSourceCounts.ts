@@ -9,9 +9,7 @@ interface SourcedEntry {
   sourceId?: string;
 }
 
-// Built-in species, classes, and backgrounds carry book labels ("Player's Handbook",
-// "Volo's Guide to Monsters", ...) rather than explicit source ids, so resolve each
-// label once and count entries per manifest source.
+// Built-ins carry labels rather than source ids, so resolve each label once.
 const staticEntries: SourcedEntry[] = [...baseSpecies, ...baseClasses, ...baseBackgrounds];
 
 const staticEntryCountsBySourceId = staticEntries.reduce<Map<string, number>>((counts, entry) => {

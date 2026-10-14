@@ -1,8 +1,4 @@
-// The Powered Character (Kids on Bikes, chapter 5).
-//
-// One document per Powered Character, belonging to a campaign rather than to a user: the table
-// co-controls it. Two write paths, because the book gives the GM and the players different rights
-// over the same card — the GM owns the document, and "any player may activate any Aspect".
+// One document per campaign, with two write paths: the GM's and any player's.
 const express = require('express');
 const db = require('../db');
 const {
@@ -34,10 +30,7 @@ async function resolveAccess(req, res, campaignId) {
   return { membership, isOwner: await isCampaignOwner(req.user.id, campaignId) };
 }
 
-/**
- * Load one Powered Character and the caller's rights over it. A row in a campaign they are not in
- * reads as absent, so the id space is not walkable.
- */
+/** A row in a campaign they are not in reads as absent. */
 async function loadForCaller(req, res) {
   const id = Number.parseInt(req.params.id, 10);
   const row = Number.isFinite(id) ? await db.get('SELECT * FROM powered_characters WHERE id = ?', id) : null;
@@ -127,9 +120,7 @@ router.put('/api/powered-characters/:id', requireAuth, async (req, res) => {
   }
 });
 
-// The play state, which every member at the table may write: Power Tokens spent, and which
-// Aspects are turned sideways and in front of whom. It carries no version — two players clicking
-// the same card is the case the table exists for, and the patch touches nothing the GM is editing.
+// No version: two players clicking one card is the case the table exists for.
 router.put('/api/powered-characters/:id/play', requireAuth, async (req, res) => {
   try {
     const found = await loadForCaller(req, res);

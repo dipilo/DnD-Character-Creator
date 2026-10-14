@@ -26,9 +26,7 @@ const decodeHtmlEntities = (value) => {
   return String(value ?? '').replaceAll(/&(amp|quot|#x27|#39|lt|gt|nbsp);/g, (match) => htmlEntityMap[match] ?? match);
 };
 
-// Inline elements render without whitespace; D&D Beyond splits words across inline tags
-// (e.g. <span class="No-Break">), so inline tags are removed while block tags become
-// spaces to keep adjacent cells/paragraphs separated.
+// Drop inline tags without a space; block tags become one.
 const inlineTagNames = new Set(['a', 'abbr', 'b', 'cite', 'code', 'em', 'i', 'mark', 'q', 's', 'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'wbr']);
 const tagOrCommentPattern = /<!--[\s\S]*?-->|<\/?([a-z][a-z0-9-]*)(?:\s[^>]*)?\/?>/gi;
 const replaceTags = (value) => value.replaceAll(tagOrCommentPattern, (match, tagName) => (
@@ -84,10 +82,7 @@ const mergeFeatureOptions = (...collections) => {
   return Array.from(merged.values()).sort((left, right) => left.name.localeCompare(right.name));
 };
 
-// Prerequisites are written both ways: "9th level" and "12th-level warlock". Requiring
-// whitespace before the noun missed every hyphenated form, so those options (Bond of the
-// Talisman, Far Scribe, Undying Servitude, ...) carried no minimum level and stayed selectable
-// at level 1.
+// Keep the hyphenated form, or those invocations stay selectable at level 1.
 const minimumLevelPattern = /\b(\d+)(?:st|nd|rd|th)?\+?[\s-]?(?:level|warlock|sorcerer|fighter)\b/i;
 
 const parseMinimumLevel = (text) => {
@@ -148,10 +143,7 @@ const extractFeatureOptionsFromSection = (raw, config) => {
       const body = sliceSectionBody(block.content);
       const paragraphs = extractParagraphEntries(body);
       const prerequisiteEntry = paragraphs.find((entry) => /^prerequisite/i.test(entry.text));
-      // Only the first paragraph used to survive, which stripped the effect off every option
-      // written in more than one: Gift of the Protectors and Far Scribe both ended up describing
-      // nothing but the blank page they add, and Investment of the Chain Master promised
-      // "the following benefits" with the bullet list that lists them dropped.
+      // Take an option's whole body: two options differ only in their second paragraph.
       const description = extractStructuredTexts(body)
         .filter((entry) => !/^prerequisite\b/i.test(entry) && !/^repeatable\.?$/i.test(entry))
         .join(' ')
@@ -209,10 +201,7 @@ const createGrantFeature = (id, name, description, level, source, chooseCount, o
 
 const normalizeFeatureName = (value) => normalizeIdentifier(value).replace(/^level \d+ /, '').trim();
 
-// A choice feature's section nests one heading per option, so its own description runs on into
-// the option bodies — Pact Boon read as its intro sentence followed by all three boons glued
-// together, immediately above the selector that lists the same three. The options are extracted
-// from that very text, so the description can be cut at the first one it repeats.
+// Cut the description at the first option body it repeats.
 const trimRepeatedOptionBodies = (description, options) => {
   if (!description) {
     return description;
@@ -347,9 +336,7 @@ const buildExtractedChoicePools = async (pack, rawDocument) => {
     borrowedTashasDocument = Boolean(tashasRaw);
   }
 
-  // These options are read out of Tasha's even while another pack is being imported, so the
-  // cross-reference context has to follow the document: a "chapter 3" footnote inside a Tasha's
-  // option means a Tasha's spell, not one from whichever book is currently being parsed.
+  // The cross-reference context follows the document the option came from.
   if (borrowedTashasDocument) {
     setDocumentReferenceContext(tashasRaw, "Tasha's Cauldron of Everything");
   }
@@ -375,9 +362,7 @@ const buildExtractedChoicePools = async (pack, rawDocument) => {
     eldritchInvocationOptions: edition === '2014'
       ? mergeFeatureOptions(localInvocationOptions, tashasInvocationOptions)
       : localInvocationOptions,
-    // Pact of the Talisman lives in Tasha's, and the talisman invocations require it, so the
-    // 2014 boon pool has to include the supplement's option or those invocations can never
-    // become selectable.
+    // The 2014 boon pool needs the supplement's option, or its invocations never unlock.
     pactBoonOptions: edition === '2014'
       ? mergeFeatureOptions(localPactBoonOptions, tashasPactBoonOptions)
       : localPactBoonOptions,
@@ -455,9 +440,7 @@ const enrichSubclassEntry = (entry, extractedPools) => {
   };
 };
 
-// When the pack already carries a same-name class or subclass entry (e.g. the extracted
-// optional-feature supplements), fold the grant features into it instead of appending a
-// duplicate placeholder that would inflate entry counts.
+// Fold into the existing entry rather than appending a placeholder that inflates counts.
 const mergeSupplementEntries = (entries, supplements) => {
   const remaining = [...supplements];
   const merged = entries.map((entry) => {
@@ -580,12 +563,7 @@ const applyInlineChoicesToContent = (content) => ({
   }))
 });
 
-// A supplement's "…Options" section is a heading that introduces a pool ("When you choose eldritch
-// invocations, you have access to these additional options."), not a feature the character gains.
-// Its options are extracted into the pool and merged onto the real feature, so leaving the heading
-// behind as a feature just prints a promise of options next to the feature that actually lists
-// them. Sections that carry their own content, like "Additional Warlock Spells", are not pools and
-// are kept.
+// A pool heading is not a feature; a section with its own content is kept.
 const isPoolAnnouncementFeature = (feature, poolSectionNames) => {
   return Boolean(feature?.optional)
     && !(feature.options?.length > 0)

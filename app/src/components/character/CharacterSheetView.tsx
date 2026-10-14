@@ -1,13 +1,4 @@
-// The rendered character sheet (MERGE_PLAN.md Phase 5).
-//
-// Extracted from `CharacterSheetPage` so the campaign party view can render a *fetched* character
-// through exactly the same code as the one in your own cache. That is the point of Phase 5: the
-// roster shows real, live sheets — the ones the builder produces — rather than the D&D Beyond blob
-// the scheduler used to store on the seat.
-//
-// It takes a whole `Character` and derives everything else. It reads no store and performs no
-// writes, so the owner's page and a campaign-mate's read-only view differ only in the `actions`
-// they hand it.
+// Reads no store and writes nothing: the owner's page and the party view differ by `actions`.
 import { useMemo, type ReactNode } from 'react';
 import {
   getRuntimeClassById,
@@ -86,17 +77,9 @@ interface CharacterSheetViewProps {
   leading?: ReactNode;
   /** Shown under the title. Used to say whose sheet this is when it is not the reader's. */
   note?: ReactNode;
-  /**
-   * The whole write surface. Omitting it is what makes this read-only, which is how a campaign-mate
-   * renders someone else's sheet through the same component. Every tracker and every equipment or
-   * spell edit hands back a patch; the page decides what to do with it.
-   */
+  /** Omitting it is what makes the sheet read-only; every edit hands back a patch. */
   onChange?: (patch: Partial<Character>) => void;
-  /**
-   * How an unfinished choice is opened. The sheet cannot navigate into the builder on its own —
-   * the character has to be loaded into it first — so the page that owns that does it. Without
-   * this the outstanding choices are still listed, and only the links are gone.
-   */
+  /** The owning page navigates; without this the choices still list, minus the links. */
   onOpenBuilder?: (path: string) => void;
 }
 
@@ -477,10 +460,7 @@ export function CharacterSheetView({
 
   const castingStat = useMemo(() => primaryCastingStat(vitals.spellcasting), [vitals.spellcasting]);
 
-  // What a feature's own sentences add to its dice: "1d10 plus your Fighter level", "+ PB". The
-  // level a "when you reach 14th level" clause counts is the class's, which each card passes. The
-  // Monk's Martial Arts die and the Rogue's Sneak Attack are columns rather than sentences, so
-  // each class hands over its own table at the level this character holds in it.
+  // A level clause counts the class's level, and columns come from its own table.
   const featureContext = useMemo<FeatureContext>(
     () => ({
       level: totalLevel,

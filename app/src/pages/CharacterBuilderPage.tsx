@@ -13,11 +13,7 @@ import { useAdvancementTasks } from '@/hooks/useAdvancementTasks';
 import { AdvancementTasks } from '@/components/character/AdvancementTasks';
 import { BuilderDraftBanner } from '@/components/builder/BuilderDraftBanner';
 
-/**
- * What the Class Levels card says under a class name. A subclass chosen above the class's current
- * level is kept rather than dropped — lowering a level while trying things out should not throw a
- * choice away — so the card says out loud that it is not active yet.
- */
+/** A subclass above the current level is parked, and the card says so. */
 function describeSubclassLine(
   cls: ReturnType<typeof getRuntimeClassById>,
   subclass: ReturnType<typeof getRuntimeSubclass>,
@@ -153,9 +149,7 @@ export function CharacterBuilderPage() {
     if (routeStepId) setBuilderStep(routeStepId);
   }, [routeStepId, setBuilderStep]);
 
-  // Eight steps do not fit a phone, so the rail scrolls — and a scrolled rail that never follows
-  // the wizard leaves the current step off-screen. Scrolling an element is a DOM effect, not
-  // component state mirrored from props, so it belongs in an effect.
+  // Scrolling the rail is a DOM effect, not state mirrored from props.
   useEffect(() => {
     const active = stepRailRef.current?.querySelector('[data-active]');
     active?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });

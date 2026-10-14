@@ -1,12 +1,4 @@
-// The Actions tab: one filtered table of everything this character can do in a round.
-//
-// The chips are D&D Beyond's — All / Attack / Action / Bonus Action / Reaction / Other / Limited
-// Use — and every row comes from `deriveSheetActions`, so a weapon, a spell and a feature print the
-// same six columns. Nothing here is a list of actions written in the app.
-//
-// Same posture as every other sheet panel: no store, no state but the chip, and `onChange` is the
-// whole write surface. Rolling is not a write, so a campaign-mate reading a shared sheet still gets
-// every to-hit and every damage button.
+// Every row comes from `deriveSheetActions`; rolling is not a write, so a reader keeps it.
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -98,12 +90,7 @@ export function SheetActionsPanel({
   const resourceFor = (entry: SheetActionEntry) =>
     entry.resourceKey ? classResources.find((resource) => resource.key === entry.resourceKey) : undefined;
 
-  /**
-   * Rolling to hit with a spell *is* casting it, so the roll spends the slot rather than a Cast
-   * button beside it spending one and the roll being a second press. The lowest slot that can carry
-   * the spell is the one spent, which is what `lib/spellCasting.ts` already answers for the Spells
-   * tab; upcasting is a real choice and stays there, where the slots are.
-   */
+  /** The roll spends the lowest slot that carries it; upcasting stays on the Spells tab. */
   const castOnAttack = (entry: SheetActionEntry) => {
     if (entry.kind !== 'spell' || !onChange) return;
     if (entry.spellLevel === undefined || entry.spellLevel === 0) return;
@@ -179,9 +166,7 @@ export function SheetActionsPanel({
           <p className="text-sm text-muted-foreground">Nothing here under this filter.</p>
         ) : (
           sections.map((section) => {
-            // The actions everybody has are a list of names under their own heading, the way the
-            // books print them: nothing about them is rolled, so a table row of empty columns was
-            // the wrong shape for them.
+            // Nothing about them is rolled, so a table row of empty columns was the wrong shape.
             const own = section.entries.filter((entry) => entry.kind !== 'combat-action');
             const standard = section.entries.filter((entry) => entry.kind === 'combat-action');
             return (
@@ -235,13 +220,7 @@ function hitCell(entry: SheetActionEntry, effects: AppliedRollEffects, onRoll: (
   return entry.saveLabel ? <span className="tabular-nums">{entry.saveLabel}</span> : undefined;
 }
 
-/**
- * The Damage cell, one line per choice the row offers. A Versatile weapon states two, and which one
- * is thrown is decided as the blow is struck — so they are two buttons rather than one reading
- * "1d6+1 bludgeoning (1d8+1 bludgeoning)", which could only ever throw the first.
- *
- * Rolling changes nothing, so a read-only sheet keeps these.
- */
+/** Versatile is two buttons: one label could only ever throw the first. */
 function damageCell(entry: SheetActionEntry) {
   if (entry.damages.length === 0) return undefined;
   return (

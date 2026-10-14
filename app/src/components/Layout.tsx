@@ -18,12 +18,7 @@ interface LayoutProps {
 
 const COMMUNITY_TESTING_MODE: boolean = false;
 
-/**
- * Destinations that belong to no one game. Each system contributes its own on top of these
- * (`GameSystemDefinition.navItems`), so switching the game swaps the builder and its companions
- * and leaves the shared screens alone. Home leads the row rather than trailing the active system's
- * own items — it is the one destination that makes sense before "which game" has even been chosen.
- */
+/** Each system adds its own on top; Home leads, since it precedes choosing a game. */
 const HOME_NAV_ITEM: GameSystemNavItem = { to: '/', label: 'Home', icon: Home, match: '/', exact: true };
 const TRAILING_SHARED_NAV_ITEMS: GameSystemNavItem[] = [
   { to: '/campaigns', label: 'Campaigns', icon: CalendarRange, match: '/campaign' },
@@ -50,10 +45,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
   // belong to none of them, so the nav still offers the game you were last playing.
   const activeSystem = resolveActiveGameSystem(location.pathname, preferredSystemId);
 
-  // A DOM write keyed off the resolved system, not state mirrored into state: the theme store
-  // owns the palette, the router owns the path, and this tells the one about the other. It is the
-  // *active* system rather than the route's, so the campaign and dice screens wear the colours of
-  // the game you are playing instead of dropping back to the default.
+  // A DOM write off the *active* system, so campaign and dice screens keep its colours.
   useEffect(() => {
     setRoutePalette(activeSystem.id);
   }, [activeSystem.id]);

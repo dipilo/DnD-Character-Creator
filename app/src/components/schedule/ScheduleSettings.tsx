@@ -16,10 +16,7 @@ interface ScheduleSettingsProps {
   onFilterAggregateChange: (value: boolean) => void;
 }
 
-/**
- * Calendar appearance. This is what the old ColorManager screen was for; it is a popover beside
- * the calendars now because the settings only mean anything while you are looking at them.
- */
+/** A popover beside the calendars: the settings only mean anything while you look. */
 export function ScheduleSettings({ filterAggregate, onFilterAggregateChange }: Readonly<ScheduleSettingsProps>) {
   const { ownColor, aggregatePalette, viewTimeZone, setOwnColor, setAggregateEntry, setViewTimeZone, resetColors } =
     useSchedulePreferences();

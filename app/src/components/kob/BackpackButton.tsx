@@ -2,13 +2,7 @@ import { readCanvas } from '@/lib/kob/backpackCanvas';
 import { cn } from '@/lib/utils';
 import type { KobBackpackCanvas } from '@/types/kob';
 
-/**
- * The backpack itself, as the way in.
- *
- * It is a 140 KB traced drawing, so it is served from `public/` and requested by the browser
- * rather than imported — CLAUDE.md's boot-cost rule is about the JS graph, and an `<img>` keeps it
- * out of every chunk.
- */
+/** Served from `public/` as an `<img>`, which keeps 140 KB out of every chunk. */
 const BACKPACK_SRC = `${import.meta.env.BASE_URL}assets/kob/backpack.svg`;
 
 interface BackpackButtonProps {

@@ -1,7 +1,4 @@
-// What a limited-use feature's own sentences are read to state.
-//
-// This fails silently: a sentence the parser stops matching does not error, the feature just has
-// no tracker on the sheet. Every line below is one a source actually prints.
+// A sentence the parser stops matching leaves the feature with no tracker.
 //
 //   node scripts/test/classResources.mjs      (npm run test:class-resources)
 

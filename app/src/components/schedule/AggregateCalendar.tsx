@@ -30,14 +30,7 @@ interface Band {
   playerIds: number[];
 }
 
-/**
- * The server slices the whole window at *every* block boundary in it, so one unbroken evening comes
- * back as however many slices anyone else's blocks happen to cut it into. Drawn one event per
- * slice, a single band was a row of abutting events and the reader saw seams that are not there.
- *
- * Runs are joined only when the same people are free, never merely the same number of them — the
- * panel names them, and a merge on count alone would name the wrong ones.
- */
+/** Runs join only when the same people are free: a merge on count names the wrong ones. */
 function mergeBands(intervals: AggregateInterval[]): Band[] {
   const bands: Band[] = [];
   for (const interval of intervals) {
@@ -72,19 +65,7 @@ function formatSpan(band: Band, timeZone: string): string {
   return `${day.format(start)}, ${clock.format(start)} to ${clock.format(new Date(band.end))}`;
 }
 
-/**
- * When everyone is free, shaded by how many. Each band is drawn as a background event rather than
- * the client intersecting anything itself.
- *
- * Two things about FullCalendar 7 shape this component, and both fail silently:
- *
- *   - the shade comes from the `color` refiner, which replaced `backgroundColor`/`borderColor`.
- *     Unknown refiners are dropped without a word, so every band painted in the classic theme's
- *     default green whatever the count was;
- *   - a background event renders *under* the slot lanes and never receives a pointer, so
- *     `eventClick` and `eventMouseEnter` on one never fire. Picking a band goes through
- *     `dateClick` on the grid instead, which is also the only version of this a thumb can work.
- */
+/** FullCalendar 7: the shade is the `color` refiner, and a background event gets no pointer. */
 export function AggregateCalendar({ campaignId, players, playerFilter = null }: Readonly<AggregateCalendarProps>) {
   const [bands, setBands] = useState<Band[]>([]);
   const [selected, setSelected] = useState<Band | null>(null);
@@ -103,9 +84,7 @@ export function AggregateCalendar({ campaignId, players, playerFilter = null }: 
 
   const filterKey = playerFilter?.join(',') ?? '';
 
-  // An event-source function, not `datesSet` plus `addEvent`: FullCalendar fires `datesSet` while
-  // it initialises, before React has attached the ref the imperative version read, so the first
-  // load found no API and returned — the view stayed empty until something forced a second fire.
+  // `datesSet` fires before React attaches the ref, so the first load found no API.
   const loadIntervals = useCallback(
     async (info: EventSourceFuncInfo): Promise<EventInput[]> => {
       const intervals = await fetchAggregate(campaignId, info.start.toISOString(), info.end.toISOString(), playerFilter);
@@ -183,11 +162,7 @@ interface BandDetailsProps {
   onClear: () => void;
 }
 
-/**
- * Who is free in the slot that was picked. It sits under the calendar rather than floating: a card
- * anchored to the pointer has nowhere to go on a phone, and it cannot be read without holding a
- * finger on top of the thing it describes.
- */
+/** Under the calendar, not floating: an anchored card has nowhere to go on a phone. */
 function BandDetails({ band, emptyPick, rosterSize, timeZone, names, isTouch, onClear }: Readonly<BandDetailsProps>) {
   const verb = isTouch ? 'Tap' : 'Click';
 

@@ -1,15 +1,4 @@
-// The rendered Kids on Bikes sheet.
-//
-// Extracted from `KobSheetPage` for the same reason `CharacterSheetView` was extracted from the
-// D&D one: a campaign-mate opening a seated character has to see the real sheet, not a summary,
-// and that means the owner's page and the party view render through the same component.
-//
-// It is the same frame the D&D sheet is: a persistent header and rail — the tokens, the stat dice
-// and the Knacks, everything read while doing something else — with one tabbed subsection beside
-// it holding the genuine alternates.
-//
-// It reads no store and performs no writes. `onChange` is the whole write surface, and its absence
-// is what makes the party view read-only.
+// Reads no store and writes nothing: `onChange` absent is what makes the party view read-only.
 import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { getGameSystem } from '@/data/gameSystems';
@@ -52,10 +41,7 @@ function Field({ label, value }: Readonly<{ label: string; value: string }>) {
   );
 }
 
-/**
- * The backpack, opened as the board it is. Read-only without `onChange`, which is the same thing
- * that makes the rest of the party view read-only.
- */
+/** Read-only without `onChange`, like the rest of the party view. */
 function BackpackCard({
   character,
   onChange,
@@ -80,10 +66,7 @@ function BackpackCard({
   );
 }
 
-/**
- * A Bonded Action is agreed between two players, so it prints the pair and the shared history
- * they wrote — the mechanical line comes from the appendix, never from what was typed.
- */
+/** Prints the pair and their history; the mechanical line comes from the appendix. */
 function BondedActionsCard({ character }: Readonly<{ character: KobCharacter }>) {
   return (
     <Card>

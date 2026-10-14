@@ -34,12 +34,7 @@ function emptyDocument(): PoweredCharacterData {
   };
 }
 
-/**
- * The Powered Character at one table (Kids on Bikes, chapter 5).
- *
- * The chapter's own rules are quoted underneath rather than paraphrased: they are imported from
- * the rulebook, so this page states no rule of its own.
- */
+/** The chapter's rules are quoted from the import, so this page states none of its own. */
 export function PoweredCharacterPage() {
   const campaignId = useCampaignId();
   const { membership } = useCampaignStore();

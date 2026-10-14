@@ -48,11 +48,7 @@ function countOffsets(raw: string): number[] {
   return Array.from({ length: count }, (_, i) => i + 1);
 }
 
-/**
- * Weekly repeats for one availability block. There is no recurrence rule in the schema — a block
- * is a start and an end — so "repeats weekly" is materialised as copies, and the horizon is the
- * player's to choose rather than something the app decides on their behalf.
- */
+/** No recurrence rule in the schema, so a repeat is materialised as copies. */
 export function RepeatBlockDialog({ source, onOpenChange, onApply }: Readonly<RepeatBlockDialogProps>) {
   const [mode, setMode] = useState<RepeatMode>('count');
   const [count, setCount] = useState('4');

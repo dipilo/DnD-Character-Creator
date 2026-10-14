@@ -1,10 +1,6 @@
 import type { KobConsentSheet } from '@/types/kob';
 
-/**
- * The Consent Sheet's printed wording (rulebook p. 16–18). Transcribed rather than imported: the
- * Obsidian vault has no note for this chapter, and the source PDFs beside it are encrypted, so
- * `import-kids-on-bikes.mjs` cannot reach it. Add the note and it moves to `generated.ts`.
- */
+/** Transcribed: the vault has no note and the source PDFs are encrypted. */
 export interface KobConsentField {
   key: keyof KobConsentSheet;
   label: string;
@@ -47,10 +43,7 @@ export const KOB_INTIMACY_LEVELS: readonly KobConsentField[] = [
   },
 ];
 
-/**
- * The one line in the Romance and Intimacy chapter stated as a hard limit rather than a
- * discussion point, so it is the one the sheet enforces instead of only displaying.
- */
+/** The one line stated as a hard limit, so the sheet enforces it rather than showing it. */
 export const KOB_CHILD_INTIMACY_HARD_LINE =
   "Children should not engage in sexual intimacy. They’ve got monsters to fight! " +
   'On-screen and off-screen intimacy are unavailable for a child character.';

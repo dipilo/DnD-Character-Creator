@@ -1,23 +1,11 @@
-/**
- * The registry of tabletop systems the app can build characters for.
- *
- * One record per system: its identity, where its builder lives, and the palette the UI wears while
- * you are working in it. Adding a system is adding an entry here plus its content module — no
- * component branches on a system id, and nothing about a system is spelled out in a page.
- */
+// One record per system; no component branches on a system id.
 
 import { Bike, ClipboardList, Download, FlaskConical, Sword, Users, Zap } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export type GameSystemId = 'dnd-5e' | 'kids-on-bikes';
 
-/**
- * Accent tokens layered over the shared neutral palette in `index.css`.
- *
- * Values are bare HSL triplets (`H S% L%`) because that is the format shadcn's tokens use —
- * `hsl(var(--primary))` is how every component reads them, so a hex value here renders nothing.
- * Only the tokens a system actually recolours are listed; anything omitted keeps the base value.
- */
+/** Bare HSL triplets, as shadcn's tokens are read; an omitted token keeps the base value. */
 export type ThemeTokens = Partial<
   Record<
     | 'primary'
@@ -41,13 +29,7 @@ export interface GameSystemTheme {
   light: ThemeTokens;
 }
 
-/**
- * A destination in the main nav that belongs to one system.
- *
- * These live here rather than in `Layout` because a system's routes are the registry's to state:
- * switching the active game swaps the whole set, and a nav list written out in a component would
- * be the second place a system is described.
- */
+/** Here, not in `Layout`: a nav list in a component would describe a system twice. */
 export interface GameSystemNavItem {
   to: string;
   label: string;
@@ -80,48 +62,21 @@ export interface GameSystemDefinition {
   builderPath: string;
   /** Route the character list for this system lives at. */
   charactersPath: string;
-  /**
-   * Where one saved character's sheet lives. A function because the two systems nest it
-   * differently, and because the party view has to link to either without knowing which.
-   */
+  /** A function: the two systems nest it differently and the party view links to either. */
   sheetPath: (characterId: string) => string;
   /** Where the picker lands when this system is chosen. */
   homePath: string;
-  /**
-   * Every route prefix that belongs to this system. The theme follows these, so a sheet and a
-   * character list count, not just the builder.
-   */
+  /** The theme follows these, so a sheet and a character list count too. */
   routePrefixes: string[];
   /** This system's own nav destinations, shown while it is the active game. */
   navItems: GameSystemNavItem[];
-  /**
-   * Tabs this system adds to a campaign, beside the shared Schedule, Roster, Party, Groups and
-   * Members. `to` is relative to `/campaign/:campaignId`.
-   *
-   * A campaign belongs to one game, so which of these are shown follows the campaign's own
-   * `system_id` — the same reason `hasSelectableSources` lives here rather than as an id check in
-   * `CampaignLayout`.
-   */
+  /** `to` is relative to `/campaign/:campaignId`, and the campaign's `system_id` picks them. */
   campaignTabs: GameSystemCampaignTab[];
   /** False while a system is still being built out — it stays visible but is not selectable. */
   available: boolean;
-  /**
-   * Whether this system's content comes from a library of separately selectable books.
-   *
-   * D&D does: a campaign agrees which of ~20 source packs are in play and that seeds the builder's
-   * filter. Kids on Bikes is a single core rulebook, so a campaign has nothing to choose between
-   * and "Sources in play" was an empty control offering a D&D book list on a Kids on Bikes table.
-   * It is a capability rather than an id check because CLAUDE.md rules out branching on a system id
-   * — a third system declares its own answer here instead of editing the campaign screens.
-   */
+  /** A capability, not an id check: a third system declares its own answer. */
   hasSelectableSources: boolean;
-  /**
-   * What the shared roller offers while this system is the active game.
-   *
-   * Only the capability lives here, never a rule's text: naming the rule is enough for the control
-   * and the result badge, and the wording itself belongs in the system's own imported content
-   * (Kids on Bikes states the Lucky Break in `playRules`, which the sheet quotes).
-   */
+  /** The capability only; a rule's wording belongs in the system's imported content. */
   dice: {
     /** Quick-roll buttons, in the order they are shown. */
     presets: string[];

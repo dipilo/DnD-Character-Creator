@@ -1,9 +1,4 @@
-// The table's live dice feed.
-//
-// While a session is open, every roll anybody at this campaign makes — on their sheet, on the dice
-// page, anywhere — is posted to it, so the DM and the players read the same history. The watcher
-// that posts them is started at boot (`startSessionBroadcast`); this page is where the session is
-// started, ended and read.
+// The watcher posting rolls starts at boot; this is where a session is run.
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dices, Play, Square } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';

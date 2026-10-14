@@ -7,14 +7,7 @@ import type {
   KobBackpackSide,
 } from '@/types/kob';
 
-/**
- * The backpack board: what a node may hold, and how big a dropped picture may be.
- *
- * A character is one JSON document in `characters.data`, so an image dropped onto the board is
- * part of that document. These caps are what keep a photo off a phone camera from making the
- * document too large to save — a link has no size at all, which is why anything bigger is asked
- * for as one.
- */
+/** A dropped image is part of `characters.data`, so these caps keep it savable. */
 export const MAX_INLINE_IMAGE_BYTES = 512 * 1024;
 export const MAX_CANVAS_INLINE_BYTES = 4 * 1024 * 1024;
 
@@ -41,11 +34,7 @@ function isNode(value: unknown): value is KobBackpackNode {
   return typeof node.id === 'string' && typeof node.x === 'number' && typeof node.y === 'number';
 }
 
-/**
- * Read a canvas off a document that may predate it, or have been written by another version. A
- * missing field and a wrong-shaped one both read as an empty board rather than throwing in a
- * render — the same guard CLAUDE.md asks for on `character.proficiencies`.
- */
+/** A missing or wrong-shaped field reads as an empty board rather than throwing. */
 export function readCanvas(canvas: KobBackpackCanvas | undefined | null): KobBackpackCanvas {
   if (!canvas || typeof canvas !== 'object' || !Array.isArray(canvas.nodes)) return EMPTY_CANVAS;
   const nodes = canvas.nodes.filter(isNode).map(normaliseNode);
@@ -111,13 +100,7 @@ export function inlineBytes(canvas: KobBackpackCanvas): number {
   return canvas.nodes.reduce((total, node) => total + (node.src.startsWith('data:') ? node.src.length : 0), 0);
 }
 
-/**
- * A picture ready to put on the board, or the reason to show the player.
- *
- * The size is checked *after* the re-encode, not before: a photo straight off a phone is several
- * megabytes and every one of them used to be refused, although the version a card displays is a
- * fraction of that. The caps are unchanged — what changed is what is measured against them.
- */
+/** Size is checked *after* the re-encode: a phone photo passes once downscaled. */
 export async function prepareInlineImage(
   file: File,
   canvas: KobBackpackCanvas,
@@ -186,10 +169,7 @@ export function anchorOf(node: KobBackpackNode, side: KobBackpackSide): { x: num
   return { x: node.x + node.width, y: midY };
 }
 
-/**
- * A cubic curve that leaves and enters square to the borders it joins, which is what stops two
- * cards side by side being connected by a line through both of them.
- */
+/** Square to the borders, so two cards side by side are not joined through them. */
 export function edgePath(start: { x: number; y: number }, startSide: KobBackpackSide, end: { x: number; y: number }, endSide: KobBackpackSide): string {
   const reach = Math.max(40, Math.hypot(end.x - start.x, end.y - start.y) / 2.5);
   const out = offsetFor(startSide, reach);
@@ -212,11 +192,7 @@ export function sideFacing(node: KobBackpackNode, target: { x: number; y: number
   return dy > 0 ? 'bottom' : 'top';
 }
 
-/**
- * The cards a frame carries. Containment is by the card's centre rather than its whole rectangle,
- * so a card overhanging a frame's edge still travels with it — dragging a frame and leaving one
- * corner behind is the frustrating version of this.
- */
+/** Containment is by centre, so a card overhanging a frame still travels with it. */
 export function nodesInGroup(group: KobBackpackNode, nodes: KobBackpackNode[]): string[] {
   return nodes
     .filter((node) => node.id !== group.id && node.kind !== 'group')
@@ -253,13 +229,7 @@ export function nodesTouching(box: { x: number; y: number; width: number; height
     .map((node) => node.id);
 }
 
-/**
- * The topmost card at a board point, frames excluded: what an arrow lands on when it is let go.
- *
- * Read from the board's own geometry rather than `document.elementFromPoint`, which answers with
- * the dialog rather than the card once a pointer is captured — so every arrow silently landed on
- * nothing.
- */
+/** From the board's geometry: `elementFromPoint` answers with the captured dialog. */
 export function nodeAtPoint(point: { x: number; y: number }, nodes: KobBackpackNode[]): KobBackpackNode | null {
   const hit = inPaintOrder(nodes).filter(
     (node) => node.kind !== 'group'

@@ -1,11 +1,4 @@
-// The character's level, on the sheet, in both directions.
-//
-// A level is a number on the document and the builder's Class step is not the only place it may be
-// set — but which class gains or gives back the level is a real choice for a multiclass character,
-// so the menu names the class rather than picking one. Levelling is something a player tries out,
-// which is why the control that raises a level also lowers it, and why it can take a first level in
-// a new class: the check is the Class step's own, and a class the character cannot take yet is
-// listed with what it asks for rather than hidden.
+// The menu names the class, since which one gains the level is a real choice.
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

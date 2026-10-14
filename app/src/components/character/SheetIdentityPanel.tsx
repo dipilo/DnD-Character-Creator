@@ -1,9 +1,4 @@
-// Who the character is, editable where the player reads it.
-//
-// The background prints suggestions; these are the lines the player actually wrote, and until now
-// they could only be changed by reopening the builder and walking back to the Description step.
-// Same posture as every other sheet panel: it holds no state and hands a patch back through the one
-// optional `onChange`, so a campaign-mate reading a shared sheet gets the text and no fields.
+// Hands a patch back through the one optional `onChange`, like every sheet panel.
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';

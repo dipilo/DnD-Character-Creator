@@ -1,13 +1,4 @@
-// Character sharing: who may open a sheet, and who may edit it.
-//
-// The read rules used to be one sentence — a row belongs to one user, and attaching it to a
-// campaign lets that campaign read it — and a status snapshot was enough to check them. Three
-// things widen them now, all of them the owner's own act, and each has a way of being wrong that
-// looks like nothing at all: a private character still readable by its table, a granted editor
-// able to move someone else's seat, a consent the GM could grant themselves.
-//
-// So this drives the whole surface with four real accounts and asserts the refusals as hard as
-// the permissions.
+// Four real accounts, asserting the refusals as hard as the permissions.
 //
 //   node server/test/characterSharing.mjs      (npm run test:sharing)
 
@@ -110,7 +101,6 @@ async function scenario() {
   const mateBefore = await call('mate', 'GET', `/api/characters/${sheet.id}`);
   check('an unattached character is invisible to a campaign-mate', mateBefore.status === 404, mateBefore.status);
 
-  // ---- attaching is the act of sharing -------------------------------------
   await call('player', 'PUT', `/api/characters/${sheet.id}/seat`, { campaign_id: campaignId });
   const mateAttached = await call('mate', 'GET', `/api/characters/${sheet.id}`);
   check('attaching lets a campaign-mate read it', mateAttached.status === 200, mateAttached.status);
@@ -120,7 +110,6 @@ async function scenario() {
   const mateWrite = await call('mate', 'PUT', `/api/characters/${sheet.id}`, { version: 1, data: sheet });
   check('a reader who tries to write is refused with 403', mateWrite.status === 403 && mateWrite.json.error === 'character_not_editable', `${mateWrite.status} ${mateWrite.json.error}`);
 
-  // ---- private closes it again, seat and all -------------------------------
   const madePrivate = await call('player', 'PUT', `/api/characters/${sheet.id}/sharing`, { visibility: 'private' });
   check('the owner can make it private', madePrivate.json.sharing?.visibility === 'private', madePrivate.json.sharing?.visibility);
   const shareToken = madePrivate.json.sharing?.share_token;
@@ -136,7 +125,6 @@ async function scenario() {
   const anonPrivate = await call('anon', 'GET', `/api/shared/characters/${shareToken}`);
   check('a private share link does not open for a stranger', anonPrivate.status === 404, anonPrivate.status);
 
-  // ---- public opens for anyone, signed in or not ---------------------------
   await call('player', 'PUT', `/api/characters/${sheet.id}/sharing`, { visibility: 'public' });
   const anonPublic = await call('anon', 'GET', `/api/shared/characters/${shareToken}`);
   check('a public share link opens signed out', anonPublic.status === 200, anonPublic.status);
@@ -149,7 +137,6 @@ async function scenario() {
   const anonOld = await call('anon', 'GET', `/api/shared/characters/${shareToken}`);
   check('the old link stops working', anonOld.status === 404, anonOld.status);
 
-  // ---- a named grant beats the visibility ---------------------------------
   await call('player', 'PUT', `/api/characters/${sheet.id}/sharing`, { visibility: 'private' });
   const mateId = (await call('gm', 'GET', `/api/campaigns/${campaignId}/members`)).json.members
     ?.find((m) => m.user_name === 'sharing-mate')?.user_id;
@@ -184,7 +171,6 @@ async function scenario() {
   });
   check('a grant cannot name someone from another table', strangerGrant.status === 400, strangerGrant.status);
 
-  // ---- the grantee can find it without being sent a link -------------------
   const mateShared = await call('mate', 'GET', '/api/characters/shared-with-me');
   check('a grantee can list what was shared with them', mateShared.status === 200, mateShared.status);
   check('and it names the character', mateShared.json.characters?.[0]?.id === sheet.id, mateShared.json.characters?.[0]?.id);
@@ -201,7 +187,6 @@ async function scenario() {
   const mateSharedAfter = await call('mate', 'GET', '/api/characters/shared-with-me');
   check('and takes it off the shared list', mateSharedAfter.json.characters?.length === 0, mateSharedAfter.json.characters?.length);
 
-  // ---- the GM's table-wide consent ----------------------------------------
   await call('player', 'PUT', `/api/characters/${sheet.id}/sharing`, { visibility: 'campaign' });
   const gmBefore = await call('gm', 'PUT', `/api/characters/${sheet.id}`, { version: 3, data: sheet });
   check('the GM cannot edit without consent', gmBefore.status === 403, gmBefore.status);
@@ -236,7 +221,6 @@ async function scenario() {
   const gmAfterWithdrawal = await call('gm', 'PUT', `/api/characters/${second.id}`, { version: 1, data: second });
   check('withdrawing it stops the GM writing', gmAfterWithdrawal.status === 403, gmAfterWithdrawal.status);
 
-  // ---- the invite carries the ask and the answer --------------------------
   const preview = await call('anon', 'GET', `/api/invites/${inviteToken}`);
   check('the invite preview carries the ask', preview.json.campaign?.requests_character_edit === 1, preview.json.campaign?.requests_character_edit);
 
@@ -247,7 +231,6 @@ async function scenario() {
   const gmJoined = await call('gm', 'GET', `/api/characters/${joined.id}`);
   check('consent given on the invite is honoured', gmJoined.json.character?.can_edit === true, gmJoined.json.character?.can_edit);
 
-  // ---- deletion revokes the link ------------------------------------------
   const liveToken = (await call('player', 'GET', `/api/characters/${sheet.id}/sharing`)).json.sharing?.share_token;
   await call('player', 'PUT', `/api/characters/${sheet.id}/sharing`, { visibility: 'public' });
   check('the link works before deletion', (await call('anon', 'GET', `/api/shared/characters/${liveToken}`)).status === 200);

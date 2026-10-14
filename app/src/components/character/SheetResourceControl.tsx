@@ -1,12 +1,4 @@
-// Spending a limited-use feature from the row that has it.
-//
-// The Class Resources card is where a whole pool is read at once; this is the other half — the one
-// press that *uses* the feature, beside the feature. Rage and its siblings are entered rather than
-// spent, which the resource itself already knows (`activatable`), so the control says Enter / End
-// there and Use everywhere else.
-//
-// Shared by the Actions table and the Features tab. `onSetUsed` and `onToggleActive` being absent
-// is what leaves a read-only sheet with the count and no buttons.
+// Says Enter / End where the resource is `activatable`, Use everywhere else.
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { ResolvedClassResource } from '@/lib/sheetPlayState';

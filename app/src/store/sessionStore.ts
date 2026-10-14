@@ -1,14 +1,4 @@
-/**
- * The table's shared dice history.
- *
- * A campaign can have one session open at a time; while it is, every roll anybody at that table
- * makes is posted to it, so the DM and the players read the same feed. The store knows the session
- * and the feed; `startSessionBroadcast` is what watches the dice tray from outside and posts, the
- * same direction `characterSync` watches `characterStore`.
- *
- * Nothing here is persisted. A session is a server fact, and a stale one cached in localStorage
- * would have this tab posting rolls into a game that ended yesterday.
- */
+// One open session per campaign; not persisted, since a stale one posts into a dead game.
 import { create } from 'zustand';
 import {
   endGameSession,
@@ -44,10 +34,7 @@ interface SessionState {
   clear: () => void;
 }
 
-/**
- * Which session this tab posts into, and under whose name. Module-level rather than store state
- * because the broadcast watcher reads it on every settled roll and must not re-subscribe.
- */
+/** Module-level: the watcher reads it on every settled roll and must not re-subscribe. */
 let activeSessionId: number | null = null;
 let activeCharacterName: string | null = null;
 
@@ -152,13 +139,7 @@ function toRollPayload(entry: DiceRollLogEntry) {
   };
 }
 
-/**
- * Post every roll this tab settles into the open session.
- *
- * Started once from `main.tsx`, because a roll made on a character sheet has to reach the feed
- * just as much as one made on the dice page — a watcher that only ran while the session screen was
- * open would collect nothing anybody actually rolled.
- */
+/** Started once from `main.tsx`, or a sheet roll would never reach the feed. */
 export function startSessionBroadcast(): void {
   let lastSeenId: string | null = useDiceTrayStore.getState().log[0]?.id ?? null;
 

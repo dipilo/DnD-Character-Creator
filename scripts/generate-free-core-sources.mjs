@@ -261,9 +261,7 @@ const getToolCategory = (entry) => {
     .find((name) => name && toolCategoryNames.has(name));
 };
 
-// Spellcasting foci are named by family in a class kit ("an arcane focus"), so the family has to
-// travel with the item or the builder has nothing to offer. 2014 states it as `gear_category`,
-// 2024 lists it among `equipment_categories` — the same shape change that hit tools and weapons.
+// The family must travel with the item, or the builder has nothing to offer.
 const gearCategoryNames = new Set(['Arcane Foci', 'Druidic Foci', 'Holy Symbols']);
 
 const getGearCategory = (entry) => {
@@ -276,10 +274,7 @@ const getGearCategory = (entry) => {
     .find((name) => name && gearCategoryNames.has(name));
 };
 
-// The same shape change hit weapons: 2014 states `weapon_category` ("Martial") and `weapon_range`
-// ("Melee") outright, 2024 states neither and lists "Martial Melee Weapons" among its
-// `equipment_categories`. Without these two the 2024 printings carried no category at all, so a
-// sheet could not tell whether the character was proficient with them and read every one as melee.
+// 2024 states neither field, so without these the printings carried no category.
 const weaponCategoryIndexes = new Set(['simple', 'martial']);
 const weaponRangeIndexes = new Set(['melee', 'ranged']);
 
@@ -294,10 +289,7 @@ const getWeaponFacet = (entry, allowed, explicit) => {
   return undefined;
 };
 
-// Feats carry their benefits in two different shapes: the 2014 dataset splits them into a `desc`
-// array whose benefit lines start with "-", while the 2024 dataset ships one markdown
-// `description` string whose benefits are "**Name.** text" lines. Reading only the 2014 shape
-// left every 2024 feat with an empty description and no benefits at all.
+// Both shapes are read, or every 2024 feat arrives with no benefits at all.
 const featBenefitHeadingPattern = /^\*\*(.+?)\.?\*\*\s*/;
 
 const parseFeatText = (feat) => {
@@ -653,9 +645,7 @@ const buildBackgroundSummary = ({ background, featDescription, skillProficiencie
 };
 
 export const createPack = async ({ edition, sourceId, label, category, includeCoreSpeciesAndBackgrounds = false }) => {
-  // Top-level entry ids must be unique across sources: both editions share the raw SRD
-  // indexes (e.g. "fireball", "longsword", "acolyte", "grappler"), and colliding ids make
-  // one edition silently shadow the other in the merged registry.
+  // Both editions share the raw SRD indexes, so a collision shadows one silently.
   const toSourcedEntryId = (index) => `${sourceId}-${index}`;
   const [spells, equipment, feats, monsters, backgrounds, races, subraces, traits] = await Promise.all([
     readEditionJson(edition, '5e-SRD-Spells.json'),
@@ -972,9 +962,7 @@ export const createPack = async ({ edition, sourceId, label, category, includeCo
   };
 };
 
-// SRD prose carries the same page navigation as the HTML dumps ("a book of spells is a spellbook
-// (described later in this section)") but never passes through the HTML extractor, so the shared
-// rewriter is applied to the finished pack's prose fields instead.
+// It skips the HTML extractor, so the shared rewriter runs on the finished pack.
 const crossReferenceTextKeys = new Set(['description', 'text', 'summary', 'feature']);
 
 const rewritePackCrossReferences = (value, key) => {

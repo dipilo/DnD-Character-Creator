@@ -109,9 +109,7 @@ const getFeatCategory = (feat: { name: string; sourceId?: string; features?: Arr
 
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
-// The structured fields only ever capture part of a prerequisite line (Grappler's "Strength 13
-// or higher" lands in `ability`, Eldritch Adept's "Spellcasting or Pact Magic feature" in
-// `pactMagic`), so every populated field is reported, and the source's own text is the fallback.
+// Every populated field is reported, with the source's own text as the fallback.
 const formatFeatPrerequisites = (feat: Feat) => {
   const prerequisites = feat.prerequisites;
   if (!prerequisites) {

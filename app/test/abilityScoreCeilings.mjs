@@ -1,12 +1,5 @@
-// The ceiling a feat states on the ability score it raises.
-//
-// This failed silently: nothing capped an increase, so the 2024 Ability Score Improvement feat
-// took a Charisma of 20 to 22 and every number derived from it — the spell save DC, the attack
-// bonus, the skill modifiers — was wrong with no error anywhere. The ceiling is the source's own
-// ("This feat can't increase an ability score above 20", "to a maximum of 30"), so a feat that
-// states none is still applied whole.
-//
-// Run with `npm run test:ability-ceilings` from the workspace root.
+// The ceiling is the source's own; a feat stating none is applied whole.
+// Run with `npm run test:ability-ceilings`.
 import assert from 'node:assert/strict';
 
 const { applyAbilityScoreBonuses, deriveAbilityScoreBonuses } = await import('@/lib/builderRules');

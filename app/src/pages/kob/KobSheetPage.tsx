@@ -1,6 +1,4 @@
-// One of your own Kids on Bikes characters, out of the local cache. The sheet itself is
-// `KobSheetView`, shared with the campaign party view — this page is the lookup, the owner's
-// actions, and the one place the sheet's edits are written.
+// The lookup, the owner's actions, and the one place the sheet's edits are written.
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, FileDown, Pencil } from 'lucide-react';
 import { toast } from 'sonner';

@@ -1,9 +1,4 @@
-// Server-side sessions (MERGE_PLAN.md Phase 1b).
-//
-// Before this, "authentication" was an `X-User-Id` header the client asserted and the server
-// believed, so editing one integer in devtools made you any user on the system. A session id is
-// minted here, stored in `sessions`, and handed back only as an httpOnly cookie — the client
-// never sees a user id it could echo, and the browser will not hand the cookie to script.
+// A session id in an httpOnly cookie; the client never sees a user id it could echo.
 const db = require('../db');
 const { genSessionId } = require('./tokens');
 const { readCookie } = require('./cookies');
@@ -17,20 +12,14 @@ const REVOKED_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
 // among them: nothing downstream needs it, and req.user gets serialised into responses.
 const USER_COLUMNS = 'u.id, u.username, u.discord_id, u.created_at';
 
-/**
- * Secure cookies require HTTPS, which dev over http://localhost does not have. Default to the
- * environment and let COOKIE_SECURE force it either way for hosts that terminate TLS upstream.
- */
+/** Defaults to the environment; COOKIE_SECURE forces it for TLS terminated upstream. */
 function useSecureCookie() {
   if (process.env.COOKIE_SECURE === '1') return true;
   if (process.env.COOKIE_SECURE === '0') return false;
   return process.env.NODE_ENV === 'production';
 }
 
-/**
- * SameSite=Lax is only sufficient because the SPA reaches the API same-origin through the Vercel
- * rewrites (MERGE_PLAN.md §5.2). A split-origin deployment would need None+Secure and a CSRF token.
- */
+/** A split-origin deployment would need None+Secure and a CSRF token. */
 function cookieOptions(extra = {}) {
   return {
     httpOnly: true,
@@ -88,10 +77,7 @@ async function createSession(req, res, user) {
   return id;
 }
 
-/**
- * Resolve the caller from their session cookie, or null. The only way a request acquires an
- * identity — there is no header or query fallback.
- */
+/** The only way a request acquires an identity: no header or query fallback. */
 async function getSessionUser(req) {
   const sid = readCookie(req, SESSION_COOKIE);
   if (!sid) return null;

@@ -10,7 +10,13 @@ import { ContentReferenceText } from '@/components/ContentReferenceText';
 import { ToolProficiencyChoices } from '@/components/builder/ToolProficiencyChoices';
 import { ArrowLeft, Check } from 'lucide-react';
 import { toast } from 'sonner';
-import { getRulesEdition, getToolChoiceIdPrefix, resolveBackgroundGrantedFeat } from '@/lib/builderRules';
+import {
+  getBackgroundSkillChoice,
+  getRulesEdition,
+  getToolChoiceIdPrefix,
+  isChoicePlaceholderLabel,
+  resolveBackgroundGrantedFeat
+} from '@/lib/builderRules';
 
 const formatEquipmentOptionLabel = (item: { name: string; count?: number }) => {
   const prefix = item.count ? `${item.count} ` : '';
@@ -46,6 +52,9 @@ export function BackgroundDetails() {
 
   const isSelected = builderState.character?.backgroundId === background.id;
   const selectedBackgroundLanguages = builderState.character?.backgroundLanguageSelections ?? [];
+  const selectedBackgroundSkills = builderState.character?.backgroundSkillSelections ?? [];
+  const skillChoice = getBackgroundSkillChoice(background);
+  const grantedSkills = background.skillProficiencies.filter((skill) => !isChoicePlaceholderLabel(skill));
   const grantedFeat = resolveBackgroundGrantedFeat(background, feats);
   const uses2024OriginBonuses = !background.abilityScoreIncreases?.length && getRulesEdition(background.sourceId, background.source) === '2024';
   const suggestedCharacteristics = background.suggestedCharacteristics?.length
@@ -145,14 +154,34 @@ export function BackgroundDetails() {
     (_, slotNumber) => `${background?.id ?? 'background'}-language-slot-${slotNumber + 1}`
   );
 
+  const backgroundSkillSlotIds = Array.from(
+    { length: skillChoice?.count ?? 0 },
+    (_, slotNumber) => `${background?.id ?? 'background'}-skill-slot-${slotNumber + 1}`
+  );
+
   const handleSelectBackground = () => {
     if (isSelected) {
-      updateBuilderCharacter({ backgroundId: undefined, backgroundLanguageSelections: [] });
+      updateBuilderCharacter({ backgroundId: undefined, backgroundLanguageSelections: [], backgroundSkillSelections: [] });
       toast.success(`${background.name} deselected`);
       return;
     }
-    updateBuilderCharacter({ backgroundId: background.id, backgroundLanguageSelections: [] });
+    updateBuilderCharacter({ backgroundId: background.id, backgroundLanguageSelections: [], backgroundSkillSelections: [] });
     toast.success(`${background.name} selected`);
+  };
+
+  const updateBackgroundSkillSelection = (slotIndex: number, value: string) => {
+    if (!isSelected) {
+      return;
+    }
+
+    const nextSelections = [...selectedBackgroundSkills];
+    if (value === '__none__') {
+      nextSelections.splice(slotIndex, 1);
+    } else {
+      nextSelections[slotIndex] = value;
+    }
+
+    updateBuilderCharacter({ backgroundSkillSelections: nextSelections.filter(Boolean) });
   };
 
   const updateBackgroundLanguageSelection = (slotIndex: number, value: string) => {
@@ -248,10 +277,52 @@ export function BackgroundDetails() {
               <div>
                 <span className="text-muted-foreground">Skill Proficiencies</span>
                 <div className="mt-1 flex flex-wrap gap-1">
-                  {background.skillProficiencies.map((skill) => (
+                  {grantedSkills.map((skill) => (
                     <Badge key={skill} variant="secondary">{skill}</Badge>
                   ))}
                 </div>
+                {skillChoice && (
+                  <div className="mt-3 space-y-2">
+                    <p className="text-sm">Choose {skillChoice.count}</p>
+                    {backgroundSkillSlotIds.map((slotId, index) => {
+                      const currentValue = selectedBackgroundSkills[index];
+                      const blocked = new Set([
+                        ...grantedSkills,
+                        ...selectedBackgroundSkills.filter((_, entryIndex) => entryIndex !== index)
+                      ]);
+
+                      return (
+                        <div key={slotId} className="flex items-center gap-2">
+                          <Select
+                            value={currentValue ?? '__none__'}
+                            onValueChange={(value) => updateBackgroundSkillSelection(index, value)}
+                            disabled={!isSelected}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder={`Choose skill ${index + 1}`} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="__none__">None</SelectItem>
+                              {skillChoice.options
+                                .filter((entry) => entry === currentValue || !blocked.has(entry))
+                                .map((entry) => (
+                                  <SelectItem key={entry} value={entry}>{entry}</SelectItem>
+                                ))}
+                            </SelectContent>
+                          </Select>
+                          {currentValue && (
+                            <Button type="button" size="sm" variant="ghost" onClick={() => updateBackgroundSkillSelection(index, '__none__')}>
+                              Clear
+                            </Button>
+                          )}
+                        </div>
+                      );
+                    })}
+                    {!isSelected && (
+                      <p className="text-xs text-muted-foreground">Select this background first to lock in its skill choices.</p>
+                    )}
+                  </div>
+                )}
               </div>
 
               {background.toolProficiencies && background.toolProficiencies.length > 0 && (

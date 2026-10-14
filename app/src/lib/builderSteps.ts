@@ -1,7 +1,4 @@
-// The builder's step rail.
-//
-// It lives here rather than in `CharacterBuilderPage` because the draft banner resumes a recovered
-// character by step id, and a `.tsx` may export components and nothing else.
+// Here, not in the page: a `.tsx` may export components and nothing else.
 
 export const builderSteps = [
   { id: 'species', name: 'Species', path: '/builder/species' },
@@ -23,10 +20,7 @@ export function builderStepIdForPath(pathname: string): BuilderRailStepId | unde
   return builderSteps.find((step) => pathname.startsWith(step.path))?.id;
 }
 
-/**
- * Where a recorded step id resumes. A stored id is validated against the rail rather than trusted:
- * it is read back out of localStorage, where a build from any earlier version may have written it.
- */
+/** Validated against the rail: any earlier version may have written it. */
 export function builderStepPath(id: string | undefined): string {
   return builderSteps.find((step) => step.id === id)?.path ?? builderSteps[0].path;
 }
@@ -35,10 +29,7 @@ export function builderStepName(id: string | undefined): string {
   return builderSteps.find((step) => step.id === id)?.name ?? builderSteps[0].name;
 }
 
-/**
- * How many choices each step still owes, from the one derivation the sheet and the builder share.
- * A task whose route is outside the rail is counted nowhere rather than against the first step.
- */
+/** From the one derivation the sheet and the builder share. */
 export function outstandingByBuilderStep(
   tasks: readonly { href: string; count: number }[],
 ): Partial<Record<BuilderRailStepId, number>> {

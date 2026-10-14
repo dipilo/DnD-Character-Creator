@@ -1,11 +1,4 @@
-/**
- * Dice notation, parsed once and shared by both roll paths.
- *
- * The 3D surface resolves with one object per settled die and **no modifier on any of them**
- * (dice-box strips its group data before resolving), so a total computed from the resolved array
- * alone silently drops the `+3` in `2d6+3`. The modifier is the notation's, not a die's, so it is
- * parsed here and added by the caller — which also lets the instant roller produce the same shape.
- */
+/** The modifier is the notation's, not a die's: dice-box resolves without it. */
 
 export interface DiceNotationGroup {
   qty: number;
@@ -69,10 +62,7 @@ export function expandDiceNotation(notation: string): number[] | null {
   return dice.length > 0 ? dice : null;
 }
 
-/**
- * Roll without the physics surface. Not cryptographic on purpose — a dice roll gates nothing, and
- * `crypto.getRandomValues` here would be noise beside the real rule (session ids, invite tokens).
- */
+/** Not cryptographic on purpose: a dice roll gates nothing. */
 export function rollDiceNotation(notation: string): DiceRollResult[] | null {
   const parsed = parseDiceNotation(notation);
   if (!parsed) return null;
@@ -85,10 +75,7 @@ export function rollDiceNotation(notation: string): DiceRollResult[] | null {
   );
 }
 
-/**
- * The notation a modified roll is thrown with — `1d20+3`, or a bare `1d20` when the modifier is
- * zero, because "+0" on the tray reads as a bonus the character does not have.
- */
+/** A bare `1d20` at zero, because "+0" reads as a bonus the character lacks. */
 export function modifierNotation(sides: number, modifier: number, quantity = 1): string {
   const base = `${quantity}d${sides}`;
   if (modifier === 0) return base;

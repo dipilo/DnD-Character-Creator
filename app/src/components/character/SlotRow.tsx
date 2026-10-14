@@ -1,7 +1,4 @@
-// One row of pips for a spendable pool — a spell slot level, a Rage, a Ki Point.
-//
-// Shared by the resources panel and the spells panel so a slot is spent the same way wherever it
-// is shown, and `onSetUsed` being absent is what makes a read-only sheet read-only.
+// Shared, so a slot is spent the same way wherever it is shown.
 import { cn } from '@/lib/utils';
 
 interface SlotRowProps {

@@ -1,11 +1,4 @@
-/**
- * The palette a group can be tagged with. The server stores the key and interprets nothing, the
- * same posture it takes for `system_id` — so adding a colour is a client change alone.
- *
- * `swatch` is a Tailwind background for the dot beside a name; `soft` tints a card's edge and
- * `text`/`border` colour a backpack arrow and a frame. None is a raw hex value, so every one of
- * them follows the theme.
- */
+/** The server stores the key only; no value is a raw hex, so all follow the theme. */
 export const GROUP_COLORS = [
   { key: 'slate', label: 'Slate', swatch: 'bg-slate-500', soft: 'border-l-slate-500', text: 'text-slate-500', border: 'border-slate-500' },
   { key: 'rose', label: 'Rose', swatch: 'bg-rose-500', soft: 'border-l-rose-500', text: 'text-rose-500', border: 'border-rose-500' },

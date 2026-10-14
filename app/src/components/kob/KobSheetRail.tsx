@@ -1,9 +1,4 @@
-// The half of the Kids on Bikes sheet that never goes away: the tokens you spend, the dice you
-// roll, and the Knacks you spend once a session. Everything else is an alternate view of the
-// character and lives in the tabbed subsection beside this.
-//
-// It writes nothing of its own — `onChange` is the whole write surface, exactly as in
-// `KobSheetView`, and a roll is not a write.
+// Writes nothing of its own: `onChange` is the whole write surface.
 import { useState } from 'react';
 import { ChevronDown, Minus, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';

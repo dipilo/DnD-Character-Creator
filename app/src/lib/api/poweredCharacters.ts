@@ -1,13 +1,7 @@
 import { api } from './client';
 import type { PoweredCharacter, PoweredCharacterData, PoweredCharacterPlayPatch } from './types';
 
-/**
- * The Powered Character (Kids on Bikes, chapter 5). It belongs to a campaign, not to a user.
- *
- * Two writes, because the book gives the GM and the players different rights over the same card:
- * `updatePoweredCharacter` replaces the document and is the owner's, `playPoweredCharacter` moves
- * the Power Tokens and the Aspects and is every member's.
- */
+/** Two writes: the document is the owner's, the Tokens and Aspects every member's. */
 export async function listPoweredCharacters(campaignId: number): Promise<PoweredCharacter[]> {
   const body = await api.get<{ powered_characters: PoweredCharacter[] }>(
     `/api/powered-characters?campaign_id=${encodeURIComponent(campaignId)}`,
@@ -23,10 +17,7 @@ export async function createPoweredCharacter(campaignId: number, data: Partial<P
   return body.powered_character;
 }
 
-/**
- * Replace the document. `version` is the one last seen: a player spending a Power Token bumps it,
- * so an edit written against a stale card is refused rather than undoing their move.
- */
+/** A player's spend bumps the version, so a stale edit is refused, not their move undone. */
 export async function updatePoweredCharacter(
   id: number,
   version: number,

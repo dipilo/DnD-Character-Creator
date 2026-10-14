@@ -3,17 +3,7 @@ import { persist } from 'zustand/middleware';
 import { createDebouncedLocalStorage } from '@/lib/debouncedStorage';
 import { parseDiceNotation, rollDiceNotation, type DiceRollResult } from '@/lib/diceNotation';
 
-/**
- * One shared dice tray for every roll the app makes outside the roller page.
- *
- * A store rather than a context because the callers are leaves — a skill row, a relationship
- * question — and the tray itself is mounted once by `Layout`. `roll()` resolves with the outcome so
- * a caller that needs the number (rolling a relationship question against its list) can await it,
- * while a caller that just wants dice on screen can ignore it.
- *
- * Nothing here imports the physics surface; `DiceTray` loads that lazily and only when the
- * preference asks for it. See CLAUDE.md, "Boot Cost and the Bundle Graph".
- */
+// One shared tray, mounted once by `Layout`; the physics surface loads lazily.
 
 export interface DiceRollRequest {
   /** Dice notation to throw, e.g. `1d20+5`. */
@@ -22,28 +12,13 @@ export interface DiceRollRequest {
   label: string;
   /** A second line under the label — the modifier's provenance, usually. */
   detail?: string;
-  /**
-   * Kids on Bikes' Lucky Break: "If you roll the maximum value of the die, you get a Lucky
-   * Break—meaning that you reroll the die and add the maximum value that you rolled the first time
-   * to the new roll. You can get multiple Lucky Breaks on a single check." Single-die notation only.
-   */
+  /** Lucky Break: a maximum roll rerolls and adds. Single-die notation only. */
   explodeOnMax?: boolean;
-  /**
-   * Throw every die the notation asks for and count only some of them. 5e's advantage is two d20s
-   * of which the higher counts, and plenty of systems roll-and-drop, so the tray takes the rule as
-   * "keep this many, from this end" rather than knowing what advantage is.
-   */
+  /** "Keep this many, from this end", so the tray need not know what advantage is. */
   keep?: DiceKeepRule;
-  /**
-   * Count any die that lands below this as this, without changing what settled on the surface.
-   * Reliable Talent and Silver Tongue are 5e's only two, but "a die below n counts as n" is as
-   * generic as a keep rule, so the tray takes it rather than knowing what either feature is.
-   */
+  /** Counts low dice as n without changing what settled on the surface. */
   floor?: number;
-  /**
-   * A line the tray prints under the total, computed from the outcome. It is a callback so the
-   * tray needs to know nothing about any game's rules — the caller reads its own difficulty table.
-   */
+  /** A callback, so the tray knows nothing about any game's rules. */
   describeOutcome?: (outcome: DiceRollOutcome) => string | null;
 }
 
@@ -62,10 +37,7 @@ export interface DiceRollOutcome {
   natural: number | null;
   /** How many times the die landed on its maximum and was thrown again. */
   luckyBreaks: number;
-  /**
-   * Which entries of `results` counted toward the total. Absent when every die did — a dropped
-   * die is still on the surface and still in the log, so the reader can see what was discarded.
-   */
+  /** Absent when every die did; a dropped die stays on the surface and in the log. */
   keptIndexes?: number[];
   /** The floor the total was counted under, where one applied. The dice on screen are unchanged. */
   floor?: number;
@@ -84,10 +56,7 @@ export interface SettledRoll extends DiceRollOutcome {
   request: DiceRollRequest;
 }
 
-/**
- * A settled roll flattened for the log. `describeOutcome` is a callback, so its line is resolved
- * here rather than stored — that is also what keeps an entry serializable.
- */
+/** `describeOutcome` resolves here, which is what keeps an entry serializable. */
 export interface DiceRollLogEntry extends DiceRollOutcome {
   id: string;
   label: string;
@@ -105,10 +74,7 @@ interface DiceTrayState {
   queue: PendingRoll[];
   active: PendingRoll | null;
   outcome: SettledRoll | null;
-  /**
-   * True from the first roll of the session. The tray mounts the physics surface on it rather than
-   * on page load, so a route nobody rolls on never downloads the engine.
-   */
+  /** So a route nobody rolls on never downloads the engine. */
   warm: boolean;
   /** Every roll the app has settled, newest first, wherever it was thrown from. */
   log: DiceRollLogEntry[];
@@ -133,10 +99,7 @@ export function isMaximum(result: DiceRollResult | undefined): boolean {
   return Boolean(result?.sides && result.value === result.sides);
 }
 
-/**
- * Which dice a keep rule counts. Only the first group is subject to it — the rule exists for the
- * pair of d20s in an advantage roll, and a `2d20+1d4` would still add the d4.
- */
+/** First group only: the rule exists for an advantage pair, so `2d20+1d4` keeps the d4. */
 function resolveKeptIndexes(
   results: DiceRollResult[],
   counts: readonly number[],
@@ -159,10 +122,7 @@ function resolveKeptIndexes(
     .filter((index) => kept.has(index) || candidates.every((entry) => entry.index !== index));
 }
 
-/**
- * Which dice a floor raises, and what each counts as. Only the first group is subject to it, for
- * the same reason a keep rule is: it exists for the d20 of a test, not for a damage die beside it.
- */
+/** First group only, as with a keep rule: it is for the d20, not a damage die beside it. */
 function applyFloor(results: DiceRollResult[], floor: number | undefined): {
   counts: number[];
   raisedIndexes?: number[];

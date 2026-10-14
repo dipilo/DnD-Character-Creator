@@ -1,15 +1,4 @@
-/**
- * A chapter of the Kids on Bikes rulebook, as headed sections of prose.
- *
- * Chapter 5 is the Powered Character, and the vault has no note for it. What the app needs from it
- * is the rules a screen quotes rather than paraphrases (CLAUDE.md's copy rule) and the two numbers
- * the chapter states in a sentence: the size of the Power Token pool, and how many Aspects the GM
- * puts out per player. Both are read here, never written into a component.
- *
- * Headings are found by type size, not by position: the body is set at 10pt, a section heading at
- * 20 and a chapter heading at 24, which separates them from an indented example or a bullet that a
- * position test would confuse.
- */
+// Chapter 5 from the rulebook PDF; headings are found by type size, not position.
 import { toLines } from './pdfText.mjs';
 
 const FOOTER_Y = 30;
@@ -37,11 +26,7 @@ const INDENT = 5;
 /** A "N PT" cell is set against its row's middle line, so it shares that line's y within this. */
 const ROW_TOLERANCE = 2.5;
 
-/**
- * A gap wider than this multiple of the page's usual leading is a paragraph break. The chapter is
- * set on 13pt leading with 18.7pt between paragraphs, so the two are 1.44 apart and the threshold
- * sits below that rather than beside it.
- */
+/** 13pt leading against 18.7pt between paragraphs, so the threshold sits below 1.44. */
 const PARAGRAPH_GAP = 1.25;
 
 const WORD_NUMBERS = new Map([
@@ -58,13 +43,7 @@ function joinContinuation(text, continuation) {
   return `${text} ${continuation}`;
 }
 
-/**
- * The type size of a line's dominant run, not its largest.
- *
- * The bullet these lists open with is an 18pt dingbat in front of 10pt body text, so the largest
- * run on the line is the bullet — and reading that as the line's size turns every bullet in the
- * chapter into a section heading with its own body underneath it.
- */
+/** Dominant, not largest: an 18pt bullet would make every list item a heading. */
 function sizeOf(line) {
   return line.items.reduce((widest, item) => (item.width > widest.width ? item : widest), line.items[0]).height;
 }
@@ -73,13 +52,7 @@ function linesOf(page) {
   return toLines(page.items.filter((item) => item.y > FOOTER_Y)).map((line) => ({ ...line, size: sizeOf(line) }));
 }
 
-/**
- * The page each chapter opens on.
- *
- * A chapter heading has to be the *first* line on its page: the table of contents lists all seven
- * of them at the same 24pt, so taking any line that matches resolves Chapter 5 to the contents page
- * and reads a chapter that is two lines long.
- */
+/** Must be the *first* line on its page, or the contents page resolves as Chapter 5. */
 function findChapters(pages) {
   const found = [];
   for (const page of pages) {
@@ -90,10 +63,7 @@ function findChapters(pages) {
   return found.map((entry, index) => ({ ...entry, to: (found[index + 1]?.from ?? pages.length + 1) - 1 }));
 }
 
-/**
- * The usual line leading on a page, so a paragraph break can be told from a wrapped line. Measured
- * per page: the chapter mixes body text with bulleted lists set on their own leading.
- */
+/** Measured per page: the chapter mixes body text with lists on their own leading. */
 function medianGap(lines) {
   const gaps = [];
   for (let i = 1; i < lines.length; i += 1) {
@@ -170,12 +140,7 @@ function statedNumber(sections, pattern, label, warn) {
   return WORD_NUMBERS.get(raw) ?? Number.parseInt(raw, 10);
 }
 
-/**
- * The bullets under one factor heading, each already joined with the lines that continue it.
- *
- * A bullet is flush at its own indent and its continuations sit further right, so the two are told
- * apart the way Appendix K tells a prompt from an entry: by x, never by position.
- */
+/** A bullet and its continuations are told apart by x, never by position. */
 function collectBullets(lines, from) {
   const bullets = [];
   for (let i = from; i < lines.length; i += 1) {
@@ -187,13 +152,7 @@ function collectBullets(lines, from) {
   return { bullets, next: lines.length };
 }
 
-/**
- * The chapter's lines in reading order, each carrying the left margin of the page it is set on.
- *
- * The margin has to travel with the line: the book alternates recto and verso, so the same body
- * text sits at x=39 on one page and x=28 on the next, and a list that runs over the fold is read
- * as a page of headings if the margin is taken from the wrong side.
- */
+/** The book alternates recto and verso, so the margin travels with the line. */
 function chapterLines(pages) {
   const lines = [];
   for (const page of pages) {
@@ -222,14 +181,7 @@ function readFactorBullets(factor, bullets, warn) {
   }
 }
 
-/**
- * The four things the chapter adds up into a difficulty.
- *
- * Which four is read from the equation the chapter states — "amount of experience + deviation +
- * scope + degree of control = difficulty" — rather than from a list written here, so a printing
- * that adds a fifth arrives on its own. Each name then finds its own heading and the bullets under
- * it, and the heading's capitalisation wins because the equation prints them lowercase.
- */
+/** Read from the equation the chapter states, so a fifth factor arrives on its own. */
 function readFactors(pages, sections, warn) {
   const equation = EQUATION.exec(sections.flatMap((section) => section.paragraphs).join(' '));
   if (!equation) {
@@ -268,12 +220,7 @@ function readFactors(pages, sections, warn) {
   return { equation: equation[1].trim(), factors: factors.filter((factor) => factor.options.length > 0) };
 }
 
-/**
- * The consequences table, whose "N PT" cell is set vertically centred against two or three lines of
- * text. Read as a line stream that cell lands inside whichever line it happens to share a y with,
- * which is what puts "1 PT" in the middle of the sentence it labels; the two columns are separated
- * on the x the table's own heading gives instead.
- */
+/** Split on the x the table's heading gives: the centred cell shares a y with any line. */
 function readConsequences(pages, warn) {
   for (const page of pages) {
     const items = page.items.filter((item) => item.y > FOOTER_Y);
@@ -322,14 +269,7 @@ function settleConsequences(items, bounds, warn) {
 
 const EMPTY_POWER_CHECK = { equation: '', factors: [], consequences: [] };
 
-/**
- * Chapter 5. The two numbers the chapter states — the shared Power Token pool and how many Aspects
- * the GM deals per player — and the power check: the four factors a difficulty is added up from and
- * what each Power Token spent on it costs.
- *
- * `sections` is the chapter as prose and no screen renders it, the way the vault's tips and worked
- * examples are imported and not rendered. What a screen shows is the structure beside it.
- */
+/** `sections` is the prose nothing renders; what a screen shows is the structure beside it. */
 export function readPoweredCharacters(pages, warn) {
   const chapter = findChapters(pages).find((entry) => /powered characters/i.test(entry.title));
   if (!chapter) {

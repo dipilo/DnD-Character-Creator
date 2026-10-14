@@ -53,13 +53,7 @@ export function Stat({
   );
 }
 
-/**
- * Initiative, speed, the passive scores, then the six ability blocks that hold the saves and skills.
- *
- * Everything here is derived from the character document — no value is editable, because none of
- * them are things a player changes. Rolling one is not editing it: a check goes to the shared dice
- * tray and writes nothing back, which is why a read-only party view can roll from it too.
- */
+/** All derived and none editable; rolling writes nothing, so a reader can roll too. */
 export function SheetVitalsPanel({
   vitals,
   variant = 'panel',
@@ -109,10 +103,7 @@ export function SheetVitalsPanel({
   );
 }
 
-/**
- * Save DC and spell attack per casting class. It sits on the Spells tab beside the spells it
- * describes rather than in the rail: a save DC is read while casting, not while doing something else.
- */
+/** On the Spells tab, not the rail: a save DC is read while casting. */
 export function SheetSpellcastingCard({ vitals }: Readonly<{ vitals: SheetVitals }>) {
   if (vitals.spellcasting.length === 0) {
     return null;

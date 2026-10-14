@@ -32,10 +32,7 @@ export {
 	useContentLibrary
 } from './runtimeContent';
 
-// Wiring, not re-export: `characterStore` sits in the boot graph (the sync watcher reaches it) and
-// must not drag this library in with it. It calls through `contentResolvers`, and importing `@/data`
-// — which every screen that can reach a builder action already does — is what fills them in.
-// See `contentResolvers.ts` for the 5.75 MB this keeps off every page load.
+// Wiring, not re-export: `characterStore` must not drag this library into boot.
 import { registerDndContentResolvers } from './contentResolvers';
 import {
 	getRuntimeBackgroundById as resolveBackground,

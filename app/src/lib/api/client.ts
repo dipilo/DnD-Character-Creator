@@ -1,25 +1,11 @@
-// The typed API client (MERGE_PLAN.md Phase 2). It replaces the scheduler's hand-rolled
-// client/src/api.js, which is being retired rather than ported.
-//
-// Every request is same-origin by default and carries the session cookie: the SPA reaches the API
-// through the Vercel rewrites for /api and /auth in production (MERGE_PLAN.md §5.2, §14) and the
-// Vite dev proxy locally. That is what lets the cookie stay `SameSite=Lax` with no CSRF token, so
-// pointing VITE_API_BASE at another origin gives that up — it exists for debugging, not for the
-// deployed build.
+// Same-origin by default, which is what lets the cookie stay `SameSite=Lax`.
 
 const API_BASE = (import.meta.env.VITE_API_BASE ?? '').replace(/\/+$/, '');
 
 /** Status used for a request that never reached the server at all. */
 export const NETWORK_ERROR_STATUS = 0;
 
-/**
- * How long to wait before giving up on a request.
- *
- * `fetch` has no timeout of its own, so a connection the host never answers leaves the promise
- * pending for as long as the page is open: every page that derives its spinner from "no result
- * yet" then spins forever, with nothing in the console. The bound is generous because the free
- * host can take about a minute to wake. A failed request remains retryable in the UI.
- */
+/** `fetch` has no timeout, so a silent host spins every spinner forever. */
 export const REQUEST_TIMEOUT_MS = 90_000;
 
 function withTimeout(signal: AbortSignal | undefined): AbortSignal {
@@ -52,10 +38,7 @@ export function isConflict(error: unknown): boolean {
   return error instanceof ApiError && error.status === 409;
 }
 
-/**
- * The request never reached the server: offline, a cold-starting host, or no API at all in a
- * local build. The sync layer treats this as "try again later", never as data loss.
- */
+/** The sync layer treats this as "try again later", never as data loss. */
 export function isOffline(error: unknown): boolean {
   return error instanceof ApiError && error.status === NETWORK_ERROR_STATUS;
 }

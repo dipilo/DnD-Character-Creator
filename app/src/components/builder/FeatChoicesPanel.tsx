@@ -1,10 +1,4 @@
-// Everything a feat still asks the player for, on the step where the feat was taken.
-//
-// A feat's benefits are prose in the source, so what it grants is read out of that text by the
-// importer (`scripts/lib/featBenefits.mjs`) and resolved here: the ability score it raises, the
-// spells it names, the spells it leaves open, and the option pool it borrows from another class.
-// The ability score choices also appear on the Ability Scores step, which is where they are
-// applied; they are repeated here because that is where the feat was chosen.
+// A feat's choices belong on the step where the feat was taken.
 import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

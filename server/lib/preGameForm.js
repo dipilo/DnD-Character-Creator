@@ -1,14 +1,4 @@
-/**
- * The Pre-Game Form (Kids on Bikes, Appendix A) and the compiled view of a table's answers.
- *
- * This is the one place the server reads inside a form's document rather than storing it verbatim,
- * and that is deliberate: **the compiled merge is a privacy boundary**, so it cannot be computed by
- * the client the way `characters.summary` is. A member who is not the GM never receives anybody's
- * form — only the union below, with no name attached to any line.
- *
- * The list ids are the client's, read out of the rulebook by `scripts/import-kids-on-bikes.mjs`.
- * Nothing here knows what "Wish List" means; it bounds the shape and merges by id.
- */
+/** The compiled merge is a privacy boundary, so the server computes it, not the client. */
 
 /** A list id is a slug the importer made out of the book's own heading. */
 const LIST_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -29,10 +19,7 @@ function normaliseEntries(value) {
   return [...seen];
 }
 
-/**
- * Bound an incoming form. Anything outside the shape is dropped rather than stored: a list nobody
- * can see in the form is one nobody can take back out of the merge either.
- */
+/** A list nobody can see in the form is one nobody can take out of the merge. */
 function normaliseForm(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) return { error: 'data_must_be_an_object' };
   const source = data.lists && typeof data.lists === 'object' && !Array.isArray(data.lists) ? data.lists : {};
@@ -69,13 +56,7 @@ function publicForm(row, ownerName = null) {
   };
 }
 
-/**
- * What the table sees: every answer, by list, with nobody's name on it.
- *
- * `respondents` is the count and not a roster, because the point of the merge is that a line
- * cannot be traced back. It is still reported, because "three of five have answered" is what tells
- * a GM the list is not yet the whole table's.
- */
+/** `respondents` is a count, not a roster, but it still says how much of the table answered. */
 function compileForms(rows) {
   const lists = new Map();
   for (const row of rows) {

@@ -2,8 +2,6 @@ const chrono = require('chrono-node');
 const { DateTime, IANAZone } = require('luxon');
 const db = require('../db');
 
-/* ---------- timezone mapping ---------- */
-
 function tzFromAbbrev(tzRaw) {
   if (!tzRaw) return null;
   const s = String(tzRaw).trim().toLowerCase();
@@ -33,11 +31,7 @@ function extractTzFromText(text) {
   return null;
 }
 
-/**
- * chrono resolves a wall-clock reading against the *system* zone, so "7pm" on a server in UTC
- * became 7pm UTC no matter which zone the player wrote it in. Re-stamp the components it read
- * into the target zone instead of converting the instant it produced.
- */
+/** Re-stamp the components into the target zone; chrono reads against the system one. */
 function reanchorToZone(jsDate, zone) {
   const local = DateTime.fromJSDate(jsDate);
   return DateTime.fromObject(
@@ -71,15 +65,6 @@ function extractRangesWithChrono(text, tz = 'Etc/UTC') {
   }
   return ranges;
 }
-
-/* ---------- free-text availability heuristics ----------
- *
- * A player writes availability the way they would say it: the days once, the hours once, and the
- * two halves in whichever order came out. "Mon, Wed, Fri 8pm-midnight" states the hours only on
- * the last fragment; "every Monday and Wednesday 7pm-11pm" only on the second. Parsing each
- * fragment in isolation is what produced a correct Wednesday block beside a Monday block of
- * 12pm-6pm (MERGE_PLAN.md §13) — so the fragments are parsed first and *associated* second.
- */
 
 const ALL_WEEKDAYS = [1, 2, 3, 4, 5, 6, 7];
 
@@ -199,10 +184,7 @@ function minutesOfDay(time) {
   return time.hour * 60 + time.minute;
 }
 
-/**
- * "7-10pm" and "7pm-11" each state the half of the day once. Push the bare side onto the stated
- * one, then let a still-inverted range mean it runs past midnight.
- */
+/** Push the bare side onto the stated one; a still-inverted range runs past midnight. */
 function resolveTimeRange(startText, endText) {
   const start = parseClockTime(startText);
   const end = parseClockTime(endText);
@@ -263,11 +245,7 @@ function parseTimeRanges(clause) {
   return implied ? [implied] : [];
 }
 
-/**
- * The nearest clause that supplies the half this one is missing. Days read backwards ("Monday,
- * Wednesday 7pm-11pm" names the day first) and times read forwards ("Mon, Wed, Fri 8pm-midnight"
- * names them last), so the preferred direction differs per half.
- */
+/** Days read backwards and times forwards, so the preferred direction differs per half. */
 function nearestNonEmpty(clauses, index, pick, preferForward) {
   for (let offset = 1; offset < clauses.length; offset++) {
     const preferred = preferForward ? clauses[index + offset] : clauses[index - offset];
@@ -373,7 +351,6 @@ function buildRangesFromText(text, tzRaw, daysAhead = 14) {
 }
 
 
-/* ---------- DB helpers & merge logic ---------- */
 async function insertAvailabilityRow(player_id, start_iso, end_iso, source='manual', campaign_id = null, cx = db) {
   if (campaign_id !== null && campaign_id !== undefined) {
     const info = await cx.run('INSERT INTO availability(player_id,start_iso,end_iso,source,campaign_id) VALUES (?, ?, ?, ?, ?)', player_id, start_iso, end_iso, source, campaign_id);

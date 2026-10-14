@@ -1,27 +1,15 @@
-// Converts 5etools-format JSON data into this app's canonical content buckets.
-//
-// 5etools publishes clean, complete, structured JSON for every book. Its data files each
-// contain entries from many books, tagged with a `source` abbreviation (e.g. "TCE" for
-// Tasha's, "XGE" for Xanathar's, "XPHB" for the 2024 PHB). This adapter reads a directory of
-// those JSON files, keeps only the entries for a chosen source abbreviation, and maps them
-// into our canonical buckets. It performs no network access — the user supplies the files.
-//
-// What a class's level table means is not restated here: the columns are rendered to the same plain
-// text an HTML table yields and handed to `lib/classTables.mjs`, and the pools stated in prose to
-// `lib/classResources.mjs`, which is what keeps this path and the document imports from disagreeing
-// about whether a column is a pool, a die or neither.
+// 5etools JSON -> canonical content. No network: `--dir` is supplied. See scripts/README.md.
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { skillNames } from './canonical-content.mjs';
+import { parseBackgroundEquipmentText, skillNames } from './canonical-content.mjs';
 import { applyProseResources } from './lib/classResources.mjs';
 import { featureDiceFromColumns, resourcesFromColumns } from './lib/classTables.mjs';
+import { extractFeatBenefitStructures } from './lib/featBenefits.mjs';
+import { expandFiveEToolsVersions, resolveFiveEToolsCopies } from './lib/fiveEToolsCopy.mjs';
+import { readAdditionalSpells, SPELL_SCHOOL_BY_CODE } from './lib/fiveEToolsSpells.mjs';
 
 const SIZE_MAP = { T: 'Tiny', S: 'Small', M: 'Medium', L: 'Large', H: 'Huge', G: 'Gargantuan' };
-const SCHOOL_MAP = {
-  A: 'Abjuration', C: 'Conjuration', D: 'Divination', E: 'Enchantment',
-  V: 'Evocation', I: 'Illusion', N: 'Necromancy', T: 'Transmutation'
-};
 const ABILITY_MAP = { str: 'strength', dex: 'dexterity', con: 'constitution', int: 'intelligence', wis: 'wisdom', cha: 'charisma' };
 const DAMAGE_TYPE_MAP = { S: 'slashing', P: 'piercing', B: 'bludgeoning' };
 const abilityKeys = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
@@ -105,9 +93,14 @@ const cleanText = (value) => renderEntries(value).replaceAll(/\s+/g, ' ').trim()
 
 // --- source filtering -----------------------------------------------------------------------
 
-const matchesSource = (entry, sourceAbbr) => {
+const matchesSource = (entry, sourceAbbr, includeOtherSources = false) => {
   if (!sourceAbbr) return true;
-  return String(entry?.source ?? '').toLowerCase() === sourceAbbr.toLowerCase();
+  const wanted = sourceAbbr.toLowerCase();
+  if (String(entry?.source ?? '').toLowerCase() === wanted) return true;
+  // A book that reprints is recorded as `otherSources` on the first printing, so a book whose
+  // content 5etools credits elsewhere (Elemental Evil's spells sit under XGE) needs this opt-in.
+  if (!includeOtherSources) return false;
+  return (entry?.otherSources ?? []).some((other) => String(other?.source ?? '').toLowerCase() === wanted);
 };
 
 // --- readers --------------------------------------------------------------------------------
@@ -121,7 +114,7 @@ const readJsonSafe = async (filePath) => {
 };
 
 const collectFromDir = async (dir) => {
-  const collected = { spell: [], monster: [], race: [], subrace: [], background: [], feat: [], item: [], baseitem: [], subclass: [], subclassFeature: [], class: [], classFeature: [], classFluff: [] };
+  const collected = { spell: [], monster: [], race: [], subrace: [], background: [], feat: [], item: [], baseitem: [], subclass: [], subclassFeature: [], class: [], classFeature: [], classFluff: [], optionalfeature: [], language: [], action: [] };
   const walk = async (current) => {
     const entries = await fs.readdir(current, { withFileTypes: true }).catch(() => []);
     for (const entry of entries) {
@@ -172,7 +165,7 @@ const mapSpell = (spell, ctx) => {
     id: toSourcedId(ctx.sourceId, spell.name),
     name: spell.name,
     level: spell.level ?? 0,
-    school: SCHOOL_MAP[spell.school] ?? spell.school ?? 'Unknown',
+    school: SPELL_SCHOOL_BY_CODE[spell.school] ?? spell.school ?? 'Unknown',
     castingTime: time ? `${time.number ?? 1} ${time.unit ?? 'action'}` : 'Unknown',
     range: rangeText || 'Self',
     components,
@@ -207,16 +200,128 @@ const mapAbilityIncreases = (abilityBlocks) => {
   return increases;
 };
 
-const mapRaceFeatures = (race, ctx, label) => {
-  return (race.entries ?? [])
+// A named sub-entry is a benefit line with a heading, which is the shape a species trait and a
+// feat's benefit share.
+const mapNamedSubFeatures = (entries, idPrefix, label) => {
+  return (entries ?? [])
     .filter((entry) => entry && typeof entry === 'object' && entry.name && entry.type === 'entries')
     .map((entry, index) => ({
-      id: toSourcedId(ctx.sourceId, race.name, entry.name, String(index)),
+      id: `${idPrefix}-${slugify(entry.name)}-${index}`,
       name: stripInlineTags(entry.name),
       description: cleanText(entry.entries) || stripInlineTags(entry.name),
       level: 1,
       source: label
     }));
+};
+
+const mapRaceFeatures = (race, ctx, label) =>
+  mapNamedSubFeatures(race.entries, toSourcedId(ctx.sourceId, race.name), label);
+
+// --- what a species or a background grants --------------------------------------------------
+
+const COUNT_WORDS = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six'];
+const countWord = (count) => COUNT_WORDS[count] ?? String(count);
+
+// A tool family is picked from, never granted, so the phrase is the one `getToolProficiencyChoice`
+// reads ("One type of artisan's tools").
+const TOOL_FAMILY_LABELS = {
+  anyartisanstool: "artisan's tools",
+  anyartisanstools: "artisan's tools",
+  anygamingset: 'gaming set',
+  anymusicalinstrument: 'musical instrument'
+};
+
+const PROFICIENCY_NOUNS = { skill: 'skill', tool: 'tool', weapon: 'weapon', armor: 'armor', language: 'language' };
+
+const proficiencyName = (type, key) => {
+  const term = proficiencyTerm(key);
+  if (type === 'skill') return titleCaseSkill(term);
+  if (type === 'armor') return ARMOR_PROFICIENCY_LABELS[term.toLowerCase()] ?? term;
+  if (type === 'weapon') {
+    if (/^simple$/i.test(term)) return 'Simple weapons';
+    if (/^martial$/i.test(term)) return 'Martial weapons';
+  }
+  return term.charAt(0).toUpperCase() + term.slice(1);
+};
+
+/** "any", "anyArtisansTool" and "choose" are pending choices, so each reads as the phrase the builder offers a selector for. */
+const choiceProficiencyLabel = (type, key, count, from) => {
+  if (from?.length > 0) return `${countWord(count)} of your choice: ${from.join(', ')}`;
+  const family = TOOL_FAMILY_LABELS[String(key).toLowerCase()];
+  if (family) return `${countWord(count)} type of ${family}`;
+  const noun = PROFICIENCY_NOUNS[type] ?? 'proficiency';
+  return `${countWord(count)} ${noun}${count > 1 ? 's' : ''} of your choice`;
+};
+
+const readProficiencyEntry = (type, key, value) => {
+  if (key === 'choose') {
+    const from = (value?.from ?? []).map((entry) => proficiencyName(type, entry));
+    return from.length > 0 ? { name: choiceProficiencyLabel(type, key, value?.count ?? 1, from), type } : null;
+  }
+  if (/^any/i.test(key)) {
+    return { name: choiceProficiencyLabel(type, key, Number(value) || 1, null), type };
+  }
+  return value === true ? { name: proficiencyName(type, key), type } : null;
+};
+
+/** One entity's structured proficiency block, its grants and its pending choices alike. */
+const readProficiencyBlock = (blocks, type) => (blocks ?? [])
+  .filter((block) => block && typeof block === 'object')
+  .flatMap((block) => Object.entries(block)
+    .map(([key, value]) => readProficiencyEntry(type, key, value))
+    .filter(Boolean));
+
+const mapEntityProficiencies = (entity) => [
+  ...readProficiencyBlock(entity?.skillProficiencies, 'skill'),
+  ...readProficiencyBlock(entity?.toolProficiencies, 'tool'),
+  ...readProficiencyBlock(entity?.weaponProficiencies, 'weapon'),
+  ...readProficiencyBlock(entity?.armorProficiencies, 'armor')
+];
+
+/** A language the entity picks is a slot, so it is written as the phrase the static data uses. */
+const mapEntityLanguages = (blocks) => {
+  const languages = [];
+  // A lineage restates the race's languages beside its own, so a named one is granted once; an
+  // open slot is a separate pick every time it is stated.
+  const granted = new Set();
+
+  for (const block of blocks ?? []) {
+    if (!block || typeof block !== 'object') continue;
+    for (const [key, value] of Object.entries(block)) {
+      if (/^any/i.test(key)) {
+        for (let slot = 0; slot < (Number(value) || 1); slot += 1) languages.push('One of your choice');
+        continue;
+      }
+      if (value !== true) continue;
+      const name = proficiencyName('language', key);
+      if (granted.has(name)) continue;
+      granted.add(name);
+      languages.push(name);
+    }
+  }
+
+  return languages;
+};
+
+/** How many languages a background leaves open, which is the only part of the block it states. */
+const countLanguageChoices = (blocks) => {
+  const count = (blocks ?? []).reduce((total, block) => total + Object.entries(block ?? {})
+    .filter(([key]) => /^any/i.test(key))
+    .reduce((slots, [, value]) => slots + (Number(value) || 1), 0), 0);
+  return count > 0 ? count : undefined;
+};
+
+/** `additionalSpells` read into the species shape; an unresolvable name is warned, never guessed. */
+const mapEntitySpells = (entity, idPrefix, ctx) => {
+  if (!entity?.additionalSpells) return [];
+  const { speciesSpells, unresolved } = readAdditionalSpells(entity.additionalSpells, {
+    idPrefix,
+    spellLevelByName: ctx.spellLevelByName
+  });
+  for (const name of unresolved) {
+    console.warn(`${entity.name}: "${name}" is granted by this entry, but no book in the directory states its level; it is left off.`);
+  }
+  return speciesSpells;
 };
 
 const mapSpeed = (speed) => {
@@ -225,70 +330,338 @@ const mapSpeed = (speed) => {
   return 30;
 };
 
+/** Both printings let some species pick their size, and the data states both letters. */
+const mapSizeOptions = (size) => {
+  const options = [...new Set((Array.isArray(size) ? size : [size]).map((entry) => SIZE_MAP[entry]).filter(Boolean))];
+  return options.length > 1 ? options : undefined;
+};
+
+/** A `_versions` lineage already prints the race in its name, so prefixing it again doubles it. */
+const lineageName = (race, subrace, index) => {
+  const name = subrace.name ? stripInlineTags(subrace.name) : '';
+  if (!name) return `${race.name} Variant ${index + 1}`;
+  return name.startsWith(race.name) ? name : `${race.name} (${name})`;
+};
+
+// The merge below mirrors `Renderer.race._getMergedSubrace` in 5etools; the rules are its, not
+// this repo's, so a lineage reads the way the site renders it.
+const SUBRACE_CONCAT_KEYS = ['traitTags', 'languageProficiencies'];
+
+/** A subrace entry replaces the race trait its `data.overwrite` names, and otherwise adds to them. */
+const mergeSubraceEntries = (raceEntries, subraceEntries) => {
+  const merged = [...(raceEntries ?? [])];
+  for (const entry of subraceEntries ?? []) {
+    const target = entry?.data?.overwrite;
+    if (!target) {
+      merged.push(entry);
+      continue;
+    }
+    const replaced = merged.findIndex((existing) => stripInlineTags(existing?.name ?? '').toLowerCase().trim() === String(target).toLowerCase().trim());
+    if (replaced === -1) merged.push(entry);
+    else merged[replaced] = entry;
+  }
+  return merged;
+};
+
+/** An increase the lineage states replaces the race's for that ability, and adds for the rest. */
+const mergeSubraceAbility = (raceAbility, subraceAbility, overwrite) => {
+  const base = overwrite || !raceAbility ? subraceAbility.map(() => ({})) : raceAbility.map((block) => ({ ...block }));
+  if (base.length !== subraceAbility.length) {
+    console.warn('subrace ability blocks do not line up with the base race; the lineage states them alone.');
+    return subraceAbility.map((block) => ({ ...block }));
+  }
+  return base.map((block, index) => ({ ...block, ...subraceAbility[index] }));
+};
+
+/**
+ * A book whose species contribution is a subrace of another book's race (MToF's Eladrin, Eberron's
+ * dragonmarks, SCAG's Ghostwise Halfling) states only the lineage, so the base race is folded in
+ * here and the lineage ships as a species of its own.
+ */
+const mergeSubraceOntoRace = (race, subrace, index) => {
+  const merged = { ...race };
+  delete merged.subraces;
+  delete merged._versions;
+  delete merged._copy;
+  delete merged.reprintedAs;
+  delete merged.hasFluff;
+  delete merged.hasFluffImages;
+
+  const { name, source, raceName, raceSource, overwrite, entries, ability, ...rest } = subrace;
+
+  if (ability) merged.ability = mergeSubraceAbility(race.ability, ability, Boolean(overwrite?.ability));
+  if (entries) merged.entries = mergeSubraceEntries(race.entries, entries);
+
+  for (const key of SUBRACE_CONCAT_KEYS) {
+    if (rest[key] === undefined) continue;
+    merged[key] = overwrite?.[key] ? rest[key] : [...(race[key] ?? []), ...rest[key]];
+    delete rest[key];
+  }
+
+  if (rest.skillProficiencies) {
+    // A lineage's skills merge into the race's single block rather than adding a second one.
+    if (!race.skillProficiencies || overwrite?.skillProficiencies || rest.skillProficiencies.length > 1 || race.skillProficiencies.length > 1) {
+      merged.skillProficiencies = rest.skillProficiencies;
+    } else {
+      merged.skillProficiencies = [{ ...race.skillProficiencies[0], ...rest.skillProficiencies[0] }];
+    }
+    delete rest.skillProficiencies;
+  }
+
+  // Everything the lineage restates it restates in full, `additionalSpells` included: the Zariel
+  // tiefling's Legacy of Avernus is not the Tiefling's Infernal Legacy plus two spells.
+  Object.assign(merged, rest);
+
+  for (const [key, value] of Object.entries(merged)) {
+    if (value === null || value === undefined) delete merged[key];
+  }
+
+  merged.name = lineageName(race, subrace, index);
+  merged.source = source ?? race.source;
+  return merged;
+};
+
 const mapRace = (race, subracesByRace, ctx) => {
-  const variants = (subracesByRace.get(`${race.name}|${race.source}`) ?? []).map((subrace, index) => ({
-    id: toSourcedId(ctx.sourceId, race.name, subrace.name ?? `variant-${index + 1}`),
-    name: subrace.name ? `${race.name} (${stripInlineTags(subrace.name)})` : `${race.name} Variant ${index + 1}`,
-    description: cleanText(subrace.entries) || `${race.name} lineage option.`,
-    abilityScoreIncreases: mapAbilityIncreases(subrace.ability),
-    features: mapRaceFeatures(subrace, ctx, ctx.label)
-  }));
+  const variants = (subracesByRace.get(`${race.name}|${race.source}`) ?? []).map((subrace, index) => {
+    const variantId = toSourcedId(ctx.sourceId, race.name, subrace.name ?? `variant-${index + 1}`);
+    const spells = mapEntitySpells(subrace, variantId, ctx);
+    const proficiencies = mapEntityProficiencies(subrace);
+    const sizeOptions = mapSizeOptions(subrace.size);
+    return {
+      id: variantId,
+      name: lineageName(race, subrace, index),
+      description: cleanText(subrace.entries) || `${race.name} lineage option.`,
+      abilityScoreIncreases: mapAbilityIncreases(subrace.ability),
+      features: mapRaceFeatures(subrace, ctx, ctx.label),
+      ...(proficiencies.length > 0 ? { proficiencies } : {}),
+      ...(spells.length > 0 ? { spells } : {}),
+      ...(sizeOptions ? { sizeOptions } : {})
+    };
+  });
+
+  const raceId = toSourcedId(ctx.sourceId, race.name);
+  const proficiencies = mapEntityProficiencies(race);
+  const spells = mapEntitySpells(race, raceId, ctx);
+  const sizeOptions = mapSizeOptions(race.size);
 
   return {
-    id: toSourcedId(ctx.sourceId, race.name),
+    id: raceId,
     name: race.name,
     description: cleanText(race.entries?.filter?.((entry) => typeof entry === 'string')) || `${race.name} from ${ctx.label}.`,
     size: SIZE_MAP[Array.isArray(race.size) ? race.size[0] : race.size] ?? 'Medium',
+    ...(sizeOptions ? { sizeOptions } : {}),
     speed: mapSpeed(race.speed),
     abilityScoreIncreases: mapAbilityIncreases(race.ability),
     features: mapRaceFeatures(race, ctx, ctx.label),
-    languages: (race.languageProficiencies?.[0] ? Object.keys(race.languageProficiencies[0]).filter((key) => race.languageProficiencies[0][key] === true).map((key) => key.charAt(0).toUpperCase() + key.slice(1)) : []),
+    ...(proficiencies.length > 0 ? { proficiencies } : {}),
+    ...(spells.length > 0 ? { spells } : {}),
+    languages: mapEntityLanguages(race.languageProficiencies),
     variants: variants.length > 0 ? variants : undefined,
     source: ctx.label,
     sourceId: ctx.sourceId
   };
 };
 
-const mapBackground = (background, ctx) => {
-  const feature = (background.entries ?? []).find((entry) => entry?.name && /feature/i.test(entry.name));
+/** A background states its proficiencies, its equipment and its feature in a hanging list, so a top-level search finds neither. */
+const findNamedEntry = (entries, pattern) => {
+  for (const entry of [entries].flat()) {
+    if (!entry || typeof entry !== 'object') continue;
+    if (entry.name && pattern.test(stripInlineTags(entry.name))) return entry;
+    const nested = findNamedEntry(entry.items ?? entry.entries ?? entry.entry, pattern);
+    if (nested) return nested;
+  }
+  return undefined;
+};
+
+const collectTables = (entries, tables = []) => {
+  for (const entry of [entries].flat()) {
+    if (!entry || typeof entry !== 'object') continue;
+    if (entry.type === 'table') tables.push(entry);
+    collectTables(entry.items ?? entry.entries ?? entry.entry, tables);
+  }
+  return tables;
+};
+
+/** The suggested characteristics are rolled on a table each, labelled by what it rolls. */
+const readCharacteristicTable = (entries, pattern) => {
+  const table = collectTables(entries).find((entry) => pattern.test(stripInlineTags(
+    [entry.caption, ...(entry.colLabels ?? [])].filter(Boolean).join(' ')
+  )));
+  if (!table) return [];
+
+  return (table.rows ?? [])
+    .map((row) => (Array.isArray(row) ? cleanText(row.at(-1)) : cleanText(row)))
+    .filter(Boolean);
+};
+
+const mapBackgroundSkills = (blocks) => {
+  const granted = [];
+  const named = new Set();
+  let count = 0;
+  let anyCount = 0;
+
+  const readEntry = (key, value) => {
+    if (key === 'choose') {
+      for (const skill of value?.from ?? []) named.add(titleCaseSkill(proficiencyTerm(skill)));
+      count += value?.count ?? 1;
+      return;
+    }
+    if (/^any/i.test(key)) {
+      anyCount += Number(value) || 1;
+      return;
+    }
+    if (value === true) granted.push(titleCaseSkill(proficiencyTerm(key)));
+  };
+
+  for (const block of blocks ?? []) {
+    for (const [key, value] of Object.entries(block ?? {})) readEntry(key, value);
+  }
+
+  count += anyCount;
+  return {
+    skillProficiencies: granted,
+    // "any" is the whole list, which the document importer answers the same way.
+    skillChoices: anyCount > 0 ? [...skillNames] : [...named],
+    skillCount: count
+  };
+};
+
+/** One slot per group, the alternatives of a choice line under it, exactly as the 2024 packs read. */
+const toBackgroundEquipment = (groups) => groups.flatMap((group) => {
+  if (group.length === 1) return group;
+  return [{
+    name: 'Choose 1',
+    type: group[0]?.type ?? 'gear',
+    alternatives: group.map((option) => (option.contents
+      ? { name: [option.name, ...option.contents.map((entry) => entry.name)].join(', '), type: option.type }
+      : option))
+  }];
+});
+
+const mapBackgroundEquipment = (background, itemIndex) => {
+  // A background states its groups as the list itself; a class wraps the same list in `defaultData`.
+  if (background.startingEquipment) {
+    const groups = Array.isArray(background.startingEquipment)
+      ? { defaultData: background.startingEquipment }
+      : background.startingEquipment;
+    return toBackgroundEquipment(mapEquipmentOptions(groups, itemIndex));
+  }
+
+  const line = findNamedEntry(background.entries, /^equipment\b/i);
+  return line ? parseBackgroundEquipmentText(cleanText(line.entry ?? line.entries)) : [];
+};
+
+/** A feat a background grants is a pointer, and the feat itself is in the pack's own bucket. */
+const mapGrantedFeatNames = (feats) => [...new Set((feats ?? [])
+  .flatMap((block) => Object.entries(block ?? {}).filter(([, held]) => held === true).map(([name]) => name))
+  .map((name) => titleCaseWords(proficiencyTerm(name)))
+  .filter(Boolean))];
+
+const mapBackground = (background, ctx, itemIndex) => {
+  const feature = findNamedEntry(background.entries, /feature/i);
+  const { skillProficiencies, skillChoices, skillCount } = mapBackgroundSkills(background.skillProficiencies);
+  const toolProficiencies = readProficiencyBlock(background.toolProficiencies, 'tool').map((entry) => entry.name);
+  const grantedFeatNames = mapGrantedFeatNames(background.feats);
+  const personalityTraits = readCharacteristicTable(background.entries, /personality trait/i);
+  const ideals = readCharacteristicTable(background.entries, /\bideal/i);
+  const bonds = readCharacteristicTable(background.entries, /\bbond/i);
+  const flaws = readCharacteristicTable(background.entries, /\bflaw/i);
+  const suggested = [...personalityTraits, ...ideals, ...bonds, ...flaws];
+
+  if (background.additionalSpells) {
+    console.warn(`${background.name}: this background states spells of its own, which no background field holds; they reach the character only through the feat it grants.`);
+  }
+
   return {
     id: toSourcedId(ctx.sourceId, background.name),
     name: background.name,
     description: cleanText(background.entries?.filter?.((entry) => typeof entry === 'string')) || `${background.name} background.`,
-    skillProficiencies: Object.keys(background.skillProficiencies?.[0] ?? {}).filter((key) => background.skillProficiencies[0][key] === true).map((key) => key.charAt(0).toUpperCase() + key.slice(1)),
-    toolProficiencies: Object.keys(background.toolProficiencies?.[0] ?? {}).filter((key) => background.toolProficiencies[0][key] === true),
-    languageCount: background.languageProficiencies?.[0]?.anyStandard,
-    equipment: [],
+    skillProficiencies,
+    ...(skillCount > 0 ? { skillChoices, skillChoiceCount: skillCount } : {}),
+    ...(toolProficiencies.length > 0 ? { toolProficiencies } : {}),
+    languageCount: countLanguageChoices(background.languageProficiencies),
+    ...(grantedFeatNames.length > 0 ? { grantedFeatNames } : {}),
+    equipment: mapBackgroundEquipment(background, itemIndex),
     feature: {
-      name: feature?.name ? stripInlineTags(feature.name) : `${background.name} Feature`,
+      // A background that grants a feat states no feature of its own, and the feat is the grant.
+      name: feature?.name ? stripInlineTags(feature.name) : (grantedFeatNames[0] ?? `${background.name} Feature`),
       description: feature ? cleanText(feature.entries) : cleanText(background.entries)
     },
-    personalityTraits: [],
-    ideals: [],
-    bonds: [],
-    flaws: [],
+    personalityTraits,
+    ideals,
+    bonds,
+    flaws,
+    ...(suggested.length > 0 ? { suggestedCharacteristics: suggested } : {}),
     source: ctx.label,
     sourceId: ctx.sourceId
   };
 };
 
-const mapFeat = (feat, ctx) => {
-  const prereqParts = [];
-  for (const prereq of feat.prerequisite ?? []) {
-    if (prereq.level) prereqParts.push(`Level ${prereq.level.level ?? prereq.level}`);
-    if (prereq.ability) prereqParts.push(prereq.ability.map((block) => Object.entries(block).map(([key, value]) => `${ABILITY_MAP[key] ?? key} ${value}`).join(', ')).join('; '));
-    if (prereq.spellcasting || prereq.spellcasting2020) prereqParts.push('Spellcasting feature');
-    if (prereq.other) prereqParts.push(stripInlineTags(prereq.other));
-    if (prereq.race) prereqParts.push(prereq.race.map((entry) => entry.name).join(' or '));
+/** Read alongside `text`, because `evaluateFeatPrerequisites` enforces the structured half. */
+const mapFeatPrerequisiteFields = (prerequisites) => {
+  const fields = {};
+
+  for (const prereq of prerequisites ?? []) {
+    const level = typeof prereq.level === 'object' ? prereq.level.level : prereq.level;
+    if (Number(level) > 0) fields.level = Math.max(fields.level ?? 0, Number(level));
+    for (const block of prereq.ability ?? []) {
+      for (const [key, value] of Object.entries(block)) {
+        const ability = ABILITY_MAP[key];
+        if (!ability || !Number.isFinite(Number(value))) continue;
+        fields.ability = { ...fields.ability, [ability]: Math.max(fields.ability?.[ability] ?? 0, Number(value)) };
+      }
+    }
+    if (prereq.spellcasting || prereq.spellcasting2020) fields.spellcasting = true;
+    if (prereq.pact) fields.pactMagic = true;
+    if (prereq.race) fields.race = [...(fields.race ?? []), ...prereq.race.map((entry) => stripInlineTags(entry.name ?? ''))].filter(Boolean);
+    if (prereq.class) fields.class = [...(fields.class ?? []), ...[prereq.class].flat().map((entry) => stripInlineTags(entry?.name ?? entry ?? ''))].filter(Boolean);
   }
 
+  return fields;
+};
+
+/** The sentence the player is shown, which `evaluateFeatPrerequisites` reads alongside the fields. */
+const mapFeatPrerequisiteText = (prerequisites) => {
+  const parts = [];
+  for (const prereq of prerequisites ?? []) {
+    if (prereq.level) parts.push(`Level ${prereq.level.level ?? prereq.level}`);
+    if (prereq.ability) parts.push(prereq.ability.map((block) => Object.entries(block).map(([key, value]) => `${ABILITY_MAP[key] ?? key} ${value}`).join(', ')).join('; '));
+    if (prereq.spellcasting || prereq.spellcasting2020) parts.push('Spellcasting feature');
+    if (prereq.other) parts.push(stripInlineTags(prereq.other));
+    if (prereq.race) parts.push(prereq.race.map((entry) => entry.name).join(' or '));
+  }
+  return parts.join('; ');
+};
+
+const mapFeat = (feat, ctx) => {
+  const prerequisiteText = mapFeatPrerequisiteText(feat.prerequisite);
+  const featId = toSourcedId(ctx.sourceId, feat.name);
+  const description = cleanText(feat.entries);
+  const features = mapNamedSubFeatures(feat.entries, featId, ctx.label);
+  // The benefit lines are prose here too, so they go through the same reader the document imports
+  // use — a spell the feat grants or leaves open is otherwise silently dropped.
+  const parsed = extractFeatBenefitStructures(featId, [description, ...features.map((entry) => entry.description)]);
+  const structuredIncreases = mapAbilityIncreases(feat.ability);
+  // The spells are structured here, and a feat that names a *list* rather than a spell ("two
+  // cantrips from the Lorehold and Prismari lists") states nothing the prose reader can resolve.
+  const stated = readAdditionalSpells(feat.additionalSpells, { idPrefix: featId, spellLevelByName: ctx.spellLevelByName });
+  const grantedSpells = [...new Set([...(parsed.grantedSpells ?? []), ...stated.grantedSpellNames])];
+  const spellChoices = stated.spellChoices.length > 0 ? stated.spellChoices : parsed.spellChoices;
+  const prerequisiteFields = mapFeatPrerequisiteFields(feat.prerequisite);
+
   return {
-    id: toSourcedId(ctx.sourceId, feat.name),
+    id: featId,
     name: feat.name,
-    description: cleanText(feat.entries),
-    prerequisites: prereqParts.length > 0 ? { text: prereqParts.join('; ') } : undefined,
-    abilityScoreIncreases: mapAbilityIncreases(feat.ability),
-    features: [],
+    description,
+    prerequisites: prerequisiteText ? { ...prerequisiteFields, text: prerequisiteText } : undefined,
+    // `ability` is structured here, so it wins; the prose reader only supplies what it has no field
+    // for — the alternatives, and the two increases a feat offers as a mode.
+    abilityScoreIncreases: structuredIncreases.length > 0 ? structuredIncreases : parsed.abilityScoreIncreases,
+    ...(parsed.abilityScoreIncreaseAlternatives ? { abilityScoreIncreaseAlternatives: parsed.abilityScoreIncreaseAlternatives } : {}),
+    ...(grantedSpells.length > 0 ? { grantedSpells } : {}),
+    ...(spellChoices?.length > 0 ? { spellChoices } : {}),
+    ...(parsed.optionChoices ? { optionChoices: parsed.optionChoices } : {}),
+    features,
     source: ctx.label,
     sourceId: ctx.sourceId
   };
@@ -315,10 +688,19 @@ const mapCost = (valueInCp) => {
   return { amount: valueInCp, unit: 'cp' };
 };
 
+// The family a "one type of <x>" choice draws from, keyed by the letter the data files it under.
+const TOOL_CATEGORY_BY_TYPE = { AT: "Artisan's Tools", INS: 'Musical Instruments', GS: 'Gaming Sets', T: 'Other Tools' };
+const GEAR_CATEGORY_BY_FOCUS = { arcane: 'Arcane Foci', druid: 'Druidic Foci', holy: 'Holy Symbols' };
+
 const mapItem = (item, ctx) => {
   const armorCategoryByType = { LA: 'light', MA: 'medium', HA: 'heavy', S: 'shield' };
   const type = (item.type ?? '').split('|')[0];
   return {
+    ...(TOOL_CATEGORY_BY_TYPE[type] ? { toolCategory: TOOL_CATEGORY_BY_TYPE[type] } : {}),
+    ...(GEAR_CATEGORY_BY_FOCUS[String(item.scfType ?? '').toLowerCase()] ? { gearCategory: GEAR_CATEGORY_BY_FOCUS[String(item.scfType).toLowerCase()] } : {}),
+    // The two-handed die the source states, never one inferred from the die it replaces.
+    ...(item.dmg2 ? { versatileDamage: item.dmg2 } : {}),
+    ...(Number(item.strength) > 0 ? { strengthRequirement: Number(item.strength) } : {}),
     id: toSourcedId(ctx.sourceId, item.name),
     name: item.name,
     type: ITEM_TYPE_TO_BUCKET_TYPE(item),
@@ -339,8 +721,24 @@ const mapItem = (item, ctx) => {
   };
 };
 
+// A damage line is a list of types, or a block of them carrying the note that qualifies them
+// ("from nonmagical attacks"), which both printings print as part of the line.
+const flattenDamageList = (list, key) => (list ?? []).flatMap((entry) => {
+  if (typeof entry === 'string') return [stripInlineTags(entry)];
+  if (!entry || typeof entry !== 'object') return [];
+  return [...flattenDamageList(entry[key], key), ...(entry.note ? [stripInlineTags(entry.note)] : [])];
+});
+
+const mapMonsterSenses = (monster) => {
+  const senses = (monster.senses ?? []).map(stripInlineTags);
+  const passive = Number.isFinite(Number(monster.passive)) ? `passive Perception ${monster.passive}` : null;
+  const line = [...senses, passive].filter(Boolean).join(', ');
+  return line ? [line] : undefined;
+};
+
 const mapMonster = (monster, ctx) => {
   const abilityScores = Object.fromEntries(abilityKeys.map((key) => [ABILITY_MAP[key], monster[key] ?? 10]));
+  const senses = mapMonsterSenses(monster);
   const acEntry = Array.isArray(monster.ac) ? monster.ac[0] : monster.ac;
   const ac = typeof acEntry === 'object' ? (acEntry.ac ?? 10) : (acEntry ?? 10);
   const mapActions = (list, prefix) => (list ?? []).map((entry, index) => ({
@@ -365,6 +763,13 @@ const mapMonster = (monster, ctx) => {
     speed: speedText || '30 ft.',
     abilityScores,
     challengeRating: typeof monster.cr === 'object' ? (monster.cr.cr ?? '0') : String(monster.cr ?? '0'),
+    ...(monster.save ? { savingThrows: Object.entries(monster.save).map(([key, value]) => `${titleCaseWords(key)} ${stripInlineTags(String(value))}`) } : {}),
+    ...(monster.skill ? { skills: Object.entries(monster.skill).map(([key, value]) => `${titleCaseSkill(key)} ${stripInlineTags(String(value))}`) } : {}),
+    ...(monster.vulnerable ? { damageVulnerabilities: flattenDamageList(monster.vulnerable, 'vulnerable') } : {}),
+    ...(monster.resist ? { damageResistances: flattenDamageList(monster.resist, 'resist') } : {}),
+    ...(monster.immune ? { damageImmunities: flattenDamageList(monster.immune, 'immune') } : {}),
+    ...(monster.conditionImmune ? { conditionImmunities: flattenDamageList(monster.conditionImmune, 'conditionImmune') } : {}),
+    ...(senses ? { senses } : {}),
     traits: mapActions(monster.trait, 'trait'),
     actions: mapActions(monster.action, 'action'),
     bonusActions: mapActions(monster.bonus, 'bonus'),
@@ -376,7 +781,7 @@ const mapMonster = (monster, ctx) => {
   };
 };
 
-const mapSubclasses = (subclasses, subclassFeatures, ctx) => {
+const mapSubclasses = (subclasses, subclassFeatures, optionIndex, ctx) => {
   const featuresByKey = new Map();
   for (const feature of subclassFeatures) {
     const key = `${feature.subclassShortName}|${feature.className}|${feature.subclassSource ?? feature.source}`;
@@ -384,7 +789,18 @@ const mapSubclasses = (subclasses, subclassFeatures, ctx) => {
     featuresByKey.get(key).push(feature);
   }
 
-  return subclasses.map((subclass) => {
+  // A legacy subclass is listed once per printing of its class (`classSource` PHB and XPHB), and
+  // both entries resolve to the same features, so they are one subclass here.
+  const byIdentity = new Map();
+  for (const subclass of subclasses) {
+    const identity = `${subclass.shortName}|${subclass.className}|${subclass.source}`;
+    const incumbent = byIdentity.get(identity);
+    if (!incumbent || (subclass.subclassFeatures ?? []).length > (incumbent.subclassFeatures ?? []).length) {
+      byIdentity.set(identity, subclass);
+    }
+  }
+
+  return [...byIdentity.values()].map((subclass) => {
     const key = `${subclass.shortName}|${subclass.className}|${subclass.source}`;
     const features = (featuresByKey.get(key) ?? [])
       .sort((left, right) => (left.level ?? 0) - (right.level ?? 0))
@@ -397,7 +813,7 @@ const mapSubclasses = (subclasses, subclassFeatures, ctx) => {
       }))
       .filter((feature) => feature.description);
 
-    return {
+    const mapped = {
       id: toSourcedId(ctx.sourceId, subclass.className, subclass.name),
       classId: slugify(subclass.className),
       name: subclass.name,
@@ -406,14 +822,176 @@ const mapSubclasses = (subclasses, subclassFeatures, ctx) => {
       source: ctx.label,
       sourceId: ctx.sourceId
     };
+
+    return applyOptionalFeatureProgressions(mapped, subclass.optionalfeatureProgression, optionIndex, ctx);
   }).filter((subclass) => subclass.features.length > 0);
+};
+
+// --- languages and combat actions -----------------------------------------------------------
+
+// 5etools files a language's table as `type`, and the builder's vocabulary is the book's own:
+// "exotic" is 2014's name for the second table, which the app reads as rare.
+const LANGUAGE_RARITY_MAP = { standard: 'standard', exotic: 'rare', rare: 'rare', secret: 'rare' };
+
+const mapLanguage = (language, ctx) => ({
+  id: toSourcedId(ctx.sourceId, language.name),
+  name: stripInlineTags(language.name ?? ''),
+  rarity: LANGUAGE_RARITY_MAP[String(language.type ?? '').toLowerCase()] ?? 'standard',
+  ...(language.typicalSpeakers?.length ? { origin: language.typicalSpeakers.map(stripInlineTags).join(', ') } : {}),
+  ...(language.script ? { script: stripInlineTags(String(language.script)) } : {}),
+  ...(language.entries?.length ? { note: cleanText(language.entries) } : {}),
+  source: ctx.label,
+  sourceId: ctx.sourceId
+});
+
+// The timing is on `time`, which is a string ("bonus") or a block ({number, unit}); an entry that
+// states none is an action, which is how both books print the unlabelled ones.
+const readActionTiming = (time) => {
+  const unit = String((Array.isArray(time) ? time[0] : time)?.unit ?? (Array.isArray(time) ? time[0] : time) ?? '').toLowerCase();
+  if (unit.startsWith('bonus')) return 'bonus-action';
+  if (unit.startsWith('reaction')) return 'reaction';
+  return 'action';
+};
+
+const mapCombatAction = (action, ctx) => ({
+  id: toSourcedId(ctx.sourceId, action.name),
+  name: stripInlineTags(action.name ?? ''),
+  timing: readActionTiming(action.time),
+  // No `summary`: the field is the book's own Actions-table line, and this data states none.
+  description: cleanText(action.entries),
+  source: ctx.label,
+  sourceId: ctx.sourceId
+});
+
+// --- optional features ----------------------------------------------------------------------
+
+const titleCaseWords = (value) => String(value ?? '')
+  .replaceAll(/\b[a-z]/g, (letter) => letter.toUpperCase());
+
+// Option ids are the plain slug of the name, never source-prefixed: a pool is shared between two
+// features by *matching option ids*, so a prefix would stop a supplement's invocations merging.
+const toOptionId = (value) => stripInlineTags(String(value ?? ''))
+  .toLowerCase()
+  .replaceAll(/[^a-z0-9]+/g, ' ')
+  .trim()
+  .replaceAll(' ', '-');
+
+// An option's own gate, from the structured `prerequisite` rather than a sentence: a level, the
+// spell it needs, and the pact or another option it builds on.
+const mapOptionalFeaturePrerequisites = (prerequisites) => {
+  const texts = [];
+  let minimumLevel;
+  const requiredOptionIds = [];
+  const requiredSpellIds = [];
+
+  for (const prereq of prerequisites ?? []) {
+    const level = typeof prereq.level === 'object' ? prereq.level.level : prereq.level;
+    if (Number(level) > 0) {
+      minimumLevel = minimumLevel === undefined ? Number(level) : Math.min(minimumLevel, Number(level));
+      texts.push(`Level ${level}`);
+    }
+    for (const spell of prereq.spell ?? []) {
+      const [name, marker] = String(spell).split('|')[0].split('#');
+      if (!name) continue;
+      requiredSpellIds.push(toOptionId(name));
+      // The data states a spell in lower case and marks a cantrip with `#c`; the gate is shown to
+      // the player, so it reads as the book prints it.
+      texts.push(`${titleCaseWords(stripInlineTags(name))}${marker === 'c' ? ' cantrip' : ''}`);
+    }
+    for (const pact of [prereq.pact].flat().filter(Boolean)) {
+      requiredOptionIds.push(toOptionId(`Pact of the ${pact}`));
+      texts.push(`Pact of the ${pact}`);
+    }
+    for (const feature of [prereq.optionalfeature ?? prereq.feature].flat().filter(Boolean)) {
+      const name = String(feature).split('|')[0];
+      requiredOptionIds.push(toOptionId(name));
+      texts.push(stripInlineTags(name));
+    }
+    for (const patron of [prereq.patron].flat().filter(Boolean)) {
+      texts.push(`${stripInlineTags(String(patron))} patron`);
+    }
+    const other = prereq.otherSummary?.entry ?? prereq.other;
+    if (other) texts.push(stripInlineTags(String(other)));
+  }
+
+  if (texts.length === 0) return undefined;
+  return {
+    text: texts.join(', '),
+    ...(minimumLevel === undefined ? {} : { minimumLevel }),
+    requiredOptionIds: [...new Set(requiredOptionIds)],
+    requiredSpellIds: [...new Set(requiredSpellIds)]
+  };
+};
+
+// Keyed by `featureType`; an option lists under every type it carries, since styles are shared.
+const indexOptionalFeatures = (optionalFeatures) => {
+  const index = new Map();
+  for (const feature of optionalFeatures ?? []) {
+    const option = {
+      id: toOptionId(feature.name),
+      name: stripInlineTags(feature.name ?? ''),
+      description: cleanText(feature.entries),
+      prerequisites: mapOptionalFeaturePrerequisites(feature.prerequisite)
+    };
+    if (!option.id || !option.description) continue;
+    for (const type of feature.featureType ?? []) {
+      const key = String(type);
+      if (!index.has(key)) index.set(key, new Map());
+      if (!index.get(key).has(option.id)) index.get(key).set(option.id, option);
+    }
+  }
+  return index;
+};
+
+// What the progression states at the level it first grants anything: the pool's codes say which
+// options it draws from, so nothing here names a book or a class.
+const readProgression = (block) => {
+  const levels = Object.entries(block.progression ?? {})
+    .map(([level, count]) => [Number(level), Number(count)])
+    .filter(([level, count]) => Number.isFinite(level) && Number.isFinite(count) && count > 0)
+    .sort((left, right) => left[0] - right[0]);
+  if (levels.length === 0) return null;
+  return { level: levels[0][0], chooseCount: levels[0][1] };
+};
+
+/** Progression -> selector on the feature it names, or its own feature when none matches. */
+const applyOptionalFeatureProgressions = (entry, progressions, optionIndex, ctx) => {
+  let features = entry.features;
+
+  for (const block of progressions ?? []) {
+    const progression = readProgression(block);
+    if (!progression) continue;
+    const options = [...new Set((block.featureType ?? []).map(String))]
+      .flatMap((type) => [...(optionIndex.get(type)?.values() ?? [])]);
+    if (options.length === 0) continue;
+
+    const poolName = stripInlineTags(block.name ?? '');
+    const target = features.findIndex((feature) => toOptionId(feature.name) === toOptionId(poolName));
+    const selector = { requiresChoice: true, chooseCount: progression.chooseCount, options };
+
+    if (target === -1) {
+      features = [...features, {
+        id: toSourcedId(ctx.sourceId, entry.name, poolName),
+        name: poolName,
+        description: `Choose from the ${poolName.toLowerCase()} available to you.`,
+        level: progression.level,
+        source: ctx.label,
+        ...selector
+      }];
+      continue;
+    }
+
+    features = features.map((feature, index) => (index === target ? { ...feature, ...selector } : feature));
+  }
+
+  return features.length === entry.features.length && features === entry.features
+    ? entry
+    : { ...entry, features: [...features].sort((left, right) => left.level - right.level) };
 };
 
 // --- classes --------------------------------------------------------------------------------
 
-// A class's level table arrives as entry objects rather than text, so each cell is rendered to the
-// same plain text an HTML table yields and handed to `lib/classTables.mjs`. What a column *means* —
-// which ones are pools, which are dice, which are neither — is stated once, there.
+// Cells render to the plain text an HTML table yields; `lib/classTables.mjs` judges the columns.
 const renderTableCell = (cell) => {
   if (cell == null) return '';
   if (typeof cell === 'number') return String(cell);
@@ -451,9 +1029,7 @@ const spellSlotsFromTableGroups = (groups) => {
 
 // --- class features -------------------------------------------------------------------------
 
-// "name|className|classSource|level|source": the class source defaults to the PHB and the feature's
-// own source to the class's, which is how a book that adds features to an existing class points at
-// them.
+// "name|className|classSource|level|source"; class source defaults to PHB, feature's to the class's.
 const parseFeatureRef = (ref) => {
   const [name, className, classSource, level, source] = String(ref ?? '').split('|');
   const resolvedClassSource = classSource || 'PHB';
@@ -488,11 +1064,7 @@ const indexClassFeatures = (classFeatures) => {
   return index;
 };
 
-/**
- * The class's features in level order, plus the level at which it gains its subclass — which the
- * data states on the pointer (`gainSubclassFeature`) rather than on the class, and which is read
- * from the subclass features themselves only when no pointer claims it.
- */
+/** Features in level order; the subclass level is on the pointer, not the class. */
 const mapClassFeatures = (cls, featureIndex, ctx) => {
   const features = [];
   let subclassLevel = null;
@@ -570,10 +1142,7 @@ const mapToolProficiencies = (proficiencies) => {
   return mapped.length > 0 ? [...new Set(mapped)] : undefined;
 };
 
-/**
- * What the class lets a character choose from, and how many. "any: 4" is the whole skill list, which
- * is why the list is shared with the document importer rather than restated here.
- */
+/** "any: n" is the whole skill list, shared with the document importer rather than restated. */
 const mapSkillChoices = (proficiencies) => {
   const named = new Set();
   let count = 0;
@@ -606,10 +1175,7 @@ const mapSkillChoices = (proficiencies) => {
 
 // --- multiclassing --------------------------------------------------------------------------
 
-/**
- * Who may take the class after their first. The data keeps "or" apart from "and" natively, which is
- * the distinction the parsed `primaryAbility` has already lost, so it is read from here.
- */
+/** `requirements.or` is the only place the "or" survives; `primaryAbility` has lost it. */
 const mapMulticlassPrerequisites = (requirements) => {
   if (!requirements) return undefined;
 
@@ -647,9 +1213,7 @@ const mapMulticlassProficiencies = (multiclassing) => {
 
 // --- starting equipment ---------------------------------------------------------------------
 
-// A category the player still has to resolve is written as the phrase `lib/startingEquipment.ts`
-// reads ("Any simple weapon", "Any musical instrument"), never as a bare category name, or the
-// builder renders it as a fixed grant and the pick never gets made.
+// Write the phrase `lib/startingEquipment.ts` reads, never a bare category, or the pick is lost.
 const EQUIPMENT_TYPE_OPTIONS = {
   weaponSimple: ['Any simple weapon', 'weapon'],
   weaponSimpleMelee: ['Any simple melee weapon', 'weapon'],
@@ -703,7 +1267,14 @@ const mapEquipmentEntry = (entry, itemIndex) => {
   if (!entry || typeof entry !== 'object') return null;
 
   if (typeof entry.value === 'number') {
-    return { name: `${Math.round(entry.value / GOLD_IN_COPPER)} gp`, type: 'gold' };
+    // Stated in copper, so an amount under a gold piece would round to a "0 gp" grant; some
+    // pre-2024 entries state a bare coin count, and a zero line is worse than no line.
+    const gold = Math.round(entry.value / GOLD_IN_COPPER);
+    if (gold <= 0) {
+      console.warn(`a starting-equipment line states ${entry.value} copper, under one gold piece; it is left off rather than shown as "0 gp".`);
+      return null;
+    }
+    return { name: `${gold} gp`, type: 'gold' };
   }
 
   const categories = entry.equipmentTypes ?? (entry.equipmentType ? [entry.equipmentType] : null);
@@ -730,16 +1301,7 @@ const mapEquipmentEntry = (entry, itemIndex) => {
   };
 };
 
-/**
- * One slot per group, with its alternatives beside each other — the shape the builder renders a
- * selector from.
- *
- * Several items under one key are one option granting all of them, so the extras ride along as
- * `contents`: a selection resolves to a single `Equipment` row, and "(a) a longsword and a shield"
- * has to stay one alternative or it loses its pairing with (b). A group with only one key is
- * granted outright rather than chosen, so each of its items becomes a fixed slot of its own instead
- * of being nested under the first — the alternative read four javelins as the contents of a pack.
- */
+/** One slot per group; extras under one key ride along as `contents` to keep (a) paired. */
 const mapEquipmentOptions = (startingEquipment, itemIndex) => {
   const groups = [];
 
@@ -793,9 +1355,7 @@ const mapPrimaryAbility = (cls) => {
   return ABILITY_MAP[(cls.proficiency ?? [])[0]] ?? 'strength';
 };
 
-// Both real sources are tried first — the pointer that says it grants a subclass feature, then the
-// lowest level any of the class's own subclasses states a feature at. Neither is a guess; the last
-// resort is, so it says so rather than passing as read.
+// Pointer first, then the lowest subclass feature level; the 3 is a guess, so it is logged.
 const SUBCLASS_LEVEL_WHEN_UNSTATED = 3;
 
 const resolveSubclassLevel = (cls, statedLevel, lowestSubclassLevel) => {
@@ -806,7 +1366,7 @@ const resolveSubclassLevel = (cls, statedLevel, lowestSubclassLevel) => {
 };
 
 const mapClass = (cls, context) => {
-  const { featureIndex, itemIndex, fluffByName, subclassesByClass, ctx } = context;
+  const { featureIndex, itemIndex, fluffByName, subclassesByClass, optionIndex, ctx } = context;
   const hitDie = Number(cls.hd?.faces) || 0;
   const { features, subclassLevel } = mapClassFeatures(cls, featureIndex, ctx);
   const classSubclasses = subclassesByClass.get(slugify(cls.name)) ?? [];
@@ -822,7 +1382,7 @@ const mapClass = (cls, context) => {
     .flatMap((subclass) => subclass.features.map((feature) => feature.level))
     .reduce((lowest, level) => (lowest === null || level < lowest ? level : lowest), null);
 
-  return {
+  const mapped = {
     id: toSourcedId(ctx.sourceId, cls.name),
     name: cls.name,
     description: (fluff ? cleanText(fluff.entries) : '') || `The ${cls.name} class.`,
@@ -848,14 +1408,12 @@ const mapClass = (cls, context) => {
     source: ctx.label,
     sourceId: ctx.sourceId
   };
+
+  return applyOptionalFeatureProgressions(mapped, cls.optionalfeatureProgression, optionIndex, ctx);
 };
 
-/**
- * Every class the chosen book states. A source that reprints optional features for an existing class
- * carries no hit die, and a class with no positive hit die is unbuildable, so it is dropped rather
- * than shipped as a class nobody can take.
- */
-const mapClasses = (classes, classFeatures, items, fluff, subclasses, ctx) => {
+/** A reprint of optional features carries no hit die, and an unbuildable class is dropped. */
+const mapClasses = (classes, classFeatures, items, fluff, subclasses, optionIndex, ctx) => {
   const featureIndex = indexClassFeatures(classFeatures);
   const itemIndex = indexItems(items);
   const fluffByName = new Map(fluff.map((entry) => [String(entry.name ?? '').toLowerCase(), entry]));
@@ -868,42 +1426,129 @@ const mapClasses = (classes, classFeatures, items, fluff, subclasses, ctx) => {
 
   return classes
     .filter((cls) => Number(cls.hd?.faces) > 0)
-    .map((cls) => mapClass(cls, { featureIndex, itemIndex, fluffByName, subclassesByClass, ctx }));
+    .map((cls) => mapClass(cls, { featureIndex, itemIndex, fluffByName, subclassesByClass, optionIndex, ctx }));
 };
 
 // --- entry point ----------------------------------------------------------------------------
 
-export const buildCanonicalContentFrom5eTools = (raw, { sourceId, label, sourceAbbr }) => {
-  const ctx = { sourceId, label };
-  const keep = (list) => list.filter((entry) => matchesSource(entry, sourceAbbr));
+// A `_copy` is resolved against every book in the directory, and a `_versions` variant is an entry
+// of its own; both are pointers, and an unread pointer ships a name with no content behind it.
+const RESOLVED_BUCKETS = {
+  race: ['race'],
+  subrace: ['subrace'],
+  background: ['background'],
+  feat: ['feat'],
+  monster: ['monster'],
+  spell: ['spell'],
+  item: ['item', 'baseitem'],
+  baseitem: ['baseitem', 'item'],
+  class: ['class'],
+  subclass: ['subclass'],
+  classFeature: ['classFeature'],
+  subclassFeature: ['subclassFeature'],
+  optionalfeature: ['optionalfeature']
+};
+
+// A subrace's `_versions` carry `_mod` operations against the *race's* traits ("replace Breath
+// Weapon"), so expanding them before the race is merged in appends what was meant to replace.
+// The subrace bucket keeps its versions and the species mapping expands them.
+const DEFERRED_VERSION_BUCKETS = new Set(['subrace']);
+
+const resolvePointers = (raw) => {
+  const resolved = { ...raw };
+  for (const [bucket, poolBuckets] of Object.entries(RESOLVED_BUCKETS)) {
+    if (!Array.isArray(raw[bucket])) continue;
+    const pool = poolBuckets.flatMap((key) => raw[key] ?? []);
+    const copied = resolveFiveEToolsCopies(raw[bucket], { pool, bucket });
+    resolved[bucket] = DEFERRED_VERSION_BUCKETS.has(bucket)
+      ? copied
+      : expandFiveEToolsVersions(copied, { bucket });
+  }
+  return resolved;
+};
+
+export const buildCanonicalContentFrom5eTools = (rawInput, { sourceId, label, sourceAbbr, includeOtherSources = false }) => {
+  const raw = resolvePointers(rawInput);
+  // Levels are read across every book, because a feat or a species grants a spell by name alone.
+  const spellLevelByName = new Map(raw.spell.map((spell) => [String(spell.name ?? '').toLowerCase(), spell.level ?? 0]));
+  const ctx = {
+    sourceId,
+    label,
+    spellLevelByName: (name) => spellLevelByName.get(String(name).toLowerCase())
+  };
+  const keep = (list) => list.filter((entry) => matchesSource(entry, sourceAbbr, includeOtherSources));
 
   const races = keep(raw.race);
+  const keptRaceKeys = new Set(races.map((race) => `${race.name}|${race.source}`));
   const subracesByRace = new Map();
+  // A subrace whose race this book did not print still belongs to it, so it is adopted below
+  // rather than dropped with the race it hangs off.
+  const adoptedSubraces = [];
   for (const subrace of keep(raw.subrace)) {
     const key = `${subrace.raceName}|${subrace.raceSource}`;
+    if (!keptRaceKeys.has(key)) {
+      adoptedSubraces.push(subrace);
+      continue;
+    }
     if (!subracesByRace.has(key)) subracesByRace.set(key, []);
-    subracesByRace.get(key).push(subrace);
+    for (const expanded of keep(expandFiveEToolsVersions([subrace], { bucket: 'subrace' }))) {
+      subracesByRace.get(key).push(expanded);
+    }
   }
 
-  const subclasses = mapSubclasses(keep(raw.subclass), keep(raw.subclassFeature), ctx);
-  // Features and items are matched by the UID they are referenced with, so they are looked up across
-  // every book in the directory: a supplement's class points at the PHB's longsword and at features
-  // printed under the class's own source.
-  const classes = mapClasses(keep(raw.class), raw.classFeature, [...raw.item, ...raw.baseitem], keep(raw.classFluff), subclasses, ctx);
+  const adoptedRaces = adoptedSubraces.flatMap((subrace, index) => {
+    const parent = raw.race.find((race) => race.name === subrace.raceName && race.source === subrace.raceSource);
+    if (!parent) {
+      console.warn(`subrace "${subrace.name ?? '(unnamed)'}" belongs to ${subrace.raceName} (${subrace.raceSource}), which no book in the directory states; it is left off.`);
+      return [];
+    }
+    // Merged first, so a version's `_mod` has the race's own traits to operate on.
+    return keep(expandFiveEToolsVersions([mergeSubraceOntoRace(parent, subrace, index)], { bucket: 'race' }));
+  });
+
+  // Options are matched by `featureType`, so they are read across every book in the directory for
+  // the same reason features and items are: a supplement's class draws on the core book's pool.
+  const optionIndex = indexOptionalFeatures(raw.optionalfeature);
+
+  const subclasses = mapSubclasses(keep(raw.subclass), keep(raw.subclassFeature), optionIndex, ctx);
+  // Matched by referenced UID, so looked up across every book: a supplement points at PHB items.
+  const itemIndex = indexItems([...raw.item, ...raw.baseitem]);
+  const classes = mapClasses(keep(raw.class), raw.classFeature, [...raw.item, ...raw.baseitem], keep(raw.classFluff), subclasses, optionIndex, ctx);
+
+  // Two entries with one id is a duplicate the registry would collapse and the counts would not.
+  const dedupeById = (entries) => {
+    const seen = new Set();
+    return entries.filter((entry) => {
+      const id = entry?.id;
+      if (!id || seen.has(id)) {
+        if (id) console.warn(`dropped a second entry sharing the id "${id}".`);
+        return false;
+      }
+      seen.add(id);
+      return true;
+    });
+  };
 
   // A pool the level table does not state is read from the feature's own sentences, by the same
   // module the document imports use.
-  return applyProseResources({
-    species: races.map((race) => mapRace(race, subracesByRace, ctx)),
+  const content = applyProseResources({
+    species: [...races, ...adoptedRaces].map((race) => mapRace(race, subracesByRace, ctx)),
     classes,
     subclasses,
-    backgrounds: keep(raw.background).map((background) => mapBackground(background, ctx)),
+    backgrounds: keep(raw.background).map((background) => mapBackground(background, ctx, itemIndex)),
     spells: keep(raw.spell).map((spell) => mapSpell(spell, ctx)),
     equipment: [...keep(raw.item), ...keep(raw.baseitem)].map((item) => mapItem(item, ctx)),
     feats: keep(raw.feat).map((feat) => mapFeat(feat, ctx)),
     monsters: keep(raw.monster).map((monster) => mapMonster(monster, ctx)),
+    languages: keep(raw.language).map((language) => mapLanguage(language, ctx)),
+    combatActions: keep(raw.action).map((action) => mapCombatAction(action, ctx)),
     ua: []
   });
+
+  for (const [bucket, entries] of Object.entries(content)) {
+    if (Array.isArray(entries)) content[bucket] = dedupeById(entries);
+  }
+  return content;
 };
 
 export const load5eToolsData = collectFromDir;

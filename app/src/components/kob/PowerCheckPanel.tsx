@@ -40,14 +40,7 @@ function consequenceFor(tokens: number): string {
   return matched?.text ?? '';
 }
 
-/**
- * A power check: the difficulty the four factors add up to, then a d6 per Power Token until the
- * table meets it or gives up.
- *
- * The pool is the campaign's, so every spend goes back through `onSpend` and the whole table sees
- * it; the attempt itself is this reader's, the way a roll is. Lucky Breaks come from the tray's own
- * `explodeOnMax`, which is the same switch a stat check uses.
- */
+/** The pool is the campaign's, so every spend goes back through `onSpend`. */
 export function PowerCheckPanel({ name, spent, busy, onSpend }: Readonly<PowerCheckPanelProps>) {
   const { equation, factors } = kob.poweredCharacter.powerCheck;
   const [choices, setChoices] = useState<Record<string, string>>({});
@@ -145,12 +138,7 @@ interface FactorFieldProps {
   onChange: (value: string) => void;
 }
 
-/**
- * One factor. The option list carries only the label and its modifier: the book's examples run to
- * three lines apiece, and a phone-width dropdown of five of them is the wall of text this screen
- * exists to replace. They are printed under the field once a choice is made, which is when they
- * are what the narration needs.
- */
+/** The book's examples print under the field once chosen, not in the dropdown. */
 function FactorField({ factor, value, onChange }: Readonly<FactorFieldProps>) {
   const id = `factor-${factor.id}`;
   const chosen = factor.options.find((option) => option.id === value);

@@ -54,10 +54,7 @@ function expiryFromChoice(choice: string): string | null {
   return new Date(Date.now() + option.hours * 60 * 60 * 1000).toISOString();
 }
 
-/**
- * The inner form is remounted by a `key` on the dialog rather than seeding its fields from an
- * effect — the same rule `PlayerEditorDialog` follows.
- */
+/** Remounted by `key` rather than seeded from an effect, as `PlayerEditorDialog` is. */
 function InviteForm({ campaignId, invite, campaignInviteDefaults, onSaved, onOpenChange }: Readonly<Omit<InviteSettingsDialogProps, 'open'>>) {
   const [maxUses, setMaxUses] = useState(String(invite?.max_uses ?? 1));
   // An existing invite's expiry is a timestamp, not one of the spans, so editing defaults to

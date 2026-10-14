@@ -1,12 +1,4 @@
-// Who may open this sheet, and who may edit it. The owner's control panel for both.
-//
-// Visibility is the D&D Beyond-shaped choice and it is what a share link means: one URL serves
-// every setting, so narrowing a character narrows every link already sent. Rotating the link is
-// the harder revoke, for when the URL went somewhere it should not have.
-//
-// Grants are the named half — a specific player, or whoever runs a campaign. The server only
-// accepts subjects the owner already shares a table with, so the picker is built from exactly
-// that: the members of the campaigns they belong to.
+// One URL serves every visibility; the grant picker is built from shared tables only.
 import { useCallback, useEffect, useState } from 'react';
 import { Check, Copy, Loader2, RefreshCw, Share2, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -56,10 +48,7 @@ interface ShareCandidate {
 
 const candidateKey = (subjectType: CharacterGrantSubject, subjectId: number) => `${subjectType}:${subjectId}`;
 
-/**
- * The share URL. `BASE_URL` is absolute in dev and prod alike (CLAUDE.md keeps the Vite base that
- * way), so a deploy under a subpath still produces a link that resolves.
- */
+/** `BASE_URL` is absolute, so a deploy under a subpath still produces a resolving link. */
 function shareUrlFor(token: string): string {
   return new URL(`${import.meta.env.BASE_URL}shared/${token}`, window.location.origin).toString();
 }
@@ -314,11 +303,7 @@ function describeError(error: unknown): string | undefined {
   return error instanceof Error ? error.message : undefined;
 }
 
-/**
- * Everyone the server will accept as a grant subject: the GM of each campaign the owner belongs to
- * (unless that is them), and every other member of those campaigns. Loading it here rather than
- * asking for a search endpoint keeps the rule that a grant can never name a stranger.
- */
+/** Built from the owner's own campaigns, so a grant can never name a stranger. */
 async function loadShareCandidates(userId: number | null): Promise<ShareCandidate[]> {
   const campaigns = await listCampaigns();
   const byKey = new Map<string, ShareCandidate>();

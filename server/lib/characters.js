@@ -1,44 +1,24 @@
-// Builder characters (MERGE_PLAN.md Phase 2).
-//
-// A character is stored as one JSON document rather than mapped columns, because CLAUDE.md
-// requires a saved character to read back into the builder and that needs every choice-mode and
-// selection field intact — a lossy column mapping breaks `loadCharacterIntoBuilder` silently.
-// These helpers are the single place the document is parsed and the single shape it leaves in.
+// One JSON document, not mapped columns, or `loadCharacterIntoBuilder` breaks silently.
 const { characterVisibility } = require('./characterAccess');
 
 // A serialised document larger than this is not a character sheet any more; the most likely cause
 // is a portrait data URL. Rejecting it here beats storing a row nothing can load.
 const MAX_DOCUMENT_BYTES = 4 * 1024 * 1024;
 
-// `summary` is a display line, not data: it is denormalised so a party view can list a campaign's
-// characters without parsing everyone's document, and it is bounded because nothing reads it except
-// a card subtitle.
+// Denormalised so a party view needs no document, and bounded: only a card subtitle reads it.
 const MAX_SUMMARY_LENGTH = 200;
 
-/**
- * The client's one-line description of a character ("Level 5 Elf Wizard 5"). Stored verbatim and
- * never interpreted here — resolving species and class ids to names needs the content library,
- * which is the client's, so this column is the client's to write.
- */
+/** Stored verbatim: resolving ids to names needs the library, which is the client's. */
 function normaliseSummary(value) {
   if (typeof value !== 'string') return null;
   const trimmed = value.trim().slice(0, MAX_SUMMARY_LENGTH);
   return trimmed || null;
 }
 
-/**
- * The columns a summary and an access decision need, and not one byte more.
- *
- * `SELECT *` on this table reads `data`, which is the whole character document and may carry
- * megabytes of inlined pictures. A list endpoint that took it pulled every member's document out
- * of the database to print a card subtitle, which is what made the party view time out.
- */
+/** `SELECT *` reads `data`, whose inlined pictures are what timed the party view out. */
 const SUMMARY_COLUMNS = 'id, user_id, campaign_id, player_id, name, summary, visibility, schema_version, version, created_at, updated_at, deleted_at';
 
-/**
- * Row metadata, without the document. What list endpoints return. `share_token` is deliberately
- * absent: it is a credential, and it is handed out by the owner's own sharing route alone.
- */
+/** `share_token` is absent: a credential, handed out by the owner's sharing route alone. */
 function characterSummary(row) {
   if (!row || typeof row !== 'object') return null;
   return {
@@ -56,12 +36,7 @@ function characterSummary(row) {
   };
 }
 
-/**
- * The party view's row (MERGE_PLAN.md Phase 5): a summary plus the two names a member needs to
- * read it — whose character it is and which seat it sits in. Both come from joins, so they are the
- * only fields here that are not the character's own; `username` is the one column of `users` that
- * is safe to hand a campaign-mate.
- */
+/** The joined names are the only fields here that are not the character's own. */
 function campaignCharacterSummary(row, access = null) {
   const summary = characterSummary(row);
   if (!summary) return null;
@@ -69,21 +44,13 @@ function campaignCharacterSummary(row, access = null) {
     ...summary,
     owner_name: row.owner_name ?? null,
     player_name: row.player_name ?? null,
-    // A character its owner has made private still holds its seat and still fills a line in the
-    // roster — they put it there — but the sheet behind it does not open. Saying so on the row is
-    // what stops the party view offering a link that can only 404.
+    // Saying so stops the roster offering a link that can only 404.
     can_read: Boolean(access),
     can_edit: Boolean(access?.canEdit),
   };
 }
 
-/**
- * The summary plus the parsed document. A row whose JSON is unreadable reports `data: null`.
- *
- * `access` is what `resolveCharacterAccess` said about the caller; the two flags travel with the
- * sheet so a reader knows whether to offer a write surface at all. They are a courtesy — every
- * write is checked again — and `is_owner` is the one that gates anything but the document.
- */
+/** Unreadable JSON reports `data: null`; the access flags are a courtesy, rechecked on write. */
 function publicCharacter(row, access = { isOwner: true, canEdit: true }) {
   const summary = characterSummary(row);
   if (!summary) return null;
@@ -106,10 +73,7 @@ function parseDocument(row) {
   }
 }
 
-/**
- * Validate an incoming document and serialise it once. Returns `{ error }` for anything a client
- * should be told about, `{ text, name }` otherwise.
- */
+/** `{ error }` for anything a client should be told about, `{ text, name }` otherwise. */
 function serializeDocument(data, fallbackName, summary) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) {
     return { error: 'data_must_be_an_object' };

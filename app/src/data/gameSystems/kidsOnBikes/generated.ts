@@ -1,10 +1,6 @@
 // GENERATED FILE — do not edit by hand.
-// Source: an Obsidian vault of Kids on Bikes (2nd edition) notes, and the rulebook PDF for the
-// three appendices the vault has no note for.
-// Regenerate with: node scripts/import-kids-on-bikes.mjs
-//
-// Every value below is read out of those sources. Anything they do not say is absent
-// here rather than invented; `meta.warnings` records what the import could not resolve.
+// Source: an Obsidian vault of Kids on Bikes (2nd edition) notes, plus the rulebook PDF.
+// Regenerate with: node scripts/import-kids-on-bikes.mjs; `meta.warnings` records what it could not reach.
 
 import type { KidsOnBikesContent } from './types';
 

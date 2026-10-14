@@ -28,10 +28,7 @@ interface StatSpreadProps {
   className?: string;
 }
 
-/**
- * Throw a Stat Check. The Lucky Break is the tray's `explodeOnMax`, and the line under the total
- * is read off the imported difficulty table rather than a scale written into this component.
- */
+/** The line under the total is read off the imported table, not a scale written here. */
 function rollStatCheck(statId: KobStatId, die: KobDie, bonus: number, target: number | null) {
   const faces = DIE_FACES[die];
   if (!faces) return;
@@ -46,10 +43,7 @@ function rollStatCheck(statId: KobStatId, die: KobDie, bonus: number, target: nu
   });
 }
 
-/**
- * With a target, the line is the outcome table's own verdict for the margin; without one it is
- * the difficulty band the total would beat.
- */
+/** With a target it is the outcome verdict; without one, the band the total would beat. */
 function describeStatCheck(total: number, target: number | null): string | null {
   if (target === null) {
     const band = difficultyBandFor(total);
@@ -62,10 +56,7 @@ function describeStatCheck(total: number, target: number | null): string | null 
   return `${margin >= 0 ? '+' : ''}${margin}: ${verdict}`;
 }
 
-/**
- * The six stats and their dice, with the age's +1s shown against the stat they modify rather than
- * folded into the die — the die is what you roll, the +1 is what you add after.
- */
+/** The +1s show against the stat, not folded into the die: the die is what you roll. */
 export function StatSpread({ statDice, age, onChange, rollable, target = null, className }: Readonly<StatSpreadProps>) {
   const bonuses = statBonusesForAge(age);
   const editable = typeof onChange === 'function';

@@ -34,13 +34,7 @@ function describe(connection: CampaignConnection): string {
   return connection.detail ? `${connection.name} — ${connection.detail}` : connection.name;
 }
 
-/**
- * Who a relationship or a bonded action is with, picked from the table rather than typed.
- *
- * A character is stored as a pointer plus its name; a seat nobody has built a character for is
- * stored as the name alone, because there is nothing to point at. Either way `who` is what
- * survives when that person leaves the table, which is the rule this field exists to keep.
- */
+/** `who` is what survives when that person leaves the table. */
 export function PartyMateField({
   id,
   label,

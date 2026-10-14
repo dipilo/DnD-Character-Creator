@@ -1,10 +1,4 @@
-// Characters somebody else granted this account.
-//
-// Nothing notifies a grantee, so before this there was no way to find out at all: you had to be
-// sent the link or happen to open the right campaign's party page. Only explicit grants are
-// listed — a table-wide "the GM may edit my sheets here" already has a home on that campaign's
-// Party tab, and restating it under a heading that says somebody chose to share with *you* would
-// be a different claim from the one the player made.
+// Explicit grants only: a table-wide consent already has a home on the Party tab.
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Users } from 'lucide-react';

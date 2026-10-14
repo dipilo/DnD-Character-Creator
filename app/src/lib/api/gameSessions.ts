@@ -1,12 +1,7 @@
 import { api } from './client';
 import type { GameSession, SessionRoll } from './types';
 
-/**
- * Play sessions and the roll feed they collect.
- *
- * The feed is polled with `after`, the last roll id already held, so a poll asks for what is new
- * rather than for the whole session again.
- */
+/** Polled with `after`, so a poll asks for what is new rather than the whole session. */
 export async function listGameSessions(campaignId: number): Promise<{ sessions: GameSession[]; canManage: boolean }> {
   const body = await api.get<{ sessions: GameSession[]; can_manage: boolean }>(
     `/api/game-sessions?campaign_id=${encodeURIComponent(campaignId)}`,

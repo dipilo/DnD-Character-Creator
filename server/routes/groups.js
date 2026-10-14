@@ -5,9 +5,7 @@ const { getCampaignMembership, isCampaignOwner, memberHasPermission, requireAuth
 
 const router = express.Router();
 
-// Every write here repeated the same six lines of owner-or-can_manage_groups checking, and the
-// read, reorder, suggest and save-suggestion routes had no check at all — a caller who knew a
-// group id could rename or empty another campaign's table. One helper, applied everywhere.
+// One helper everywhere: read, reorder and suggest had no check at all.
 
 /** null when allowed, else the {status, error} to respond with. */
 async function checkGroupManageAccess(user, campaignId) {
@@ -131,12 +129,7 @@ router.delete('/api/groups/:id', requireAuth, async (req, res) => {
   }
 });
 
-/**
- * What a group is, beyond a name and a member list. `color` is a palette key the client defines
- * and the server keeps opaque, the same posture `system_id` and `allowed_source_ids` take; a
- * `target_size` of null is "no target". One table rather than an `if (Object.hasOwn(...))` block
- * per column, per CLAUDE.md.
- */
+/** `color` stays opaque and null `target_size` is "no target"; one table, not a branch each. */
 const GROUP_UPDATABLE_COLUMNS = [
   ['name', (value) => ({ value: typeof value === 'string' ? value.trim().slice(0, 80) : null })],
   ['notes', (value) => ({ value: typeof value === 'string' ? value.slice(0, 4000) : null })],

@@ -1,6 +1,4 @@
-// Everything that only means something while the physics surface is on screen: theme, colour,
-// size and impact sound. Split out of `DiceRollerPage` so instant-roll mode can simply not render
-// it, rather than leaving a panel of controls that change nothing.
+// Split out so instant-roll mode renders no panel of controls that change nothing.
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';

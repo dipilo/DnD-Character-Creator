@@ -1,9 +1,4 @@
-/**
- * Spell slot totals: what a class contributes at its level, and the shared pool a multiclass
- * caster draws from. Split out of `builderRules.ts` so the server can run it for the Discord
- * bot's play state (`server/lib/botPlayState.js`) — that loader uses Node's type stripping, so
- * this file may hold only `type` imports, exactly like `sheetMath.ts`.
- */
+/** Split out for the bot's loader, so this file may hold only `type` imports. */
 import type { Class, Subclass } from '@/types/dnd';
 
 /** The shape `builderRules`' `SelectedClassWithLevel` has; structural, so both callers fit. */
@@ -112,10 +107,7 @@ export const getCasterContribution = (entry: SlotClassEntry): { kind: CasterKind
   };
 };
 
-/**
- * The slots a character has: a single caster's own column, or the multiclass table at the
- * combined caster level; pact slots are summed separately because they are the Warlock's own pool.
- */
+/** The multiclass table at the combined level; pact slots sum separately. */
 export const deriveSlotTotals = (entries: SlotClassEntry[]): SlotTotals => {
   const contributions = entries.map((entry) => ({ entry, contribution: getCasterContribution(entry) }));
 

@@ -32,17 +32,9 @@ export interface ImportedContentBucket {
   feats: Feat[];
   monsters: Monster[];
   ua: Array<Record<string, unknown>>;
-  /**
-   * The actions every character can take. Not one of `contentBucketKeys` — nobody picks one — so it
-   * is neither counted in a pack's entry total nor listed in the homebrew hub. A pack generated
-   * before it carries none, which is why every read guards the array.
-   */
+  /** Uncounted and unlisted: a pack generated before it carries none, so reads guard the array. */
   combatActions?: CombatAction[];
-  /**
-   * The languages each printing tabulates. Not one of `contentBucketKeys` for the same reason
-   * `combatActions` is not: a language is picked in a slot a species or background opens, not from
-   * the library, so it is neither counted in a pack's entry total nor listed in the homebrew hub.
-   */
+  /** Uncounted for the same reason: a language is picked in a slot, not from the library. */
   languages?: LanguageOption[];
 }
 
@@ -145,7 +137,7 @@ export const contentSourceManifest: ContentSourceManifestEntry[] = [
     label: "Mordenkainen's Tome of Foes",
     category: 'supplement',
     aliases: ['mtof'],
-    description: 'Built-in species content only; no local source document is available to bundle more entries.',
+    description: 'The Gith, the elf, dwarf, gnome and tiefling lineages, Svirfneblin Magic and the bestiary, imported from 5etools.',
     file: 'src/data/sourceFiles/mordenkainens-tome-of-foes.ts'
   },
   {
@@ -153,7 +145,7 @@ export const contentSourceManifest: ContentSourceManifestEntry[] = [
     label: "Fizban's Treasury of Dragons",
     category: 'supplement',
     aliases: ['fizbans', 'ftod'],
-    description: 'Built-in species content only; no local source document is available to bundle more entries.',
+    description: 'The chromatic, metallic and gem dragonborn, the Drakewarden and Ascendant Dragon subclasses, draconic spells, feats, magic items and dragons, imported from 5etools.',
     file: 'src/data/sourceFiles/fizbans-treasury-of-dragons.ts'
   },
   {
@@ -175,7 +167,7 @@ export const contentSourceManifest: ContentSourceManifestEntry[] = [
     label: 'Eberron: Rising from the Last War',
     category: 'expansion',
     aliases: ['erlw', 'eberron'],
-    description: 'No local source document is available yet; import one with the workspace CLI to bundle entries.',
+    description: 'Eberron species and the dragonmarked lineages, the House Agent background, feats, magic items, languages and bestiary, imported from 5etools. The Artificer is credited to Tasha’s Cauldron of Everything there, so it arrives with that pack.',
     file: 'src/data/sourceFiles/eberron-rising-from-the-last-war.ts'
   },
   {
@@ -215,6 +207,78 @@ export const contentSourceManifest: ContentSourceManifestEntry[] = [
     file: 'src/data/sourceFiles/monstrous-compendium-vol-3-minecraft-creatures.ts'
   },
   {
+    id: 'scag',
+    label: "Sword Coast Adventurer's Guide",
+    category: 'supplement',
+    aliases: ['scag', 'sword coast'],
+    description: 'The Sword Coast lineages, six subclasses, the Faerun backgrounds and regional languages, imported from 5etools.',
+    file: 'src/data/sourceFiles/sword-coast-adventurers-guide.ts'
+  },
+  {
+    id: 'ravnica',
+    label: "Guildmasters' Guide to Ravnica",
+    category: 'expansion',
+    aliases: ['ggr', 'ravnica'],
+    description: 'The Ravnican species, the ten guild backgrounds, Encode Thoughts, guild equipment and bestiary, imported from 5etools.',
+    file: 'src/data/sourceFiles/guildmasters-guide-to-ravnica.ts'
+  },
+  {
+    id: 'strixhaven',
+    label: 'Strixhaven: A Curriculum of Chaos',
+    category: 'expansion',
+    aliases: ['scc', 'strixhaven'],
+    description: 'The Owlin, the five college backgrounds, Silvery Barbs and the other Strixhaven spells, both feats and the bestiary, imported from 5etools.',
+    file: 'src/data/sourceFiles/strixhaven-a-curriculum-of-chaos.ts'
+  },
+  {
+    id: 'ravenloft',
+    label: "Van Richten's Guide to Ravenloft",
+    category: 'expansion',
+    aliases: ['vrgr', 'ravenloft'],
+    description: 'The dhampir, hexblood and reborn lineages, the College of Spirits and Undead subclasses, the dread backgrounds and bestiary, imported from 5etools.',
+    file: 'src/data/sourceFiles/van-richtens-guide-to-ravenloft.ts'
+  },
+  {
+    id: 'wildemount',
+    label: "Explorer's Guide to Wildemount",
+    category: 'expansion',
+    aliases: ['egw', 'wildemount'],
+    description: 'The Wildemount lineages, the Echo Knight and the two dunamancy wizard subclasses, Wildemount backgrounds, the dunamancy spells, equipment and bestiary, imported from 5etools.',
+    file: 'src/data/sourceFiles/explorers-guide-to-wildemount.ts'
+  },
+  {
+    id: 'theros',
+    label: 'Mythic Odysseys of Theros',
+    category: 'expansion',
+    aliases: ['mot', 'theros'],
+    description: 'The Theran species, the Athlete background, equipment, languages and bestiary, imported from 5etools. Piety and the supernatural gifts have no field in this app and are not bundled.',
+    file: 'src/data/sourceFiles/mythic-odysseys-of-theros.ts'
+  },
+  {
+    id: 'bigbys',
+    label: 'Bigby Presents: Glory of the Giants',
+    category: 'supplement',
+    aliases: ['bgg', 'bigbys', 'glory of the giants'],
+    description: 'The Path of the Giant, the giant backgrounds, the giant feats, runic equipment and bestiary, imported from 5etools.',
+    file: 'src/data/sourceFiles/bigby-presents-glory-of-the-giants.ts'
+  },
+  {
+    id: 'book-of-many-things',
+    label: 'The Book of Many Things',
+    category: 'supplement',
+    aliases: ['bmt', 'book of many things', 'deck of many things'],
+    description: 'The Rewarded and Ruined backgrounds, the Cartomancer feat, card spells, the deck magic items and bestiary, imported from 5etools.',
+    file: 'src/data/sourceFiles/the-book-of-many-things.ts'
+  },
+  {
+    id: 'elemental-evil',
+    label: "Elemental Evil Player's Companion",
+    category: 'supplement',
+    aliases: ['eepc', 'elemental evil', 'princes of the apocalypse'],
+    description: 'The aarakocra, genasi, goliath and deep gnome, and the elemental spells, imported from 5etools. The spells are credited there to their reprint, so this pack is imported with reprints included.',
+    file: 'src/data/sourceFiles/elemental-evil-players-companion.ts'
+  },
+  {
     id: 'homebrew',
     label: 'Homebrew',
     category: 'homebrew',
@@ -252,10 +316,7 @@ export const resolveSourceId = (sourceId: string | undefined, sourceText: string
     return undefined;
   }
 
-  // Prefer an exact label/alias match, then the longest partial overlap. Taking the first
-  // partial match instead would let a short alias shadow a more specific sibling source —
-  // e.g. "Basic Rules 2024" contains the 2014 alias "basic rules" and would resolve to the
-  // wrong edition.
+  // Never first-match: a short alias would shadow a more specific sibling source.
   let bestPartialId: string | undefined;
   let bestPartialLength = 0;
 
@@ -286,10 +347,7 @@ export const sourceMatchesSelection = (
   return selectedSourceIds.some((selectedId) => {
     const compatibleIds = sourceSelectionFamilies[selectedId] ?? [selectedId];
 
-    // When the content's canonical source id is known, match strictly against the selected
-    // family. Fuzzy text matching is only a fallback for content without a resolvable id;
-    // using it here would wrongly match e.g. "Basic Rules (2024)" against the 2014 alias
-    // "basic rules", so the two editions could not be filtered independently.
+    // Fuzzy matching is only a fallback for content with no resolvable id.
     if (resolvedSourceId) {
       return compatibleIds.includes(resolvedSourceId);
     }

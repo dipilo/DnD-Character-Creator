@@ -1,11 +1,4 @@
-/**
- * What the character is carrying, and what it weighs.
- *
- * Derivation, not state: every weight comes from the catalogue entry the loadout already resolves,
- * and the purse is the one number a player types. Nothing here names an item — an entry the
- * catalogue does not know simply weighs nothing, the same way an unresolved spell prints only its
- * name.
- */
+/** Derived from the catalogue; an entry it does not know simply weighs nothing. */
 import type { ResolvedEquipmentSelection } from '@/lib/builderRules';
 import type { Character, CoinUnit } from '@/types/dnd';
 import { COIN_UNITS, getCoins } from '@/lib/sheetPlayState';

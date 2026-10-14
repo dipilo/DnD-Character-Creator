@@ -95,9 +95,7 @@ router.post('/api/players', requireAuth, async (req, res) => {
         await mergeInsertAvailability(created.id, block.start_iso, block.end_iso, 'sheet');
       }
     }
-  // Whether making a seat also takes it is the table's setting, not a rule (`lib/seatClaim.js`).
-  // A player who is not the owner takes the first seat they make by default, which is what almost
-  // everyone was doing by hand immediately afterwards.
+  // A non-owner takes the first seat they make, which everyone was doing by hand.
   const campaign = await db.get('SELECT * FROM campaigns WHERE id = ?', campaignId);
   const mode = resolveAutoClaimMode(campaign, mem);
   if (shouldAutoClaim(mode, mem.player_id)) {
@@ -226,9 +224,7 @@ router.delete('/api/players/:id', requireAuth, async (req, res) => {
   }
 });
 
-// reorder players (body: { ids: [id1, id2, ...] }) -> sets sort_index according to array order
-// This route took no auth at all before Phase 1b: anyone who could guess a player id could
-// shuffle another campaign's roster. Membership in every affected campaign is now required.
+// Took no auth before Phase 1b: anyone guessing an id could shuffle another roster.
 router.post('/api/players/reorder', requireAuth, async (req, res) => {
   try {
     const ids = req.body?.ids;

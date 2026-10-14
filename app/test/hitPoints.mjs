@@ -1,12 +1,5 @@
-// What a character's classes and Constitution say their hit points are.
-//
-// The arithmetic failed silently once: a later class's first level was counted twice, so a
-// Fighter 3 / Rogue 1 read 42 rather than 35 and nothing errored. `builderRules.ts` sits behind
-// Vite's `@/` alias, so this loads it through Node's own type stripping with `aliasLoader.mjs`
-// resolving the alias; a value import that reaches into React or the content packs fails the
-// import, which is loud.
-//
-// Run with `npm run test:hit-points` from the workspace root.
+// A later class's first level was once counted twice, silently.
+// Run with `npm run test:hit-points`.
 import assert from 'node:assert/strict';
 
 const { deriveCharacterHitPoints } = await import('@/lib/builderRules');

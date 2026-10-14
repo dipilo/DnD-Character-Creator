@@ -7,10 +7,7 @@ import {
   type ThemeTokens,
 } from '@/data/gameSystems';
 
-/**
- * Light is kept whole — every token, every component — even though no control switches to it
- * today. Reintroducing a toggle is then one control, not a re-derivation of the palette.
- */
+/** Kept whole, so reintroducing a toggle is one control rather than a re-derivation. */
 export type ThemeMode = 'dark' | 'light';
 
 interface ThemeState {
@@ -59,13 +56,7 @@ export const useThemeStore = create<ThemeState>()(
   ),
 );
 
-/**
- * The system the current route belongs to, or null off any system's builder.
- *
- * Deliberately a module variable rather than store state: the route is the router's to own, and
- * writing it into the store from a component would be `setState` mirroring external state, which
- * CLAUDE.md rules out. `setRoutePalette` is a DOM write, not a render input.
- */
+/** A module variable: the route is the router's, and this is a DOM write, not a render input. */
 let routePaletteId: GameSystemId | null = null;
 
 function resolvePaletteId(state: ThemeState): GameSystemId {
@@ -92,10 +83,7 @@ function withAccentHue(tokens: ThemeTokens, hue: number | null): ThemeTokens {
   return rotated;
 }
 
-/**
- * Writes the resolved theme onto the document. Called at boot, from the store subscription and
- * from `setRoutePalette` — never from React state, so there is no frame of the wrong palette.
- */
+/** Never from React state, so there is no frame of the wrong palette. */
 export function renderTheme(): void {
   const state = useThemeStore.getState();
   const root = document.documentElement;
@@ -119,10 +107,7 @@ export function setRoutePalette(paletteId: GameSystemId | null): void {
   renderTheme();
 }
 
-/**
- * Applies the persisted theme and keeps the document in step with it. Called once from `main.tsx`,
- * outside React, for the same reason auth hydration is.
- */
+/** Called once from `main.tsx`, outside React, as auth hydration is. */
 export function startThemeWatcher(): void {
   renderTheme();
   useThemeStore.subscribe(() => renderTheme());

@@ -1,14 +1,4 @@
-// The Pre-Game Form (Kids on Bikes, Appendix A).
-//
-// A form belongs to the member who wrote it and is scoped to one campaign. Three readers, three
-// routes, and they are not interchangeable:
-//
-//   - its author reads and writes their own (`/api/pre-game-form`);
-//   - the campaign owner reads every one of them, with names (`/api/pre-game-forms`);
-//   - anyone at the table reads the compiled merge, with none (`/api/pre-game-form/summary`).
-//
-// The merge is computed here rather than in the client for that last reason: a client that could
-// assemble it would have had to be handed the forms first.
+// Three readers, three routes; the merge is computed here so no client is handed the forms.
 const express = require('express');
 const db = require('../db');
 const { compileForms, normaliseForm, publicForm } = require('../lib/preGameForm');
@@ -23,10 +13,7 @@ function campaignIdFrom(source) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
 }
 
-/**
- * Resolve the caller's membership, or the response to send instead. Reading a form is not a
- * permission the owner grants: every member has one and every member may read the merge.
- */
+/** Reading a form is not a granted permission: every member may read the merge. */
 async function requireMember(req, res, campaignId) {
   if (campaignId === null) {
     res.status(400).json({ error: 'campaign_id required' });

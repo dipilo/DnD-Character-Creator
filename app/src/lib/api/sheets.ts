@@ -8,15 +8,7 @@ import type {
   SheetSyncRequest,
 } from './types';
 
-/**
- * Google Sheets intake (MERGE_PLAN.md §20).
- *
- * The schema is fetched rather than declared here: `server/lib/sheetIntake.js` is the single
- * definition of what the template asks and which seat column each answer lands in, and the
- * importer reads the same one. A copy in the client is a copy that drifts.
- *
- * These routes answer `{ ok, ... }`, unlike `/api/players` — see the envelope note in CLAUDE.md.
- */
+/** The schema is fetched, not declared: a copy in the client is a copy that drifts. */
 export async function fetchIntakeTemplate(): Promise<SheetIntakeTemplate> {
   const body = await api.get<{ fields: SheetIntakeTemplate['fields']; templates: SheetIntakeTemplate['templates'] }>(
     '/api/sheet-template',
@@ -34,10 +26,7 @@ export async function fetchSheetColumns(spreadsheetId: string, gid?: string): Pr
   return await api.post('/api/sheet-columns', { spreadsheetId, gid });
 }
 
-/**
- * Asks the server what an import *would* do. Same body as the real thing plus `dry_run`, and the
- * same response shape, so the preview and the result render through one component.
- */
+/** Same body plus `dry_run` and the same shape, so one component renders both. */
 export async function previewSheetImport(request: SheetSyncRequest): Promise<SheetPreview> {
   return await api.post<SheetPreview>('/api/sync', { ...request, dry_run: true });
 }

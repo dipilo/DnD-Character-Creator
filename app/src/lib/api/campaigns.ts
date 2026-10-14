@@ -1,11 +1,7 @@
 import { api } from './client';
 import type { AutoClaimMode, Campaign, CampaignMember, CampaignPermissions, Player, UnclaimedPlayer } from './types';
 
-/**
- * Campaigns and their membership (MERGE_PLAN.md Phase 4). Every campaign-scoped route on the
- * server resolves the campaign and checks membership, so a 403 `not_a_member` here is the
- * boundary working, not a bug to route around.
- */
+/** A 403 `not_a_member` is the boundary working, not something to route around. */
 export async function listCampaigns(): Promise<Campaign[]> {
   const body = await api.get<{ campaigns: Campaign[] }>('/api/campaigns');
   return body.campaigns ?? [];
@@ -27,10 +23,7 @@ export async function setCampaignSystem(campaignId: number, systemId: string): P
   return body.campaign;
 }
 
-/**
- * What a campaign grants people as they arrive. `member` covers every join; `invite` seeds new
- * invite links, which can still carry a blob of their own.
- */
+/** `member` covers every join; `invite` seeds links that can still carry their own blob. */
 export async function setCampaignDefaultPermissions(
   campaignId: number,
   scope: 'member' | 'invite',
@@ -41,19 +34,13 @@ export async function setCampaignDefaultPermissions(
   return body.campaign;
 }
 
-/**
- * The sources this table plays with (MERGE_PLAN.md Phase 5). Owner-only, and an empty list means no
- * restriction — the same thing an empty selection means in the builder's own source filter.
- */
+/** Owner-only, and an empty list is no restriction, as in the builder's own filter. */
 export async function setCampaignSources(campaignId: number, sourceIds: string[]): Promise<Campaign> {
   const body = await api.put<{ campaign: Campaign }>(`/api/campaigns/${campaignId}`, { allowed_source_ids: sourceIds });
   return body.campaign;
 }
 
-/**
- * Read a permission blob the server stored verbatim. Bad JSON reads as "grants nothing" rather
- * than throwing inside a render — the same posture `parseAllowedSourceIds` takes below.
- */
+/** Bad JSON reads as "grants nothing" rather than throwing inside a render. */
 export function parsePermissionBlob(blob: string | null | undefined): CampaignPermissions {
   if (!blob) return {};
   try {
@@ -65,11 +52,7 @@ export function parsePermissionBlob(blob: string | null | undefined): CampaignPe
   }
 }
 
-/**
- * Read a campaign's allowed sources. The server stores the array as JSON text and does not
- * interpret it, so this is the single place the client parses it — bad JSON reads as "unrestricted"
- * rather than throwing inside a render.
- */
+/** The single place the client parses it; bad JSON reads as unrestricted. */
 export function parseAllowedSourceIds(campaign: Pick<Campaign, 'allowed_source_ids'> | null | undefined): string[] {
   if (!campaign?.allowed_source_ids) return [];
   try {
@@ -128,10 +111,7 @@ export async function updateMemberPermissions(
   return body.member;
 }
 
-/**
- * Remove someone from a campaign. Owner-only, and it takes back only what membership granted: the
- * seat goes back to unclaimed and their characters leave the table, neither is deleted.
- */
+/** Takes back the membership only: the seat unclaims and the characters leave, undeleted. */
 export async function removeCampaignMember(campaignId: number, memberId: number): Promise<void> {
   await api.delete(`/api/campaigns/${campaignId}/members/${memberId}`);
 }
@@ -147,10 +127,7 @@ export async function addSelfAsPlayer(campaignId: number): Promise<Player> {
   return body.player;
 }
 
-/**
- * Seats nobody owns yet. Deliberately readable without a session so an invite landing page can
- * show them before the visitor has an account.
- */
+/** Readable without a session, so an invite landing page can show them. */
 export async function listUnclaimedPlayers(campaignId: number): Promise<UnclaimedPlayer[]> {
   const body = await api.get<{ players: UnclaimedPlayer[] }>(`/api/campaigns/${campaignId}/unclaimed-players`);
   return body.players ?? [];
@@ -200,10 +177,7 @@ export async function setMemberAutoClaim(
   return body.member;
 }
 
-/**
- * Whether this table asks its players to let the GM edit their characters. Owner-only, and it is
- * only the question: nothing is granted until each player answers it themselves.
- */
+/** Owner-only, and only the question: nothing is granted until a player answers. */
 export async function setCampaignCharacterEditRequest(campaignId: number, requested: boolean): Promise<Campaign> {
   const body = await api.put<{ campaign: Campaign }>(`/api/campaigns/${campaignId}`, {
     requests_character_edit: requested,
@@ -211,10 +185,7 @@ export async function setCampaignCharacterEditRequest(campaignId: number, reques
   return body.campaign;
 }
 
-/**
- * The caller's own answer to that ask. It covers every character they seat at this table, now and
- * later, and only they can write it — the owner cannot grant it to themselves.
- */
+/** Covers every character they seat here; the owner cannot grant it to themselves. */
 export async function setCharacterEditConsent(campaignId: number, consent: boolean): Promise<CampaignMember> {
   const body = await api.put<{ membership: CampaignMember }>(
     `/api/campaigns/${campaignId}/character-edit-consent`,

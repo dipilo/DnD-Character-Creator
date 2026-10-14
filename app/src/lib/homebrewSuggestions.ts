@@ -3,10 +3,7 @@ import { useContentLibrary } from '@/data/runtimeContent';
 import { defaultLanguageOptions, skillNames } from '@/lib/builderRules';
 import type { Proficiency } from '@/types/dnd';
 
-// Builds autocomplete suggestion pools for the Homebrew Workbench's free-text
-// fields entirely from data already loaded into the content library (imported
-// sources plus other homebrew entries), so suggestions grow with the library
-// instead of duplicating book content as hardcoded strings here.
+// Built from the content library, so suggestions grow with it rather than being hardcoded.
 
 // Case-insensitive dedupe that keeps the first-seen casing, so "Light Armor"
 // and "light armor" from different sources collapse into one suggestion.
@@ -21,12 +18,7 @@ function collectDistinct(values: Iterable<string | undefined | null>): string[] 
   return [...canonicalByKey.values()].sort((a, b) => a.localeCompare(b));
 }
 
-// Stricter than collectDistinct: for fields whose real values are short,
-// singular nouns (a skill, a tool, a language, an armor/weapon category),
-// source data occasionally leaks full sentences instead of a clean item
-// name (a "choose one of..." instruction, or a monster's prose language
-// note). Those aren't picked items, so they make unusable suggestions -
-// drop anything that reads like a sentence fragment rather than a name.
+// Drops anything reading like a sentence: source data leaks prose into short-noun fields.
 const SENTENCE_FRAGMENT_LEAD = /^(choose|and|or|all|any|as|the|see|another|other)\b/i;
 // Trailing "property"/"properties" means the source text was describing a
 // rule ("weapons with the Light property"), not naming a pickable item.
@@ -65,9 +57,7 @@ export function useHomebrewSuggestions() {
     ]);
     const armorProficiencies = collectAtomicItems(classes.flatMap((entry) => entry.armorProficiencies));
     const weaponProficiencies = collectAtomicItems(classes.flatMap((entry) => entry.weaponProficiencies));
-    // Monster stat blocks' "Languages" line is often free prose ("understands
-    // Common but can't speak", or worse, misaligned parser output) rather
-    // than a clean language name, so it's excluded as a suggestion source.
+    // A monster's Languages line is often prose, so it is not a suggestion source.
     const languages = collectAtomicItems([...defaultLanguageOptions, ...species.flatMap((entry) => entry.languages ?? [])]);
 
     const proficiencyNames = collectDistinct([...skills, ...toolProficiencies, ...armorProficiencies, ...weaponProficiencies, ...languages]);

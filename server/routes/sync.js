@@ -11,11 +11,7 @@ const { canUserModifyPlayer, getCampaignMembership, isCampaignOwner, memberHasPe
 
 const router = express.Router();
 
-/**
- * The plan, in the shape the client renders: what would be created, what would be changed on which
- * seat, and what was skipped and why. Returned by both the dry run and the real write so the
- * preview and the result read identically.
- */
+/** Returned by the dry run and the real write alike, so both read identically. */
 function summarisePlan(plan, seats) {
   const seatNames = new Map(seats.map((seat) => [seat.id, seat.name || seat.discord || `#${seat.id}`]));
   return {
@@ -49,13 +45,9 @@ router.get('/api/sheet-template', requireAuth, (req, res) => {
   });
 });
 
-// The three routes below all took no authentication at all. They make the server fetch a
-// caller-supplied URL, rewrite a campaign's whole roster, or forward a body to the configured
-// Apps Script endpoint, so all three now require a session (and campaign rights where relevant).
+// All three fetch, rewrite or forward on request, so all three need a session now.
 
-// endpoint: POST /api/sheet-columns { spreadsheetId, gid?, sheetName? }
-// Answers with the sheet's headers *and* the mapping they auto-resolve to, so the client shows a
-// filled-in mapping the DM corrects rather than an empty one they have to build.
+// Returns the headers *and* their auto-mapping, so the DM corrects rather than builds.
 router.post('/api/sheet-columns', requireAuth, async (req, res) => {
   try {
     const raw = req.body.spreadsheetId || req.body.sheetId || req.body.sheetLink;
@@ -74,21 +66,7 @@ router.post('/api/sheet-columns', requireAuth, async (req, res) => {
   }
 });
 
-/* ---------- endpoints ---------- */
-
-/**
- * Imports a sheet's rows into one campaign's roster.
- *
- * The version this replaced derived each player's id from the sheet's **row index**
- * (`row.id ? Number(row.id) : idx + 1`) and wrote `INSERT OR REPLACE INTO players (id, ...)`.
- * Importing a five-row sheet therefore overwrote players 1–5 across the *entire database*,
- * whichever campaigns they belonged to, blanked every column the sheet had no answer for, and
- * un-claimed any seat it landed on. Rows are matched against this campaign's own seats now
- * (`planSheetImport`), unmatched rows become new seats with server-assigned ids, and a blank
- * answer means "no opinion" rather than "clear the column".
- *
- * `dryRun` returns the same plan without writing, which is what the client previews.
- */
+/** Rows match this campaign's own seats; a blank answer is no opinion, not a clear. */
 router.post('/api/sync', requireAuth, async (req, res) => {
   try {
     const input = req.body.spreadsheetId || req.body.sheetLink || req.body.sheet || config.spreadsheetId;
@@ -101,9 +79,7 @@ router.post('/api/sync', requireAuth, async (req, res) => {
 
     const mem = await getCampaignMembership(req.user.id, campaignId);
     if (!mem) return res.status(403).json({ error: 'not_a_member' });
-    // An import rewrites seats that are not the caller's, so it takes the right over other
-    // people's seats as well as the right to make one. `can_create_players` alone is the default
-    // every arrival holds — gating on it by itself let any member rewrite the whole roster.
+    // `can_create_players` is every arrival's default, so it cannot gate this alone.
     const mayImport = memberHasPermission(mem, 'can_create_players') && memberHasPermission(mem, 'can_delete_players');
     if (!await isCampaignOwner(req.user.id, campaignId) && !mayImport) {
       return res.status(403).json({ error: 'forbidden' });
@@ -164,9 +140,7 @@ router.post('/api/sync', requireAuth, async (req, res) => {
       }
     });
 
-    // Preference names resolve to ids and availability re-parses outside the transaction: both
-    // read rows the transaction has only just written, and both are idempotent if a later one
-    // fails. `campaign_members` gets a seat row per created player so unclaimed seats still list.
+    // Outside the transaction: both read rows it just wrote, and both are idempotent.
     for (const seat of touched) {
       if (seat.created) {
         try {
