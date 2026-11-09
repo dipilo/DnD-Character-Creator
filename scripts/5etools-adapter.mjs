@@ -75,6 +75,11 @@ const INLINE_TAG_TEXT = {
   damage: (body) => String(body).split('|')[0],
   scaledice: (body) => String(body).split('|')[0],
   scaledamage: (body) => String(body).split('|')[0],
+  // `{@filter 1/4|bestiary|challenge rating=[&0;&1/4]|type=beast|…}` leads with its display text
+  // and follows with the query, so the generic "third field wins" rule printed the query: the
+  // Beast Shapes table's Max CR column read `challenge rating=[&0;&1/4]` and every row was
+  // rejected as unparseable, which left the Druid with no Wild Shape forms at all.
+  filter: (body) => String(body).split('|')[0],
   // These carry a chapter, a page or an owner where another tag carries its display text.
   book: (body) => String(body).split('|')[0],
   adventure: (body) => String(body).split('|')[0],
@@ -109,7 +114,9 @@ const renderEntries = (entries, depth = 0) => {
   if (typeof entries === 'string') return stripInlineTags(entries);
   if (typeof entries === 'number') return String(entries);
   if (Array.isArray(entries)) {
-    return entries.map((entry) => renderEntries(entry, depth)).filter(Boolean).join(' ');
+    // Newlines, not spaces: each item is the book's own paragraph or labelled block, and joining
+    // them with a space ran Wild Shape's seven labelled paragraphs into one wall of prose.
+    return entries.map((entry) => renderEntries(entry, depth)).filter(Boolean).join('\n');
   }
   if (typeof entries !== 'object') return '';
 
@@ -122,7 +129,12 @@ const renderEntries = (entries, depth = 0) => {
       return `${name}${renderEntries(entries.entries, depth + 1)}`.trim();
     }
     case 'list':
-      return (entries.items ?? []).map((item) => renderEntries(item, depth + 1)).filter(Boolean).join(' ');
+      // A bullet per line, with the marker the text renderer already splits on.
+      return (entries.items ?? [])
+        .map((item) => renderEntries(item, depth + 1))
+        .filter(Boolean)
+        .map((item) => `• ${item}`)
+        .join('\n');
     case 'item':
     case 'itemSpell':
     case 'itemSub': {

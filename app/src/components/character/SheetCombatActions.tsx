@@ -36,7 +36,9 @@ export function SheetCombatActions({ actions }: Readonly<{ actions: readonly She
             onClick={() => setOpenId(entry.id)}
           >
             {entry.name}
-            {index < sorted.length - 1 ? <span className="text-muted-foreground">,</span> : null}
+            {/* Punctuation between the chips, not part of the control's name: without `aria-hidden`
+                every one of these announces itself as "Dash," comma included. */}
+            {index < sorted.length - 1 ? <span aria-hidden="true" className="text-muted-foreground">,</span> : null}
           </button>
         ))}
       </div>

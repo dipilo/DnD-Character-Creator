@@ -90,7 +90,7 @@ export const contentSourceManifest: ContentSourceManifestEntry[] = [
     label: "Player's Handbook (2024)",
     category: 'core',
     aliases: ["player's handbook 2024", 'phb 2024', '2024 phb'],
-    description: 'The revised 2024 player rules. The local PHB(2024) document only covers the table of contents, so the free 2024 core content is bundled under Basic Rules (2024); import a full dump to bundle PHB-exclusive entries.',
+    description: 'The revised 2024 player rules, imported from 5etools: 34 species, all twelve classes with 48 subclasses, 16 backgrounds, 391 spells, 217 items, 80 feats and the Actions in Combat list. Grapple and Shove are Unarmed Strike options there, so they arrive with Basic Rules (2024).',
     file: 'src/data/sourceFiles/phb-2024.ts'
   },
   {
@@ -160,7 +160,8 @@ export const contentSourceManifest: ContentSourceManifestEntry[] = [
     label: "Volo's Guide to Monsters",
     category: 'supplement',
     aliases: ['volos', 'vgtm'],
-    description: 'Playable monstrous species from the 2016 supplement, shipped as built-in app content.'
+    description: 'The thirteen playable monstrous species from the 2016 supplement, imported from 5etools with the reprint notes that keep their traits apart from the Monsters of the Multiverse versions, plus its bestiary and languages.',
+    file: 'src/data/sourceFiles/volos-guide-to-monsters.ts'
   },
   {
     id: 'erlw',

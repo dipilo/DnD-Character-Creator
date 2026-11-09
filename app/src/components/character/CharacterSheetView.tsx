@@ -658,6 +658,7 @@ export function CharacterSheetView({
                 character={character}
                 shift={shift}
                 monsters={monsters}
+                resource={classResources.find((entry) => entry.featureName === shift.feature.name)}
                 onChange={onChange}
               />
             ) : null}

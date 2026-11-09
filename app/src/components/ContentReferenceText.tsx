@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 const referenceTargets = new Map<string, { label: string; to: string }>([
   ['equipment', { label: 'Equipment', to: '/builder/equipment' }],
@@ -210,37 +211,41 @@ function TableBlock({ rows, keyPrefix }: Readonly<{ rows: readonly string[]; key
   const columns = Math.max(...cells.map((row) => row.length));
   const [heading = [], ...body] = cells;
 
+  // Each row is a grid of its own rather than `display: contents` over one shared grid: Chromium
+  // drops a `display: contents` element from the accessibility tree, which left the rows and cells
+  // unreachable to a screen reader and to `getByRole('row')`. One shared `1fr` template is what
+  // keeps the columns lined up across separate grids.
+  const template = { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` };
+  const cellsOf = (row: readonly string[], rowKey: string, heading = false) =>
+    Array.from({ length: columns }, (_, column) => {
+      const value = row[column] ?? '';
+      return (
+        <span
+          key={`${rowKey}-${column}`}
+          role={heading ? 'columnheader' : 'cell'}
+          className={cn(
+            heading && 'border-b pb-1 text-xs font-medium uppercase tracking-wide text-foreground',
+            !heading && isNumericCell(value) && 'tabular-nums'
+          )}
+        >
+          {value}
+        </span>
+      );
+    });
+
   return (
-    <span
-      role="table"
-      className="my-2 grid gap-x-3 gap-y-1 text-sm"
-      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, auto))` }}
-    >
-      <span role="row" className="contents">
-        {Array.from({ length: columns }, (_, column) => (
-          <span
-            key={`${keyPrefix}-head-${column}`}
-            role="columnheader"
-            className="border-b pb-1 text-xs font-medium uppercase tracking-wide text-foreground"
-          >
-            {heading[column] ?? ''}
-          </span>
-        ))}
+    <span role="table" className="my-2 block text-sm">
+      <span role="row" className="grid gap-x-3" style={template}>
+        {cellsOf(heading, `${keyPrefix}-head`, true)}
       </span>
       {body.map((row, index) => (
-        <span key={`${keyPrefix}-row-${index}-${row[0] ?? ''}`} role="row" className="contents">
-          {Array.from({ length: columns }, (_, column) => {
-            const value = row[column] ?? '';
-            return (
-              <span
-                key={`${keyPrefix}-cell-${index}-${column}`}
-                role="cell"
-                className={isNumericCell(value) ? 'tabular-nums' : undefined}
-              >
-                {value}
-              </span>
-            );
-          })}
+        <span
+          key={`${keyPrefix}-row-${index}-${row[0] ?? ''}`}
+          role="row"
+          className="grid gap-x-3 gap-y-1"
+          style={template}
+        >
+          {cellsOf(row, `${keyPrefix}-cell-${index}`)}
         </span>
       ))}
     </span>

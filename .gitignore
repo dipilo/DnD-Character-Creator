@@ -55,3 +55,8 @@ app/info.md
 
 # Downloaded 5etools data tree (licensed content stays out of the repo)
 .cache/
+
+test-results/
+playwright-report/
+blob-report/
+.playwright/

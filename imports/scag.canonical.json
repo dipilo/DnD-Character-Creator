@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source SCAG).",
     "origin": "imported-json",
-    "importedAt": "2026-11-09T04:38:21.653Z",
+    "importedAt": "2026-11-09T16:27:55.254Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -742,7 +742,7 @@
           {
             "id": "scag-half-elf-variant-moon-elf-or-sun-elf-descent-cantrip-variant-feature-cantrip-4",
             "name": "Variant Feature; Cantrip",
-            "description": "You know one cantrip of your choice from the class=wizard. Intelligence is your spellcasting ability for it.",
+            "description": "You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
@@ -1366,7 +1366,7 @@
       {
         "id": "scag-halfling-ghostwise",
         "name": "Halfling (Ghostwise)",
-        "description": "Ghostwise halflings trace their ancestry back to a war among halfling tribes that sent their ancestors into flight from Luiren. Ghostwise halflings are the rarest of the hin, found only in the Chondalwood and a few other isolated forests, clustered in tight-knit clans. Many ghostwise clans select a natural landmark as the center of their territory, and members carry a piece of that landmark with them at all times.",
+        "description": "Ghostwise halflings trace their ancestry back to a war among halfling tribes that sent their ancestors into flight from Luiren. Ghostwise halflings are the rarest of the hin, found only in the Chondalwood and a few other isolated forests, clustered in tight-knit clans.\nMany ghostwise clans select a natural landmark as the center of their territory, and members carry a piece of that landmark with them at all times.",
         "size": "Small",
         "speed": 25,
         "abilityScoreIncreases": [
@@ -1820,14 +1820,14 @@
           {
             "id": "scag-path-of-the-battlerager-battlerager-armor-1",
             "name": "Battlerager Armor",
-            "description": "When you choose this path at 3rd level, you gain the ability to use spiked armor as a weapon. While you are wearing spiked armor and are raging, you can use a bonus action to make one melee weapon attack with your armor spikes at a target within 5 feet of you. If the attack hits, the spikes deal 1d4 piercing damage. You use your Strength modifier for the attack and damage rolls. Additionally, when you use the Attack action to grapple a creature, the target takes 3 piercing damage if your grapple check succeeds.",
+            "description": "When you choose this path at 3rd level, you gain the ability to use spiked armor as a weapon.\nWhile you are wearing spiked armor and are raging, you can use a bonus action to make one melee weapon attack with your armor spikes at a target within 5 feet of you. If the attack hits, the spikes deal 1d4 piercing damage. You use your Strength modifier for the attack and damage rolls.\nAdditionally, when you use the Attack action to grapple a creature, the target takes 3 piercing damage if your grapple check succeeds.",
             "level": 3,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-path-of-the-battlerager-restriction-dwarves-only-2",
             "name": "Restriction—Dwarves Only",
-            "description": "Only dwarves can follow the Path of the Battlerager. The battlerager fills a particular niche in dwarven society and culture. Your DM can lift this restriction to better suit the campaign. The restriction exists for the Forgotten Realms. It might not apply to your DM's setting or your DM's version of the Realms.",
+            "description": "Only dwarves can follow the Path of the Battlerager. The battlerager fills a particular niche in dwarven society and culture.\nYour DM can lift this restriction to better suit the campaign. The restriction exists for the Forgotten Realms. It might not apply to your DM's setting or your DM's version of the Realms.",
             "level": 3,
             "source": "Sword Coast Adventurer's Guide"
           },
@@ -1865,35 +1865,35 @@
           {
             "id": "scag-arcana-domain-arcana-domain-0",
             "name": "Arcana Domain",
-            "description": "Magic is an energy that suffuses the multiverse and that fuels both destruction and creation. Gods of the Arcana domain know the secrets and potential of magic intimately. For some of these gods, magical knowledge is a great responsibility that comes with a special understanding of the nature of reality. Other gods of Arcana see magic as pure power, to be used as its wielder sees fit. The gods of this domain are often associated with knowledge, as learning and arcane power tend to go hand-in-hand. In the Realms, deities of this domain include SCAG and SCAG, as well as SCAG of the elven pantheon. In other worlds, this domain includes Hecate, Math Mathonwy, and Isis; the triple moon gods of Solinari, Lunitari, and Nuitari of Krynn; and Boccob, Vecna, and Wee Jas of Greyhawk. At each indicated cleric level, add the listed spells to your spells prepared. They do not count towards your limit. Arcana Domain Spells:\nCleric Level | Spells\n1st | detect magic, magic missile\n3rd | magic weapon, Nystul's magic aura\n5th | dispel magic, magic circle\n7th | arcane eye, Leomund's secret chest\n9th | planar binding, teleportation circle",
+            "description": "Magic is an energy that suffuses the multiverse and that fuels both destruction and creation. Gods of the Arcana domain know the secrets and potential of magic intimately. For some of these gods, magical knowledge is a great responsibility that comes with a special understanding of the nature of reality. Other gods of Arcana see magic as pure power, to be used as its wielder sees fit.\nThe gods of this domain are often associated with knowledge, as learning and arcane power tend to go hand-in-hand. In the Realms, deities of this domain include SCAG and SCAG, as well as SCAG of the elven pantheon. In other worlds, this domain includes Hecate, Math Mathonwy, and Isis; the triple moon gods of Solinari, Lunitari, and Nuitari of Krynn; and Boccob, Vecna, and Wee Jas of Greyhawk.\nAt each indicated cleric level, add the listed spells to your spells prepared. They do not count towards your limit.\nArcana Domain Spells:\nCleric Level | Spells\n1st | detect magic, magic missile\n3rd | magic weapon, Nystul's magic aura\n5th | dispel magic, magic circle\n7th | arcane eye, Leomund's secret chest\n9th | planar binding, teleportation circle",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-arcana-domain-arcane-initiate-1",
             "name": "Arcane Initiate",
-            "description": "When you choose this domain at 1st level, you gain proficiency in the Arcana skill, and you gain two cantrips of your choice from the class=wizard. For you, these cantrips count as cleric cantrips.",
+            "description": "When you choose this domain at 1st level, you gain proficiency in the Arcana skill, and you gain two cantrips of your choice from the wizard spell list. For you, these cantrips count as cleric cantrips.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-arcana-domain-channel-divinity-arcane-abjuration-2",
             "name": "Channel Divinity: Arcane Abjuration",
-            "description": "Starting at 2nd level, you can use your Channel Divinity to abjure otherworldly creatures. As an action, you present your holy symbol, and one celestial, elemental, fey, or fiend of your choice that is within 30 feet of you must make a Wisdom saving throw, provided that the creature can see or hear you. If the creature fails its saving throw, it is turned for 1 minute or until it takes any damage. A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly end its move in a space within 30 feet of you. It also can't take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, then the creature can use the Dodge action. After you reach 5th level, when a creature fails its saving throw against your Arcane Abjuration feature, the creature is banished for 1 minute (as in the banishment spell, no concentration required) if it isn't on its plane of origin, and its challenge rating is at or below a certain threshold, as shown below. Arcane Banishment:\nCleric level | Banishes Creatures of CR...\n5th | 1/2 or lower\n8th | 1 or lower\n11th | 2 or lower\n14th | 3 or lower\n17th | 4 or lower",
+            "description": "Starting at 2nd level, you can use your Channel Divinity to abjure otherworldly creatures.\nAs an action, you present your holy symbol, and one celestial, elemental, fey, or fiend of your choice that is within 30 feet of you must make a Wisdom saving throw, provided that the creature can see or hear you. If the creature fails its saving throw, it is turned for 1 minute or until it takes any damage.\nA turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly end its move in a space within 30 feet of you. It also can't take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, then the creature can use the Dodge action.\nAfter you reach 5th level, when a creature fails its saving throw against your Arcane Abjuration feature, the creature is banished for 1 minute (as in the banishment spell, no concentration required) if it isn't on its plane of origin, and its challenge rating is at or below a certain threshold, as shown below.\nArcane Banishment:\nCleric level | Banishes Creatures of CR...\n5th | 1/2 or lower\n8th | 1 or lower\n11th | 2 or lower\n14th | 3 or lower\n17th | 4 or lower",
             "level": 2,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-arcana-domain-arcana-domain-3",
             "name": "Arcana Domain",
-            "description": "Magic is an energy that suffuses the multiverse and that fuels both destruction and creation. Gods of the Arcana domain know the secrets and potential of magic intimately. For some of these gods, magical knowledge is a great responsibility that comes with a special understanding of the nature of reality. Other gods of Arcana see magic as pure power, to be used as its wielder sees fit. The gods of this domain are often associated with knowledge, as learning and arcane power tend to go hand-in-hand. In the Realms, deities of this domain include SCAG and SCAG, as well as SCAG of the elven pantheon. In other worlds, this domain includes Hecate, Math Mathonwy, and Isis; the triple moon gods of Solinari, Lunitari, and Nuitari of Krynn; and Boccob, Vecna, and Wee Jas of Greyhawk. At each indicated cleric level, add the listed spells to your spells prepared. They do not count towards your limit. Arcana Domain Spells:\nCleric Level | Spells\n1st | detect magic, magic missile\n3rd | magic weapon, Nystul's magic aura\n5th | dispel magic, magic circle\n7th | arcane eye, Leomund's secret chest\n9th | planar binding, teleportation circle",
+            "description": "Magic is an energy that suffuses the multiverse and that fuels both destruction and creation. Gods of the Arcana domain know the secrets and potential of magic intimately. For some of these gods, magical knowledge is a great responsibility that comes with a special understanding of the nature of reality. Other gods of Arcana see magic as pure power, to be used as its wielder sees fit.\nThe gods of this domain are often associated with knowledge, as learning and arcane power tend to go hand-in-hand. In the Realms, deities of this domain include SCAG and SCAG, as well as SCAG of the elven pantheon. In other worlds, this domain includes Hecate, Math Mathonwy, and Isis; the triple moon gods of Solinari, Lunitari, and Nuitari of Krynn; and Boccob, Vecna, and Wee Jas of Greyhawk.\nAt each indicated cleric level, add the listed spells to your spells prepared. They do not count towards your limit.\nArcana Domain Spells:\nCleric Level | Spells\n1st | detect magic, magic missile\n3rd | magic weapon, Nystul's magic aura\n5th | dispel magic, magic circle\n7th | arcane eye, Leomund's secret chest\n9th | planar binding, teleportation circle",
             "level": 3,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-arcana-domain-channel-divinity-arcane-abjuration-4",
             "name": "Channel Divinity: Arcane Abjuration",
-            "description": "Starting at 2nd level, you can use your Channel Divinity to abjure otherworldly creatures. As an action, you present your holy symbol, and one celestial, elemental, fey, or fiend of your choice that is within 30 feet of you must make a Wisdom saving throw, provided that the creature can see or hear you. If the creature fails its saving throw, it is turned for 1 minute or until it takes any damage. A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly end its move in a space within 30 feet of you. It also can't take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, then the creature can use the Dodge action. After you reach 5th level, when a creature fails its saving throw against your Arcane Abjuration feature, the creature is banished for 1 minute (as in the banishment spell, no concentration required) if it isn't on its plane of origin, and its challenge rating is at or below a certain threshold, as shown below. Arcane Banishment:\nCleric level | Banishes Creatures of CR...\n5th | 1/2 or lower\n8th | 1 or lower\n11th | 2 or lower\n14th | 3 or lower\n17th | 4 or lower",
+            "description": "Starting at 2nd level, you can use your Channel Divinity to abjure otherworldly creatures.\nAs an action, you present your holy symbol, and one celestial, elemental, fey, or fiend of your choice that is within 30 feet of you must make a Wisdom saving throw, provided that the creature can see or hear you. If the creature fails its saving throw, it is turned for 1 minute or until it takes any damage.\nA turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly end its move in a space within 30 feet of you. It also can't take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there's nowhere to move, then the creature can use the Dodge action.\nAfter you reach 5th level, when a creature fails its saving throw against your Arcane Abjuration feature, the creature is banished for 1 minute (as in the banishment spell, no concentration required) if it isn't on its plane of origin, and its challenge rating is at or below a certain threshold, as shown below.\nArcane Banishment:\nCleric level | Banishes Creatures of CR...\n5th | 1/2 or lower\n8th | 1 or lower\n11th | 2 or lower\n14th | 3 or lower\n17th | 4 or lower",
             "level": 3,
             "source": "Sword Coast Adventurer's Guide"
           },
@@ -1931,35 +1931,35 @@
           {
             "id": "scag-purple-dragon-knight-banneret-purple-dragon-knight-banneret-0",
             "name": "Purple Dragon Knight (Banneret)",
-            "description": "Purple Dragon Knights are warriors who hail from the kingdom of Cormyr. Pledged to protect the crown, they take the fight against evil beyond the kingdom's borders. They are tasked with wandering the land as knights errant, relying on their judgment, bravery, and fidelity to guide them in defeating evildoers. A Purple Dragon Knight inspires greatness in others by committing brave deeds in battle. The mere presence of a knight in a hamlet is enough to cause some orcs and bandits to seek easier prey. A lone knight is a skilled warrior, but a knight leading a band of allies can transform even the most poorly equipped militia into a ferocious war band. A knight prefers to lead through deeds, not words. As a knight spearheads an attack, the knight's actions can awaken reserves of courage and conviction in allies that they never suspected they had.",
+            "description": "Purple Dragon Knights are warriors who hail from the kingdom of Cormyr. Pledged to protect the crown, they take the fight against evil beyond the kingdom's borders. They are tasked with wandering the land as knights errant, relying on their judgment, bravery, and fidelity to guide them in defeating evildoers.\nA Purple Dragon Knight inspires greatness in others by committing brave deeds in battle. The mere presence of a knight in a hamlet is enough to cause some orcs and bandits to seek easier prey. A lone knight is a skilled warrior, but a knight leading a band of allies can transform even the most poorly equipped militia into a ferocious war band.\nA knight prefers to lead through deeds, not words. As a knight spearheads an attack, the knight's actions can awaken reserves of courage and conviction in allies that they never suspected they had.",
             "level": 3,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-purple-dragon-knight-banneret-rallying-cry-1",
             "name": "Rallying Cry",
-            "description": "When you choose this archetype at 3rd level, you learn how to inspire your allies to fight on past their injuries. When you use your Second Wind feature, you can choose up to three creatures within 60 feet of you that are allied with you. Each one regains hit points equal to your fighter level, provided that the creature can see or hear you.",
+            "description": "When you choose this archetype at 3rd level, you learn how to inspire your allies to fight on past their injuries.\nWhen you use your Second Wind feature, you can choose up to three creatures within 60 feet of you that are allied with you. Each one regains hit points equal to your fighter level, provided that the creature can see or hear you.",
             "level": 3,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-purple-dragon-knight-banneret-restriction-knighthood-2",
             "name": "Restriction: Knighthood",
-            "description": "Purple Dragon Knights are tied to a specific order of Cormyrean knighthood. Banneret serves as the generic name for this archetype if you use it in other campaign settings or to model warlords other than the Purple Dragon Knights.",
+            "description": "Purple Dragon Knights are tied to a specific order of Cormyrean knighthood.\nBanneret serves as the generic name for this archetype if you use it in other campaign settings or to model warlords other than the Purple Dragon Knights.",
             "level": 3,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-purple-dragon-knight-banneret-royal-envoy-3",
             "name": "Royal Envoy",
-            "description": "A Purple Dragon Knight serves as an envoy of the Cormyrean crown. Knights of high standing are expected to conduct themselves with grace. At 7th level, you gain proficiency in the Persuasion skill. If you are already proficient in it, you gain proficiency in one of the following skills of your choice: Animal Handling, Insight, Intimidation, or Performance. Your proficiency bonus is doubled for any ability check you make that uses Persuasion. You receive this benefit regardless of the skill proficiency you gain from this feature.",
+            "description": "A Purple Dragon Knight serves as an envoy of the Cormyrean crown. Knights of high standing are expected to conduct themselves with grace.\nAt 7th level, you gain proficiency in the Persuasion skill. If you are already proficient in it, you gain proficiency in one of the following skills of your choice: Animal Handling, Insight, Intimidation, or Performance.\nYour proficiency bonus is doubled for any ability check you make that uses Persuasion. You receive this benefit regardless of the skill proficiency you gain from this feature.",
             "level": 7,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-purple-dragon-knight-banneret-inspiring-surge-4",
             "name": "Inspiring Surge",
-            "description": "Starting at 10th level, when you use your Action Surge feature, you can choose one creature within 60 feet of you that is allied with you. That creature can make one melee or ranged weapon attack with its reaction, provided that it can see or hear you. Starting at 18th level, you can choose two allies within 60 feet of you, rather than one.",
+            "description": "Starting at 10th level, when you use your Action Surge feature, you can choose one creature within 60 feet of you that is allied with you. That creature can make one melee or ranged weapon attack with its reaction, provided that it can see or hear you.\nStarting at 18th level, you can choose two allies within 60 feet of you, rather than one.",
             "level": 10,
             "source": "Sword Coast Adventurer's Guide"
           },
@@ -2056,14 +2056,14 @@
           {
             "id": "scag-oath-of-the-crown-oath-spells-3",
             "name": "Oath Spells",
-            "description": "You gain oath spells at the paladin levels listed. Oath of the Crown Spells:\nPaladin Level | Spells\n3rd | command, compelled duel\n5th | warding bond, zone of truth\n9th | aura of vitality, spirit guardians\n13th | banishment, guardian of faith\n17th | circle of power, geas",
+            "description": "You gain oath spells at the paladin levels listed.\nOath of the Crown Spells:\nPaladin Level | Spells\n3rd | command, compelled duel\n5th | warding bond, zone of truth\n9th | aura of vitality, spirit guardians\n13th | banishment, guardian of faith\n17th | circle of power, geas",
             "level": 3,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-oath-of-the-crown-tenets-of-the-crown-4",
             "name": "Tenets of the Crown",
-            "description": "The tenets of the Oath of the Crown are often set by the sovereign to which their oath is sworn, but generally emphasize the following tenets. Law. The law is paramount. It is the mortar that holds the stones of civilization together, and it must be respected. Loyalty. Your word is your bond. Without loyalty, oaths and laws are meaningless. Courage. You must be willing to do what needs to be done for the sake of order, even in the face of overwhelming odds. If you don't act, then who will? Responsibility. You must deal with the consequences of your actions, and you are responsible for fulfilling your duties and obligations.",
+            "description": "The tenets of the Oath of the Crown are often set by the sovereign to which their oath is sworn, but generally emphasize the following tenets.\nLaw. The law is paramount. It is the mortar that holds the stones of civilization together, and it must be respected.\nLoyalty. Your word is your bond. Without loyalty, oaths and laws are meaningless.\nCourage. You must be willing to do what needs to be done for the sake of order, even in the face of overwhelming odds. If you don't act, then who will?\nResponsibility. You must deal with the consequences of your actions, and you are responsible for fulfilling your duties and obligations.",
             "level": 3,
             "source": "Sword Coast Adventurer's Guide"
           },
@@ -2091,7 +2091,7 @@
           {
             "id": "scag-oath-of-the-crown-exalted-champion-8",
             "name": "Exalted Champion",
-            "description": "At 20th level, your presence on the field of battle is an inspiration to those dedicated to your cause. You can use your action to gain the following benefits for 1 hour: You have resistance to bludgeoning, piercing, and slashing damage from nonmagical weapons. Your allies have advantage on death saving throws while within 30 feet of you. You have advantage on Wisdom saving throws, as do your allies within 30 feet of you. This effect ends early if you are incapacitated or die. Once you use this feature, you can't use it again until you finish a long rest.",
+            "description": "At 20th level, your presence on the field of battle is an inspiration to those dedicated to your cause. You can use your action to gain the following benefits for 1 hour:\n• You have resistance to bludgeoning, piercing, and slashing damage from nonmagical weapons.\n• Your allies have advantage on death saving throws while within 30 feet of you.\n• You have advantage on Wisdom saving throws, as do your allies within 30 feet of you.\nThis effect ends early if you are incapacitated or die. Once you use this feature, you can't use it again until you finish a long rest.",
             "level": 20,
             "source": "Sword Coast Adventurer's Guide"
           }
@@ -2138,42 +2138,42 @@
           {
             "id": "scag-the-undying-the-undying-0",
             "name": "The Undying",
-            "description": "Death holds no sway over your patron, who has unlocked the secrets of everlasting life, although such a prize—like all power—comes at a price. Once mortal, the Undying has seen mortal lifetimes pass like the seasons, like the flicker of endless days and nights. It has the secrets of the ages to share, secrets of life and death. Beings of this sort include Vecna, Lord of the Hand and the Eye; the dread Iuz; the lich-queen Vol; the Undying Court of Aerenal; Vlaakith, lich-queen of the githyanki; and the deathless wizard Fistandantilus. In the Realms, Undying patrons include Larloch the Shadow King, legendary master of Warlock's Crypt, and Gilgeam, the God-King of Unther. Expanded Spell List. The Undying lets you choose from an expanded list of spells when you learn a warlock spell. The following spells are added to the warlock spell list for you. Undying Expanded Spells:\nSpell Level | Spells\n1st | false life, ray of sickness\n2nd | blindness/deafness, silence\n3rd | feign death, speak with dead\n4th | aura of life, death ward\n5th | contagion, legend lore",
+            "description": "Death holds no sway over your patron, who has unlocked the secrets of everlasting life, although such a prize—like all power—comes at a price. Once mortal, the Undying has seen mortal lifetimes pass like the seasons, like the flicker of endless days and nights. It has the secrets of the ages to share, secrets of life and death. Beings of this sort include Vecna, Lord of the Hand and the Eye; the dread Iuz; the lich-queen Vol; the Undying Court of Aerenal; Vlaakith, lich-queen of the githyanki; and the deathless wizard Fistandantilus.\nIn the Realms, Undying patrons include Larloch the Shadow King, legendary master of Warlock's Crypt, and Gilgeam, the God-King of Unther.\nExpanded Spell List. The Undying lets you choose from an expanded list of spells when you learn a warlock spell. The following spells are added to the warlock spell list for you.\nUndying Expanded Spells:\nSpell Level | Spells\n1st | false life, ray of sickness\n2nd | blindness/deafness, silence\n3rd | feign death, speak with dead\n4th | aura of life, death ward\n5th | contagion, legend lore",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-the-undying-among-the-dead-1",
             "name": "Among the Dead",
-            "description": "Starting at 1st level, you learn the spare the dying cantrip, which counts as a warlock cantrip for you. You also have advantage on saving throws against any disease. Additionally, undead have difficulty harming you. If an undead targets you directly with an attack or a harmful spell, that creature must make a Wisdom saving throw against your spell save DC (an undead needn't make the save when it includes you in an area effect, such as the explosion of fireball). On a failed save, the creature must choose a new target or forfeit targeting someone instead of you, potentially wasting the attack or spell. On a successful save, the creature is immune to this effect for 24 hours. An undead is also immune to this effect for 24 hours if you target it with an attack or a harmful spell.",
+            "description": "Starting at 1st level, you learn the spare the dying cantrip, which counts as a warlock cantrip for you. You also have advantage on saving throws against any disease.\nAdditionally, undead have difficulty harming you. If an undead targets you directly with an attack or a harmful spell, that creature must make a Wisdom saving throw against your spell save DC (an undead needn't make the save when it includes you in an area effect, such as the explosion of fireball). On a failed save, the creature must choose a new target or forfeit targeting someone instead of you, potentially wasting the attack or spell. On a successful save, the creature is immune to this effect for 24 hours. An undead is also immune to this effect for 24 hours if you target it with an attack or a harmful spell.",
             "level": 1,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-the-undying-the-undying-2",
             "name": "The Undying",
-            "description": "Death holds no sway over your patron, who has unlocked the secrets of everlasting life, although such a prize—like all power—comes at a price. Once mortal, the Undying has seen mortal lifetimes pass like the seasons, like the flicker of endless days and nights. It has the secrets of the ages to share, secrets of life and death. Beings of this sort include Vecna, Lord of the Hand and the Eye; the dread Iuz; the lich-queen Vol; the Undying Court of Aerenal; Vlaakith, lich-queen of the githyanki; and the deathless wizard Fistandantilus. In the Realms, Undying patrons include Larloch the Shadow King, legendary master of Warlock's Crypt, and Gilgeam, the God-King of Unther. Expanded Spell List. The Undying lets you choose from an expanded list of spells when you learn a warlock spell. The following spells are added to the warlock spell list for you. Undying Expanded Spells:\nSpell Level | Spells\n1st | false life, ray of sickness\n2nd | blindness/deafness, silence\n3rd | feign death, speak with dead\n4th | aura of life, death ward\n5th | contagion, legend lore",
+            "description": "Death holds no sway over your patron, who has unlocked the secrets of everlasting life, although such a prize—like all power—comes at a price. Once mortal, the Undying has seen mortal lifetimes pass like the seasons, like the flicker of endless days and nights. It has the secrets of the ages to share, secrets of life and death. Beings of this sort include Vecna, Lord of the Hand and the Eye; the dread Iuz; the lich-queen Vol; the Undying Court of Aerenal; Vlaakith, lich-queen of the githyanki; and the deathless wizard Fistandantilus.\nIn the Realms, Undying patrons include Larloch the Shadow King, legendary master of Warlock's Crypt, and Gilgeam, the God-King of Unther.\nExpanded Spell List. The Undying lets you choose from an expanded list of spells when you learn a warlock spell. The following spells are added to the warlock spell list for you.\nUndying Expanded Spells:\nSpell Level | Spells\n1st | false life, ray of sickness\n2nd | blindness/deafness, silence\n3rd | feign death, speak with dead\n4th | aura of life, death ward\n5th | contagion, legend lore",
             "level": 3,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-the-undying-defy-death-3",
             "name": "Defy Death",
-            "description": "Starting at 6th level, you can give yourself vitality when you cheat death or when you help someone else cheat it. You can regain hit points equal to 1d8 + your Constitution modifier (minimum of 1 hit point) when you succeed on a death saving throw or when you stabilize a creature with spare the dying. Once you use this feature, you can't use it again until you finish a long rest.",
+            "description": "Starting at 6th level, you can give yourself vitality when you cheat death or when you help someone else cheat it. You can regain hit points equal to 1d8 + your Constitution modifier (minimum of 1 hit point) when you succeed on a death saving throw or when you stabilize a creature with spare the dying.\nOnce you use this feature, you can't use it again until you finish a long rest.",
             "level": 6,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-the-undying-undying-nature-4",
             "name": "Undying Nature",
-            "description": "Beginning at 10th level, you can hold your breath indefinitely, and you don't require food, water, or sleep, although you still require rest to reduce exhaustion and still benefit from finishing short and long rests. In addition, you age at a slower rate. For every 10 years that pass, your body ages only 1 year, and you are immune to being magically aged.",
+            "description": "Beginning at 10th level, you can hold your breath indefinitely, and you don't require food, water, or sleep, although you still require rest to reduce exhaustion and still benefit from finishing short and long rests.\nIn addition, you age at a slower rate. For every 10 years that pass, your body ages only 1 year, and you are immune to being magically aged.",
             "level": 10,
             "source": "Sword Coast Adventurer's Guide"
           },
           {
             "id": "scag-the-undying-indestructible-life-5",
             "name": "Indestructible Life",
-            "description": "When you reach 14th level, you partake some of the true secrets of the Undying. On your turn, you can use a bonus action to regain hit points equal to 1d8 + your warlock level. Additionally, if you put a severed body part of yours back in place when you use this feature, the part reattaches. Once you use this feature, you can't use it again until you finish a short or long rest.",
+            "description": "When you reach 14th level, you partake some of the true secrets of the Undying. On your turn, you can use a bonus action to regain hit points equal to 1d8 + your warlock level. Additionally, if you put a severed body part of yours back in place when you use this feature, the part reattaches.\nOnce you use this feature, you can't use it again until you finish a short or long rest.",
             "level": 14,
             "source": "Sword Coast Adventurer's Guide"
           }
@@ -2282,7 +2282,7 @@
       {
         "id": "scag-clan-crafter",
         "name": "Clan Crafter",
-        "description": "The Stout Folk are well known for their artisanship and the worth of their handiworks, and you have been trained in that ancient tradition. For years you labored under a dwarf master of the craft, enduring long hours and dismissive, sour-tempered treatment in order to gain the fine skills you possess today. You are most likely a dwarf, but not necessarily—particularly in the North, the shield dwarf clans learned long ago that only proud fools who are more concerned for their egos than their craft turn away promising apprentices, even those of other races.",
+        "description": "The Stout Folk are well known for their artisanship and the worth of their handiworks, and you have been trained in that ancient tradition. For years you labored under a dwarf master of the craft, enduring long hours and dismissive, sour-tempered treatment in order to gain the fine skills you possess today.\nYou are most likely a dwarf, but not necessarily—particularly in the North, the shield dwarf clans learned long ago that only proud fools who are more concerned for their egos than their craft turn away promising apprentices, even those of other races.",
         "skillProficiencies": [
           "History",
           "Insight"
@@ -2370,7 +2370,7 @@
         ],
         "feature": {
           "name": "Feature: Library Access",
-          "description": "Though others must often endure extensive interviews and significant fees to gain access to even the most common archives in your library, you have free and easy access to the majority of the library, though it might also have repositories of lore that are too valuable, magical, or secret to permit anyone immediate access. You have a working knowledge of your cloister's personnel and bureaucracy, and you know how to navigate those connections with some ease. Additionally, you are likely to gain preferential treatment at other libraries across the Realms, as professional courtesy to a fellow scholar."
+          "description": "Though others must often endure extensive interviews and significant fees to gain access to even the most common archives in your library, you have free and easy access to the majority of the library, though it might also have repositories of lore that are too valuable, magical, or secret to permit anyone immediate access.\nYou have a working knowledge of your cloister's personnel and bureaucracy, and you know how to navigate those connections with some ease.\nAdditionally, you are likely to gain preferential treatment at other libraries across the Realms, as professional courtesy to a fellow scholar."
         },
         "personalityTraits": [],
         "ideals": [],
@@ -2382,7 +2382,7 @@
       {
         "id": "scag-courtier",
         "name": "Courtier",
-        "description": "In your earlier days, you were a personage of some significance in a noble court or a bureaucratic organization. You might or might not come from an upper-class family; your talents, rather than the circumstances of your birth, could have secured you this position. You might have been one of the many functionaries, attendants, and other hangers-on in the Court of Silverymoon, or perhaps you traveled in Waterdeep's baroque and sometimes cutthroat conglomeration of guilds, nobles, adventurers, and secret societies.",
+        "description": "In your earlier days, you were a personage of some significance in a noble court or a bureaucratic organization. You might or might not come from an upper-class family; your talents, rather than the circumstances of your birth, could have secured you this position.\nYou might have been one of the many functionaries, attendants, and other hangers-on in the Court of Silverymoon, or perhaps you traveled in Waterdeep's baroque and sometimes cutthroat conglomeration of guilds, nobles, adventurers, and secret societies.",
         "skillProficiencies": [
           "Insight",
           "Persuasion"
@@ -2465,7 +2465,7 @@
       {
         "id": "scag-far-traveler",
         "name": "Far Traveler",
-        "description": "Almost all of the common people and other folk that one might encounter along the Sword Coast or in the North have one thing in common: they live out their lives without ever traveling more than a few miles from where they were born. You aren't one of those folk. You are from a distant place, one so remote that few of the common folk in the North realize that it exists, and chances are good that even if some people you meet have heard of your homeland, they know merely the name and perhaps a few outrageous stories.",
+        "description": "Almost all of the common people and other folk that one might encounter along the Sword Coast or in the North have one thing in common: they live out their lives without ever traveling more than a few miles from where they were born.\nYou aren't one of those folk.\nYou are from a distant place, one so remote that few of the common folk in the North realize that it exists, and chances are good that even if some people you meet have heard of your homeland, they know merely the name and perhaps a few outrageous stories.",
         "skillProficiencies": [
           "Insight",
           "Perception"
@@ -2508,7 +2508,7 @@
         ],
         "feature": {
           "name": "Feature: All Eyes on You",
-          "description": "Your accent, mannerisms, figures of speech, and perhaps even your appearance all mark you as foreign. Curious glances are directed your way wherever you go, which can be a nuisance, but you also gain the friendly interest of scholars and others intrigued by far-off lands, to say nothing of everyday folk who are eager to hear stories of your homeland. You can parley this attention into access to people and places you might not otherwise have, for you and your traveling companions. Noble lords, scholars, and merchant princes, to name a few, might be interested in hearing about your distant homeland and people."
+          "description": "Your accent, mannerisms, figures of speech, and perhaps even your appearance all mark you as foreign. Curious glances are directed your way wherever you go, which can be a nuisance, but you also gain the friendly interest of scholars and others intrigued by far-off lands, to say nothing of everyday folk who are eager to hear stories of your homeland.\nYou can parley this attention into access to people and places you might not otherwise have, for you and your traveling companions. Noble lords, scholars, and merchant princes, to name a few, might be interested in hearing about your distant homeland and people."
         },
         "personalityTraits": [
           "I have different assumptions from those around me concerning personal space, blithely invading others' space in innocence, or reacting to ignorant invasion of my own.",
@@ -2618,7 +2618,7 @@
         ],
         "feature": {
           "name": "Feature: Inheritance",
-          "description": "Choose or randomly determine your inheritance from the possibilities in the table below. Work with your Dungeon Master to come up with details: Why is your inheritance so important, and what is its full story? You might prefer for the DM to invent these details as part of the game, allowing you to learn more about your inheritance as your character does. The Dungeon Master is free to use your inheritance as a story hook, sending you on quests to learn more about its history or true nature, or confronting you with foes who want to claim it for themselves or prevent you from learning what you seek. The DM also determines the properties of your inheritance and how they figure into the item's history and importance. For instance, the object might be a minor magic item, or one that begins with a modest ability and increases in potency with the passage of time. Or, the true nature of your inheritance might not be apparent at first and is revealed only when certain conditions are met. When you begin your adventuring career, you can decide whether to tell your companions about your inheritance right away. Rather than attracting attention to yourself, you might want to keep your inheritance a secret until you learn more about what it means to you and what it can do for you. d8 | Object or item:\n1 | A document such as a map, a letter, or a journal\n2-3 | a trinket (see \"Trinkets\" in chapter 5 of the Player's Handbook)\n4 | an article of clothing\n5 | a piece of jewelry\n6 | an arcane book or formulary\n7 | a written story, song, poem, or secret\n8 | a tattoo or other body marking"
+          "description": "Choose or randomly determine your inheritance from the possibilities in the table below. Work with your Dungeon Master to come up with details: Why is your inheritance so important, and what is its full story? You might prefer for the DM to invent these details as part of the game, allowing you to learn more about your inheritance as your character does.\nThe Dungeon Master is free to use your inheritance as a story hook, sending you on quests to learn more about its history or true nature, or confronting you with foes who want to claim it for themselves or prevent you from learning what you seek. The DM also determines the properties of your inheritance and how they figure into the item's history and importance. For instance, the object might be a minor magic item, or one that begins with a modest ability and increases in potency with the passage of time. Or, the true nature of your inheritance might not be apparent at first and is revealed only when certain conditions are met.\nWhen you begin your adventuring career, you can decide whether to tell your companions about your inheritance right away. Rather than attracting attention to yourself, you might want to keep your inheritance a secret until you learn more about what it means to you and what it can do for you.\nd8 | Object or item:\n1 | A document such as a map, a letter, or a journal\n2-3 | a trinket (see \"Trinkets\" in chapter 5 of the Player's Handbook)\n4 | an article of clothing\n5 | a piece of jewelry\n6 | an arcane book or formulary\n7 | a written story, song, poem, or secret\n8 | a tattoo or other body marking"
         },
         "personalityTraits": [],
         "ideals": [],
@@ -2661,7 +2661,7 @@
         ],
         "feature": {
           "name": "Feature: Knightly Regard",
-          "description": "You receive shelter and succor from members of your knightly order and those who are sympathetic to its aims. If your order is a religious one, you can gain aid from temples and other religious communities of your deity. Knights of civic orders can get help from the community—whether a lone settlement or a great nation—that they serve, and knights of philosophical orders can find help from those they have aided in pursuit of their ideals, and those who share their ideals. This help comes in the form of shelter and meals, and healing when appropriate, as well as occasionally risky assistance, such as a band of local citizens rallying to aid a sorely pressed knight, or those who support the order helping to smuggle a knight out of town when he or she is being hunted unjustly."
+          "description": "You receive shelter and succor from members of your knightly order and those who are sympathetic to its aims. If your order is a religious one, you can gain aid from temples and other religious communities of your deity. Knights of civic orders can get help from the community—whether a lone settlement or a great nation—that they serve, and knights of philosophical orders can find help from those they have aided in pursuit of their ideals, and those who share their ideals.\nThis help comes in the form of shelter and meals, and healing when appropriate, as well as occasionally risky assistance, such as a band of local citizens rallying to aid a sorely pressed knight, or those who support the order helping to smuggle a knight out of town when he or she is being hunted unjustly."
         },
         "personalityTraits": [],
         "ideals": [],
@@ -2746,7 +2746,7 @@
       {
         "id": "scag-uthgardt-tribe-member",
         "name": "Uthgardt Tribe Member",
-        "description": "Though you might have only recently arrived in civilized lands, you are no stranger to the values of cooperation and group effort when striving for supremacy. You learned these principles, and much more, as a member of an Uthgardt tribe. Your people have always tried to hold to the old ways.",
+        "description": "Though you might have only recently arrived in civilized lands, you are no stranger to the values of cooperation and group effort when striving for supremacy. You learned these principles, and much more, as a member of an Uthgardt tribe.\nYour people have always tried to hold to the old ways.",
         "skillProficiencies": [
           "Athletics",
           "Survival"
@@ -2785,7 +2785,7 @@
         ],
         "feature": {
           "name": "Feature: Uthgardt Heritage",
-          "description": "You have an excellent knowledge of not only your tribe's territory, but also the terrain and natural resources of the rest of the North. You are familiar enough with any wilderness area that you can find twice as much food and water as you normally would when you forage there. Additionally, you can call upon the hospitality of your people, and those allied with your tribe, often including members of the druid circles, tribes of nomadic elves, the Harpers, and the priesthoods devoted to the gods of the First Circle."
+          "description": "You have an excellent knowledge of not only your tribe's territory, but also the terrain and natural resources of the rest of the North. You are familiar enough with any wilderness area that you can find twice as much food and water as you normally would when you forage there.\nAdditionally, you can call upon the hospitality of your people, and those allied with your tribe, often including members of the druid circles, tribes of nomadic elves, the Harpers, and the priesthoods devoted to the gods of the First Circle."
         },
         "personalityTraits": [],
         "ideals": [],
@@ -2835,7 +2835,7 @@
       {
         "id": "scag-waterdhavian-noble",
         "name": "Waterdhavian Noble",
-        "description": "You are a scion of one of the great noble families of Waterdeep. Human families who jealously guard their privilege and place in the City of Splendors, Waterdhavian nobles have a reputation across Faerûn for being eccentric, spoiled, venal, and, above all else, rich. Whether you are a shining example of the reason for this reputation or one who proves the rule by being an exception, people expect things of you when they know your surname and what it means.",
+        "description": "You are a scion of one of the great noble families of Waterdeep. Human families who jealously guard their privilege and place in the City of Splendors, Waterdhavian nobles have a reputation across Faerûn for being eccentric, spoiled, venal, and, above all else, rich.\nWhether you are a shining example of the reason for this reputation or one who proves the rule by being an exception, people expect things of you when they know your surname and what it means.",
         "skillProficiencies": [
           "History",
           "Persuasion"
@@ -2878,7 +2878,7 @@
         ],
         "feature": {
           "name": "Feature: Kept in Style",
-          "description": "While you are in Waterdeep or elsewhere in the North, your house sees to your everyday needs. Your name and signet are sufficient to cover most of your expenses; the inns, taverns, and festhalls you frequent are glad to record your debt and send an accounting to your family's estate in Waterdeep to settle what you owe. This advantage enables you to live a comfortable lifestyle without having to pay 2 gp a day for it, or reduces the cost of a wealthy or aristocratic lifestyle by that amount. You may not maintain a less affluent lifestyle and use the difference as income—the benefit is a line of credit, not an actual monetary reward."
+          "description": "While you are in Waterdeep or elsewhere in the North, your house sees to your everyday needs. Your name and signet are sufficient to cover most of your expenses; the inns, taverns, and festhalls you frequent are glad to record your debt and send an accounting to your family's estate in Waterdeep to settle what you owe.\nThis advantage enables you to live a comfortable lifestyle without having to pay 2 gp a day for it, or reduces the cost of a wealthy or aristocratic lifestyle by that amount. You may not maintain a less affluent lifestyle and use the difference as income—the benefit is a line of credit, not an actual monetary reward."
         },
         "personalityTraits": [],
         "ideals": [],
@@ -3098,7 +3098,7 @@
         "rarity": "standard",
         "origin": "Calishite ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3108,7 +3108,7 @@
         "rarity": "standard",
         "origin": "Mulan ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3118,7 +3118,7 @@
         "rarity": "standard",
         "origin": "Chondathan ethnic group, Tethyrian ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3128,7 +3128,7 @@
         "rarity": "standard",
         "origin": "Damaran ethnic group, Nar ethnic group",
         "script": "Dethek",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3138,7 +3138,7 @@
         "rarity": "standard",
         "origin": "Arkaiun ethnic group",
         "script": "Espruar",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3148,7 +3148,7 @@
         "rarity": "standard",
         "origin": "Gur ethnic group",
         "script": "Thorass",
-        "note": "A patois of Roushoum and Rashemi. Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "A patois of Roushoum and Rashemi.\nOption: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3158,7 +3158,7 @@
         "rarity": "standard",
         "origin": "Halruaan ethnic group",
         "script": "Draconic",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3168,7 +3168,7 @@
         "rarity": "standard",
         "origin": "Illuskan ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3178,7 +3178,7 @@
         "rarity": "standard",
         "origin": "Bedine ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3188,7 +3188,7 @@
         "rarity": "standard",
         "origin": "Mulan ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3198,7 +3198,7 @@
         "rarity": "standard",
         "origin": "Rashemi ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3208,7 +3208,7 @@
         "rarity": "standard",
         "origin": "Imaskari ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3218,7 +3218,7 @@
         "rarity": "standard",
         "origin": "Shaaran ethnic group",
         "script": "Dethek",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3228,7 +3228,7 @@
         "rarity": "standard",
         "origin": "Shou ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3238,7 +3238,7 @@
         "rarity": "standard",
         "origin": "Mulan ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3248,7 +3248,7 @@
         "rarity": "standard",
         "origin": "Tuigan ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3258,7 +3258,7 @@
         "rarity": "standard",
         "origin": "Turami ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3268,7 +3268,7 @@
         "rarity": "standard",
         "origin": "Ulutiun ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3278,7 +3278,7 @@
         "rarity": "standard",
         "origin": "Mulan ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       },
@@ -3288,7 +3288,7 @@
         "rarity": "standard",
         "origin": "Ffolk ethnic group",
         "script": "Thorass",
-        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar. If your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
+        "note": "Option: Human Languages. Many human ethnicities and nations in Faerûn have their own language, in addition to Common. Most human languages are written in Thorass, the alphabet of Old Common, derived from the Chondathan language that traders used as their common tongue. A few human languages use other alphabets, including Draconic, Dethek, and Espruar.\nIf your Dungeon Master allows this option, then any human from an ethnic group that has its own language is assumed to know that language as well as Common. This ethnic language is treated as a free additional language for such individuals.",
         "source": "Sword Coast Adventurer's Guide",
         "sourceId": "scag"
       }

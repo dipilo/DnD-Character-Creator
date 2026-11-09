@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { SheetCatalogPicker, type CatalogPickerItem } from '@/components/character/SheetCatalogPicker';
 import { ABILITY_ABBREVIATIONS, formatModifier } from '@/lib/sheetDerivations';
+import { setClassResourceUsed, type ResolvedClassResource } from '@/lib/sheetPlayState';
 import { abilityModifier } from '@/lib/sheetMath';
 import {
   assumeFormPatch,
@@ -22,6 +23,8 @@ interface SheetWildShapePanelProps {
   shift: ResolvedWildShape;
   /** The whole library: which of it is a form is the feature's own table's answer. */
   monsters: readonly Monster[];
+  /** The pool the feature spends, when its own text states one. Transforming is what spends it. */
+  resource?: ResolvedClassResource;
   onChange?: (patch: Partial<Character>) => void;
 }
 
@@ -39,7 +42,24 @@ function describeLimits(shift: ResolvedWildShape): string {
 
 const challengeLabel = (form: Monster) => `CR ${form.challengeRating}`;
 
-export function SheetWildShapePanel({ character, shift, monsters, onChange }: Readonly<SheetWildShapePanelProps>) {
+export function SheetWildShapePanel({ character, shift, monsters, resource, onChange }: Readonly<SheetWildShapePanelProps>) {
+  // Assuming a form *is* using the feature, so Transform spends the use rather than leaving the
+  // player to press Use beside it and wonder what it did. Reverting early gives nothing back —
+  // "until you use Wild Shape again" is what costs the second one.
+  const remaining = resource?.maximum == null ? null : Math.max(0, resource.maximum - resource.used);
+  const spent = resource && remaining === 0;
+
+  const transform = (form: Monster) => {
+    if (!onChange) return;
+    const patch = assumeFormPatch(character, form, shift.rules, shift.classLevel);
+    if (!resource) {
+      onChange(patch);
+      return;
+    }
+
+    onChange({ ...patch, ...setClassResourceUsed(character, resource, resource.used + 1) });
+  };
+
   const available = useMemo<CatalogPickerItem[]>(() => {
     const held = new Set(shift.known.map((form) => form.id));
     return eligibleForms(monsters, shift.limits)
@@ -67,7 +87,15 @@ export function SheetWildShapePanel({ character, shift, monsters, onChange }: Re
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-base">{shift.feature.name}</CardTitle>
+        <CardTitle className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-base">
+          {shift.feature.name}
+          {resource && remaining !== null ? (
+            <span className="text-xs font-normal text-muted-foreground tabular-nums">
+              {remaining} of {resource.maximum} uses left
+              {resource.resetsOn ? ` · back on a ${resource.resetsOn} rest` : ''}
+            </span>
+          ) : null}
+        </CardTitle>
         <CardDescription>{describeLimits(shift)}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -103,7 +131,9 @@ export function SheetWildShapePanel({ character, shift, monsters, onChange }: Re
                       size="sm"
                       variant="outline"
                       className="min-h-9 coarse:min-h-11"
-                      onClick={() => onChange(assumeFormPatch(character, form, shift.rules, shift.classLevel))}
+                      disabled={spent}
+                      title={spent ? `No uses of ${shift.feature.name} left until you rest.` : undefined}
+                      onClick={() => transform(form)}
                     >
                       Transform
                     </Button>

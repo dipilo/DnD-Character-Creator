@@ -44,9 +44,13 @@
     "test:roll-effects": "node --import ./app/test/aliasLoader.mjs app/test/rollEffects.mjs",
     "test:species-groups": "node --import ./app/test/aliasLoader.mjs app/test/speciesGroups.mjs",
     "test:species-reprints": "node --import ./app/test/aliasLoader.mjs --test app/test/speciesReprints.mjs",
-    "test:wild-shape": "node --import ./app/test/aliasLoader.mjs --test app/test/wildShape.mjs"
+    "test:wild-shape": "node --import ./app/test/aliasLoader.mjs --test app/test/wildShape.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:imported-text": "node --import ./app/test/aliasLoader.mjs --test app/test/importedText.mjs"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.0",
     "febdnddata": "^1.0.0-09f6c01",
     "pdfjs-dist": "^6.3.289"
   }

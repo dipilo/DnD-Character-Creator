@@ -37,26 +37,35 @@ test('the reprint contributes no traits to the printing it superseded', () => {
   assert.deepEqual(names(fallbackTraits(VOLOS, MULTIVERSE)), []);
 });
 
-test('the reprint itself still takes the older printing as a fallback', () => {
+test('the reprint takes no traits from the printing it superseded either', () => {
   assert.equal(isSupersededBy(MULTIVERSE, VOLOS), false);
-  assert.deepEqual(names(fallbackTraits(MULTIVERSE, VOLOS)), [
-    'Expert Forgery',
-    'Kenku Training',
-    'Mimicry'
-  ]);
+  assert.deepEqual(names(fallbackTraits(MULTIVERSE, VOLOS)), []);
 });
 
-test('a printing that names no reprint keeps the fallback every other species relies on', () => {
-  const plain = { ...VOLOS, reprintedAs: undefined };
-  assert.deepEqual(names(fallbackTraits(plain, MULTIVERSE)), [
+// The app's own hand-written Kenku carries no reprint note and no book at all, so the reprint note
+// alone never reached it — and it is the entry the player actually had on screen.
+test('a printing with no reprint note is still held apart from another book', () => {
+  const handWritten = { ...VOLOS, sourceId: undefined, source: 'Kenku', reprintedAs: undefined };
+  assert.deepEqual(names(fallbackTraits(handWritten, MULTIVERSE)), []);
+});
+
+test('a second copy of the same book is not a reprint of itself, and does fill gaps', () => {
+  const sameBook = { ...MULTIVERSE, sourceId: 'vgm' };
+  assert.equal(isSupersededBy(VOLOS, sameBook), false);
+  assert.deepEqual(names(fallbackTraits(VOLOS, sameBook)), [
     'Expert Duplication',
     'Kenku Recall',
     'Mimicry'
   ]);
 });
 
-test('a second copy of the same book is not a reprint of itself', () => {
-  assert.equal(isSupersededBy(VOLOS, { ...MULTIVERSE, sourceId: 'vgm' }), false);
+test('a primary holding no traits at all is a real gap and still gets filled', () => {
+  const empty = { ...VOLOS, features: [], reprintedAs: undefined };
+  assert.deepEqual(names(fallbackTraits(empty, MULTIVERSE)), [
+    'Expert Duplication',
+    'Kenku Recall',
+    'Mimicry'
+  ]);
 });
 
 test('a variant list is held back with the traits', () => {

@@ -8,6 +8,7 @@ import type { ImportedContentBucket } from '@/data/librarySources';
 import { resolveSourceId } from '@/data/librarySources';
 import type { ContentBucketKey } from '@/lib/canonicalContent';
 import { defaultLanguageOptions, getRulesEdition } from '@/lib/builderRules';
+import { sanitizeImportedText } from '@/lib/importedText';
 import { fallbackTraits } from '@/lib/speciesReprints';
 
 const getStoreBucket = <K extends ContentBucketKey>(bucket: K): ImportedContentBucket[K] => {
@@ -26,7 +27,11 @@ const staticMonsters = () => getImportedBucket('monsters') as Monster[];
 const staticSubclasses = () => getImportedBucket('subclasses') as Subclass[];
 const staticCombatActions = () => getImportedBucket('combatActions') as CombatAction[];
 const staticLanguages = () => getImportedBucket('languages') as LanguageOption[];
-const unsupportedStaticSourceIds = new Set(['phb-2014', 'phb-2024']);
+// The ids of the placeholder scaffolds, which ship no content and must not shadow the Basic Rules
+// packs. An id leaves this set the moment a real pack is imported under it — the filter reaches
+// `species`/`classes`/`backgrounds`, which already include every pack, so leaving `phb-2024` here
+// after importing the book would have dropped its species, classes and backgrounds in silence.
+const unsupportedStaticSourceIds = new Set(['phb-2014']);
 const isUnsupportedLegacyStaticEntry = (sourceId?: string) => {
   return sourceId ? unsupportedStaticSourceIds.has(sourceId) : false;
 };
@@ -141,35 +146,6 @@ const choosePreferredCount = (primary?: number, fallback?: number) => {
   return (fallback && fallback > 0) ? fallback : (primary ?? fallback ?? 0);
 };
 const normalizeFeatureName = (value: string) => normalizeIdentifier(value).replaceAll(/\s*\([^)]*\)/g, '').trim();
-const chromeNoisePatterns = [
-  /\/\/\s*<!\[CDATA\[[\s\S]*$/i,
-  /Waterdeep\.CompendiumPage\.initialize[\s\S]*$/i,
-  /\/\/\s*This site works best with JavaScript enabled\.[\s\S]*$/i,
-  /\bMy Characters\b[\s\S]*$/i,
-  /\bHomebrew Classes Backgrounds Species Feats Spells Equipment\b[\s\S]*$/i,
-  /\bTools Character Builder Sigil 3D VTT\b[\s\S]*$/i,
-  /\bBrowse Spells Browse Monsters Browse Magic Items Browse Backgrounds Browse Feats Browse Species Browse Subclasses\b[\s\S]*$/i,
-  /\bnew URLSearchParams\(document\.location\.search\)[\s\S]*$/i,
-  /Hexblade\. What a cool name![\s\S]*$/i,
-  /\bThis section presents the [^.]+ spell list\.[\s\S]*$/i,
-  /\b[A-Z][^.]+ subclass is a specialization that grants you features at certain [^.]+ levels, as specified in the subclass\.[\s\S]*$/i
-];
-
-const sanitizeImportedText = (value?: string) => {
-  if (!value) {
-    return value;
-  }
-
-  return chromeNoisePatterns.reduce((current, pattern) => current.replace(pattern, ' '), value)
-    .replaceAll(/[“"]\s+/g, (match) => match.trimEnd())
-    .replaceAll(/\s+[”"]/g, (match) => match.trimStart())
-    .replaceAll(/\s+/g, ' ')
-    // Joining separately extracted paragraphs can strand the joining space in front of the
-    // punctuation that opened the next one ("back into its true form . Its statistics are...").
-    .replaceAll(/\s+([,;.])/g, '$1')
-    .trim();
-};
-
 const getClassFallbackScore = (cls: Class) => {
   const equipmentScore = cls.equipmentOptions.reduce((total, group) => total + group.length, 0);
   const skillScore = cls.skillChoices.length + cls.skillCount;
@@ -1429,11 +1405,34 @@ export const getRuntimeEquipment = memoizeRuntime('equipment', () => {
 
 export const getRuntimeMonsters = memoizeRuntime('monsters', () => mergeDynamicBucket(staticMonsters(), 'monsters').map(sanitizeMonster));
 
+/**
+ * Two books of one printing state the same action, so the list is deduped by name within an
+ * edition the way every other bucket is: Basic Rules (2024) and the Player's Handbook (2024) both
+ * print Attack, and `mergeCollectionsById` kept both because their ids differ — the Actions in
+ * Combat list read "Attack, Attack, Dash, Dash, Disengage, Disengage".
+ *
+ * The richer entry wins. Only the book that tabulates its actions states a `summary`, which is the
+ * one line the panel prints above the rule.
+ */
+const combatActionScore = (action: CombatAction) =>
+  (action.summary ? 1000 : 0) + action.description.length;
+
 /** Not a `ContentBucketKey`: nobody picks one, so a pack contributes via its own field. */
 export const getRuntimeCombatActions = memoizeRuntime('combat-actions', () => {
   const { importedPacks } = useContentStore.getState();
   const imported = importedPacks.flatMap((pack) => pack.content.combatActions ?? []);
-  return mergeCollectionsById(staticCombatActions(), imported);
+  const merged = mergeCollectionsById(staticCombatActions(), imported);
+
+  const best = new Map<string, CombatAction>();
+  for (const action of merged) {
+    const key = `${normalizeIdentifier(action.name)}::${getRulesEdition(action.sourceId, action.source)}`;
+    const current = best.get(key);
+    if (!current || combatActionScore(action) > combatActionScore(current)) {
+      best.set(key, action);
+    }
+  }
+
+  return [...best.values()];
 });
 
 /** Not a `ContentBucketKey` either, for the same reason `combatActions` is not. */
