@@ -377,6 +377,94 @@ check("a feat's structured prerequisites are enforceable fields, not only a sent
   assert.ok(feat.prerequisites.text.includes('Level 4'));
 });
 
+check("an `ability` block per alternative is an or, not a second minimum", () => {
+  const feat = build({
+    feat: [{
+      name: 'Observant',
+      source: 'FIX',
+      prerequisite: [{ ability: [{ int: 13 }, { wis: 13 }] }],
+      entries: ['You notice things.']
+    }]
+  }).feats[0];
+  assert.equal(feat.prerequisites.ability, undefined);
+  assert.deepEqual(feat.prerequisites.abilityAlternatives, [{ intelligence: 13 }, { wisdom: 13 }]);
+  assert.equal(feat.prerequisites.text, 'Intelligence 13 or Wisdom 13');
+});
+
+check('a field only one alternative states is not a requirement, it is the sentence', () => {
+  const feat = build({
+    feat: [{
+      name: 'Squat Nimbleness',
+      source: 'FIX',
+      prerequisite: [
+        { race: [{ name: 'dwarf' }, { name: 'small race', displayEntry: 'a Small race' }] },
+        { ability: [{ str: 13 }], level: 4 }
+      ],
+      entries: ['You are uncommonly nimble for your size.']
+    }]
+  }).feats[0];
+  assert.equal(feat.prerequisites.race, undefined, 'the other alternative needs no race at all');
+  assert.equal(feat.prerequisites.level, undefined);
+  assert.equal(feat.prerequisites.ability, undefined);
+  assert.equal(feat.prerequisites.text, 'dwarf or a Small race or Level 4; Strength 13');
+});
+
+check('a requirement every alternative states survives, and the alternatives collapse', () => {
+  const feat = build({
+    feat: [{
+      name: 'Grappler',
+      source: 'FIX',
+      category: 'G',
+      prerequisite: [{ level: 4, ability: [{ str: 13 }] }, { level: 4, ability: [{ dex: 13 }] }],
+      entries: ['You are an unbreakable grip.']
+    }]
+  }).feats[0];
+  assert.equal(feat.prerequisites.level, 4, 'both alternatives ask for level 4');
+  assert.deepEqual(feat.prerequisites.abilityAlternatives, [{ strength: 13 }, { dexterity: 13 }]);
+  assert.equal(feat.prerequisites.ability, undefined);
+});
+
+check('a named feature, a named feat and a proficiency all reach the player', () => {
+  const feats = build({
+    feat: [
+      { name: 'Archery', source: 'FIX', category: 'FS:fighter', prerequisite: [{ feature: ['Fighting Style'] }], entries: ['+2 to ranged attacks.'] },
+      { name: 'Ember of the Fire Giant', source: 'FIX', prerequisite: [{ level: 4, feat: ['strike of the giants|FIX|strike of the giants (fire strike)'] }], entries: ['You gain fire resistance.'] },
+      { name: 'Fighting Initiate', source: 'FIX', prerequisite: [{ proficiency: [{ weapon: 'martial' }] }], entries: ['You learn a Fighting Style.'] },
+      { name: 'Strike of the Giants', source: 'FIX', prerequisite: [{ proficiency: [{ weaponGroup: 'martial' }] }, { background: [{ name: 'Giant Foundling' }] }], entries: ['You can strike with giant might.'] }
+    ]
+  }).feats;
+  assert.deepEqual(feats[0].prerequisites.features, ['Fighting Style']);
+  assert.equal(feats[0].prerequisites.text, 'Fighting Style feature');
+  assert.deepEqual(feats[1].prerequisites.feats, ['strike of the giants']);
+  assert.equal(feats[1].prerequisites.text, 'Level 4; Strike of the Giants (Fire Strike) feat');
+  assert.equal(feats[2].prerequisites.text, 'Proficiency with a martial weapon');
+  assert.equal(feats[3].prerequisites.text, 'Proficiency with martial weapons or Giant Foundling background');
+});
+
+check("`spellcasting2020` is the either of the two, not Spellcasting alone", () => {
+  const feat = build({
+    feat: [{ name: 'Eldritch Adept', source: 'FIX', prerequisite: [{ spellcasting2020: true }], entries: ['You learn an Eldritch Invocation.'] }]
+  }).feats[0];
+  assert.deepEqual(
+    [feat.prerequisites.spellcasting, feat.prerequisites.pactMagic],
+    [true, true],
+    'a Warlock meets it through Pact Magic'
+  );
+  assert.equal(feat.prerequisites.text, 'Spellcasting or Pact Magic feature');
+});
+
+check("a 2024 feat's own category label is carried, and a fighting style's suffix dropped", () => {
+  const feats = build({
+    feat: [
+      { name: 'Alert', source: 'FIX', category: 'O', repeatable: true, entries: ['You gain initiative.'] },
+      { name: 'Archery', source: 'FIX', category: 'FS:fighter', entries: ['You gain a bonus to ranged attacks.'] }
+    ]
+  }).feats;
+  assert.deepEqual([feats[0].category, feats[0].repeatable], ['origin', true]);
+  assert.equal(feats[1].category, 'fighting-style');
+  assert.equal(feats[0].repeatable, true);
+});
+
 // --- equipment and monsters -----------------------------------------------------------------
 
 check('a tool carries the family a "one type of" choice draws from', () => {

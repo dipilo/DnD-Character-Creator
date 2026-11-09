@@ -400,6 +400,11 @@ function readColumn(table: FeatureTableDice | undefined): ColumnDice | null {
   return { base: normalizeDice(base.toLowerCase()), reached: normalizeDice(reached.toLowerCase()) };
 }
 
+/** The die the column states at the level held, for a reader outside the throw pipeline. */
+export function featureTableDie(featureName: string, context: FeatureContext): string | undefined {
+  return readColumn(context.tableDice?.[featureName.trim().toLowerCase()])?.reached;
+}
+
 /** Matched on the printed 1st-level value, not position, so a stated die keeps its own. */
 function applyColumnDice(drafts: readonly ThrowDraft[], column: ColumnDice): void {
   const target = drafts.find((draft) => draft.dice === column.base);

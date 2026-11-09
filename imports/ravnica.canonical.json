@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source GGR).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T17:54:19.830Z",
+    "importedAt": "2026-11-09T04:38:20.527Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -104,6 +104,9 @@
           "Common",
           "Sylvan"
         ],
+        "reprintedAs": [
+          "Centaur|MPMM"
+        ],
         "source": "Guildmasters' Guide to Ravnica",
         "sourceId": "ravnica"
       },
@@ -177,6 +180,9 @@
         "languages": [
           "Common",
           "Goblin"
+        ],
+        "reprintedAs": [
+          "Goblin|MPMM"
         ],
         "source": "Guildmasters' Guide to Ravnica",
         "sourceId": "ravnica"
@@ -352,6 +358,9 @@
         "languages": [
           "Common",
           "Other"
+        ],
+        "reprintedAs": [
+          "Minotaur|MPMM"
         ],
         "source": "Guildmasters' Guide to Ravnica",
         "sourceId": "ravnica"
@@ -758,7 +767,7 @@
         ],
         "feature": {
           "name": "Feature: False Identity",
-          "description": "You have more than one identity. The one you wear most of the time makes you appear to be a member of a guild other than House Dimir. You have documentation, established acquaintances, and disguises that allow you to assume that persona and fit into the secondary guild. Whenever you choose, you can drop this identity and blend into the guildless masses of the city. Consider why you're embedded in the secondary guild. Create a story with your DM, inspired by rolling on the following table or choosing a reason that suits you. 1 — My parents belong to this guild, and I let them think I'm following in their footsteps.; 2 — I've been assigned to track this guild's activities.; 3 — I've been assigned to get close to an individual in this guild and learn their secrets.; 4 — I've been assigned to recruit a new Dimir spy from the ranks of this guild.; 5 — I was a member of this guild before the Dimir recruited me.; 6 — I don't like what this guild stands for and want to destroy it from within.; 7 — I secretly wish I could leave the Dimir and join this guild, but there is no escaping the Dimir.; 8 — I chose this guild at random or on a lark."
+          "description": "You have more than one identity. The one you wear most of the time makes you appear to be a member of a guild other than House Dimir. You have documentation, established acquaintances, and disguises that allow you to assume that persona and fit into the secondary guild. Whenever you choose, you can drop this identity and blend into the guildless masses of the city. Consider why you're embedded in the secondary guild. Create a story with your DM, inspired by rolling on the following table or choosing a reason that suits you. d8 | Reason for Infiltration\n1 | My parents belong to this guild, and I let them think I'm following in their footsteps.\n2 | I've been assigned to track this guild's activities.\n3 | I've been assigned to get close to an individual in this guild and learn their secrets.\n4 | I've been assigned to recruit a new Dimir spy from the ranks of this guild.\n5 | I was a member of this guild before the Dimir recruited me.\n6 | I don't like what this guild stands for and want to destroy it from within.\n7 | I secretly wish I could leave the Dimir and join this guild, but there is no escaping the Dimir.\n8 | I chose this guild at random or on a lark."
         },
         "personalityTraits": [
           "I'm good at hiding my true thoughts and feelings.",
@@ -1890,7 +1899,7 @@
           "unit": "gp"
         },
         "weight": 8,
-        "description": "Innovation is a dangerous pursuit, at least the way the mages of the Izzet League engage in it. As protection against the risk of an experiment going awry, they have developed a device to help channel and control their magic. This apparatus is a collection of leather straps, flexible tubing, glass cylinders, and plates, bracers, and fittings made from a magic-infused metal alloy called mizzium, all assembled into a harness. The item weighs 8 pounds. While you are wearing the mizzium apparatus, you can use it as an arcane focus. In addition, you can attempt to cast a spell that you do not know or have prepared. The spell you choose must be on your class's spell list and of a level for which you have a spell slot, and you must provide the spell's components. You expend a spell slot to cast the spell as normal, but before resolving it you must make an Intelligence (Arcana) check. The DC is 10 + twice the level of the spell slot you expend to cast the spell. On a successful check, you cast the spell as normal, using your spell save DC and spellcasting ability modifier. On a failed check, you cast a different spell from the one you intended. Randomly determine the spell you cast by rolling on the table for the level of the spell slot you expended. If the slot is 6th level or higher, roll on the table for 5th-level spells. If you try to cast a cantrip you don't know, the DC for the Intelligence (Arcana) check is 10, and on a failed check, there is no effect. 1st-Level Spells: 1 — burning hands; 2 — chaos bolt; 3 — color spray; 4 — faerie fire; 5 — fog cloud; 6 — thunderwave 2nd-Level Spells: 1 — blur; 2 — gust of wind; 3 — heat metal; 4 — Melf's acid arrow; 5 — scorching ray; 6 — shatter 3rd-Level Spells: 1 — fear; 2 — feign death; 3 — fireball; 4 — gaseous form; 5 — sleet storm; 6 — stinking cloud 4th-Level Spells: 1 — confusion; 2 — conjure minor elementals; 3 — Evard's black tentacles; 4 — ice storm 5th-Level Spells: 1 — animate objects; 2 — cloudkill; 3 — cone of cold; 4 — flame strike",
+        "description": "Innovation is a dangerous pursuit, at least the way the mages of the Izzet League engage in it. As protection against the risk of an experiment going awry, they have developed a device to help channel and control their magic. This apparatus is a collection of leather straps, flexible tubing, glass cylinders, and plates, bracers, and fittings made from a magic-infused metal alloy called mizzium, all assembled into a harness. The item weighs 8 pounds. While you are wearing the mizzium apparatus, you can use it as an arcane focus. In addition, you can attempt to cast a spell that you do not know or have prepared. The spell you choose must be on your class's spell list and of a level for which you have a spell slot, and you must provide the spell's components. You expend a spell slot to cast the spell as normal, but before resolving it you must make an Intelligence (Arcana) check. The DC is 10 + twice the level of the spell slot you expend to cast the spell. On a successful check, you cast the spell as normal, using your spell save DC and spellcasting ability modifier. On a failed check, you cast a different spell from the one you intended. Randomly determine the spell you cast by rolling on the table for the level of the spell slot you expended. If the slot is 6th level or higher, roll on the table for 5th-level spells. If you try to cast a cantrip you don't know, the DC for the Intelligence (Arcana) check is 10, and on a failed check, there is no effect. 1st-Level Spells:\nd6 | spell\n1 | burning hands\n2 | chaos bolt\n3 | color spray\n4 | faerie fire\n5 | fog cloud\n6 | thunderwave 2nd-Level Spells:\nd6 | spell\n1 | blur\n2 | gust of wind\n3 | heat metal\n4 | Melf's acid arrow\n5 | scorching ray\n6 | shatter 3rd-Level Spells:\nd6 | spell\n1 | fear\n2 | feign death\n3 | fireball\n4 | gaseous form\n5 | sleet storm\n6 | stinking cloud 4th-Level Spells:\nd4 | spell\n1 | confusion\n2 | conjure minor elementals\n3 | Evard's black tentacles\n4 | ice storm 5th-Level Spells:\nd4 | spell\n1 | animate objects\n2 | cloudkill\n3 | cone of cold\n4 | flame strike",
         "properties": []
       },
       {

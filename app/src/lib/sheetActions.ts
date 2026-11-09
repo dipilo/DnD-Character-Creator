@@ -100,6 +100,10 @@ export interface SheetActionEntry {
 const attackRange = (attack: DerivedAttack) =>
   attack.range ?? (attack.kind.startsWith('Melee') ? 'Melee' : undefined);
 
+/** An Unarmed Strike's damage is a flat number; offering it as a throw rolled 0 and reported it. */
+const NAMES_A_DIE = /\bd\d+\b/i;
+const rollable = (damage: string) => (NAMES_A_DIE.test(damage) ? damage : undefined);
+
 function weaponRows(attacks: readonly DerivedAttack[]): SheetActionEntry[] {
   return attacks.map((attack) => ({
     id: `weapon-${attack.name}`,
@@ -112,10 +116,15 @@ function weaponRows(attacks: readonly DerivedAttack[]): SheetActionEntry[] {
     range: attackRange(attack),
     attackBonus: attack.attackBonus,
     damages: [
-      { notation: attack.damage, label: attack.damage },
+      { notation: rollable(attack.damage), label: attack.damage },
       ...(attack.versatileDamage
-        ? [{ notation: attack.versatileDamage, label: `${attack.versatileDamage} (two-handed)` }]
-        : [])
+        ? [{ notation: rollable(attack.versatileDamage), label: `${attack.versatileDamage} (two-handed)` }]
+        : []),
+      // On the feature's own terms, so a player can see which line a trait lets them use.
+      ...(attack.alternateDamages ?? []).map((entry) => ({
+        notation: entry.notation ? rollable(entry.notation) : undefined,
+        label: `${entry.damage} (${entry.source})`
+      }))
     ],
     notes: [attack.proficient ? '' : 'Not proficient', ...attack.properties].filter(Boolean).join(', ') || undefined
   }));

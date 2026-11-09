@@ -130,11 +130,16 @@ const renderEntries = (entries, depth = 0) => {
       return `${name}${renderEntries(entries.entry ?? entries.entries, depth + 1)}`.trim();
     }
     case 'table': {
-      const caption = entries.caption ? `${stripInlineTags(entries.caption)}: ` : '';
-      const rows = (entries.rows ?? [])
-        .map((row) => (Array.isArray(row) ? row.map((cell) => renderEntries(cell, depth + 1)).join(' — ') : renderEntries(row, depth + 1)))
-        .join('; ');
-      return `${caption}${rows}`.trim();
+      // One row per line, cells separated by ` | `: the sheet's text renderer reads a run of those
+      // as a table, and `a — b; c — d` made every tabulated feature a run of prose.
+      const caption = entries.caption ? `${stripInlineTags(entries.caption)}:` : '';
+      const header = (entries.colLabels ?? []).map((label) => stripInlineTags(label).trim());
+      const rows = (entries.rows ?? []).map((row) => (Array.isArray(row)
+        ? row.map((cell) => renderEntries(cell, depth + 1)).join(' | ')
+        : renderEntries(row, depth + 1)));
+      // The header is a row like any other, and a single column is a list rather than a table.
+      const lines = header.length > 1 ? [header.join(' | '), ...rows] : rows;
+      return [caption, ...lines].filter(Boolean).join('\n').trim();
     }
     case 'quote':
       return renderEntries(entries.entries, depth + 1);
@@ -148,7 +153,13 @@ const renderEntries = (entries, depth = 0) => {
   }
 };
 
-const cleanText = (value) => renderEntries(value).replaceAll(/\s+/g, ' ').trim();
+// Horizontal whitespace only: a line break is structure here, not spacing, so a table's rows and
+// a block's paragraphs survive to the renderer.
+const cleanText = (value) => renderEntries(value)
+  .replaceAll(/[^\S\n]+/g, ' ')
+  .replaceAll(/ ?\n ?/g, '\n')
+  .replaceAll(/\n{3,}/g, '\n\n')
+  .trim();
 
 // --- fluff ----------------------------------------------------------------------------------
 
@@ -532,6 +543,20 @@ const mergeSubraceOntoRace = (race, subrace, index) => {
   return merged;
 };
 
+// "Kenku|MPMM" on the Volo's entry: the later book reprints this species under renamed traits
+// ("Expert Forgery" became "Expert Duplication"), so merging the two printings by trait name
+// granted both. 51 of the 160 races carry it.
+// An object entry carries the kind it was reprinted *as*: Eberron's dragonmarks became feats, and
+// a feat does not supersede a lineage's traits, so only a species reprint counts.
+const SPECIES_REPRINT_TAGS = new Set(['race', 'subrace']);
+const mapReprintedAs = (reprintedAs) => (reprintedAs ?? [])
+  .map((entry) => {
+    if (typeof entry === 'string') return entry;
+    return SPECIES_REPRINT_TAGS.has(String(entry?.tag ?? 'race')) ? entry.uid : '';
+  })
+  .map((uid) => stripInlineTags(String(uid ?? '')).trim())
+  .filter(Boolean);
+
 const mapRace = (race, subracesByRace, ctx) => {
   const variants = (subracesByRace.get(`${race.name}|${race.source}`) ?? []).map((subrace, index) => {
     const variantId = toSourcedId(ctx.sourceId, race.name, subrace.name ?? `variant-${index + 1}`);
@@ -572,6 +597,7 @@ const mapRace = (race, subracesByRace, ctx) => {
     ...(spells.length > 0 ? { spells } : {}),
     languages: mapEntityLanguages(race.languageProficiencies),
     variants: variants.length > 0 ? variants : undefined,
+    ...(mapReprintedAs(race.reprintedAs).length > 0 ? { reprintedAs: mapReprintedAs(race.reprintedAs) } : {}),
     source: ctx.label,
     sourceId: ctx.sourceId
   };
@@ -714,41 +740,156 @@ const mapBackground = (background, ctx, itemIndex) => {
   };
 };
 
-/** Read alongside `text`, because `evaluateFeatPrerequisites` enforces the structured half. */
-const mapFeatPrerequisiteFields = (prerequisites) => {
-  const fields = {};
+/** One `ability` block is every score it names at once; several blocks are alternatives. */
+const mapAbilityBlock = (block) => {
+  const minimums = {};
+  for (const [key, value] of Object.entries(block ?? {})) {
+    const ability = ABILITY_MAP[key];
+    if (!ability || !Number.isFinite(Number(value))) continue;
+    minimums[ability] = Math.max(minimums[ability] ?? 0, Number(value));
+  }
+  return Object.keys(minimums).length > 0 ? minimums : null;
+};
 
-  for (const prereq of prerequisites ?? []) {
-    const level = typeof prereq.level === 'object' ? prereq.level.level : prereq.level;
-    if (Number(level) > 0) fields.level = Math.max(fields.level ?? 0, Number(level));
-    for (const block of prereq.ability ?? []) {
-      for (const [key, value] of Object.entries(block)) {
-        const ability = ABILITY_MAP[key];
-        if (!ability || !Number.isFinite(Number(value))) continue;
-        fields.ability = { ...fields.ability, [ability]: Math.max(fields.ability?.[ability] ?? 0, Number(value)) };
-      }
+const readPrerequisiteLevel = (prereq) => {
+  const level = typeof prereq.level === 'object' ? prereq.level.level : prereq.level;
+  return Number(level) > 0 ? Number(level) : null;
+};
+
+/** `"strike of the giants|BGG|strike of the giants (fire strike)"` names one feat three ways. */
+const readFeatPointer = (entry) => stripInlineTags(String(entry ?? '').split('|')[0]).trim();
+
+const TITLE_SMALL_WORDS = new Set(['a', 'an', 'and', 'from', 'in', 'of', 'or', 'the', 'to', 'with']);
+
+/** The data folds a pointer to lower case, so printing it back is a title case, not an upper. */
+const toTitleCase = (value) => value
+  .split(' ')
+  // The first *letter*, not the first character: a parenthesised variant left "(fire strike)" alone.
+  .map((word, index) => (index > 0 && TITLE_SMALL_WORDS.has(word)
+    ? word
+    : word.replace(/[a-z]/, (letter) => letter.toUpperCase())))
+  .join(' ');
+
+const readFeatPointerLabel = (entry) => {
+  const parts = String(entry ?? '').split('|');
+  return toTitleCase(stripInlineTags(parts[2] ?? parts[0] ?? '').trim());
+};
+
+const mapFeatureNames = (prereq) => [prereq.feature ?? []].flat()
+  .map((entry) => stripInlineTags(entry?.name ?? entry ?? '').trim())
+  .filter(Boolean);
+
+/**
+ * Read alongside `text`, because `evaluateFeatPrerequisites` enforces the structured half.
+ * Separate entries are alternatives, so a field becomes a requirement only where *every* one of
+ * them states it; otherwise "Dwarf or Strength 13" would read as a line nobody meets. Where they
+ * all state it the alternatives collapse: the lowest level any of them accepts, and the union of
+ * their ability blocks as an or-list.
+ */
+const mapFeatPrerequisiteFields = (prerequisites) => {
+  const entries = (prerequisites ?? []).filter(Boolean);
+  if (entries.length === 0) {
+    return {};
+  }
+
+  const fields = {};
+  const everyEntry = (read) => entries.every((prereq) => read(prereq));
+  const union = (read) => [...new Set(entries.flatMap(read))].filter(Boolean);
+
+  const levels = entries.map(readPrerequisiteLevel);
+  if (levels.every((level) => level !== null)) {
+    fields.level = Math.min(...levels);
+  }
+
+  const abilityBlocks = entries.map((prereq) => (prereq.ability ?? []).map(mapAbilityBlock).filter(Boolean));
+  if (abilityBlocks.every((blocks) => blocks.length > 0)) {
+    const blocks = abilityBlocks.flat();
+    if (blocks.length > 1) {
+      fields.abilityAlternatives = blocks;
+    } else {
+      [fields.ability] = blocks;
     }
-    if (prereq.spellcasting || prereq.spellcasting2020) fields.spellcasting = true;
-    if (prereq.pact) fields.pactMagic = true;
-    if (prereq.race) fields.race = [...(fields.race ?? []), ...prereq.race.map((entry) => stripInlineTags(entry.name ?? ''))].filter(Boolean);
-    if (prereq.class) fields.class = [...(fields.class ?? []), ...[prereq.class].flat().map((entry) => stripInlineTags(entry?.name ?? entry ?? ''))].filter(Boolean);
+  }
+
+  if (everyEntry((prereq) => prereq.race?.length)) {
+    fields.race = union((prereq) => prereq.race.map((entry) => stripInlineTags(entry.name ?? '')));
+  }
+  if (everyEntry((prereq) => [prereq.class ?? []].flat().length)) {
+    fields.class = union((prereq) => [prereq.class].flat().map((entry) => stripInlineTags(entry?.name ?? entry ?? '')));
+  }
+  if (everyEntry((prereq) => mapFeatureNames(prereq).length)) {
+    fields.features = union(mapFeatureNames);
+  }
+  if (everyEntry((prereq) => [prereq.feat ?? []].flat().length)) {
+    fields.feats = union((prereq) => [prereq.feat].flat().map(readFeatPointer));
+  }
+
+  // `spellcasting2020` is 5etools' name for the 2020 wording, which is the *either* of the two.
+  // Mapping it to Spellcasting alone refused every Warlock who took Eldritch Adept.
+  if (everyEntry((prereq) => prereq.spellcasting || prereq.spellcasting2020 || prereq.spellcastingFeature)) {
+    fields.spellcasting = true;
+  }
+  if (everyEntry((prereq) => prereq.pact || prereq.spellcasting2020)) {
+    fields.pactMagic = true;
   }
 
   return fields;
 };
 
+// Nothing on a feat makes this enforceable, so it is stated for the player and nothing more.
+// The kinds are 5etools' own keys, and `weaponGroup` read as "martial weaponGroup" unmapped.
+const describeProficiencyKind = (kind, value) => {
+  switch (kind) {
+    case 'weapon': return `a ${value} weapon`;
+    case 'weaponGroup': return `${value} weapons`;
+    case 'armor': return `${value} armor`;
+    default: return `${value} ${kind.replaceAll(/([a-z])([A-Z])/g, '$1 $2').toLowerCase()}`;
+  }
+};
+
+const describeProficiencyRequirement = (proficiency) => {
+  const parts = Object.entries(proficiency ?? {}).map(([kind, value]) => describeProficiencyKind(kind, value));
+  return parts.length > 0 ? `Proficiency with ${parts.join(' and ')}` : '';
+};
+
+const describeAbilityBlock = (block) =>
+  Object.entries(block)
+    .map(([key, value]) => {
+      const ability = ABILITY_MAP[key] ?? key;
+      return `${ability.charAt(0).toUpperCase()}${ability.slice(1)} ${value}`;
+    })
+    .join(' and ');
+
 /** The sentence the player is shown, which `evaluateFeatPrerequisites` reads alongside the fields. */
 const mapFeatPrerequisiteText = (prerequisites) => {
-  const parts = [];
-  for (const prereq of prerequisites ?? []) {
+  const alternatives = [];
+  for (const prereq of (prerequisites ?? []).filter(Boolean)) {
+    const parts = [];
     if (prereq.level) parts.push(`Level ${prereq.level.level ?? prereq.level}`);
-    if (prereq.ability) parts.push(prereq.ability.map((block) => Object.entries(block).map(([key, value]) => `${ABILITY_MAP[key] ?? key} ${value}`).join(', ')).join('; '));
-    if (prereq.spellcasting || prereq.spellcasting2020) parts.push('Spellcasting feature');
+    if (prereq.ability) parts.push(prereq.ability.map(describeAbilityBlock).join(' or '));
+    if (prereq.spellcasting2020) parts.push('Spellcasting or Pact Magic feature');
+    else if (prereq.spellcasting || prereq.spellcastingFeature) parts.push('Spellcasting feature');
+    else if (prereq.pact) parts.push('Pact Magic feature');
+    if (prereq.feature) parts.push(mapFeatureNames(prereq).map((name) => `${name} feature`).join(' or '));
+    if (prereq.feat) parts.push(`${[prereq.feat].flat().map(readFeatPointerLabel).filter(Boolean).join(' or ')} feat`);
+    if (prereq.proficiency) parts.push([prereq.proficiency].flat().map(describeProficiencyRequirement).filter(Boolean).join(' or '));
+    if (prereq.background) parts.push(`${[prereq.background].flat().map((entry) => stripInlineTags(entry?.name ?? entry ?? '')).filter(Boolean).join(' or ')} background`);
+    if (prereq.campaign) parts.push(`${[prereq.campaign].flat().join(' or ')} campaign`);
     if (prereq.other) parts.push(stripInlineTags(prereq.other));
-    if (prereq.race) parts.push(prereq.race.map((entry) => entry.name).join(' or '));
+    if (prereq.otherSummary) parts.push(stripInlineTags(prereq.otherSummary.entry ?? prereq.otherSummary));
+    // The race name is the pointer and `displayEntry` the printed half: Squat Nimbleness's
+    // "a Small race" exists only there, and `meetsRaceRequirement` reads it off this sentence.
+    if (prereq.race) parts.push(prereq.race.map((entry) => stripInlineTags(entry.displayEntry ?? entry.name ?? '')).join(' or '));
+    if (parts.length > 0) alternatives.push(parts.filter(Boolean).join('; '));
   }
-  return parts.join('; ');
+  return alternatives.join(' or ');
 };
+
+// 5etools labels a 2024 feat; `FS:fighter` and the like are all one Fighting Style feat.
+const FEAT_CATEGORY_MAP = { O: 'origin', G: 'general', FS: 'fighting-style', EB: 'epic-boon' };
+
+const mapFeatCategory = (category) =>
+  FEAT_CATEGORY_MAP[String(category ?? '').split(':')[0].toUpperCase()];
 
 const mapFeat = (feat, ctx) => {
   const prerequisiteText = mapFeatPrerequisiteText(feat.prerequisite);
@@ -771,6 +912,8 @@ const mapFeat = (feat, ctx) => {
     name: feat.name,
     description,
     prerequisites: prerequisiteText ? { ...prerequisiteFields, text: prerequisiteText } : undefined,
+    ...(mapFeatCategory(feat.category) ? { category: mapFeatCategory(feat.category) } : {}),
+    ...(feat.repeatable ? { repeatable: true } : {}),
     // `ability` is structured here, so it wins; the prose reader only supplies what it has no field
     // for — the alternatives, and the two increases a feat offers as a mode.
     abilityScoreIncreases: structuredIncreases.length > 0 ? structuredIncreases : parsed.abilityScoreIncreases,
@@ -1041,12 +1184,18 @@ const mapLanguage = (language, ctx) => ({
   sourceId: ctx.sourceId
 });
 
-// The timing is on `time`, which is a string ("bonus") or a block ({number, unit}); an entry that
-// states none is an action, which is how both books print the unlabelled ones.
+// The timing is on `time`, which is a string ("bonus", "Free", "Varies") or a block
+// ({number, unit}); an entry that states none is an action, which is how both books print the
+// unlabelled ones. "Free" and "Varies" are neither: Improvising an Action, End Concentration and
+// the free object interaction cost no action, and defaulting them to one filed every one of them
+// under Actions.
+const UNTIMED_UNITS = new Set(['free', 'varies']);
 const readActionTiming = (time) => {
-  const unit = String((Array.isArray(time) ? time[0] : time)?.unit ?? (Array.isArray(time) ? time[0] : time) ?? '').toLowerCase();
+  const first = Array.isArray(time) ? time[0] : time;
+  const unit = String(first?.unit ?? first ?? '').toLowerCase();
   if (unit.startsWith('bonus')) return 'bonus-action';
   if (unit.startsWith('reaction')) return 'reaction';
+  if (UNTIMED_UNITS.has(unit)) return 'other';
   return 'action';
 };
 

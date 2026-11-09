@@ -255,6 +255,50 @@ check('an unconditional clause still applies, and reports no condition', () => {
   assert.deepEqual(strength.conditional, []);
 });
 
+// 2024 works the rule through an example and narrows it to a skill the character lacks, so both
+// halves of the sentence have to be read: one of them is not a second grant, the other is a gate.
+const jackOfAllTrades2024 = {
+  id: 'joat-2024',
+  name: 'Jack of All Trades',
+  source: 'Basic Rules (2024)',
+  description:
+    'You can add half your Proficiency Bonus (round down) to any ability check you make that uses a '
+    + 'skill proficiency you lack and that doesn’t otherwise use your Proficiency Bonus. For example, '
+    + 'if you make a Strength (Athletics) check and lack Athletics proficiency, you can add half your '
+    + 'Proficiency Bonus to the check.',
+};
+
+check('the 2024 wording states one effect, not one per worked example', () => {
+  const effects = deriveRollEffects(jackOfAllTrades2024);
+  assert.equal(effects.length, 1);
+  assert.equal(effects[0].scope.requiresSkill, true);
+  assert.equal(effects[0].scope.excludesProficiency, true);
+});
+
+check('the example does not grant the bonus on the skill it names when proficient', () => {
+  const effects = resolveCharacterRollEffects([jackOfAllTrades2024], { bonusContext: context });
+  const proficient = applyRollEffects(effects, { kind: 'check', ability: 'strength', skill: 'Athletics', proficient: true });
+  assert.equal(proficient.bonus, undefined);
+  assert.deepEqual(proficient.applied, []);
+});
+
+check('the 2024 wording reaches a skill the character lacks', () => {
+  const effects = resolveCharacterRollEffects([jackOfAllTrades2024], { bonusContext: context });
+  assert.equal(applyRollEffects(effects, { kind: 'check', ability: 'strength', skill: 'Athletics' }).bonus, 1);
+});
+
+check('a bare ability check is not a skill, so the 2024 wording leaves it alone', () => {
+  const effects = resolveCharacterRollEffects([jackOfAllTrades2024], { bonusContext: context });
+  const bare = applyRollEffects(effects, { kind: 'check', ability: 'strength' });
+  assert.equal(bare.bonus, undefined);
+  assert.deepEqual(bare.applied, []);
+});
+
+check('the 2014 wording names no skill, so it still covers a bare ability check', () => {
+  const effects = resolveCharacterRollEffects([jackOfAllTrades], { bonusContext: context });
+  assert.equal(applyRollEffects(effects, { kind: 'check', ability: 'strength' }).bonus, 1);
+});
+
 for (const entry of checks) {
   console.log(`${entry.ok ? 'ok  ' : 'FAIL'} ${entry.name}${entry.ok ? '' : ` — ${entry.detail}`}`);
 }

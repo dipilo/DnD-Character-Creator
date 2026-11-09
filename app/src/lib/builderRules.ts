@@ -647,6 +647,12 @@ export const updateToolProficiencySelection = (
 };
 
 export const isOriginFeat = (feat: Feat) => {
+  // The 2024 book labels each of its feats, so the name list below it is only for a source that
+  // does not. Reading the label first keeps a supplement's Origin feat out of that list.
+  if (feat.category) {
+    return feat.category === 'origin';
+  }
+
   return originFeatNameSet.has(normalizeName(feat.name));
 };
 
@@ -2007,6 +2013,23 @@ export const getActiveFeatures = ({
   const replacedFeatureIds = new Set(features.flatMap((feature) => feature.replacesFeatureIds ?? []));
   return features.filter((feature) => !replacedFeatureIds.has(feature.id) || Boolean(feature.replacesFeatureIds?.length));
 };
+
+// What a feat's "<name> feature" prerequisite is checked against. Subclass features are out of
+// reach here: the Feats step reads the chosen classes, not the resolved pairs.
+export const getCharacterFeatureNames = ({
+  selectedClasses,
+  species,
+  variant
+}: {
+  selectedClasses: SelectedClassWithLevel[];
+  species?: Species;
+  variant?: SpeciesVariant;
+}) => [...new Set([
+  ...selectedClasses.flatMap(({ cls, level }) =>
+    cls.features.filter((feature) => feature.level <= level).map((feature) => feature.name)),
+  ...(species?.features ?? []).map((feature) => feature.name),
+  ...(variant?.features ?? []).map((feature) => feature.name)
+].filter(Boolean))];
 
 /** Pact Magic is its own pool, so pact slots answer the second question, not the first. */
 export const getMagicFeatureFlags = (selectedClasses: SelectedClassWithLevel[]) => {

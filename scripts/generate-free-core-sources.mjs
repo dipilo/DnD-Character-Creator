@@ -317,6 +317,76 @@ const parseFeatText = (feat) => {
   return { description: preamble.join(' '), benefits };
 };
 
+const FEAT_CATEGORIES = new Set(['origin', 'general', 'fighting-style', 'epic-boon']);
+
+const capitalize = (value) => value.charAt(0).toUpperCase() + value.slice(1);
+
+const readScorePrerequisite = (entry) => {
+  const ability = abilityIndexMap[entry?.ability_score?.index];
+  const minimum = Number(entry?.minimum_score);
+  return ability && Number.isFinite(minimum) ? [ability, minimum] : null;
+};
+
+// The 2014 dump states its prerequisites as an array of score minimums; the 2024 one states an
+// object of a level and a named feature, with any "or" of scores parked in `prerequisite_options`.
+const mapFreeCoreFeatPrerequisites = (feat) => {
+  const fields = {};
+  const parts = [];
+
+  for (const entry of [feat.prerequisites].flat().filter(Boolean)) {
+    const score = readScorePrerequisite(entry);
+    if (score) {
+      fields.ability = { ...fields.ability, [score[0]]: Math.max(fields.ability?.[score[0]] ?? 0, score[1]) };
+    }
+
+    const level = Number(entry.minimum_level);
+    if (Number.isFinite(level) && level > 1) {
+      fields.level = Math.max(fields.level ?? 0, level);
+    }
+
+    const feature = String(entry.feature_named ?? '').trim();
+    if (/^spellcasting$/i.test(feature)) {
+      fields.spellcasting = true;
+    } else if (/^pact magic$/i.test(feature)) {
+      fields.pactMagic = true;
+    } else if (feature) {
+      fields.features = [...new Set([...(fields.features ?? []), feature])];
+    }
+  }
+
+  const options = feat.prerequisite_options;
+  if (options?.type === 'ability-scores') {
+    const alternatives = (options.from?.options ?? [])
+      .map(readScorePrerequisite)
+      .filter(Boolean)
+      .map(([ability, minimum]) => ({ [ability]: minimum }));
+    if (alternatives.length > 1) {
+      fields.abilityAlternatives = alternatives;
+    } else if (alternatives.length === 1) {
+      fields.ability = { ...fields.ability, ...alternatives[0] };
+    }
+  }
+
+  if (fields.level) parts.push(`Level ${fields.level}`);
+  for (const [ability, minimum] of Object.entries(fields.ability ?? {})) {
+    parts.push(`${capitalize(ability)} ${minimum}`);
+  }
+  if (fields.abilityAlternatives) {
+    parts.push(fields.abilityAlternatives
+      .map((block) => Object.entries(block).map(([ability, minimum]) => `${capitalize(ability)} ${minimum}`).join(' and '))
+      .join(' or '));
+  }
+  if (fields.spellcasting) parts.push('Spellcasting feature');
+  if (fields.pactMagic) parts.push('Pact Magic feature');
+  for (const feature of fields.features ?? []) parts.push(`${feature} feature`);
+
+  if (parts.length === 0) {
+    return undefined;
+  }
+
+  return { ...fields, text: parts.join('; ') };
+};
+
 const toEquipmentOptionType = (name = 'gear') => {
   const normalized = name.toLowerCase();
   if (normalized.includes('weapon')) return 'weapon';
@@ -862,13 +932,11 @@ export const createPack = async ({ edition, sourceId, label, category, includeCo
           name: feat.name,
           description,
           ...structures,
-          prerequisites: (feat.prerequisites ?? []).length > 0
-            ? {
-                ability: Object.fromEntries((feat.prerequisites ?? [])
-                  .filter((entry) => entry.ability_score?.index)
-                  .map((entry) => [abilityIndexMap[entry.ability_score.index], entry.minimum_score]))
-              }
-            : undefined,
+          prerequisites: mapFreeCoreFeatPrerequisites(feat),
+          // The 2024 dump labels each feat; nothing else states a category, and the UI's own
+          // guesses from the name are the fallback.
+          ...(FEAT_CATEGORIES.has(feat.type) ? { category: feat.type } : {}),
+          ...(feat.repeatable ? { repeatable: true } : {}),
           // Only the 2024 dataset names its benefits; a synthetic "<Feat> Benefit 1" label adds
           // nothing the reader can use, so unnamed benefits stay unnamed and render as plain text.
           features: benefits.map((benefit, index) => ({

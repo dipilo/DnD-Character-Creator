@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source EEPC).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T17:54:14.102Z",
+    "importedAt": "2026-11-09T04:38:15.807Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -77,6 +77,9 @@
           "Common",
           "Other",
           "Auran"
+        ],
+        "reprintedAs": [
+          "Aarakocra|MPMM"
         ],
         "source": "Elemental Evil Player's Companion",
         "sourceId": "elemental-evil"
@@ -292,6 +295,9 @@
             ]
           }
         ],
+        "reprintedAs": [
+          "Genasi|MPMM"
+        ],
         "source": "Elemental Evil Player's Companion",
         "sourceId": "elemental-evil"
       },
@@ -372,6 +378,10 @@
           "Common",
           "Giant"
         ],
+        "reprintedAs": [
+          "Goliath|MPMM",
+          "Goliath|XPHB"
+        ],
         "source": "Elemental Evil Player's Companion",
         "sourceId": "elemental-evil"
       },
@@ -446,6 +456,9 @@
           "Common",
           "Gnomish",
           "Undercommon"
+        ],
+        "reprintedAs": [
+          "Deep Gnome|MPMM"
         ],
         "source": "Elemental Evil Player's Companion",
         "sourceId": "elemental-evil"

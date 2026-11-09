@@ -6,6 +6,10 @@ export interface FeatPrerequisiteContext {
   abilityScores: AbilityScores;
   totalLevel: number;
   classNames: string[];
+  /** Features the character already has, by name — what "Fighting Style feature" is checked against. */
+  featureNames: string[];
+  /** Feats already taken, by name, including the one the background granted. */
+  featNames: string[];
   species?: Species;
   variant?: SpeciesVariant;
   hasSpellcasting: boolean;
@@ -19,6 +23,16 @@ export interface FeatPrerequisiteResult {
 }
 
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+
+const SMALL_WORDS = new Set(['a', 'an', 'and', 'from', 'in', 'of', 'or', 'the', 'to', 'with']);
+
+/** A pointer is stored as the book's name folded to lower case; this is how it is printed back. */
+export const formatContentName = (value: string) => value
+  .split(' ')
+  .map((word, index) => (index > 0 && SMALL_WORDS.has(word)
+    ? word
+    : word.replace(/[a-z]/, (letter) => letter.toUpperCase())))
+  .join(' ');
 const normalize = (value: string) => value.toLowerCase().replaceAll(/[^a-z0-9]+/g, ' ').trim();
 
 /** Either side may contain the other: the book says "Elf", the species may be "High Elf". */
@@ -76,6 +90,19 @@ function checkMagicRequirement(feat: Feat, context: FeatPrerequisiteContext): st
   return null;
 }
 
+const describeAbilityMinimums = (block: Partial<Record<keyof AbilityScores, number>>) =>
+  Object.entries(block).map(([ability, minimum]) => `${capitalize(ability)} ${minimum}`).join(' and ');
+
+/** Any one block satisfies the line, so the report names them all rather than the nearest miss. */
+function checkAbilityAlternatives(
+  alternatives: Partial<Record<keyof AbilityScores, number>>[],
+  context: FeatPrerequisiteContext,
+): string | null {
+  const holds = alternatives.some((block) => Object.entries(block).every(([ability, minimum]) =>
+    context.abilityScores[ability as keyof AbilityScores] >= (minimum ?? 0)));
+  return holds ? null : `Requires ${alternatives.map(describeAbilityMinimums).join(' or ')}`;
+}
+
 export function evaluateFeatPrerequisites(feat: Feat, context: FeatPrerequisiteContext): FeatPrerequisiteResult {
   const prerequisites = feat.prerequisites;
   if (!prerequisites) {
@@ -90,6 +117,13 @@ export function evaluateFeatPrerequisites(feat: Feat, context: FeatPrerequisiteC
       unmet.push(`Requires ${capitalize(ability)} ${minimum} (you have ${score})`);
     }
   });
+
+  if (prerequisites.abilityAlternatives?.length) {
+    const alternatives = checkAbilityAlternatives(prerequisites.abilityAlternatives, context);
+    if (alternatives) {
+      unmet.push(alternatives);
+    }
+  }
 
   if (prerequisites.level && context.totalLevel < prerequisites.level) {
     unmet.push(`Requires level ${prerequisites.level} (you are level ${context.totalLevel})`);
@@ -106,6 +140,21 @@ export function evaluateFeatPrerequisites(feat: Feat, context: FeatPrerequisiteC
       unmet.push(`Requires ${prerequisites.class.map((entry) => capitalize(entry)).join(' or ')}`);
     }
   }
+
+  // "Fighting Style feature" gates the 2024 Fighting Style feats, which every class without the
+  // feature would otherwise be offered.
+  prerequisites.features?.forEach((required) => {
+    if (!context.featureNames.some((name) => lineageMatches(required, name))) {
+      unmet.push(`Requires a ${required} feature`);
+    }
+  });
+
+  // A feat that builds on another: the pointer is a name, because a stored id goes stale.
+  prerequisites.feats?.forEach((required) => {
+    if (!context.featNames.some((name) => lineageMatches(required, name))) {
+      unmet.push(`Requires the ${formatContentName(required)} feat`);
+    }
+  });
 
   const magic = checkMagicRequirement(feat, context);
   if (magic) {

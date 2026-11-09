@@ -1,26 +1,8 @@
 // A missed sense is simply absent from the rail, and nothing errors.
 // Run with `npm run test:senses`.
-import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
-const source = fs.readFileSync(new URL('../src/lib/sheetCombat.ts', import.meta.url), 'utf8');
-const sentences = source.slice(source.indexOf('const toSentences'));
-const js = (sentences.slice(0, sentences.indexOf(';') + 1) + '\n' + source.slice(source.indexOf('const SENSE_NAMES')))
-  .replaceAll(/^export /gm, '')
-  .replaceAll(/^type SenseName[^;]*;$/gm, '')
-  .replaceAll(/^interface [\s\S]*?^}$/gm, '')
-  .replace(/const toSentences = \(text: string\) =>/, 'const toSentences = (text) =>')
-  .replace(/\] as const;/, '];')
-  .replace(/const feetIn = \(text: string\): number \| null => \{/, 'const feetIn = (text) => {')
-  .replace(/function deriveSenses\(features: readonly Feature\[\]\): DerivedSense\[\] \{/, 'function deriveSenses(features) {')
-  .replace(/new Map<SenseName, DerivedSense>\(\)/, 'new Map()')
-  .replace(/\.filter\(\(entry\): entry is DerivedSense => Boolean\(entry\)\)/, '.filter((entry) => Boolean(entry))')
-  .replace(/const titleCaseSense = \(sense: SenseName\) =>/, 'const titleCaseSense = (sense) =>')
-  .replace(/const senseLabel = \(entry: DerivedSense\) =>/, 'const senseLabel = (entry) =>');
-
-const { deriveSenses, senseLabel } = await import(
-  'data:text/javascript,' + encodeURIComponent(`${js}\nexport { deriveSenses, senseLabel };`)
-);
+const { deriveSenses, senseLabel } = await import('@/lib/sheetCombat');
 
 let passed = 0;
 const check = (name, fn) => {

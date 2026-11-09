@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source ERLW).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T17:54:15.426Z",
+    "importedAt": "2026-11-09T04:38:16.406Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -104,6 +104,9 @@
           "Common",
           "Goblin"
         ],
+        "reprintedAs": [
+          "Bugbear|MPMM"
+        ],
         "source": "Eberron: Rising from the Last War",
         "sourceId": "erlw"
       },
@@ -186,6 +189,10 @@
           "One of your choice",
           "One of your choice"
         ],
+        "reprintedAs": [
+          "Changeling|MPMM",
+          "Changeling|EFA"
+        ],
         "source": "Eberron: Rising from the Last War",
         "sourceId": "erlw"
       },
@@ -259,6 +266,9 @@
         "languages": [
           "Common",
           "Goblin"
+        ],
+        "reprintedAs": [
+          "Goblin|MPMM"
         ],
         "source": "Eberron: Rising from the Last War",
         "sourceId": "erlw"
@@ -339,6 +349,9 @@
         "languages": [
           "Common",
           "Goblin"
+        ],
+        "reprintedAs": [
+          "Hobgoblin|MPMM"
         ],
         "source": "Eberron: Rising from the Last War",
         "sourceId": "erlw"
@@ -421,6 +434,9 @@
           "Common",
           "Other",
           "One of your choice"
+        ],
+        "reprintedAs": [
+          "Kalashtar|EFA"
         ],
         "source": "Eberron: Rising from the Last War",
         "sourceId": "erlw"
@@ -508,6 +524,10 @@
         "languages": [
           "Common",
           "Orc"
+        ],
+        "reprintedAs": [
+          "Orc|MPMM",
+          "Orc|XPHB"
         ],
         "source": "Eberron: Rising from the Last War",
         "sourceId": "erlw"
@@ -723,6 +743,10 @@
             ]
           }
         ],
+        "reprintedAs": [
+          "Shifter|MPMM",
+          "Shifter|EFA"
+        ],
         "source": "Eberron: Rising from the Last War",
         "sourceId": "erlw"
       },
@@ -821,6 +845,9 @@
         "languages": [
           "Common",
           "One of your choice"
+        ],
+        "reprintedAs": [
+          "Warforged|EFA"
         ],
         "source": "Eberron: Rising from the Last War",
         "sourceId": "erlw"
@@ -922,7 +949,7 @@
           {
             "id": "erlw-dwarf-mark-of-warding-spells-of-the-mark-11",
             "name": "Spells of the Mark",
-            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Warding Spells table are added to the spell list of your spellcasting class. Mark of Warding Spells: 1st — alarm, armor of Agathys; 2nd — arcane lock, knock; 3rd — glyph of warding, magic circle; 4th — Leomund's secret chest, Mordenkainen's faithful hound; 5th — antilife shell",
+            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Warding Spells table are added to the spell list of your spellcasting class. Mark of Warding Spells:\nSpell Level | Spells\n1st | alarm, armor of Agathys\n2nd | arcane lock, knock\n3rd | glyph of warding, magic circle\n4th | Leomund's secret chest, Mordenkainen's faithful hound\n5th | antilife shell",
             "level": 1,
             "source": "Eberron: Rising from the Last War"
           }
@@ -1049,7 +1076,7 @@
           {
             "id": "erlw-elf-mark-of-shadow-spells-of-the-mark-9",
             "name": "Spells of the Mark",
-            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Shadow Spells table are added to the spell list of your spellcasting class. Mark of Shadow Spells: 1st — disguise self, silent image; 2nd — darkness, pass without trace; 3rd — clairvoyance, major image; 4th — greater invisibility, hallucinatory terrain; 5th — mislead",
+            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Shadow Spells table are added to the spell list of your spellcasting class. Mark of Shadow Spells:\nSpell Level | Spells\n1st | disguise self, silent image\n2nd | darkness, pass without trace\n3rd | clairvoyance, major image\n4th | greater invisibility, hallucinatory terrain\n5th | mislead",
             "level": 1,
             "source": "Eberron: Rising from the Last War"
           }
@@ -1147,7 +1174,7 @@
           {
             "id": "erlw-gnome-mark-of-scribing-spells-of-the-mark-7",
             "name": "Spells of the Mark",
-            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Scribing Spells table are added to the spell list of your spellcasting class. Mark of Scribing Spells: 1st — comprehend languages, illusory script; 2nd — animal messenger, silence; 3rd — sending, tongues; 4th — arcane eye, confusion; 5th — dream",
+            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Scribing Spells table are added to the spell list of your spellcasting class. Mark of Scribing Spells:\nSpell Level | Spells\n1st | comprehend languages, illusory script\n2nd | animal messenger, silence\n3rd | sending, tongues\n4th | arcane eye, confusion\n5th | dream",
             "level": 1,
             "source": "Eberron: Rising from the Last War"
           }
@@ -1252,7 +1279,7 @@
           {
             "id": "erlw-half-elf-variant-mark-of-detection-spells-of-the-mark-7",
             "name": "Spells of the Mark",
-            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Detection Spells table are added to the spell list of your spellcasting class. Mark of Detection Spells: 1st — detect evil and good, detect poison and disease; 2nd — detect thoughts, find traps; 3rd — clairvoyance, nondetection; 4th — arcane eye, divination; 5th — legend lore",
+            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Detection Spells table are added to the spell list of your spellcasting class. Mark of Detection Spells:\nSpell Level | Spells\n1st | detect evil and good, detect poison and disease\n2nd | detect thoughts, find traps\n3rd | clairvoyance, nondetection\n4th | arcane eye, divination\n5th | legend lore",
             "level": 1,
             "source": "Eberron: Rising from the Last War"
           }
@@ -1356,7 +1383,7 @@
           {
             "id": "erlw-half-elf-variant-mark-of-storm-spells-of-the-mark-8",
             "name": "Spells of the Mark",
-            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Storm Spells table are added to the spell list of your spellcasting class. Mark of Storm Spells: 1st — feather fall, fog cloud; 2nd — gust of wind, levitate; 3rd — sleet storm, wind wall; 4th — conjure minor elementals, control water; 5th — conjure elemental",
+            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Storm Spells table are added to the spell list of your spellcasting class. Mark of Storm Spells:\nSpell Level | Spells\n1st | feather fall, fog cloud\n2nd | gust of wind, levitate\n3rd | sleet storm, wind wall\n4th | conjure minor elementals, control water\n5th | conjure elemental",
             "level": 1,
             "source": "Eberron: Rising from the Last War"
           }
@@ -1430,7 +1457,7 @@
           {
             "id": "erlw-half-orc-variant-mark-of-finding-spells-of-the-mark-5",
             "name": "Spells of the Mark",
-            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Finding Spells table are added to the spell list of your spellcasting class. Mark of Finding Spells: 1st — faerie fire, longstrider; 2nd — locate animals or plants, locate object; 3rd — clairvoyance, speak with plants; 4th — divination, locate creature; 5th — commune with nature",
+            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Finding Spells table are added to the spell list of your spellcasting class. Mark of Finding Spells:\nSpell Level | Spells\n1st | faerie fire, longstrider\n2nd | locate animals or plants, locate object\n3rd | clairvoyance, speak with plants\n4th | divination, locate creature\n5th | commune with nature",
             "level": 1,
             "source": "Eberron: Rising from the Last War"
           },
@@ -1537,7 +1564,7 @@
           {
             "id": "erlw-halfling-mark-of-healing-spells-of-the-mark-8",
             "name": "Spells of the Mark",
-            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Healing Spells table are added to the spell list of your spellcasting class. Mark of Healing Spells: 1st — cure wounds, healing word; 2nd — lesser restoration, prayer of healing; 3rd — aura of vitality, mass healing word; 4th — aura of purity, aura of life; 5th — greater restoration",
+            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Healing Spells table are added to the spell list of your spellcasting class. Mark of Healing Spells:\nSpell Level | Spells\n1st | cure wounds, healing word\n2nd | lesser restoration, prayer of healing\n3rd | aura of vitality, mass healing word\n4th | aura of purity, aura of life\n5th | greater restoration",
             "level": 1,
             "source": "Eberron: Rising from the Last War"
           }
@@ -1636,7 +1663,7 @@
           {
             "id": "erlw-halfling-mark-of-hospitality-spells-of-the-mark-8",
             "name": "Spells of the Mark",
-            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Hospitality Spells table are added to the spell list of your spellcasting class. Mark of Hospitality Spells: 1st — goodberry, sleep; 2nd — aid, calm emotions; 3rd — create food and water, Leomund's tiny hut; 4th — aura of purity, Mordenkainen's private sanctum; 5th — hallow",
+            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Hospitality Spells table are added to the spell list of your spellcasting class. Mark of Hospitality Spells:\nSpell Level | Spells\n1st | goodberry, sleep\n2nd | aid, calm emotions\n3rd | create food and water, Leomund's tiny hut\n4th | aura of purity, Mordenkainen's private sanctum\n5th | hallow",
             "level": 1,
             "source": "Eberron: Rising from the Last War"
           }
@@ -1732,7 +1759,7 @@
           {
             "id": "erlw-human-mark-of-handling-spells-of-the-mark-6",
             "name": "Spells of the Mark",
-            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Handling Spells table are added to the spell list of your spellcasting class. Mark of Handling Spells: 1st — animal friendship, speak with animals; 2nd — beast sense, calm emotions; 3rd — beacon of hope, conjure animals; 4th — aura of life, dominate beast; 5th — awaken",
+            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Handling Spells table are added to the spell list of your spellcasting class. Mark of Handling Spells:\nSpell Level | Spells\n1st | animal friendship, speak with animals\n2nd | beast sense, calm emotions\n3rd | beacon of hope, conjure animals\n4th | aura of life, dominate beast\n5th | awaken",
             "level": 1,
             "source": "Eberron: Rising from the Last War"
           }
@@ -1826,7 +1853,7 @@
           {
             "id": "erlw-human-mark-of-making-spells-of-the-mark-6",
             "name": "Spells of the Mark",
-            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Making Spells table are added to the spell list of your spellcasting class. Mark of Making Spells: 1st — identify, Tenser's floating disk; 2nd — continual flame, magic weapon; 3rd — conjure barrage, elemental weapon; 4th — fabricate, stone shape; 5th — creation",
+            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Making Spells table are added to the spell list of your spellcasting class. Mark of Making Spells:\nSpell Level | Spells\n1st | identify, Tenser's floating disk\n2nd | continual flame, magic weapon\n3rd | conjure barrage, elemental weapon\n4th | fabricate, stone shape\n5th | creation",
             "level": 1,
             "source": "Eberron: Rising from the Last War"
           }
@@ -1924,7 +1951,7 @@
           {
             "id": "erlw-human-mark-of-passage-spells-of-the-mark-6",
             "name": "Spells of the Mark",
-            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Passage Spells table are added to the spell list of your spellcasting class. Mark of Passage Spells: 1st — expeditious retreat, jump; 2nd — misty step, pass without trace; 3rd — blink, phantom steed; 4th — dimension door, freedom of movement; 5th — teleportation circle",
+            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Passage Spells table are added to the spell list of your spellcasting class. Mark of Passage Spells:\nSpell Level | Spells\n1st | expeditious retreat, jump\n2nd | misty step, pass without trace\n3rd | blink, phantom steed\n4th | dimension door, freedom of movement\n5th | teleportation circle",
             "level": 1,
             "source": "Eberron: Rising from the Last War"
           }
@@ -2004,7 +2031,7 @@
           {
             "id": "erlw-human-mark-of-sentinel-spells-of-the-mark-6",
             "name": "Spells of the Mark",
-            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Sentinel Spells table are added to the spell list of your spellcasting class. Mark of Sentinel Spells: 1st — compelled duel, shield of faith; 2nd — warding bond, zone of truth; 3rd — counterspell, protection from energy; 4th — death ward, guardian of faith; 5th — Bigby's hand",
+            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Sentinel Spells table are added to the spell list of your spellcasting class. Mark of Sentinel Spells:\nSpell Level | Spells\n1st | compelled duel, shield of faith\n2nd | warding bond, zone of truth\n3rd | counterspell, protection from energy\n4th | death ward, guardian of faith\n5th | Bigby's hand",
             "level": 1,
             "source": "Eberron: Rising from the Last War"
           }
@@ -2084,7 +2111,7 @@
           {
             "id": "erlw-human-variant-mark-of-finding-spells-of-the-mark-6",
             "name": "Spells of the Mark",
-            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Finding Spells table are added to the spell list of your spellcasting class. Mark of Finding Spells: 1st — faerie fire, longstrider; 2nd — locate animals or plants, locate object; 3rd — clairvoyance, speak with plants; 4th — divination, locate creature; 5th — commune with nature",
+            "description": "If you have the Spellcasting or the Pact Magic class feature, the spells on the Mark of Finding Spells table are added to the spell list of your spellcasting class. Mark of Finding Spells:\nSpell Level | Spells\n1st | faerie fire, longstrider\n2nd | locate animals or plants, locate object\n3rd | clairvoyance, speak with plants\n4th | divination, locate creature\n5th | commune with nature",
             "level": 1,
             "source": "Eberron: Rising from the Last War"
           }
@@ -2243,7 +2270,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "Trinkets from Aerenal: 1 — A bronzewood ring inscribed with the Elvish word for \"hope\"; 2 — A dried flower; if it's placed in water, it blooms; 3 — An ebony locket; when it's opened, an elven voice whispers \"Always\"; 4 — A tiny skull carved from dark wood; 5 — A finger bone inscribed with an unknown sigil; 6 — An ivory flute which produces no sound; 7 — A small journal made from preserved leaves; 8 — A book of poetry written by undead elves",
+        "description": "Trinkets from Aerenal:\nd8 | Trinket\n1 | A bronzewood ring inscribed with the Elvish word for \"hope\"\n2 | A dried flower; if it's placed in water, it blooms\n3 | An ebony locket; when it's opened, an elven voice whispers \"Always\"\n4 | A tiny skull carved from dark wood\n5 | A finger bone inscribed with an unknown sigil\n6 | An ivory flute which produces no sound\n7 | A small journal made from preserved leaves\n8 | A book of poetry written by undead elves",
         "properties": []
       },
       {
@@ -2278,7 +2305,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "Trinkets from Argonnessen: 1 — A pierced dragon scale on a cord; 2 — A statuette of a dragon carved from black bone; 3 — A dragon's tooth, engraved with an unknown sigil; 4 — A child's doll of a dragon, woven from leather cords; 5 — A dagger carved from a dragon's talon; 6 — A brass disk bearing the silhouette of a black dragon; 7 — A small egg-shaped piece of polished bone; 8 — A bone fragment with brass inlaid runes; 9 — A leather pouch filled with tiny draconic teeth; 10 — A single large seed that's warm to the touch",
+        "description": "Trinkets from Argonnessen:\nd10 | Trinket\n1 | A pierced dragon scale on a cord\n2 | A statuette of a dragon carved from black bone\n3 | A dragon's tooth, engraved with an unknown sigil\n4 | A child's doll of a dragon, woven from leather cords\n5 | A dagger carved from a dragon's talon\n6 | A brass disk bearing the silhouette of a black dragon\n7 | A small egg-shaped piece of polished bone\n8 | A bone fragment with brass inlaid runes\n9 | A leather pouch filled with tiny draconic teeth\n10 | A single large seed that's warm to the touch",
         "properties": []
       },
       {
@@ -2453,7 +2480,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "Trinkets from the Frostfell and Everice: 1 — A small prism carved from ice that doesn't melt; 2 — A rusted iron coin, depicting a dwarf lord and the worlds \"Five Rex Undra\"; 3 — A pair of eight-sided dice carved from ice that doesn't melt; 4 — A swatch of silvery fur that's cold to the touch, possibly from a winter wolf; 5 — A snowball; it doesn't melt and can't be compressed into ice; 6 — A tiny white dragon sculpted from ice that doesn't melt; 7 — A key carved from ice that doesn't melt; 8 — A single scale from a white dragon",
+        "description": "Trinkets from the Frostfell and Everice:\nd8 | Trinket\n1 | A small prism carved from ice that doesn't melt\n2 | A rusted iron coin, depicting a dwarf lord and the worlds \"Five Rex Undra\"\n3 | A pair of eight-sided dice carved from ice that doesn't melt\n4 | A swatch of silvery fur that's cold to the touch, possibly from a winter wolf\n5 | A snowball; it doesn't melt and can't be compressed into ice\n6 | A tiny white dragon sculpted from ice that doesn't melt\n7 | A key carved from ice that doesn't melt\n8 | A single scale from a white dragon",
         "properties": []
       },
       {
@@ -2481,7 +2508,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "Trinkets from Khyber: 1 — A pressed flower with vivid green petals; when you smell it, you hear eerie music; 2 — A tiny ball of putty; if you set it down, it begins to slowly crawl around; 3 — A perpetually warm disk of dark iron; 4 — A small journal with leathery pages; any words you write in it slowly disappear; 5 — A four-sided die carved with strange markings; 6 — A cameo with the silhouette of an unknown species; 7 — A preserved finger with purple flesh and four joints; 8 — A perfectly preserved eye; if you set it down, it rotates to follow your movement; 9 — A small box; when opened, you alone hear screaming; 10 — A preserved insect; you've never seen another like it",
+        "description": "Trinkets from Khyber:\nd10 | Trinket\n1 | A pressed flower with vivid green petals; when you smell it, you hear eerie music\n2 | A tiny ball of putty; if you set it down, it begins to slowly crawl around\n3 | A perpetually warm disk of dark iron\n4 | A small journal with leathery pages; any words you write in it slowly disappear\n5 | A four-sided die carved with strange markings\n6 | A cameo with the silhouette of an unknown species\n7 | A preserved finger with purple flesh and four joints\n8 | A perfectly preserved eye; if you set it down, it rotates to follow your movement\n9 | A small box; when opened, you alone hear screaming\n10 | A preserved insect; you've never seen another like it",
         "properties": []
       },
       {
@@ -2523,7 +2550,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "Mournland Trinkets: 1 — The favorite childhood toy of one of the adventurers, floating in midair; 2 — A tin whistle that makes beautiful colors and patterns magically appear when it's played; 3 — A toy lightning rail car; 4 — A glass eye; 5 — A silver lapel pin of a finely detailed gorgon's head with ruby eyes; 6 — A monocle that can be used as a telescope; 7 — A six-inch-tall mechanical marmoset in need of minor repairs; 8 — A small medallion made of silver, depicting a tower with an eye at the top of it and other smaller eyes embedded in the sides; 9 — A cloak pin made of iron in the shape of two hammers joined by a semicircular haft; 10 — A wooden dinosaur toy that has movable legs",
+        "description": "Mournland Trinkets:\nd10 | Trinket\n1 | The favorite childhood toy of one of the adventurers, floating in midair\n2 | A tin whistle that makes beautiful colors and patterns magically appear when it's played\n3 | A toy lightning rail car\n4 | A glass eye\n5 | A silver lapel pin of a finely detailed gorgon's head with ruby eyes\n6 | A monocle that can be used as a telescope\n7 | A six-inch-tall mechanical marmoset in need of minor repairs\n8 | A small medallion made of silver, depicting a tower with an eye at the top of it and other smaller eyes embedded in the sides\n9 | A cloak pin made of iron in the shape of two hammers joined by a semicircular haft\n10 | A wooden dinosaur toy that has movable legs",
         "properties": []
       },
       {
@@ -2537,7 +2564,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "Trinkets from Sarlona: 1 — A polished crystal sphere; when you clutch it in your fist, a telepathic voice recites a story in your mind; 2 — A teardrop pendant made from polished shell; when you hold it, you see the image of a young Riedran man; 3 — A six-sided crystal die; when you roll it, you feel a surge of emotion for six seconds; 4 — A sealed vial filled with faintly luminescent blue mist; 5 — A crystal disk engraved with a labyrinthine pattern; 6 — A leather-bound collection of kalashtar poetry called Shards of the Light; 7 — A sphere of polished crystal; when you hold it in your palm, you feel that it knows you and understands you; 8 — A cup and ball toy; when you successfully catch the ball in the cup, you feel a momentary surge of joy",
+        "description": "Trinkets from Sarlona:\nd8 | Trinket\n1 | A polished crystal sphere; when you clutch it in your fist, a telepathic voice recites a story in your mind\n2 | A teardrop pendant made from polished shell; when you hold it, you see the image of a young Riedran man\n3 | A six-sided crystal die; when you roll it, you feel a surge of emotion for six seconds\n4 | A sealed vial filled with faintly luminescent blue mist\n5 | A crystal disk engraved with a labyrinthine pattern\n6 | A leather-bound collection of kalashtar poetry called Shards of the Light\n7 | A sphere of polished crystal; when you hold it in your palm, you feel that it knows you and understands you\n8 | A cup and ball toy; when you successfully catch the ball in the cup, you feel a momentary surge of joy",
         "properties": []
       },
       {
@@ -2663,7 +2690,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "Trinkets from Xen'drik: 1 — A punched ticket for a voyage from Sharn to Stormreach; 2 — A scorpion's barb engraved with a single Elvish letter; 3 — A copper coin so big you could use it as a dinner plate; 4 — An image of an elf warrior engraved on a giant's tooth; 5 — A single page from a giant wizard's spellbook, bearing an incomplete spell; 6 — A scrap of parchment, part of a map of Stormreach; 7 — A small book titled Feersome Beests of Zendrik; 8 — A scrimshaw carving of a sahuagin",
+        "description": "Trinkets from Xen'drik:\nd8 | Trinket\n1 | A punched ticket for a voyage from Sharn to Stormreach\n2 | A scorpion's barb engraved with a single Elvish letter\n3 | A copper coin so big you could use it as a dinner plate\n4 | An image of an elf warrior engraved on a giant's tooth\n5 | A single page from a giant wizard's spellbook, bearing an incomplete spell\n6 | A scrap of parchment, part of a map of Stormreach\n7 | A small book titled Feersome Beests of Zendrik\n8 | A scrimshaw carving of a sahuagin",
         "properties": []
       },
       {
@@ -2692,7 +2719,7 @@
       {
         "id": "erlw-aberrant-dragonmark",
         "name": "Aberrant Dragonmark",
-        "description": "You have manifested an aberrant dragonmark. Determine its appearance and the flaw associated with it. You gain the following benefits: You learn a level=0. In addition, choose a level=1. You learn that spell and can cast it through your mark. Once you cast it, you must finish a short or long rest before you can cast it again through the mark. Constitution is your spellcasting ability for these spells. When you cast the 1st-level spell through your mark, you can expend one of your Hit Dice and roll it. If you roll an even number, you gain a number of temporary hit points equal to the number rolled. If you roll an odd number, one random creature within 30 feet of you (not including you) takes force damage equal to the number rolled. If no other creatures are in range, you take the damage. You also develop a random flaw from the Aberrant Dragonmark Flaws table. Aberrant Dragonmark Flaws: 1 — Your mark is a source of constant physical pain.; 2 — Your mark whispers to you. Its meaning can be unclear.; 3 — When you're stressed, the mark hisses audibly.; 4 — The skin around the mark is burned, scaly, or withered.; 5 — Animals are uneasy around you.; 6 — You have a mood swing any time you use your mark.; 7 — Your looks change slightly whenever you use the mark.; 8 — You have horrific nightmares after you use your mark. Option: Greater Aberrant Powers. At the DM's option, a character who has the Aberrant Dragonmark feat has a chance of manifesting greater power. Upon reaching 10th level, such a character has a 10 percent chance of gaining an type=boon from among the options in chapter 7 of the Dungeon Master's Guide. If the character fails to gain a boon, they have a 10 percent chance the next time they gain a level. If the character gains a boon, the DM chooses it or determines it randomly. The character also permanently loses one of their Hit Dice, and their hit point maximum is reduced by an amount equal to a roll of that die plus their Constitution modifier (minimum reduction of 1). This reduction can't be reversed by any means.",
+        "description": "You have manifested an aberrant dragonmark. Determine its appearance and the flaw associated with it. You gain the following benefits: You learn a level=0. In addition, choose a level=1. You learn that spell and can cast it through your mark. Once you cast it, you must finish a short or long rest before you can cast it again through the mark. Constitution is your spellcasting ability for these spells. When you cast the 1st-level spell through your mark, you can expend one of your Hit Dice and roll it. If you roll an even number, you gain a number of temporary hit points equal to the number rolled. If you roll an odd number, one random creature within 30 feet of you (not including you) takes force damage equal to the number rolled. If no other creatures are in range, you take the damage. You also develop a random flaw from the Aberrant Dragonmark Flaws table. Aberrant Dragonmark Flaws:\nd8 | Flaw\n1 | Your mark is a source of constant physical pain.\n2 | Your mark whispers to you. Its meaning can be unclear.\n3 | When you're stressed, the mark hisses audibly.\n4 | The skin around the mark is burned, scaly, or withered.\n5 | Animals are uneasy around you.\n6 | You have a mood swing any time you use your mark.\n7 | Your looks change slightly whenever you use the mark.\n8 | You have horrific nightmares after you use your mark. Option: Greater Aberrant Powers. At the DM's option, a character who has the Aberrant Dragonmark feat has a chance of manifesting greater power. Upon reaching 10th level, such a character has a 10 percent chance of gaining an type=boon from among the options in chapter 7 of the Dungeon Master's Guide. If the character fails to gain a boon, they have a 10 percent chance the next time they gain a level. If the character gains a boon, the DM chooses it or determines it randomly. The character also permanently loses one of their Hit Dice, and their hit point maximum is reduced by an amount equal to a roll of that die plus their Constitution modifier (minimum reduction of 1). This reduction can't be reversed by any means.",
         "prerequisites": {
           "text": "No other dragonmark"
         },

@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source BGG).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T17:54:11.964Z",
+    "importedAt": "2026-11-09T04:38:14.642Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -300,7 +300,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "While exploring your home, you discovered some trivial remnant of the ancient inhabitants, as determined by rolling on the Giant Trinkets table. The items in parentheses are the normal-sized objects most analogous to the described giant trinkets. Giant Trinkets: 1 — A giant's toothpick (a dagger); 2 — A giant's handkerchief (a blanket); 3 — A giant's marble (a crystal orb); 4 — A giant's match (a torch); 5 — A giant's letter opener (a longsword); 6 — A giant's thimble (an iron pot)",
+        "description": "While exploring your home, you discovered some trivial remnant of the ancient inhabitants, as determined by rolling on the Giant Trinkets table. The items in parentheses are the normal-sized objects most analogous to the described giant trinkets. Giant Trinkets:\nd6 | Giant Trinket\n1 | A giant's toothpick (a dagger)\n2 | A giant's handkerchief (a blanket)\n3 | A giant's marble (a crystal orb)\n4 | A giant's match (a torch)\n5 | A giant's letter opener (a longsword)\n6 | A giant's thimble (an iron pot)",
         "properties": []
       },
       {
@@ -328,7 +328,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "Sometimes, an egg laid by a giant goose inexplicably contains some kind of small trinket or minor magic item. Once it lays a golden egg, a giant goose can't do so again for a year and a day. You can use the Goose Egg Trinket table to determine the contents of a golden egg. A giant goose's egg can be a great way to give characters an item that's important to the story of an adventure or your campaign. Goose Egg Trinket: 1 — The egg is empty, but the inside of the shell is inscribed with a poem or an intricate illustration.; 2 — The gold shell encloses a candy egg.; 3 — The egg holds a small toy goose that makes a loud honking noise when squeezed.; 4 — The egg contains a potion of giant strength (hill giant) with no container.; 5 — The egg holds a pearl of power.; 6 — The egg contains a brooch of shielding.; 7 — The egg contains a figurine of wondrous power (silver raven) that activates automatically as the egg is opened, releasing what appears to be a living bird.; 8–12 — The egg is empty.",
+        "description": "Sometimes, an egg laid by a giant goose inexplicably contains some kind of small trinket or minor magic item. Once it lays a golden egg, a giant goose can't do so again for a year and a day. You can use the Goose Egg Trinket table to determine the contents of a golden egg. A giant goose's egg can be a great way to give characters an item that's important to the story of an adventure or your campaign. Goose Egg Trinket:\nd12 | Egg Contents\n1 | The egg is empty, but the inside of the shell is inscribed with a poem or an intricate illustration.\n2 | The gold shell encloses a candy egg.\n3 | The egg holds a small toy goose that makes a loud honking noise when squeezed.\n4 | The egg contains a potion of giant strength (hill giant) with no container.\n5 | The egg holds a pearl of power.\n6 | The egg contains a brooch of shielding.\n7 | The egg contains a figurine of wondrous power (silver raven) that activates automatically as the egg is opened, releasing what appears to be a living bird.\n8–12 | The egg is empty.",
         "properties": []
       },
       {
@@ -715,7 +715,10 @@
         "description": "You've manifested the fiery combat emblematic of fire giants, granting you the following benefits: Born of Flame: You have resistance to fire damage. Searing Ignition: When you take the Attack action on your turn, you can replace a single attack with a magical burst of flame. Each creature of your choice in a 15-foot-radius sphere centered on you must make a Dexterity saving throw (DC equals 8 + your proficiency bonus + the modifier of the ability increased by this feat). On a failed save, a creature takes fire damage equal to 1d8 + your proficiency bonus, and it has the blinded condition until the start of your next turn. On a successful save, the creature takes half as much damage only. You can use your Searing Ignition a number of times equal to your proficiency bonus (but no more than once per turn), and you regain all expended uses when you finish a long rest.",
         "prerequisites": {
           "level": 4,
-          "text": "Level 4"
+          "feats": [
+            "strike of the giants"
+          ],
+          "text": "Level 4; Strike of the Giants (Fire Strike) feat"
         },
         "abilityScoreIncreases": [
           {
@@ -739,7 +742,10 @@
         "description": "You've manifested the icy might emblematic of frost giants, granting you the following benefits: Born of Ice: You have resistance to cold damage. Frigid Retaliation: Immediately after a creature you can see within 30 feet of you hits you with an attack roll and deals damage, you can use your reaction to retaliate with a conjured blast of ice. The creature must make a Constitution saving throw (DC equals 8 + your proficiency bonus + the modifier of the ability increased by this feat). On a failed save, the creature takes cold damage equal to 1d8 + your proficiency bonus, and its speed is reduced to 0 until the end of its next turn. You can use this reaction a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
         "prerequisites": {
           "level": 4,
-          "text": "Level 4"
+          "feats": [
+            "strike of the giants"
+          ],
+          "text": "Level 4; Strike of the Giants (Frost Strike) feat"
         },
         "abilityScoreIncreases": [
           {
@@ -763,7 +769,10 @@
         "description": "You've manifested the confounding magic emblematic of cloud giants, granting you the following benefits: Cloudy Escape: When a creature you can see hits you with an attack roll, you can use your reaction to give yourself resistance to that attack's damage. You then teleport to an unoccupied space that you can see within 30 feet of yourself. You can use this reaction a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
         "prerequisites": {
           "level": 4,
-          "text": "Level 4"
+          "feats": [
+            "strike of the giants"
+          ],
+          "text": "Level 4; Strike of the Giants (Cloud Strike) feat"
         },
         "abilityScoreIncreases": [
           {
@@ -787,7 +796,10 @@
         "description": "You've manifested the physical talents emblematic of stone giants, granting you the following benefits: Cavernous Sight: You gain darkvision with a range of 60 feet. If you already have darkvision from another source, its range increases by 60 feet. Stone Throw: As a bonus action, you can take a rock and make a magical attack with it. The attack is a ranged spell attack with a range of 60 feet that uses the ability score you increased with this feat as the spellcasting ability. On a hit, the rock deals 1d10 force damage, and the target must succeed on a Strength saving throw (DC equals 8 + your proficiency bonus + the spellcasting ability modifier) or have the prone condition. You can use this bonus action a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
         "prerequisites": {
           "level": 4,
-          "text": "Level 4"
+          "feats": [
+            "strike of the giants"
+          ],
+          "text": "Level 4; Strike of the Giants (Stone Strike) feat"
         },
         "abilityScoreIncreases": [
           {
@@ -808,7 +820,10 @@
       {
         "id": "bigbys-rune-shaper",
         "name": "Rune Shaper",
-        "description": "You've studied the magic of Giant runes, granting you the following benefits: Comprehend Languages: You learn the comprehend languages spell. You can cast this spell without expending a spell slot, and you must finish a long rest before you can cast it in this way again. You can also cast this spell using any spell slots you have. Rune Magic: You know a number of runes equal to half your proficiency bonus (rounded down), chosen from the Rune Spells table. Whenever you finish a long rest, you can inscribe each rune you know onto one nonmagical weapon, armor, piece of clothing, or other object you touch. You temporarily learn the 1st-level spells that correspond to the runes you inscribed, as specified on the Rune Spells table, and you know those spells until you finish a long rest, when the runes fade. While you are wearing or carrying any rune-marked object, you can cast the spells associated with those runes using any spell slots you have. You can also invoke a rune inscribed on an object you are wearing or carrying and cast its associated spell without expending a spell slot or using material components. Once you cast the spell in this way, you can't do so again until you finish a long rest. Your spellcasting ability for this feat is Intelligence, Wisdom, or Charisma (choose when you select this feat). Each time you gain a level, you can replace one of the runes you know with another one from the Rune Spells table. Cloud — Fog cloud; Death — Inflict wounds; Dragon — Chromatic orb; Enemy — Disguise self; Fire — Burning hands; Friend — Speak with animals; Frost — Armor of Agathys; Hill — Goodberry; Journey — Longstrider; King — Command; Mountain — Entangle; Stone — Sanctuary; Storm — Thunderwave",
+        "description": "You've studied the magic of Giant runes, granting you the following benefits: Comprehend Languages: You learn the comprehend languages spell. You can cast this spell without expending a spell slot, and you must finish a long rest before you can cast it in this way again. You can also cast this spell using any spell slots you have. Rune Magic: You know a number of runes equal to half your proficiency bonus (rounded down), chosen from the Rune Spells table. Whenever you finish a long rest, you can inscribe each rune you know onto one nonmagical weapon, armor, piece of clothing, or other object you touch. You temporarily learn the 1st-level spells that correspond to the runes you inscribed, as specified on the Rune Spells table, and you know those spells until you finish a long rest, when the runes fade. While you are wearing or carrying any rune-marked object, you can cast the spells associated with those runes using any spell slots you have. You can also invoke a rune inscribed on an object you are wearing or carrying and cast its associated spell without expending a spell slot or using material components. Once you cast the spell in this way, you can't do so again until you finish a long rest. Your spellcasting ability for this feat is Intelligence, Wisdom, or Charisma (choose when you select this feat). Each time you gain a level, you can replace one of the runes you know with another one from the Rune Spells table. Rune | Spell\nCloud | Fog cloud\nDeath | Inflict wounds\nDragon | Chromatic orb\nEnemy | Disguise self\nFire | Burning hands\nFriend | Speak with animals\nFrost | Armor of Agathys\nHill | Goodberry\nJourney | Longstrider\nKing | Command\nMountain | Entangle\nStone | Sanctuary\nStorm | Thunderwave",
+        "prerequisites": {
+          "text": "Spellcasting feature or Rune Carver background"
+        },
         "grantedSpells": [
           "Comprehend Languages",
           "Fog Cloud",
@@ -835,7 +850,10 @@
         "description": "You've manifested the tempest magic emblematic of storm giants, granting you the following benefits: Maelstrom Aura: As a bonus action, you surround yourself with an aura of magical wind and lightning that extends 10 feet from you in every direction but not through 3. The aura lasts until the start of your next turn or until you are incapacitated. While the aura is active, you have resistance to lightning and thunder damage. In addition, attack rolls against you have disadvantage, and whenever another creature starts its turn within the aura, you can force the creature to make a Strength saving throw (DC equals 8 + your proficiency bonus + the modifier of the ability increased by this feat). On a failed save, the creature's speed is halved until the start of its next turn. You can use this bonus action a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
         "prerequisites": {
           "level": 4,
-          "text": "Level 4"
+          "feats": [
+            "strike of the giants"
+          ],
+          "text": "Level 4; Strike of the Giants (Storm Strike) feat"
         },
         "abilityScoreIncreases": [
           {
@@ -857,6 +875,9 @@
         "id": "bigbys-strike-of-the-giants",
         "name": "Strike of the Giants",
         "description": "You have absorbed primeval magic that gives you an echo of the might of giants. When you take this feat, choose one of the benefits listed below. Once per turn, when you hit a target with a melee weapon attack or a ranged weapon attack using a thrown weapon, you can imbue the attack with an additional effect depending on the benefit you chose: Cloud Strike. The target takes an extra 1d4 thunder damage. If the target is a creature, it must succeed on a Wisdom saving throw, or you become invisible to it until the start of your next turn or until immediately after you make an attack roll or cast a spell. Fire Strike. The target takes an extra 1d10 fire damage. Frost Strike. The target takes an extra 1d6 cold damage. If the target is a creature, it must succeed on a Constitution saving throw, or its speed is reduced to 0 until the start of your next turn. Hill Strike. The target takes an extra 1d6 damage of the weapon's type. If the target is a creature, it must succeed on a Strength saving throw or have the prone condition. Stone Strike. The target takes an extra 1d6 force damage. If the target is a creature, it must succeed on a Strength saving throw or be pushed 10 feet from you in a straight line. Storm Strike. The target takes an extra 1d6 lightning damage. If the target is a creature, it must succeed on a Constitution saving throw, or it has disadvantage on attack rolls until the start of your next turn. The saving throw DC for these effects equals 8 + your proficiency bonus + your Strength or Constitution modifier. You can use this feat a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+        "prerequisites": {
+          "text": "Proficiency with martial weapons or Giant Foundling background"
+        },
         "features": [
           {
             "id": "bigbys-strike-of-the-giants-cloud-strike-0",
@@ -908,6 +929,9 @@
         "id": "bigbys-strike-of-the-giants-cloud",
         "name": "Strike of the Giants; Cloud",
         "description": "You have absorbed primeval magic that gives you an echo of the might of giants. Once per turn, when you hit a target with a melee weapon attack or a ranged weapon attack using a thrown weapon, you can imbue the attack with an additional effect: Cloud Strike. The target takes an extra 1d4 thunder damage. If the target is a creature, it must succeed on a Wisdom saving throw, or you become invisible to it until the start of your next turn or until immediately after you make an attack roll or cast a spell.",
+        "prerequisites": {
+          "text": "Proficiency with martial weapons or Giant Foundling background"
+        },
         "features": [
           {
             "id": "bigbys-strike-of-the-giants-cloud-cloud-strike-0",
@@ -924,6 +948,9 @@
         "id": "bigbys-strike-of-the-giants-fire",
         "name": "Strike of the Giants; Fire",
         "description": "You have absorbed primeval magic that gives you an echo of the might of giants. Once per turn, when you hit a target with a melee weapon attack or a ranged weapon attack using a thrown weapon, you can imbue the attack with an additional effect: Fire Strike. The target takes an extra 1d10 fire damage.",
+        "prerequisites": {
+          "text": "Proficiency with martial weapons or Giant Foundling background"
+        },
         "features": [
           {
             "id": "bigbys-strike-of-the-giants-fire-fire-strike-0",
@@ -940,6 +967,9 @@
         "id": "bigbys-strike-of-the-giants-frost",
         "name": "Strike of the Giants; Frost",
         "description": "You have absorbed primeval magic that gives you an echo of the might of giants. Once per turn, when you hit a target with a melee weapon attack or a ranged weapon attack using a thrown weapon, you can imbue the attack with an additional effect: Frost Strike. The target takes an extra 1d6 cold damage. If the target is a creature, it must succeed on a Constitution saving throw, or its speed is reduced to 0 until the start of your next turn.",
+        "prerequisites": {
+          "text": "Proficiency with martial weapons or Giant Foundling background"
+        },
         "features": [
           {
             "id": "bigbys-strike-of-the-giants-frost-frost-strike-0",
@@ -956,6 +986,9 @@
         "id": "bigbys-strike-of-the-giants-hill",
         "name": "Strike of the Giants; Hill",
         "description": "You have absorbed primeval magic that gives you an echo of the might of giants. Once per turn, when you hit a target with a melee weapon attack or a ranged weapon attack using a thrown weapon, you can imbue the attack with an additional effect: Hill Strike. The target takes an extra 1d6 damage of the weapon's type. If the target is a creature, it must succeed on a Strength saving throw or have the prone condition.",
+        "prerequisites": {
+          "text": "Proficiency with martial weapons or Giant Foundling background"
+        },
         "features": [
           {
             "id": "bigbys-strike-of-the-giants-hill-hill-strike-0",
@@ -972,6 +1005,9 @@
         "id": "bigbys-strike-of-the-giants-stone",
         "name": "Strike of the Giants; Stone",
         "description": "You have absorbed primeval magic that gives you an echo of the might of giants. Once per turn, when you hit a target with a melee weapon attack or a ranged weapon attack using a thrown weapon, you can imbue the attack with an additional effect: Stone Strike. The target takes an extra 1d6 force damage. If the target is a creature, it must succeed on a Strength saving throw or be pushed 10 feet from you in a straight line.",
+        "prerequisites": {
+          "text": "Proficiency with martial weapons or Giant Foundling background"
+        },
         "features": [
           {
             "id": "bigbys-strike-of-the-giants-stone-stone-strike-0",
@@ -988,6 +1024,9 @@
         "id": "bigbys-strike-of-the-giants-storm",
         "name": "Strike of the Giants; Storm",
         "description": "You have absorbed primeval magic that gives you an echo of the might of giants. Once per turn, when you hit a target with a melee weapon attack or a ranged weapon attack using a thrown weapon, you can imbue the attack with an additional effect: Storm Strike. The target takes an extra 1d6 lightning damage. If the target is a creature, it must succeed on a Constitution saving throw, or it has disadvantage on attack rolls until the start of your next turn. The saving throw DC for these effects equals 8 + your proficiency bonus + your Strength or Constitution modifier. You can use this feat a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+        "prerequisites": {
+          "text": "Proficiency with martial weapons or Giant Foundling background"
+        },
         "features": [
           {
             "id": "bigbys-strike-of-the-giants-storm-storm-strike-0",
@@ -1006,7 +1045,10 @@
         "description": "You've manifested the resilience emblematic of hill giants, granting you the following benefits: Bulwark: When you are subjected to an effect that would move you at least 5 feet or give you the prone condition, you can use your reaction to steady yourself. You aren't moved and don't have the prone condition. Iron Stomach: Whenever you eat food as part of a short rest and spend one or more Hit Dice to regain hit points, you regain additional hit points equal to your Constitution modifier + your proficiency bonus.",
         "prerequisites": {
           "level": 4,
-          "text": "Level 4"
+          "feats": [
+            "strike of the giants"
+          ],
+          "text": "Level 4; Strike of the Giants (Hill Strike) feat"
         },
         "abilityScoreIncreases": [
           {

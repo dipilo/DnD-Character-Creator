@@ -9,14 +9,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ContentReferenceText } from '@/components/ContentReferenceText';
-import { Search, Shield } from 'lucide-react';
+import { ChevronDown, Search, Shield } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Feat } from '@/types/dnd';
+import type { Feat, FeatCategory, Feature } from '@/types/dnd';
 import {
   applyAbilityScoreBonuses,
   getClassFeatSelectionSources,
   getAdditionalFeatSelectionLimit,
+  getCharacterFeatureNames,
   getMagicFeatureFlags,
   getSelectedClassEdition,
   getSpeciesFeatSelectionSources,
@@ -24,19 +26,17 @@ import {
   resolveBackgroundGrantedFeat,
   type SelectedClassWithLevel
 } from '@/lib/builderRules';
-import { evaluateFeatPrerequisites, type FeatPrerequisiteContext } from '@/lib/featPrerequisites';
+import { evaluateFeatPrerequisites, formatContentName, type FeatPrerequisiteContext } from '@/lib/featPrerequisites';
 import { dedupeByNamePreferringEdition } from '@/lib/contentSelection';
 import { FeatChoicesPanel } from '@/components/builder/FeatChoicesPanel';
 import { featHasPendingChoices } from '@/lib/featGrants';
 import { getSelectedFeatureOptionIds } from '@/lib/featureOptions';
 
-type FeatCategory = 'origin' | 'general' | 'fighting-style' | 'epic-boon';
-
 const featCategoryLabels: Record<FeatCategory, string> = {
-  origin: 'Origin Feats',
-  general: 'General Feats',
-  'fighting-style': 'Fighting Style Feats',
-  'epic-boon': 'Epic Boon Feats'
+  origin: 'Origin',
+  general: 'General',
+  'fighting-style': 'Fighting Style',
+  'epic-boon': 'Epic Boon'
 };
 
 const normalizeText = (value: string) => value.toLowerCase().replaceAll(/[^a-z0-9]+/g, ' ').trim();
@@ -86,7 +86,17 @@ const getFeatCategoryFromSource = (feat: { name: string; sourceId?: string }) =>
   return undefined;
 };
 
-const getFeatCategory = (feat: { name: string; sourceId?: string; features?: Array<{ name: string }> }) => {
+const getFeatCategory = (feat: {
+  name: string;
+  sourceId?: string;
+  category?: FeatCategory;
+  features?: Array<{ name: string }>;
+}) => {
+  // The source's own label, where it prints one, over every guess below it.
+  if (feat.category) {
+    return feat.category;
+  }
+
   const sourceCategory = getFeatCategoryFromSource(feat);
   if (sourceCategory) {
     return sourceCategory;
@@ -109,25 +119,35 @@ const getFeatCategory = (feat: { name: string; sourceId?: string; features?: Arr
 
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
-// Every populated field is reported, with the source's own text as the fallback.
-const formatFeatPrerequisites = (feat: Feat) => {
+// One chip per requirement, so a feat asking three things does not read as one sentence the eye
+// skips. The source's own sentence is read first, because extraction lands only half of "Dwarf or
+// a Small race" and chips built from the fields alone would print the dwarf and drop the rest.
+const formatFeatPrerequisites = (feat: Feat): string[] => {
   const prerequisites = feat.prerequisites;
   if (!prerequisites) {
-    return 'No prerequisites listed';
+    return [];
+  }
+
+  const printed = prerequisites.text?.split(';').map((part) => part.trim()).filter(Boolean) ?? [];
+  if (printed.length > 0) {
+    return printed;
   }
 
   const parts: string[] = [];
+  if (prerequisites.level) {
+    parts.push(`Level ${prerequisites.level}+`);
+  }
   Object.entries(prerequisites.ability ?? {}).forEach(([ability, score]) => {
     parts.push(`${capitalize(ability)} ${score}+`);
   });
+  prerequisites.abilityAlternatives?.forEach((block) => {
+    parts.push(Object.entries(block).map(([ability, score]) => `${capitalize(ability)} ${score}+`).join(' and '));
+  });
   if (prerequisites.race?.length) {
-    parts.push(`Race: ${prerequisites.race.join(', ')}`);
+    parts.push(prerequisites.race.map(formatContentName).join(' or '));
   }
   if (prerequisites.class?.length) {
-    parts.push(`Class: ${prerequisites.class.join(', ')}`);
-  }
-  if (prerequisites.level) {
-    parts.push(`Level ${prerequisites.level}+`);
+    parts.push(prerequisites.class.map(formatContentName).join(' or '));
   }
   if (prerequisites.spellcasting) {
     parts.push('Spellcasting feature');
@@ -135,13 +155,66 @@ const formatFeatPrerequisites = (feat: Feat) => {
   if (prerequisites.pactMagic) {
     parts.push('Pact Magic feature');
   }
+  prerequisites.features?.forEach((feature) => {
+    parts.push(`${feature} feature`);
+  });
+  prerequisites.feats?.forEach((entry) => {
+    parts.push(`${formatContentName(entry)} feat`);
+  });
 
-  if (parts.length > 0) {
-    return `Prerequisite: ${parts.join(' • ')}`;
+  return parts;
+};
+
+const VISIBLE_BENEFITS = 2;
+
+const BenefitLine = ({ feature }: Readonly<{ feature: Feature }>) => (
+  <li>
+    • {feature.name ? <span className="font-medium text-foreground">{feature.name}: </span> : null}
+    <ContentReferenceText text={feature.description} />
+  </li>
+);
+
+// A feat printing six benefits made one card as tall as the whole grid row, so the rest fold away.
+// The card itself is the select control, hence the stopPropagation on the trigger.
+function FeatBenefitList({ features }: Readonly<{ features: Feature[] }>) {
+  const [open, setOpen] = useState(false);
+
+  if (features.length === 0) {
+    return null;
   }
 
-  return prerequisites.text ? `Prerequisite: ${prerequisites.text}` : 'No prerequisites listed';
-};
+  const shown = features.slice(0, VISIBLE_BENEFITS);
+  const hidden = features.slice(VISIBLE_BENEFITS);
+
+  return (
+    <div className="space-y-1">
+      <ul className="space-y-1 text-sm text-muted-foreground">
+        {shown.map((feature) => <BenefitLine key={feature.id} feature={feature} />)}
+      </ul>
+      {hidden.length > 0 && (
+        <Collapsible open={open} onOpenChange={setOpen}>
+          <CollapsibleContent>
+            <ul className="space-y-1 text-sm text-muted-foreground">
+              {hidden.map((feature) => <BenefitLine key={feature.id} feature={feature} />)}
+            </ul>
+          </CollapsibleContent>
+          <CollapsibleTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 w-full justify-between px-2 text-xs"
+              onClick={(event) => event.stopPropagation()}
+              onKeyDown={(event) => event.stopPropagation()}
+            >
+              {open ? 'Show less' : `${hidden.length} more ${hidden.length === 1 ? 'benefit' : 'benefits'}`}
+              <ChevronDown className={`h-3 w-3 transition-transform ${open ? 'rotate-180' : ''}`} />
+            </Button>
+          </CollapsibleTrigger>
+        </Collapsible>
+      )}
+    </div>
+  );
+}
 
 const EMPTY_SOURCE_IDS: string[] = [];
 
@@ -196,6 +269,13 @@ export function FeatsSelectionPage() {
 
   const selectedClassEdition = useMemo(() => getSelectedClassEdition(selectedClasses), [selectedClasses]);
 
+  // By name, not by id: a prerequisite points at a feat the way a book does, and a stored id goes
+  // stale as packs improve. Taking Strike of the Giants is what opens the six giant feats.
+  const chosenFeatNames = useMemo(() => {
+    const ids = new Set([...(grantedBackgroundFeat ? [grantedBackgroundFeat.id] : []), ...manualSelectedFeatIds]);
+    return feats.filter((entry) => ids.has(entry.id)).map((entry) => entry.name);
+  }, [feats, grantedBackgroundFeat, manualSelectedFeatIds]);
+
   const prerequisiteContext = useMemo<FeatPrerequisiteContext>(() => {
     const magic = getMagicFeatureFlags(selectedClasses);
     return {
@@ -205,6 +285,8 @@ export function FeatsSelectionPage() {
       ),
       totalLevel: selectedClasses.reduce((total, entry) => total + entry.level, 0),
       classNames: selectedClasses.map((entry) => entry.cls.name),
+      featureNames: getCharacterFeatureNames({ selectedClasses, species: selectedSpecies, variant: selectedVariant }),
+      featNames: chosenFeatNames,
       species: selectedSpecies,
       variant: selectedVariant,
       ...magic
@@ -212,6 +294,7 @@ export function FeatsSelectionPage() {
   }, [
     builderState.character?.abilityScoreBonuses,
     builderState.character?.abilityScores,
+    chosenFeatNames,
     selectedClasses,
     selectedSpecies,
     selectedVariant
@@ -239,24 +322,44 @@ export function FeatsSelectionPage() {
     return new Set(chosenFeats.filter((feat) => featHasPendingChoices(feat, selections)).map((feat) => feat.id));
   }, [builderState.character?.featSpellSelections, builderState.character?.features, chosenFeats]);
 
-  const filteredFeats = useMemo(() => {
+  // Everything the search and the book filter leave, before the category tabs narrow it: the tab
+  // counts have to say how many each tab would show, not how many the current one holds.
+  const searchedFeats = useMemo(() => {
     const matchingFeats = feats.filter((feat) => {
+      const needle = searchQuery.toLowerCase();
       const matchesSearch =
-        feat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        feat.source.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        feat.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = categoryFilter === 'all' || featCategories[feat.id] === categoryFilter;
+        feat.name.toLowerCase().includes(needle) ||
+        feat.source.toLowerCase().includes(needle) ||
+        feat.description.toLowerCase().includes(needle);
 
       return matchesSearch
-        && matchesCategory
         && sourceMatchesSelection(feat.source, feat.sourceId, selectedSourceIds)
         && feat.id !== grantedBackgroundFeat?.id;
     });
 
     // Both editions of the same feat (e.g. Grappler) can pass the filters; show one card,
     // preferring the printing that matches the selected class's rules edition.
-    const deduped = dedupeByNamePreferringEdition(matchingFeats, selectedClassEdition);
-    const qualifying = deduped.filter((feat) => prerequisiteResults.get(feat.id)?.met !== false);
+    return dedupeByNamePreferringEdition(matchingFeats, selectedClassEdition);
+  }, [feats, grantedBackgroundFeat?.id, searchQuery, selectedClassEdition, selectedSourceIds]);
+
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<'all' | FeatCategory, number>();
+    const countable = hideUnqualified
+      ? searchedFeats.filter((feat) => prerequisiteResults.get(feat.id)?.met !== false)
+      : searchedFeats;
+    counts.set('all', countable.length);
+    countable.forEach((feat) => {
+      const category = featCategories[feat.id];
+      counts.set(category, (counts.get(category) ?? 0) + 1);
+    });
+    return counts;
+  }, [featCategories, hideUnqualified, prerequisiteResults, searchedFeats]);
+
+  const filteredFeats = useMemo(() => {
+    const inCategory = categoryFilter === 'all'
+      ? searchedFeats
+      : searchedFeats.filter((feat) => featCategories[feat.id] === categoryFilter);
+    const qualifying = inCategory.filter((feat) => prerequisiteResults.get(feat.id)?.met !== false);
 
     if (hideUnqualified) {
       return qualifying;
@@ -264,20 +367,13 @@ export function FeatsSelectionPage() {
 
     // A feat the character cannot take still reads as an offer while it sits among the ones they
     // can, so the ones they qualify for come first.
-    return [...qualifying, ...deduped.filter((feat) => prerequisiteResults.get(feat.id)?.met === false)];
-  }, [
-    categoryFilter,
-    featCategories,
-    feats,
-    grantedBackgroundFeat?.id,
-    hideUnqualified,
-    prerequisiteResults,
-    searchQuery,
-    selectedClassEdition,
-    selectedSourceIds
-  ]);
+    return [...qualifying, ...inCategory.filter((feat) => prerequisiteResults.get(feat.id)?.met === false)];
+  }, [categoryFilter, featCategories, hideUnqualified, prerequisiteResults, searchedFeats]);
 
   const isSelected = (featId: string) => manualSelectedFeatIds.includes(featId);
+
+  const getOriginRestriction = (feat: Feat) =>
+    originOnlySelections && !isOriginFeat(feat) ? 'This feat pick is restricted to Origin feats.' : null;
 
   const getFeatDisabledReason = (featId: string) => {
     const feat = feats.find((entry) => entry.id === featId);
@@ -285,8 +381,9 @@ export function FeatsSelectionPage() {
       return null;
     }
 
-    if (originOnlySelections && !isOriginFeat(feat)) {
-      return 'This feat pick is currently restricted to Origin feats.';
+    const restriction = getOriginRestriction(feat);
+    if (restriction) {
+      return restriction;
     }
 
     const prerequisites = prerequisiteResults.get(featId);
@@ -430,17 +527,24 @@ export function FeatsSelectionPage() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Button variant={categoryFilter === 'all' ? 'default' : 'outline'} size="sm" onClick={() => setCategoryFilter('all')}>
-          All Feats
+        <Button
+          variant={categoryFilter === 'all' ? 'default' : 'outline'}
+          size="sm"
+          aria-pressed={categoryFilter === 'all'}
+          onClick={() => setCategoryFilter('all')}
+        >
+          All <span className="ml-1.5 tabular-nums opacity-70">{categoryCounts.get('all') ?? 0}</span>
         </Button>
         {(Object.entries(featCategoryLabels) as Array<[FeatCategory, string]>).map(([category, label]) => (
           <Button
             key={category}
             variant={categoryFilter === category ? 'default' : 'outline'}
             size="sm"
+            aria-pressed={categoryFilter === category}
+            disabled={(categoryCounts.get(category) ?? 0) === 0 && categoryFilter !== category}
             onClick={() => setCategoryFilter(category)}
           >
-            {label}
+            {label} <span className="ml-1.5 tabular-nums opacity-70">{categoryCounts.get(category) ?? 0}</span>
           </Button>
         ))}
         <Button
@@ -459,7 +563,10 @@ export function FeatsSelectionPage() {
         <div className="grid gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredFeats.map((feat) => {
             const selected = isSelected(feat.id);
-            const disabledReason = getFeatDisabledReason(feat.id);
+            const restriction = getOriginRestriction(feat);
+            const unmetPrerequisites = restriction ? [] : prerequisiteResults.get(feat.id)?.unmet ?? [];
+            const disabledReason = restriction ?? (unmetPrerequisites.length > 0 ? unmetPrerequisites.join('. ') : null);
+            const prerequisiteLabels = formatFeatPrerequisites(feat);
             const featCategory = featCategories[feat.id];
             const hasRemainingFeatSelections = remainingFeatSelections > 0;
             const canAddFeat = selected || hasRemainingFeatSelections;
@@ -494,18 +601,19 @@ export function FeatsSelectionPage() {
                 }}
               >
                 <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                  <div className="flex min-w-0 items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
                         <Shield className="h-5 w-5 text-primary" />
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <CardTitle className="text-base">{feat.name}</CardTitle>
-                        <CardDescription className="text-xs">{feat.source}</CardDescription>
+                        <CardDescription className="break-words text-xs">{feat.source}</CardDescription>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-2">
+                    <div className="flex shrink-0 flex-col items-end gap-2">
                       <Badge variant="outline">{featCategoryLabels[featCategory]}</Badge>
+                      {feat.repeatable ? <Badge variant="secondary">Repeatable</Badge> : null}
                       {selected ? <Badge>Selected</Badge> : null}
                     </div>
                   </div>
@@ -516,16 +624,7 @@ export function FeatsSelectionPage() {
                   ) : null}
                   {/* Most feats print a preamble ("You gain the following benefits:") and put the
                       actual benefits in a bullet list, which the card used to drop entirely. */}
-                  {feat.features.length > 0 ? (
-                    <ul className="space-y-1 text-sm text-muted-foreground">
-                      {feat.features.map((feature) => (
-                        <li key={feature.id}>
-                          • {feature.name ? <span className="font-medium text-foreground">{feature.name}: </span> : null}
-                          <ContentReferenceText text={feature.description} />
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
+                  <FeatBenefitList features={feat.features} />
                   {feat.abilityScoreIncreases?.length ? (
                     <div className="flex flex-wrap gap-1">
                       {feat.abilityScoreIncreases.map((increase) => (
@@ -540,8 +639,21 @@ export function FeatsSelectionPage() {
                   {feat.description || feat.features.length > 0 ? null : (
                     <p className="text-sm text-muted-foreground">No description was extracted for this feat from its source.</p>
                   )}
-                  <div className="text-xs text-muted-foreground">{formatFeatPrerequisites(feat)}</div>
-                  {disabledReason ? <div className="text-xs text-amber-600">{disabledReason}</div> : null}
+                  {prerequisiteLabels.length > 0 ? (
+                    <div className="flex flex-wrap items-center gap-1">
+                      <span className="text-xs text-muted-foreground">Requires</span>
+                      {prerequisiteLabels.map((label) => (
+                        <Badge key={label} variant="secondary" className="max-w-full whitespace-normal text-left font-normal">
+                          {label}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : null}
+                  {/* The chips say what the book asks; these say what this character is short of. */}
+                  {unmetPrerequisites.map((reason) => (
+                    <div key={reason} className="text-xs text-amber-600">{reason}</div>
+                  ))}
+                  {restriction ? <div className="text-xs text-amber-600">{restriction}</div> : null}
                   {shouldShowNoPicksNotice ? (
                     <div className="text-xs text-muted-foreground">No remaining feat picks available.</div>
                   ) : null}

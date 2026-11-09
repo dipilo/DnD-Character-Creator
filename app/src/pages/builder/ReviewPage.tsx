@@ -367,6 +367,9 @@ export function ReviewPage() {
       abilityScoreMethod: builderState.abilityScoreMethod,
       rolledScores: builderState.rolledScores,
       rolledScoreAssignments: builderState.rolledScoreAssignments,
+      // Empty is "every book", which is the absent field; storing it would make a reopened
+      // character's picker disagree with the one that built it.
+      selectedSourceIds: builderState.selectedSourceIds.length > 0 ? builderState.selectedSourceIds : undefined,
       proficiencies: {
         skills: derivedProficiencies.skills,
         tools: derivedProficiencies.tools,
@@ -391,6 +394,7 @@ export function ReviewPage() {
       classResourcesUsed: character.classResourcesUsed,
       activeEffects: character.activeEffects,
       concentration: character.concentration,
+      wildShape: character.wildShape,
       currency: character.currency,
       personality: character.personality,
       appearance: character.appearance,

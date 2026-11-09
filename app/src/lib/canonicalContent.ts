@@ -145,6 +145,7 @@ export const speciesSchema: z.ZodType<Species> = z.object({
   languages: z.array(z.string().min(1)),
   variants: z.array(speciesVariantSchema).optional(),
   spells: z.array(speciesSpellSchema).optional(),
+  reprintedAs: z.array(z.string().min(1)).optional(),
   source: z.string().min(1),
   sourceId: z.string().min(1).optional()
 });
@@ -242,24 +243,31 @@ export const spellSchema: z.ZodType<Spell> = z.object({
   sourceId: z.string().min(1).optional()
 });
 
+const abilityMinimumsSchema = z.object({
+  strength: z.number().optional(),
+  dexterity: z.number().optional(),
+  constitution: z.number().optional(),
+  intelligence: z.number().optional(),
+  wisdom: z.number().optional(),
+  charisma: z.number().optional()
+});
+
 export const featSchema: z.ZodType<Feat> = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   description: z.string().min(1),
+  category: z.enum(['origin', 'general', 'fighting-style', 'epic-boon']).optional(),
+  repeatable: z.boolean().optional(),
   prerequisites: z.object({
-    ability: z.object({
-      strength: z.number().optional(),
-      dexterity: z.number().optional(),
-      constitution: z.number().optional(),
-      intelligence: z.number().optional(),
-      wisdom: z.number().optional(),
-      charisma: z.number().optional()
-    }).optional(),
+    ability: abilityMinimumsSchema.optional(),
+    abilityAlternatives: z.array(abilityMinimumsSchema).optional(),
     level: z.number().int().nonnegative().optional(),
     class: z.array(z.string().min(1)).optional(),
     race: z.array(z.string().min(1)).optional(),
     spellcasting: z.boolean().optional(),
     pactMagic: z.boolean().optional(),
+    features: z.array(z.string().min(1)).optional(),
+    feats: z.array(z.string().min(1)).optional(),
     text: z.string().min(1).optional()
   }).optional(),
   abilityScoreIncreases: z.array(abilityScoreIncreaseSchema).optional(),

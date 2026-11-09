@@ -7,6 +7,7 @@ import {
 import { senseLabel } from '@/lib/sheetCombat';
 import { effectiveModifier, rollD20 } from '@/lib/d20Rolls';
 import { applyRollEffects, type AppliedRollEffects } from '@/lib/rollEffects';
+import { DerivationHint } from '@/components/character/DerivationHint';
 import { SheetAbilityBlocks } from '@/components/character/SheetAbilityBlocks';
 import { cn } from '@/lib/utils';
 
@@ -53,6 +54,12 @@ export function Stat({
   );
 }
 
+/** "10 + Perception +5" — the formula both printings state, with this character's own figure. */
+function passiveHint(vitals: SheetVitals, skill: string): string | undefined {
+  const entry = vitals.skills.find((candidate) => candidate.name === skill);
+  return entry ? `10 + ${skill} ${formatModifier(entry.modifier)}` : undefined;
+}
+
 /** All derived and none editable; rolling writes nothing, so a reader can roll too. */
 export function SheetVitalsPanel({
   vitals,
@@ -77,9 +84,26 @@ export function SheetVitalsPanel({
           roll={{ label: 'Initiative', modifier: vitals.initiative, effects: initiativeEffects }}
         />
         <Stat label="Speed" value={`${vitals.speed} ft`} compact={inRail} />
-        <Stat label="Passive Perc." value={String(vitals.passivePerception)} compact={inRail} />
-        <Stat label="Passive Inv." value={String(vitals.passiveInvestigation)} compact={inRail} />
-        <Stat label="Passive Ins." value={String(vitals.passiveInsight)} compact={inRail} />
+        {/* A passive score is 10 plus the skill's own modifier in both printings, and the hint says
+            which skill so the number is checkable without opening the skill list. */}
+        <Stat
+          label="Passive Perc."
+          value={String(vitals.passivePerception)}
+          hint={inRail ? undefined : passiveHint(vitals, 'Perception')}
+          compact={inRail}
+        />
+        <Stat
+          label="Passive Inv."
+          value={String(vitals.passiveInvestigation)}
+          hint={inRail ? undefined : passiveHint(vitals, 'Investigation')}
+          compact={inRail}
+        />
+        <Stat
+          label="Passive Ins."
+          value={String(vitals.passiveInsight)}
+          hint={inRail ? undefined : passiveHint(vitals, 'Insight')}
+          compact={inRail}
+        />
         {/* A special sense is a stat a player reads, not a trait they look up — the range is the
             whole of it, and the feature that granted it is the hint. */}
         {vitals.senses.map((sense) => (
@@ -124,9 +148,17 @@ export function SheetSpellcastingCard({ vitals }: Readonly<{ vitals: SheetVitals
               </span>
             </span>
             <span className="flex flex-wrap items-center gap-2 tabular-nums text-muted-foreground">
-              <span>
+              <DerivationHint
+                title={`${entry.className} spell save DC`}
+                lines={[
+                  { label: 'Base, stated by both printings', value: '8' },
+                  { label: 'Proficiency bonus', value: formatModifier(entry.proficiencyBonus) },
+                  { label: `${ABILITY_ABBREVIATIONS[entry.ability]} modifier`, value: formatModifier(entry.abilityModifier) }
+                ]}
+                detail={`A spell attack with ${entry.className} is the same figure without the 8.`}
+              >
                 Save DC <span className="font-semibold text-foreground">{entry.saveDc}</span>
-              </span>
+              </DerivationHint>
               <button
                 type="button"
                 className="min-h-11 rounded px-2 transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"

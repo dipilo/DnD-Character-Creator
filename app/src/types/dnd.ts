@@ -130,6 +130,12 @@ export interface Species {
   languages: string[];
   variants?: SpeciesVariant[];
   spells?: SpeciesSpell[];
+  /**
+   * The later printings this one was superseded by, as 5etools writes them ("Kenku|MPMM"). A
+   * printing that names one loses its traits to a printing that names none, because a reprint
+   * renames them and merging by name granted both.
+   */
+  reprintedAs?: string[];
   source: string;
   sourceId?: string;
 }
@@ -295,17 +301,30 @@ export interface FeatOptionChoice {
   label: string;
 }
 
+/** The 2024 book's own four labels; a 2014 feat is a General feat by its own rules. */
+export type FeatCategory = 'origin' | 'general' | 'fighting-style' | 'epic-boon';
+
 export interface Feat {
   id: string;
   name: string;
   description: string;
+  /** Stated by the source where it labels its feats; `getFeatCategory` guesses only without it. */
+  category?: FeatCategory;
+  /** The book says it may be taken more than once. */
+  repeatable?: boolean;
   prerequisites?: {
     ability?: Partial<Record<keyof AbilityScores, number>>;
+    /** Any one block satisfies the line: Grappler asks Strength or Dexterity 13, not both. */
+    abilityAlternatives?: Partial<Record<keyof AbilityScores, number>>[];
     level?: number;
     class?: string[];
     race?: string[];
     spellcasting?: boolean;
     pactMagic?: boolean;
+    /** Features the character must already have, by the name the book prints. */
+    features?: string[];
+    /** Feats it builds on, by name: Ember of the Fire Giant needs Strike of the Giants. */
+    feats?: string[];
     text?: string;
   };
   abilityScoreIncreases?: AbilityScoreIncrease[];
@@ -352,6 +371,19 @@ export interface Equipment {
   maxDexBonus?: number;
   strengthRequirement?: number;
   stealthDisadvantage?: boolean;
+}
+
+/** Which beasts a shape-shifter knows, and which one they are wearing. */
+export interface WildShapeState {
+  /** Monster ids, as many as the feature's own Known Forms column allows. */
+  knownFormIds?: string[];
+  /** The form assumed right now; absent is the character's own body. */
+  activeFormId?: string;
+  /**
+   * The hit points held before shifting. 2014 takes the beast's and says you "return to the number
+   * of hit points you had before", which is unanswerable without storing them.
+   */
+  restoreHp?: { current: number; maximum: number; temporary: number };
 }
 
 export interface MonsterTrait {
@@ -489,6 +521,8 @@ export interface Character {
   activeEffects?: string[];
   /** One at a time: starting a second ends the first. */
   concentration?: { spellId: string; spellName: string; slotLevel: number };
+  /** Play state too, so `buildReviewCharacter` must carry it or a shape-shifted Druid reverts. */
+  wildShape?: WildShapeState;
   /** The purse, by coin. Absent means none of that coin, so a new character carries nothing. */
   currency?: Partial<Record<CoinUnit, number>>;
   personality?: {
@@ -515,6 +549,9 @@ export interface Character {
   abilityScoreMethod?: AbilityScoreMethod;
   rolledScores?: number[];
   rolledScoreAssignments?: Partial<Record<keyof AbilityScores, number>>;
+  // The books this character was built against. Reopening it in the builder restores the picker;
+  // without it an edit silently widened to every book and offered content the table disallows.
+  selectedSourceIds?: string[];
   createdAt: string;
   updatedAt: string;
 }

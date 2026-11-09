@@ -247,21 +247,25 @@ function SpeciesGroupCard({
   return (
     <Card className={selected ? 'border-primary ring-1 ring-primary' : ''}>
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-2">
+        {/* min-w-0 on the grid item as well as the `minmax(0,1fr)` track CardHeader declares: a
+            grouped species listing six books stretched the card past its cell without both. */}
+        <div className="flex min-w-0 items-start justify-between gap-2">
           <div className="flex min-w-0 items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
               <User className="h-5 w-5 text-primary" />
             </div>
             <div className="min-w-0">
               <CardTitle className="text-base">{group.name}</CardTitle>
-              <CardDescription className="truncate text-xs">{group.sources.join(', ')}</CardDescription>
+              <CardDescription className="line-clamp-2 break-words text-xs" title={group.sources.join(', ')}>
+                {group.sources.join(', ')}
+              </CardDescription>
               <div className="mt-2 flex flex-wrap gap-2">
                 {shown && <Badge variant="outline">{getRulesEditionLabel(shown.sourceId, shown.source)}</Badge>}
                 {lineageCount > 0 && <Badge variant="secondary">{lineageCount} lineages</Badge>}
               </div>
             </div>
           </div>
-          {selected && <Badge variant="default">Selected</Badge>}
+          {selected && <Badge variant="default" className="shrink-0">Selected</Badge>}
         </div>
       </CardHeader>
       <CardContent className="space-y-3 pt-0">

@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source FTD).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T17:54:18.065Z",
+    "importedAt": "2026-11-09T04:38:16.953Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -24,7 +24,7 @@
           {
             "id": "fizbans-dragonborn-chromatic-chromatic-ancestry-0",
             "name": "Chromatic Ancestry",
-            "description": "You have a chromatic dragon ancestor, granting you a special magical affinity. Choose one kind of dragon from the Chromatic Ancestry table. This determines the damage type for your other traits, as shown in the table. Chromatic Ancestry: Black — Acid; Blue — Lightning; Green — Poison; Red — Fire; White — Cold",
+            "description": "You have a chromatic dragon ancestor, granting you a special magical affinity. Choose one kind of dragon from the Chromatic Ancestry table. This determines the damage type for your other traits, as shown in the table. Chromatic Ancestry:\nDragon | Damage Type\nBlack | Acid\nBlue | Lightning\nGreen | Poison\nRed | Fire\nWhite | Cold",
             "level": 1,
             "source": "Fizban's Treasury of Dragons"
           },
@@ -51,6 +51,9 @@
           }
         ],
         "languages": [],
+        "reprintedAs": [
+          "Dragonborn|XPHB"
+        ],
         "source": "Fizban's Treasury of Dragons",
         "sourceId": "fizbans"
       },
@@ -85,6 +88,9 @@
           }
         ],
         "languages": [],
+        "reprintedAs": [
+          "Dragonborn|XPHB"
+        ],
         "source": "Fizban's Treasury of Dragons",
         "sourceId": "fizbans"
       },
@@ -119,6 +125,9 @@
           }
         ],
         "languages": [],
+        "reprintedAs": [
+          "Dragonborn|XPHB"
+        ],
         "source": "Fizban's Treasury of Dragons",
         "sourceId": "fizbans"
       },
@@ -153,6 +162,9 @@
           }
         ],
         "languages": [],
+        "reprintedAs": [
+          "Dragonborn|XPHB"
+        ],
         "source": "Fizban's Treasury of Dragons",
         "sourceId": "fizbans"
       },
@@ -187,6 +199,9 @@
           }
         ],
         "languages": [],
+        "reprintedAs": [
+          "Dragonborn|XPHB"
+        ],
         "source": "Fizban's Treasury of Dragons",
         "sourceId": "fizbans"
       },
@@ -221,6 +236,9 @@
           }
         ],
         "languages": [],
+        "reprintedAs": [
+          "Dragonborn|XPHB"
+        ],
         "source": "Fizban's Treasury of Dragons",
         "sourceId": "fizbans"
       },
@@ -235,7 +253,7 @@
           {
             "id": "fizbans-dragonborn-gem-gem-ancestry-0",
             "name": "Gem Ancestry",
-            "description": "You have a gem dragon ancestor, granting you a special magical affinity. Choose one kind of dragon from the Gem Ancestry table. This determines the damage type for your other traits, as shown in the table. Gem Ancestry: Amethyst — Force; Crystal — Radiant; Emerald — Psychic; Sapphire — Thunder; Topaz — Necrotic",
+            "description": "You have a gem dragon ancestor, granting you a special magical affinity. Choose one kind of dragon from the Gem Ancestry table. This determines the damage type for your other traits, as shown in the table. Gem Ancestry:\nDragon | Damage Type\nAmethyst | Force\nCrystal | Radiant\nEmerald | Psychic\nSapphire | Thunder\nTopaz | Necrotic",
             "level": 1,
             "source": "Fizban's Treasury of Dragons"
           },
@@ -488,7 +506,7 @@
           {
             "id": "fizbans-dragonborn-metallic-metallic-ancestry-0",
             "name": "Metallic Ancestry",
-            "description": "You have a metallic dragon ancestor, granting you a special magical affinity. Choose one kind of dragon from the Metallic Ancestry table. This determines the damage type for your other traits, as shown in the table. Metallic Ancestry: Brass — Fire; Bronze — Lightning; Copper — Acid; Gold — Fire; Silver — Cold",
+            "description": "You have a metallic dragon ancestor, granting you a special magical affinity. Choose one kind of dragon from the Metallic Ancestry table. This determines the damage type for your other traits, as shown in the table. Metallic Ancestry:\nDragon | Damage Type\nBrass | Fire\nBronze | Lightning\nCopper | Acid\nGold | Fire\nSilver | Cold",
             "level": 1,
             "source": "Fizban's Treasury of Dragons"
           },
@@ -515,6 +533,9 @@
           }
         ],
         "languages": [],
+        "reprintedAs": [
+          "Dragonborn|XPHB"
+        ],
         "source": "Fizban's Treasury of Dragons",
         "sourceId": "fizbans"
       },
@@ -549,6 +570,9 @@
           }
         ],
         "languages": [],
+        "reprintedAs": [
+          "Dragonborn|XPHB"
+        ],
         "source": "Fizban's Treasury of Dragons",
         "sourceId": "fizbans"
       },
@@ -583,6 +607,9 @@
           }
         ],
         "languages": [],
+        "reprintedAs": [
+          "Dragonborn|XPHB"
+        ],
         "source": "Fizban's Treasury of Dragons",
         "sourceId": "fizbans"
       },
@@ -617,6 +644,9 @@
           }
         ],
         "languages": [],
+        "reprintedAs": [
+          "Dragonborn|XPHB"
+        ],
         "source": "Fizban's Treasury of Dragons",
         "sourceId": "fizbans"
       },
@@ -651,6 +681,9 @@
           }
         ],
         "languages": [],
+        "reprintedAs": [
+          "Dragonborn|XPHB"
+        ],
         "source": "Fizban's Treasury of Dragons",
         "sourceId": "fizbans"
       },
@@ -685,6 +718,9 @@
           }
         ],
         "languages": [],
+        "reprintedAs": [
+          "Dragonborn|XPHB"
+        ],
         "source": "Fizban's Treasury of Dragons",
         "sourceId": "fizbans"
       }
@@ -700,7 +736,7 @@
           {
             "id": "fizbans-way-of-the-ascendant-dragon-way-of-the-ascendant-dragon-0",
             "name": "Way of the Ascendant Dragon",
-            "description": "The dragon god Bahamut is known to travel the Material Plane in the guise of a young monk, and legend says that he founded the first monastery of the Way of the Ascendant Dragon in this guise. The fundamental teaching of this tradition holds that by emulating dragons, a monk becomes a more integrated part of the world and its magic. By altering their spirit to resonate with draconic might, monks who follow this tradition augment their prowess in battle, bolster their allies, and can even soar through the air on draconic wings. But all this power is in service of a greater goal: achieving a spiritual unity with the essence of the Material Plane. As a follower of the Way of the Ascendant Dragon, you decide how you unlocked the power of dragons within yourself. The Ascendant Dragon Origin table offers a number of possibilities. Ascendant Dragon Origin: 1 — You honed your abilities by aligning your spirit with a dragon's world-altering power.; 2 — A dragon personally took an active role in shaping your inner energy.; 3 — You studied at a monastery that traces its teachings back centuries or more to a single dragon's instruction, or one that is devoted to a dragon god.; 4 — You spent long stretches meditating in the region around an ancient dragon's lair, absorbing that lair's ambient magic.; 5 — You found a scroll written in Draconic that contained inspiring new techniques.; 6 — After a dream featuring a five-handed dragonborn, you awoke with the mystical breath of dragons.",
+            "description": "The dragon god Bahamut is known to travel the Material Plane in the guise of a young monk, and legend says that he founded the first monastery of the Way of the Ascendant Dragon in this guise. The fundamental teaching of this tradition holds that by emulating dragons, a monk becomes a more integrated part of the world and its magic. By altering their spirit to resonate with draconic might, monks who follow this tradition augment their prowess in battle, bolster their allies, and can even soar through the air on draconic wings. But all this power is in service of a greater goal: achieving a spiritual unity with the essence of the Material Plane. As a follower of the Way of the Ascendant Dragon, you decide how you unlocked the power of dragons within yourself. The Ascendant Dragon Origin table offers a number of possibilities. Ascendant Dragon Origin:\nd6 | Origin\n1 | You honed your abilities by aligning your spirit with a dragon's world-altering power.\n2 | A dragon personally took an active role in shaping your inner energy.\n3 | You studied at a monastery that traces its teachings back centuries or more to a single dragon's instruction, or one that is devoted to a dragon god.\n4 | You spent long stretches meditating in the region around an ancient dragon's lair, absorbing that lair's ambient magic.\n5 | You found a scroll written in Draconic that contained inspiring new techniques.\n6 | After a dream featuring a five-handed dragonborn, you awoke with the mystical breath of dragons.",
             "level": 3,
             "source": "Fizban's Treasury of Dragons"
           },
@@ -840,7 +876,7 @@
           {
             "id": "fizbans-drakewarden-drakewarden-0",
             "name": "Drakewarden",
-            "description": "Your connection to the natural world takes the form of a draconic spirit, which can manifest in physical form as a drake. As your powers grow, your drake grows as well, blossoming from a small four-legged companion to a majestic winged creature large and strong enough for you to ride. Along the way, you gain an increasing share of the awe-inspiring power of dragons. Consider the source of the draconic spirit you have bonded with. The Drakewarden Origin table offers examples. Drakewarden Origin: 1 — You studied a dragon's scale or claw, or a trinket from a dragon's hoard, creating your bond through that token's lingering draconic magic.; 2 — A secret order of rangers who collect and guard draconic lore taught you their ways.; 3 — A dragon gave you a geode or gemstone to care for. To your surprise, the drake hatched from that stone.; 4 — You ingested a few drops of dragon blood, forever infusing your nature magic with draconic power.; 5 — An ancient Draconic inscription on a standing stone empowered you when you read it aloud.; 6 — You had a vivid dream of a mysterious figure accompanied by seven yellow canaries, who warned you of impending doom. When you awoke, your drake was there, watching you.",
+            "description": "Your connection to the natural world takes the form of a draconic spirit, which can manifest in physical form as a drake. As your powers grow, your drake grows as well, blossoming from a small four-legged companion to a majestic winged creature large and strong enough for you to ride. Along the way, you gain an increasing share of the awe-inspiring power of dragons. Consider the source of the draconic spirit you have bonded with. The Drakewarden Origin table offers examples. Drakewarden Origin:\nd6 | Origin\n1 | You studied a dragon's scale or claw, or a trinket from a dragon's hoard, creating your bond through that token's lingering draconic magic.\n2 | A secret order of rangers who collect and guard draconic lore taught you their ways.\n3 | A dragon gave you a geode or gemstone to care for. To your surprise, the drake hatched from that stone.\n4 | You ingested a few drops of dragon blood, forever infusing your nature magic with draconic power.\n5 | An ancient Draconic inscription on a standing stone empowered you when you read it aloud.\n6 | You had a vivid dream of a mysterious figure accompanied by seven yellow canaries, who warned you of impending doom. When you awoke, your drake was there, watching you.",
             "level": 3,
             "source": "Fizban's Treasury of Dragons"
           },
@@ -1017,7 +1053,7 @@
           "M (a piece of crust from an apple pie)"
         ],
         "duration": "Concentration, up to 1 minute",
-        "description": "You fill a 20-foot cube you can see within range with fey and draconic magic. Roll on the Mischievous Surge table to determine the magical effect produced, and roll again at the start of each of your turns until the spell ends. You can move the cube up to 10 feet before you roll. Mischievous Surge: 1 — The smell of apple pie fills the air, and each creature in the cube must succeed on a Wisdom saving throw or become charmed by you until the start of your next turn.; 2 — Bouquets of flowers appear all around, and each creature in the cube must succeed on a Dexterity saving throw or be blinded until the start of your next turn as the flowers spray water in their faces.; 3 — Each creature in the cube must succeed on a Wisdom saving throw or begin giggling until the start of your next turn. A giggling creature is incapacitated and uses all its movement to move in a random direction.; 4 — Drops of molasses hover in the cube, making it 3 until the start of your next turn.",
+        "description": "You fill a 20-foot cube you can see within range with fey and draconic magic. Roll on the Mischievous Surge table to determine the magical effect produced, and roll again at the start of each of your turns until the spell ends. You can move the cube up to 10 feet before you roll. Mischievous Surge:\nd4 | Effect\n1 | The smell of apple pie fills the air, and each creature in the cube must succeed on a Wisdom saving throw or become charmed by you until the start of your next turn.\n2 | Bouquets of flowers appear all around, and each creature in the cube must succeed on a Dexterity saving throw or be blinded until the start of your next turn as the flowers spray water in their faces.\n3 | Each creature in the cube must succeed on a Wisdom saving throw or begin giggling until the start of your next turn. A giggling creature is incapacitated and uses all its movement to move in a random direction.\n4 | Drops of molasses hover in the cube, making it 3 until the start of your next turn.",
         "ritual": false,
         "concentration": true,
         "classes": [],

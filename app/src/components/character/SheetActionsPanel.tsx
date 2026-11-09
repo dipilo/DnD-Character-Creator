@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ContentReferenceText } from '@/components/ContentReferenceText';
+import { DerivationHint } from '@/components/character/DerivationHint';
 import { SheetActionTable, type SheetActionTableRow } from '@/components/character/SheetActionTable';
 import { SheetCombatActions } from '@/components/character/SheetCombatActions';
 import { SheetResourceControl } from '@/components/character/SheetResourceControl';
@@ -136,9 +137,19 @@ export function SheetActionsPanel({
       <CardHeader className="pb-3">
         <CardTitle className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-base">
           Actions
-          <span className="text-xs font-normal text-muted-foreground">
-            Attacks per Action: {attacksPerAction}
-          </span>
+          <DerivationHint
+            title="Attacks per Action"
+            className="text-xs font-normal text-muted-foreground"
+            lines={[
+              { label: 'One, which every character has', value: '1' },
+              ...(attacksPerAction.source
+                ? [{ label: attacksPerAction.source, value: `${attacksPerAction.count}` }]
+                : [])
+            ]}
+            detail={attacksPerAction.detail ?? 'No feature this character holds states more than one.'}
+          >
+            Attacks per Action: {attacksPerAction.count}
+          </DerivationHint>
         </CardTitle>
         <CardDescription>
           Weapons, the spells you attack with, and the features whose own text says when they are used.

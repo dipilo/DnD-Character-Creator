@@ -23,6 +23,9 @@ const TRACKER_FIELDS = new Set([
   'classResourcesUsed',
   // Concentration is dropped and taken up as fast as a slot is spent, and by the same click.
   'concentration',
+  // Shape-shifting is a tracker too: the form is assumed and dropped mid-fight, with the hit
+  // points beside it, so two people spending on one sheet is not a disagreement about it.
+  'wildShape',
   // Kids on Bikes keeps one tracker, and it is spent in play exactly like the rest of these.
   'adversityTokens',
 ]);

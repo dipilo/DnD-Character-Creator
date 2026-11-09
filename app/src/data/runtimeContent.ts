@@ -8,6 +8,7 @@ import type { ImportedContentBucket } from '@/data/librarySources';
 import { resolveSourceId } from '@/data/librarySources';
 import type { ContentBucketKey } from '@/lib/canonicalContent';
 import { defaultLanguageOptions, getRulesEdition } from '@/lib/builderRules';
+import { fallbackTraits } from '@/lib/speciesReprints';
 
 const getStoreBucket = <K extends ContentBucketKey>(bucket: K): ImportedContentBucket[K] => {
   const { importedPacks, homebrewLibrary } = useContentStore.getState();
@@ -870,12 +871,14 @@ const mergeSpeciesVariants = (primary: SpeciesVariant[] | undefined, fallback: S
 };
 
 const enrichSpecies = (primary: Species, fallback?: Species, supplement?: Partial<Species>): Species => {
+  // The app's own supplement still applies; only a reprint's trait list is held back.
+  const traits = fallbackTraits(primary, fallback);
   const combinedFallback = fallback
     ? {
         ...fallback,
         ...supplement,
-        features: mergeFeatureCollections(fallback.features, supplement?.features),
-        variants: mergeSpeciesVariants(fallback.variants, supplement?.variants)
+        features: mergeFeatureCollections(traits.features, supplement?.features),
+        variants: mergeSpeciesVariants(traits.variants, supplement?.variants)
       }
     : supplement;
 

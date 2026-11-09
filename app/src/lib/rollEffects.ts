@@ -16,6 +16,11 @@ export interface RollScope {
   requiresProficiency?: boolean;
   /** Jack of All Trades' own narrowing: "that doesn't already include your proficiency bonus". */
   excludesProficiency?: boolean;
+  /**
+   * The clause reaches a check only through a skill: 2024's Jack of All Trades covers "any ability
+   * check you make that uses a skill proficiency you lack", which is not a bare Strength check.
+   */
+  requiresSkill?: boolean;
 }
 
 /** The book's words, resolved against the character in `resolveCharacterRollEffects`. */
@@ -81,7 +86,8 @@ const FLOOR_PATTERN = /treat a d20 roll of (\d+) or lower as (?:an?\s+)?(\d+)/i;
 const SWING_PATTERN = /\byou (?:have|gain)\s+(advantage|disadvantage)\s+on\s+/gi;
 
 /** A comma is not a break: "Strength checks and Strength saving throws" needs it. */
-const CLAUSE_END = /[.;?!•]/;
+/** A paragraph break is one, though — the importers keep the book's own paragraphs as lines. */
+const CLAUSE_END = /[.;?!•\n]/;
 
 function clauseFrom(text: string, start: number): string {
   const rest = text.slice(start);
@@ -115,6 +121,12 @@ const MINIMUM_BONUS = /minimum (?:bonus )?of \+?(\d+)/i;
 
 const PROFICIENCY_SCOPE =
   /\b(?:lets you add your proficiency bonus|uses one of your (?:skill|tool)|you(?:'re| are) proficient)/i;
+
+/** "uses a skill proficiency you lack", "that uses one of your skill proficiencies". */
+const SKILL_SCOPE = /\buses?\b[^.;]{0,24}\bskill\b/i;
+
+/** A worked example restates the rule; reading it as a second clause granted a second effect. */
+const EXAMPLE_LEAD = /\bfor example\b/i;
 
 /** "When you make" is not among them: both printings open a scope clause with it. */
 const CONDITION_PATTERN =
@@ -168,8 +180,12 @@ function readScope(clause: string): RollScope {
     skills: skills.length > 0 ? skills : undefined,
     requiresProficiency: PROFICIENCY_SCOPE.test(clause) || undefined,
     excludesProficiency: EXCLUDES_PROFICIENCY.test(clause) || undefined,
+    requiresSkill: SKILL_SCOPE.test(clause) || undefined,
   };
 }
+
+/** The sentence `index` falls in, which is what says whether the clause is a worked example. */
+const sentenceAt = (text: string, index: number) => text.slice(sentenceStart(text, index), index);
 
 /** The size a bonus clause names, with the rounding and the floor the same clause states. */
 function readBonus(match: RegExpMatchArray, clause: string): RollBonus {
@@ -217,6 +233,7 @@ export function deriveRollEffects(
 
   for (const match of text.matchAll(SWING_PATTERN)) {
     const start = (match.index ?? 0) + match[0].length;
+    if (EXAMPLE_LEAD.test(sentenceAt(text, match.index ?? 0))) continue;
     const clause = clauseFrom(text, start);
     const scope = readScope(clause);
     if (scope.rolls.length === 0) continue;
@@ -234,7 +251,10 @@ export function deriveRollEffects(
     const clause = clauseFrom(text, start);
     // A bonus states its scope on either side of the figure: Jack of All Trades after it, the
     // Alert feat before it ("When you roll Initiative, you can add your Proficiency Bonus…").
-    const lead = text.slice(sentenceStart(text, match.index ?? 0), match.index ?? 0);
+    const lead = sentenceAt(text, match.index ?? 0);
+    // 2024's Jack of All Trades works its rule through a Strength (Athletics) example, and reading
+    // that sentence as a clause of its own gave a proficient Bard the bonus on Athletics too.
+    if (EXAMPLE_LEAD.test(lead)) continue;
     const scope = readScope(`${lead} ${clause}`);
     if (scope.rolls.length === 0) continue;
     if (!SELF_TEST.test(`${lead} ${clause}`)) continue;
@@ -305,6 +325,7 @@ function matchesScope(scope: RollScope, target: RollTarget): boolean {
   if (!scope.rolls.includes(target.kind)) return false;
   if (scope.requiresProficiency && !target.proficient) return false;
   if (scope.excludesProficiency && target.proficient) return false;
+  if (scope.requiresSkill && !target.skill) return false;
   if (scope.skills?.length) {
     return target.skill ? scope.skills.includes(target.skill) : false;
   }

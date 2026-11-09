@@ -488,7 +488,10 @@ const formatTableRows = (rows) => {
     return rows.slice(1).map((row) => `${row[0]}: ${row[1]}`);
   }
 
-  return rows.map((row) => row.join(' | '));
+  // One entry, newline-separated: a caller joining the structured texts with a space keeps the
+  // row breaks, and without them Wild Shape's Beast Shapes table read as one run of prose
+  // ("2nd | 1/4 | No flying or swimming speed | Wolf 4th | 1/2 | ...").
+  return [rows.map((row) => row.join(' | ')).join('\n')];
 };
 
 export const extractStructuredTexts = (raw) => {
@@ -1675,8 +1678,10 @@ const extractClassFeaturesFromBlock = (raw, label, featureLevels) => {
       // paragraphs-only read shipped "you gain the following benefits:" with nothing after it.
       const texts = takeUntilChrome(extractStructuredTexts(block.content))
         .filter((entry) => !featureLevelBoilerplatePattern.test(entry));
+      // Newlines, not spaces: each entry is the book's own paragraph, list item or table row, and
+      // a space join ran Wild Shape's seven labelled paragraphs together into one wall of text.
       const description = stripTrailingChrome(
-        [...texts, ...extractSpellListLines(block.content, texts.join(' '))].join(' ')
+        [...texts, ...extractSpellListLines(block.content, texts.join(' '))].join('\n')
       );
       if (!description) {
         return null;
@@ -1736,7 +1741,7 @@ const extractSubclassFeaturesFromBlock = (subclassBlock, label, featureHeadingLe
       const name = repairMojibake(featureBlock.title.replace(/^Level\s+\d+:\s*/i, ''));
       const texts = extractStructuredTexts(featureBlock.content);
       const levelSourceText = texts.join(' ');
-      const description = stripTrailingChrome(texts.filter((entry) => !featureLevelBoilerplatePattern.test(entry)).join(' '));
+      const description = stripTrailingChrome(texts.filter((entry) => !featureLevelBoilerplatePattern.test(entry)).join('\n'));
       if (!description || isChromeFeatureName(name)) {
         return null;
       }
@@ -2928,34 +2933,71 @@ const extractSpellClassMap = (raw) => {
   return classesBySpellId;
 };
 
+const ABILITY_WORD_PATTERN = 'strength|dexterity|constitution|intelligence|wisdom|charisma';
+
+/** "a <Name> feature", segment by segment, so a level and a feature in one line stay apart. */
+const readPrerequisiteFeatures = (normalized) => {
+  const features = [];
+  for (const segment of normalized.split(/,| and /i)) {
+    const match = /^(.+?)\s+features?$/i.exec(segment.trim());
+    const name = match?.[1]?.trim();
+    // The two magic features are flags of their own, and "Spellcasting or Pact Magic" is neither
+    // one feature nor two.
+    if (name && !/spellcasting|pact magic/i.test(name)) {
+      features.push(name);
+    }
+  }
+
+  return features;
+};
+
+/**
+ * The structured half of a printed "Prerequisite:" line. The sentence itself is always kept:
+ * dropping it is what hid "Proficiency with a martial weapon" from Fighting Initiate entirely,
+ * and `evaluateFeatPrerequisites` is written to read it alongside the fields.
+ */
 const parseFeatPrerequisites = (value) => {
   if (!value) {
     return undefined;
   }
 
   const normalized = value.replace(/^Prerequisite:\s*/i, '').trim();
+  if (!normalized) {
+    return undefined;
+  }
+
   const raceMatches = normalized.match(/elf|half-elf|dwarf|halfling|dragonborn|tiefling|human|gnome|half-orc|orc|goblin|aasimar|genasi/gi);
   const classMatches = normalized.match(/barbarian|bard|cleric|druid|fighter|monk|paladin|ranger|rogue|sorcerer|warlock|wizard/gi);
-  const levelMatch = normalized.match(/level\s+(\d+)/i);
-  const abilityMatches = Array.from(normalized.matchAll(/(strength|dexterity|constitution|intelligence|wisdom|charisma)\s+(\d+)/gi));
+  // The books print "5th level" and "10th-level artificer"; only "level 5" was being read.
+  const levelMatch = /level\s+(\d+)/i.exec(normalized) ?? /(\d+)(?:st|nd|rd|th)[-\s]level/i.exec(normalized);
+  // "Strength or Dexterity 13" is one minimum either score may meet, not a Dexterity minimum.
+  const alternativesMatch = new RegExp(`(${ABILITY_WORD_PATTERN})\\s+or\\s+(${ABILITY_WORD_PATTERN})\\s+(\\d+)`, 'i').exec(normalized);
+  const abilityMatches = alternativesMatch
+    ? []
+    : Array.from(normalized.matchAll(new RegExp(`(${ABILITY_WORD_PATTERN})\\s+(\\d+)`, 'gi')));
 
-  const prerequisites = {
+  const needsSpellcasting = /ability to cast at least one spell|spellcasting/i.test(normalized);
+  const needsPactMagic = /pact magic/i.test(normalized);
+  const features = readPrerequisiteFeatures(normalized);
+
+  return {
     race: raceMatches ? Array.from(new Set(raceMatches.map((entry) => entry.toLowerCase()))) : undefined,
     class: classMatches ? Array.from(new Set(classMatches.map((entry) => entry.toLowerCase()))) : undefined,
     level: levelMatch ? Number(levelMatch[1]) : undefined,
     ability: abilityMatches.length > 0
       ? Object.fromEntries(abilityMatches.map((match) => [match[1].toLowerCase(), Number(match[2])]))
       : undefined,
-    spellcasting: /ability to cast at least one spell|spellcasting feature/i.test(normalized) || undefined,
-    pactMagic: /pact magic/i.test(normalized) || undefined,
+    abilityAlternatives: alternativesMatch
+      ? [
+        { [alternativesMatch[1].toLowerCase()]: Number(alternativesMatch[3]) },
+        { [alternativesMatch[2].toLowerCase()]: Number(alternativesMatch[3]) }
+      ]
+      : undefined,
+    spellcasting: needsSpellcasting || undefined,
+    pactMagic: needsPactMagic || undefined,
+    features: features.length > 0 ? features : undefined,
     text: normalized
   };
-
-  if (!prerequisites.race && !prerequisites.class && !prerequisites.level && !prerequisites.ability && !prerequisites.spellcasting && !prerequisites.pactMagic) {
-    return undefined;
-  }
-
-  return prerequisites;
 };
 
 const parseSpellMetadata = (value) => {
@@ -3051,7 +3093,7 @@ const extractXanatharContent = (raw, label, sourceId) => {
       const featureBlocks = collectHeadingBlocks(block.content, 4)
         .filter((feature) => !/ features$/i.test(feature.title) && !isChromeFeatureName(feature.title))
         .map((feature, index) => {
-          const description = stripTrailingChrome(extractStructuredTexts(feature.content).join(' '));
+          const description = stripTrailingChrome(extractStructuredTexts(feature.content).join('\n'));
           return {
             id: `${slugify(row.subclassName)}-feature-${index + 1}`,
             name: feature.title,
@@ -3197,7 +3239,7 @@ const buildOptionalFeatureFromBlock = (featureBlock, classKey, label) => {
   // "Additional Warlock Spells" announces a list that is printed in a torn-paper aside beside the
   // paragraph, so the spells have to be read back out of it or the feature is just a promise.
   const description = stripTrailingChrome(
-    [...bodyTexts, ...extractSpellListLines(body, bodyTexts.join(' '))].join(' ')
+    [...bodyTexts, ...extractSpellListLines(body, bodyTexts.join(' '))].join('\n')
   );
   if (!description || isChromeFeatureName(featureBlock.title)) {
     return null;

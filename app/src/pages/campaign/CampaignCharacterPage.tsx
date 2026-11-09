@@ -12,8 +12,10 @@ import { Spinner } from '@/components/ui/spinner';
 import { exportCharacterToFillablePdf } from '@/lib/characterPdf';
 import { exportKobCharacterToPdf } from '@/lib/kob/characterSheetPdf';
 import { useRemoteCharacter } from '@/hooks/useRemoteCharacter';
+import { useLocalDocument } from '@/hooks/useLocalDocument';
 import { SaveConflictAlert } from '@/components/character/SaveConflictAlert';
 import { useCharacterStore } from '@/store/characterStore';
+import type { StoredCharacterDocument } from '@/lib/api';
 import type { Character } from '@/types/dnd';
 import { useCampaignId } from '@/pages/campaign/useCampaignData';
 import { useRollAttribution } from '@/hooks/useRollAttribution';
@@ -23,10 +25,15 @@ export function CampaignCharacterPage() {
   const navigate = useNavigate();
   const { characterId } = useParams<{ characterId: string }>();
   const loadDocumentIntoBuilder = useCharacterStore((state) => state.loadDocumentIntoBuilder);
-  const { record, document, error, loading, saving, applyPatch, conflict, resolveConflict } = useRemoteCharacter({
+  const loadCharacterIntoBuilder = useCharacterStore((state) => state.loadCharacterIntoBuilder);
+  const { record, document: remote, error, loading, saving, applyPatch, conflict, resolveConflict } = useRemoteCharacter({
     kind: 'id',
     id: characterId ?? '',
   });
+  // The owner's own copy is the one their cache already syncs, so editing it here is the same
+  // write their own sheet makes rather than a second writer on the row.
+  const own = useLocalDocument(record?.is_owner ? characterId ?? '' : '');
+  const document = own?.document ?? remote;
 
   // While this sheet is open, rolls made from it are attributed to the character in the table's
   // session feed.
@@ -60,17 +67,25 @@ export function CampaignCharacterPage() {
   }
 
   const isOwn = Boolean(record?.is_owner);
-  // The owner's own sheet is edited in their cache, where sync already handles it — offering a
-  // second, server-only write path for the same document would be two writers on one row.
+  // The owner writes through their own cache, a granted editor through the server. Either way the
+  // sheet gets an `onChange`, because a read-only sheet loses every tracker and every Cast button.
+  const onChange: ((patch: Partial<StoredCharacterDocument>) => void) | undefined =
+    own?.applyPatch ?? (record?.can_edit ? applyPatch : undefined);
   const mayEdit = Boolean(record?.can_edit) && !isOwn;
   const systemId = isKobDocument(document) ? 'kids-on-bikes' : DEFAULT_GAME_SYSTEM_ID;
-  const mayOpenBuilder = mayEdit && record !== null;
+  const mayOpenBuilder = Boolean(onChange) && record !== null;
 
   // `document`, not `record.data`: an inline edit here may not have been pushed yet.
   const openBuilderAt = (path: string) => {
     if (!record) return;
     if (systemId === 'kids-on-bikes') {
       navigate(`/campaign/${campaignId}/party/${record.id}/edit`);
+      return;
+    }
+    // The owner's draft comes from their cache, so the Review step writes back to the copy sync
+    // owns; a granted editor has no local copy and carries the row's version instead.
+    if (own && loadCharacterIntoBuilder(record.id)) {
+      navigate(path);
       return;
     }
     loadDocumentIntoBuilder(document as Character, { id: record.id, version: record.version, campaignId });
@@ -102,7 +117,7 @@ export function CampaignCharacterPage() {
         document={document}
         leading={backToParty}
         note={<SheetNote isOwn={isOwn} mayEdit={mayEdit} saving={saving} />}
-        onChange={mayEdit ? applyPatch : undefined}
+        onChange={onChange}
         onOpenBuilder={mayOpenBuilder ? openBuilderAt : undefined}
         actions={(
           <>

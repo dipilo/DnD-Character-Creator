@@ -138,7 +138,8 @@ function buildEditorState(character: Character): BuilderState {
     },
     abilityScoreMethod: abilityScoreEntry.abilityScoreMethod,
     rolledScores: abilityScoreEntry.rolledScores,
-    rolledScoreAssignments: abilityScoreEntry.rolledScoreAssignments
+    rolledScoreAssignments: abilityScoreEntry.rolledScoreAssignments,
+    selectedSourceIds: character.selectedSourceIds ?? []
   };
 }
 

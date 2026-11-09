@@ -28,6 +28,9 @@ export interface DerivedSpellcastingStats {
   ability: keyof AbilityScores;
   saveDc: number;
   attackBonus: number;
+  /** The two figures the formula is made of, so the card can say where the DC came from. */
+  abilityModifier: number;
+  proficiencyBonus: number;
 }
 
 /** A list: one "spell save DC" is wrong for a multiclass caster. */
@@ -48,13 +51,15 @@ export function deriveSpellcastingStats(
       ability,
       saveDc: 8 + proficiencyBonus + modifier,
       attackBonus: proficiencyBonus + modifier,
+      abilityModifier: modifier,
+      proficiencyBonus,
     });
   }
   return stats;
 }
 
 /** Derived, not an item to remember: both printings state the same damage. */
-export function deriveUnarmedStrike(
+export function baseUnarmedStrike(
   abilityScores: AbilityScores,
   proficiencyBonus: number
 ): DerivedAttack {
@@ -70,6 +75,15 @@ export function deriveUnarmedStrike(
   };
 }
 
+/** A feature's own damage line for an attack it does not replace outright. */
+export interface AlternateDamage {
+  /** What a click throws. Absent where the line names no die. */
+  notation?: string;
+  damage: string;
+  /** The feature offering it, so the row says on whose terms. */
+  source: string;
+}
+
 export interface DerivedAttack {
   name: string;
   /** 'Melee Weapon Attack' / 'Ranged Weapon Attack', in the books' own words. */
@@ -80,6 +94,8 @@ export interface DerivedAttack {
   damage: string;
   /** Versatile's two-handed line, when the weapon has one. */
   versatileDamage?: string;
+  /** Damage a feature offers in place of the row's own, on the terms the feature states. */
+  alternateDamages?: readonly AlternateDamage[];
   /** Which ability the attack uses, after finesse has picked the better of the two. */
   ability: keyof AbilityScores;
   proficient: boolean;
@@ -120,7 +136,7 @@ function attackAbility(item: NonNullable<ResolvedWeaponLike['item']>, abilitySco
 }
 
 /** "1d8" plus a modifier, plus the damage type — the line the books print. */
-function damageLine(dice: string | undefined, modifier: number, damageType: string | undefined): string {
+export function damageLine(dice: string | undefined, modifier: number, damageType: string | undefined): string {
   const base = dice?.trim() || '—';
   const withModifier = modifier === 0 ? base : `${base}${formatModifier(modifier)}`;
   return damageType ? `${withModifier} ${damageType.toLowerCase()}` : withModifier;

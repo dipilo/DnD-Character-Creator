@@ -20,7 +20,10 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-header"
       className={cn(
-        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
+        // `minmax(0, 1fr)`, not the implicit `auto`: a track's automatic minimum is its content's
+        // min-content width, which `min-w-0` on the grid *item* cannot override — a species card
+        // listing six books widened past its cell and took the Selected badge off the card with it.
+        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] grid-cols-[minmax(0,1fr)] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[minmax(0,1fr)_auto] [.border-b]:pb-6",
         className
       )}
       {...props}

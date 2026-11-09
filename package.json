@@ -20,6 +20,7 @@
     "test:bot": "node server/test/botApi.mjs",
     "test:sessions": "node server/test/gameSessions.mjs",
     "test:feat-benefits": "node scripts/test/featBenefits.mjs",
+    "test:feat-prerequisites": "node --import ./app/test/aliasLoader.mjs app/test/featPrerequisites.mjs",
     "test:class-resources": "node scripts/test/classResources.mjs",
     "test:5etools-classes": "node scripts/test/fiveEToolsClasses.mjs",
     "test:5etools-content": "node scripts/test/fiveEToolsContent.mjs",
@@ -30,7 +31,8 @@
     "test:spell-scaling": "node app/test/spellScaling.mjs",
     "test:conflict": "node app/test/characterConflict.mjs",
     "test:runtime-recovery": "node --test app/test/runtimeRecovery.mjs",
-    "test:senses": "node app/test/sheetSenses.mjs",
+    "test:senses": "node --import ./app/test/aliasLoader.mjs app/test/sheetSenses.mjs",
+    "test:unarmed-strike": "node --import ./app/test/aliasLoader.mjs --test app/test/unarmedStrike.mjs",
     "test:hit-points": "node --import ./app/test/aliasLoader.mjs app/test/hitPoints.mjs",
     "test:feature-throws": "node --import ./app/test/aliasLoader.mjs app/test/featureThrows.mjs",
     "test:expertise": "node --import ./app/test/aliasLoader.mjs app/test/expertise.mjs",
@@ -40,7 +42,9 @@
     "import:kids-on-bikes": "node scripts/import-kids-on-bikes.mjs",
     "generate:free-core": "node scripts/generate-free-core-sources.mjs",
     "test:roll-effects": "node --import ./app/test/aliasLoader.mjs app/test/rollEffects.mjs",
-    "test:species-groups": "node --import ./app/test/aliasLoader.mjs app/test/speciesGroups.mjs"
+    "test:species-groups": "node --import ./app/test/aliasLoader.mjs app/test/speciesGroups.mjs",
+    "test:species-reprints": "node --import ./app/test/aliasLoader.mjs --test app/test/speciesReprints.mjs",
+    "test:wild-shape": "node --import ./app/test/aliasLoader.mjs --test app/test/wildShape.mjs"
   },
   "devDependencies": {
     "febdnddata": "^1.0.0-09f6c01",

@@ -413,6 +413,20 @@ check('an action’s timing is read from its own time block, and absence means a
   );
 });
 
+// "Free" and "Varies" are the book saying this costs no action, and reading them as the default
+// filed Improvising an Action and the free object interaction under Actions beside Attack.
+check('an action that costs no action is neither an action nor a reaction', () => {
+  const content = build({ action: [
+    { name: 'Improvising an Action', source: 'FIX', time: ['Varies'], entries: ['You try something else.'] },
+    { name: 'End Concentration', source: 'FIX', time: ['Free'], entries: ['You stop concentrating.'] },
+    { name: 'Other Activity', source: 'FIX', time: ['Varies'], entries: ['You interact with one object.'] }
+  ] });
+  assert.deepEqual(
+    content.combatActions.map((entry) => [entry.name, entry.timing]),
+    [['Improvising an Action', 'other'], ['End Concentration', 'other'], ['Other Activity', 'other']]
+  );
+});
+
 for (const entry of checks) {
   console.log(`${entry.ok ? 'ok  ' : 'FAIL'} ${entry.name}${entry.detail ? `\n       ${entry.detail}` : ''}`);
 }

@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source MOT).",
     "origin": "imported-json",
-    "importedAt": "2026-10-14T17:54:23.915Z",
+    "importedAt": "2026-11-09T04:38:22.825Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -103,6 +103,9 @@
         "languages": [
           "Common",
           "Sylvan"
+        ],
+        "reprintedAs": [
+          "Centaur|MPMM"
         ],
         "source": "Mythic Odysseys of Theros",
         "sourceId": "theros"
@@ -278,6 +281,9 @@
           "Common",
           "Other"
         ],
+        "reprintedAs": [
+          "Minotaur|MPMM"
+        ],
         "source": "Mythic Odysseys of Theros",
         "sourceId": "theros"
       },
@@ -379,6 +385,9 @@
         "languages": [
           "Common",
           "Sylvan"
+        ],
+        "reprintedAs": [
+          "Satyr|MPMM"
         ],
         "source": "Mythic Odysseys of Theros",
         "sourceId": "theros"
@@ -495,6 +504,9 @@
         "languages": [
           "Common",
           "Primordial"
+        ],
+        "reprintedAs": [
+          "Triton|MPMM"
         ],
         "source": "Mythic Odysseys of Theros",
         "sourceId": "theros"
@@ -722,7 +734,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "While wearing this helm, you know whether there is a celestial or fiend within 30 feet of you, as well as where the creature is located, provided the creature isn't behind 3. Whenever you finish a long rest while wearing the helm, you can pray to one of the gods listed on the Helm of the Gods table and store the listed spell in the helm, replacing any spell that is already stored there. The save DC for the spell is 13. The helm has 3 charges. To cast a spell from the helm, you must expend 1 charge, and the helm regains 1d3 charges daily at dawn. Athreos — protection from evil and good; Ephara — sanctuary; Erebos — inflict wounds; Heliod — guiding bolt; Iroas — heroism; Karametra — goodberry; Keranos — thunderous smite; Klothys — entangle; Kruphix — dissonant whispers; Mogis — hellish rebuke; Nylea — faerie fire; Pharika — lesser restoration; Phenax — charm person; Purphoros — searing smite; Thassa — identify",
+        "description": "While wearing this helm, you know whether there is a celestial or fiend within 30 feet of you, as well as where the creature is located, provided the creature isn't behind 3. Whenever you finish a long rest while wearing the helm, you can pray to one of the gods listed on the Helm of the Gods table and store the listed spell in the helm, replacing any spell that is already stored there. The save DC for the spell is 13. The helm has 3 charges. To cast a spell from the helm, you must expend 1 charge, and the helm regains 1d3 charges daily at dawn. God | Spell\nAthreos | protection from evil and good\nEphara | sanctuary\nErebos | inflict wounds\nHeliod | guiding bolt\nIroas | heroism\nKarametra | goodberry\nKeranos | thunderous smite\nKlothys | entangle\nKruphix | dissonant whispers\nMogis | hellish rebuke\nNylea | faerie fire\nPharika | lesser restoration\nPhenax | charm person\nPurphoros | searing smite\nThassa | identify",
         "properties": []
       },
       {
@@ -797,7 +809,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "A creature that touches this ornate wooden vessel for 1 minute gains the benefits of a short rest. That creature also gains the effects of the bless spell until the creature finishes a short or long rest. The creature can't gain these benefits again until it finishes a long rest. If the vessel is opened, roll on the Pyxis of Pandemonium table to determine what happens. Any spells cast by the vessel have a spell save DC of 17. One minute after the vessel is opened, it disappears. It reappears, sealed, in a random location on the same plane of existence 24 hours later. Curse. Any creature that gains the benefit of a short rest from the vessel hears cloying telepathic whispers emanating from it. That creature must make a DC 17 Wisdom saving throw. On a failed save, the creature is charmed by the vessel for 1 hour. The charmed creature does everything it can to open the vessel as soon as possible. On a successful save, the creature is immune to the vessel's whispers for 24 hours. 1 — Androphagia. Each creature within 60 feet of the vessel must succeed on a DC 17 Wisdom saving throw or go berserk for 1 minute. The berserk creature must begin its turn using the Attack action to make one melee or ranged attack (its choice) against the creature nearest to it. The berserk creature can repeat the save at the end of its turn, ending the effect on itself on a success.; 2 — Bile Blight. The vessel casts the harm spell on each creature within 30 feet of it.; 3 — Flood. The vessel casts the tsunami spell at a point of the DM's choice within 120 feet of it.; 4 — Medusa's Gaze. The vessel casts the flesh to stone spell on each creature within 30 feet of it.; 5 — Labyrinth. The vessel casts the maze spell on each creature within 30 feet of it.; 6 — Nightmare. Tendrils of shadow seep from the vessel and form into 1d4 shadow demons (see the Monster Manual for their stat block), which appear in unoccupied spaces within 30 feet of it and are hostile.; 7 — Swarming Insects. The vessel casts the insect plague spell, centered on itself and with a radius of 30 feet.; 8 — Unbridled Revel. The vessel casts the Otto's irresistible dance spell on each creature within 30 feet of it.",
+        "description": "A creature that touches this ornate wooden vessel for 1 minute gains the benefits of a short rest. That creature also gains the effects of the bless spell until the creature finishes a short or long rest. The creature can't gain these benefits again until it finishes a long rest. If the vessel is opened, roll on the Pyxis of Pandemonium table to determine what happens. Any spells cast by the vessel have a spell save DC of 17. One minute after the vessel is opened, it disappears. It reappears, sealed, in a random location on the same plane of existence 24 hours later. Curse. Any creature that gains the benefit of a short rest from the vessel hears cloying telepathic whispers emanating from it. That creature must make a DC 17 Wisdom saving throw. On a failed save, the creature is charmed by the vessel for 1 hour. The charmed creature does everything it can to open the vessel as soon as possible. On a successful save, the creature is immune to the vessel's whispers for 24 hours. d8 | Calamity\n1 | Androphagia. Each creature within 60 feet of the vessel must succeed on a DC 17 Wisdom saving throw or go berserk for 1 minute. The berserk creature must begin its turn using the Attack action to make one melee or ranged attack (its choice) against the creature nearest to it. The berserk creature can repeat the save at the end of its turn, ending the effect on itself on a success.\n2 | Bile Blight. The vessel casts the harm spell on each creature within 30 feet of it.\n3 | Flood. The vessel casts the tsunami spell at a point of the DM's choice within 120 feet of it.\n4 | Medusa's Gaze. The vessel casts the flesh to stone spell on each creature within 30 feet of it.\n5 | Labyrinth. The vessel casts the maze spell on each creature within 30 feet of it.\n6 | Nightmare. Tendrils of shadow seep from the vessel and form into 1d4 shadow demons (see the Monster Manual for their stat block), which appear in unoccupied spaces within 30 feet of it and are hostile.\n7 | Swarming Insects. The vessel casts the insect plague spell, centered on itself and with a radius of 30 feet.\n8 | Unbridled Revel. The vessel casts the Otto's irresistible dance spell on each creature within 30 feet of it.",
         "properties": []
       },
       {
@@ -826,7 +838,7 @@
           "unit": "gp"
         },
         "weight": 0,
-        "description": "The sling bullets come in a pouch, which contains 1d4 + 4 bullets. Roll on the Magic Sling Bullets table for each bullet to determine its magical property. You have a +2 bonus to attack and damage rolls made with each of these bullets. If a bullet misses its target, the bullet teleports back into the pouch. Once a bullet hits a target, the bullet loses its magic. Magic Sling Bullets: 1 — Banishment. A creature that takes damage from this bullet must succeed on a DC 15 Charisma saving throw or be banished as though affected by the banishment spell.; 2 — Fulguration. On a hit, this bullet deals an extra 2d8 lightning damage to its target. All other creatures within 10 feet of the target must each succeed on a DC 15 Constitution saving throw or take 1d8 thunder damage.; 3 — Stunning. On a hit, this bullet deals an extra 1d10 force damage, and the target is stunned until the end of your next turn.; 4 — Tracking. A creature that takes damage from this bullet is marked with a glowing rune where the bullet hit. The mark lasts 24 hours. While the creature is marked, you always know the direction to it.",
+        "description": "The sling bullets come in a pouch, which contains 1d4 + 4 bullets. Roll on the Magic Sling Bullets table for each bullet to determine its magical property. You have a +2 bonus to attack and damage rolls made with each of these bullets. If a bullet misses its target, the bullet teleports back into the pouch. Once a bullet hits a target, the bullet loses its magic. Magic Sling Bullets:\nd4 | Bullet\n1 | Banishment. A creature that takes damage from this bullet must succeed on a DC 15 Charisma saving throw or be banished as though affected by the banishment spell.\n2 | Fulguration. On a hit, this bullet deals an extra 2d8 lightning damage to its target. All other creatures within 10 feet of the target must each succeed on a DC 15 Constitution saving throw or take 1d8 thunder damage.\n3 | Stunning. On a hit, this bullet deals an extra 1d10 force damage, and the target is stunned until the end of your next turn.\n4 | Tracking. A creature that takes damage from this bullet is marked with a glowing rune where the bullet hit. The mark lasts 24 hours. While the creature is marked, you always know the direction to it.",
         "properties": []
       },
       {

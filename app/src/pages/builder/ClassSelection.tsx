@@ -182,9 +182,10 @@ export function ClassSelection() {
                     }}
                   >
                     <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between gap-2">
-                        {/* min-w-0 all the way down: a prerequisite naming two abilities is wider
-                            than a third of the grid, and Badge is nowrap and shrink-0 by default. */}
+                      <div className="flex min-w-0 items-start justify-between gap-2">
+                        {/* min-w-0 all the way down, the grid item CardHeader makes included: a
+                            prerequisite naming two abilities is wider than a third of the grid,
+                            and Badge is nowrap and shrink-0 by default. */}
                         <div className="flex min-w-0 items-center gap-3">
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
                             <Sword className="h-5 w-5 text-primary" />

@@ -5,6 +5,7 @@ import {
   getRuntimeCombatActions,
   getRuntimeEquipmentById,
   getRuntimeFeatById,
+  getRuntimeMonsters,
   getRuntimeSpeciesById,
   getRuntimeSpeciesVariant,
   getRuntimeSpellById,
@@ -56,6 +57,8 @@ import { AdvancementTasks } from '@/components/character/AdvancementTasks';
 import { deriveAdvancementTasks } from '@/lib/characterAdvancement';
 import { getChosenFeatureOptions } from '@/lib/featureOptions';
 import { SheetSpellcastingCard, SheetVitalsPanel } from '@/components/character/SheetVitalsPanel';
+import { SheetWildShapePanel } from '@/components/character/SheetWildShapePanel';
+import { formAttacks, formWalkingSpeed, resolveWildShape, shiftedAbilityScores } from '@/lib/wildShape';
 import {
   ArmorClassCard,
   ProficiencyBonusCard,
@@ -287,6 +290,26 @@ export function CharacterSheetView({
     return applyAbilityScoreBonuses(character.abilityScores, storedBonuses);
   }, [character.abilityScoreBonuses, character.abilityScores, derivedAbilityBonuses]);
 
+  // A shape-shifting feature is found by what its own text says, so nothing here names the Druid.
+  const monsters = getRuntimeMonsters();
+  const shift = useMemo(
+    () => resolveWildShape({
+      character,
+      classFeatures: resolvedClasses.map(({ cls, entry }) => ({ features: cls.features, level: entry.level })),
+      monsters
+    }),
+    [character, monsters, resolvedClasses]
+  );
+  const form = shift?.form;
+
+  // "Your game statistics are replaced by the Beast's stat block": the figures a player reads mid
+  // fight come from the form, while hit points, the purse and the class's own pools stay the
+  // character's — which is what both printings' Game Statistics paragraph says.
+  const sheetScores = useMemo(
+    () => (form && shift ? shiftedAbilityScores(displayedAbilityScores, form, shift.rules) : displayedAbilityScores),
+    [displayedAbilityScores, form, shift]
+  );
+
   const displayedHp = character.hp.maximum > 0
     ? character.hp
     : deriveCharacterHitPoints({
@@ -301,13 +324,18 @@ export function CharacterSheetView({
   );
 
   const derivedArmor = useMemo(() => {
+    // The stat block states one number and no formula, so a shifted character wears the beast's.
+    if (form) {
+      return { value: form.ac, source: `${form.name} stat block`, proficient: true };
+    }
+
     return deriveArmorClass({
       abilityScores: displayedAbilityScores,
       proficiencies: derivedProficiencies,
       equipment: resolvedEquipment,
       activeFeatures
     });
-  }, [activeFeatures, derivedProficiencies, displayedAbilityScores, resolvedEquipment]);
+  }, [activeFeatures, derivedProficiencies, displayedAbilityScores, form, resolvedEquipment]);
 
   const totalLevel = character.classes.reduce((sum, entry) => sum + entry.level, 0) || 1;
   const proficiencyBonus = getCharacterProficiencyBonus(totalLevel);
@@ -352,19 +380,54 @@ export function CharacterSheetView({
 
   const vitals = useMemo(() => {
     return deriveSheetVitals({
-      abilityScores: displayedAbilityScores,
+      abilityScores: sheetScores,
       proficiencies: derivedProficiencies,
       resolvedClasses,
-      // Species speed is the walking speed; 30 is the default when nothing is chosen yet.
-      speed: species?.speed ?? 30,
+      // Species speed is the walking speed; 30 is the default when nothing is chosen yet, and a
+      // shape-shifted character moves at the form's.
+      speed: form ? formWalkingSpeed(form) : species?.speed ?? 30,
       totalLevel,
       senses,
       rollEffects,
       expertiseKeys
     });
-  }, [derivedProficiencies, displayedAbilityScores, expertiseKeys, resolvedClasses, rollEffects, senses, species, totalLevel]);
+  }, [derivedProficiencies, expertiseKeys, form, resolvedClasses, rollEffects, senses, sheetScores, species, totalLevel]);
+
+  const castingStat = useMemo(() => primaryCastingStat(vitals.spellcasting), [vitals.spellcasting]);
+
+  // A level clause counts the class's level, and columns come from its own table.
+  const featureContext = useMemo<FeatureContext>(
+    () => ({
+      level: totalLevel,
+      classLevels: Object.fromEntries(
+        resolvedClasses.map(({ entry, cls }) => [(cls?.name ?? entry.classId).toLowerCase(), entry.level])
+      ),
+      abilityModifiers: Object.fromEntries(
+        ABILITY_ORDER.map((ability) => [ability, abilityModifier(displayedAbilityScores[ability])])
+      ),
+      proficiencyBonus,
+      spellSaveDc: castingStat?.saveDc,
+      siblingFeatures: activeFeaturesWithChoices,
+      tableDice: Object.fromEntries(
+        resolvedClasses.flatMap(({ entry, cls }) =>
+          (cls?.featureDice ?? []).map((column) => [
+            column.featureName.toLowerCase(),
+            { perLevel: column.perLevel, level: entry.level }
+          ])
+        )
+      )
+    }),
+    [activeFeaturesWithChoices, castingStat, displayedAbilityScores, proficiencyBonus, resolvedClasses, totalLevel]
+  );
 
   const attacks = useMemo(() => {
+    // "You can't use any of your special senses… your ability to handle objects is determined by
+    // the form's limbs": a shifted character attacks with the stat block's own actions, not the
+    // longsword that is lying in their space.
+    if (form) {
+      return formAttacks(form);
+    }
+
     return [
       ...deriveAttacks({
         equipment: resolvedEquipment,
@@ -372,10 +435,14 @@ export function CharacterSheetView({
         proficiencyBonus: vitals.proficiencyBonus,
         weaponProficiencies: derivedProficiencies.weapons
       }),
-      // Nobody has to equip their fists, so the sheet has to know about them itself.
-      deriveUnarmedStrike(displayedAbilityScores, vitals.proficiencyBonus)
+      // Nobody has to equip their fists, so the sheet has to know about them itself — including
+      // what a trait or the Monk's Martial Arts says about the damage and the ability used.
+      deriveUnarmedStrike(displayedAbilityScores, vitals.proficiencyBonus, {
+        features: activeFeaturesWithChoices,
+        featureContext
+      })
     ];
-  }, [derivedProficiencies.weapons, displayedAbilityScores, resolvedEquipment, vitals.proficiencyBonus]);
+  }, [activeFeaturesWithChoices, derivedProficiencies.weapons, displayedAbilityScores, featureContext, form, resolvedEquipment, vitals.proficiencyBonus]);
 
   // What this character shrugs off, read from the feature's own sentences.
   const defences = useMemo(() => deriveDefences(activeFeaturesWithChoices), [activeFeaturesWithChoices]);
@@ -458,33 +525,6 @@ export function CharacterSheetView({
     });
   }, [allFeatData, background, character, derivedProficiencies.skills, derivedProficiencies.tools, feats, resolvedClasses, species, spellcastingRules, variant]);
 
-  const castingStat = useMemo(() => primaryCastingStat(vitals.spellcasting), [vitals.spellcasting]);
-
-  // A level clause counts the class's level, and columns come from its own table.
-  const featureContext = useMemo<FeatureContext>(
-    () => ({
-      level: totalLevel,
-      classLevels: Object.fromEntries(
-        resolvedClasses.map(({ entry, cls }) => [(cls?.name ?? entry.classId).toLowerCase(), entry.level])
-      ),
-      abilityModifiers: Object.fromEntries(
-        ABILITY_ORDER.map((ability) => [ability, abilityModifier(displayedAbilityScores[ability])])
-      ),
-      proficiencyBonus,
-      spellSaveDc: castingStat?.saveDc,
-      siblingFeatures: activeFeaturesWithChoices,
-      tableDice: Object.fromEntries(
-        resolvedClasses.flatMap(({ entry, cls }) =>
-          (cls?.featureDice ?? []).map((column) => [
-            column.featureName.toLowerCase(),
-            { perLevel: column.perLevel, level: entry.level }
-          ])
-        )
-      )
-    }),
-    [activeFeaturesWithChoices, castingStat, displayedAbilityScores, proficiencyBonus, resolvedClasses, totalLevel]
-  );
-
   const encumbrance = useMemo(() => {
     return deriveEncumbrance({
       character,
@@ -521,6 +561,12 @@ export function CharacterSheetView({
           <p className="text-muted-foreground short:hidden">
             Level {totalLevel} {species?.name ?? 'Unknown Species'} {classSummary}
           </p>
+          {/* The rail's numbers are the form's while this shows, so it says so where the name is. */}
+          {form ? (
+            <Badge className="mt-1">
+              {shift?.feature.name}: {form.name}
+            </Badge>
+          ) : null}
           {note}
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -567,7 +613,7 @@ export function CharacterSheetView({
         <div ref={railRef} className={railIsSticky && railFits ? 'lg:sticky lg:top-16' : undefined}>
           <SheetQuickInfoRail
             character={characterWithResolvedHp}
-            abilityScores={displayedAbilityScores}
+            abilityScores={sheetScores}
             baseAbilityScores={character.abilityScores}
             abilityBonusFor={abilityBonusFor}
             armor={derivedArmor}
@@ -606,6 +652,16 @@ export function CharacterSheetView({
           {/* One table, full width. The columns are what make it dense, and splitting the tab into
               two columns leaves each of them too narrow for six of them. */}
           <TabsContent value="actions" className="space-y-4">
+            {/* Above the table: which body the rows below belong to is the first thing to read. */}
+            {shift ? (
+              <SheetWildShapePanel
+                character={character}
+                shift={shift}
+                monsters={monsters}
+                onChange={onChange}
+              />
+            ) : null}
+
             <SheetActionsPanel
               character={character}
               attacks={attacks}

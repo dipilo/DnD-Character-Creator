@@ -19,6 +19,8 @@ export interface DocumentStoreAdapter<T extends StoredDocument = StoredDocument>
   find: (id: string) => T | undefined;
   add: (document: T) => void;
   applyRemote: (document: T, version: number) => void;
+  /** A local edit to a document this cache holds, which is what makes the owner's sheet editable. */
+  applyPatch: (id: string, patch: Partial<T>) => void;
   forget: (id: string) => void;
   markSynced: (id: string, version: number, stillDirty?: boolean) => void;
   clearPendingDelete: (id: string) => void;
@@ -48,6 +50,10 @@ const dndAdapter: DocumentStoreAdapter<Character> = {
   find: (id) => dndStore().characters.find((entry) => entry.id === id),
   add: (document) => dndStore().addCharacter(document),
   applyRemote: (document, version) => dndStore().applyRemoteCharacter(document, version),
+  applyPatch: (id, patch) => {
+    const held = dndStore().characters.find((entry) => entry.id === id);
+    if (held) dndStore().updateCharacter({ ...held, ...patch, updatedAt: new Date().toISOString() });
+  },
   forget: (id) => dndStore().forgetCharacter(id),
   markSynced: (id, version, stillDirty) => dndStore().markCharacterSynced(id, version, stillDirty),
   clearPendingDelete: (id) => dndStore().clearPendingDelete(id),
@@ -85,6 +91,7 @@ const kobAdapter: DocumentStoreAdapter<KobCharacter> = {
   find: (id) => kobStore().characters.find((entry) => entry.id === id),
   add: (document) => kobStore().addCharacter(document),
   applyRemote: (document, version) => kobStore().applyRemoteCharacter(document, version),
+  applyPatch: (id, patch) => kobStore().updateCharacter(id, patch),
   forget: (id) => kobStore().forgetCharacter(id),
   markSynced: (id, version, stillDirty) => kobStore().markCharacterSynced(id, version, stillDirty),
   clearPendingDelete: (id) => kobStore().clearPendingDelete(id),
