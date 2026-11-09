@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source FTD).",
     "origin": "imported-json",
-    "importedAt": "2026-11-09T16:27:52.878Z",
+    "importedAt": "2026-11-09T21:44:07.701Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -5305,7 +5305,7 @@
         "description": "Draconic Spirit from Fizban's Treasury of Dragons.",
         "size": "Large",
         "type": "dragon",
-        "alignment": "[object Object]",
+        "alignment": "N",
         "ac": 10,
         "hp": {
           "average": 0,
@@ -5383,7 +5383,7 @@
         "description": "Draconic Spirit (Chromatic) from Fizban's Treasury of Dragons.",
         "size": "Large",
         "type": "dragon",
-        "alignment": "[object Object]",
+        "alignment": "N",
         "ac": 10,
         "hp": {
           "average": 0,
@@ -5454,7 +5454,7 @@
         "description": "Draconic Spirit (Gem) from Fizban's Treasury of Dragons.",
         "size": "Large",
         "type": "dragon",
-        "alignment": "[object Object]",
+        "alignment": "N",
         "ac": 10,
         "hp": {
           "average": 0,
@@ -5525,7 +5525,7 @@
         "description": "Draconic Spirit (Metallic) from Fizban's Treasury of Dragons.",
         "size": "Large",
         "type": "dragon",
-        "alignment": "[object Object]",
+        "alignment": "N",
         "ac": 10,
         "hp": {
           "average": 0,

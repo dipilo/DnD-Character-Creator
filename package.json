@@ -47,7 +47,8 @@
     "test:wild-shape": "node --import ./app/test/aliasLoader.mjs --test app/test/wildShape.mjs",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:imported-text": "node --import ./app/test/aliasLoader.mjs --test app/test/importedText.mjs"
+    "test:imported-text": "node --import ./app/test/aliasLoader.mjs --test app/test/importedText.mjs",
+    "test:species-resolution": "node --import ./app/test/aliasLoader.mjs --test app/test/speciesResolution.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.0",

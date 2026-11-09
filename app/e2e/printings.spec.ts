@@ -29,6 +29,24 @@ test('a Kenku shows one printing of its traits, not both names for the same trai
   expect(Math.min(training, recall)).toBe(0);
 });
 
+// The thirteen hand-written Volo's-era species were retired once the pack supplied them, so a
+// character saved before that holds an id nothing mints any more.
+test('a character holding a retired species id still names its species', async ({ page }) => {
+  await seedCharacters(page, [
+    { id: 'old-kenku', name: 'Vash', speciesId: 'kenku', classId: DRUID_2024, level: 3 },
+    { id: 'old-tabaxi', name: 'Rrit', speciesId: 'tabaxi', classId: DRUID_2024, level: 3 },
+  ]);
+
+  // The Features tab names the species in a card title. The header's subtitle would do too, but it
+  // is `short:hidden` — in landscape there are 390px of height and it is deliberately dropped.
+  for (const [id, species] of [['old-kenku', 'Kenku'], ['old-tabaxi', 'Tabaxi']]) {
+    await page.goto(`/character/${id}`);
+    await page.getByRole('tab', { name: 'Features' }).click();
+    await expect(page.getByText(`Species Features: ${species}`)).toBeVisible();
+    await expect(page.getByText('Unknown Species')).toHaveCount(0);
+  }
+});
+
 test('an action two books both print is listed once', async ({ page }) => {
   await seedCharacters(page, [
     { id: 'druid-2024', name: 'Keth', speciesId: 'basic-rules-2024-elf', classId: DRUID_2024, level: 8 },

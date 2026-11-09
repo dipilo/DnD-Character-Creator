@@ -7,7 +7,7 @@
     "aliases": [],
     "description": "Imported from 5etools data (source MTF).",
     "origin": "imported-json",
-    "importedAt": "2026-11-09T16:27:53.485Z",
+    "importedAt": "2026-11-09T21:44:08.264Z",
     "parser": "5etools-adapter",
     "visibility": "private"
   },
@@ -1998,7 +1998,7 @@
         "skills": [
           "Deception +5",
           "Perception +4",
-          "Other [object Object]"
+          "One of Arcana +7, History +7, Nature +7, Religion +7"
         ],
         "conditionImmunities": [
           "blinded",
@@ -11302,7 +11302,7 @@
         "description": "Sacred Statue from Mordenkainen's Tome of Foes.",
         "size": "Large",
         "type": "construct",
-        "alignment": "[object Object]",
+        "alignment": "Unaligned",
         "ac": 19,
         "hp": {
           "average": 95,

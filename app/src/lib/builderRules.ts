@@ -1383,6 +1383,19 @@ export const normalizeCharacterClassIds = (
   });
 };
 
+/**
+ * The same repair for the species pointer. The sheet resolves a stale one canonically, but the
+ * builder's picker asks `group.base.id === selectedSpeciesId`, so the id the draft carries has to
+ * be the one the library currently hands out or the species reads as unchosen.
+ */
+export const normalizeCharacterSpeciesId = (
+  speciesId: string | undefined,
+  getSpeciesById: (id: string) => Species | undefined
+): string | undefined => {
+  if (!speciesId) return speciesId;
+  return getSpeciesById(speciesId)?.id ?? speciesId;
+};
+
 /** The same repair for a map keyed by class id (`multiclassSkillSelections`). */
 export const normalizeClassKeyedSelections = <T,>(
   selections: Record<string, T> | undefined,

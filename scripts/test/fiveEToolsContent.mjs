@@ -520,6 +520,60 @@ check("a monster's saves, skills, resistances and senses are read, note included
   assert.deepEqual(monster.senses, ['darkvision 120 ft., passive Perception 17']);
 });
 
+check("a skill group the stat block offers a choice from is read as the choice it is", () => {
+  const monster = build({
+    monster: [{
+      ...baseVampire,
+      source: 'FIX',
+      skill: {
+        deception: '+5',
+        other: [{ oneOf: { arcana: '+7', history: '+7', nature: '+7', religion: '+7' } }]
+      }
+    }]
+  }).monsters[0];
+  // `String()` on the group printed "Other [object Object]" into the Adult Oblex's skill list.
+  assert.deepEqual(monster.skills, [
+    'Deception +5',
+    'One of Arcana +7, History +7, Nature +7, Religion +7'
+  ]);
+});
+
+check('an alignment stated as a block carries its letters and its note, not "[object Object]"', () => {
+  const plain = build({ monster: [{ ...baseVampire, source: 'FIX', alignment: [{ alignment: ['N'] }] }] }).monsters[0];
+  assert.equal(plain.alignment, 'N');
+
+  const noted = build({
+    monster: [{
+      ...baseVampire,
+      source: 'FIX',
+      alignment: [{ alignment: ['C', 'G'], note: 'chaotic evil when fully possessed' }]
+    }]
+  }).monsters[0];
+  assert.equal(noted.alignment, 'C G (chaotic evil when fully possessed)');
+
+  const letters = build({ monster: [{ ...baseVampire, source: 'FIX', alignment: ['L', 'E'] }] }).monsters[0];
+  assert.equal(letters.alignment, 'L E');
+
+  const absent = build({ monster: [{ ...baseVampire, source: 'FIX', alignment: undefined }] }).monsters[0];
+  assert.equal(absent.alignment, 'Unaligned');
+});
+
+check('a creature type the book leaves open names every option it offers', () => {
+  const open = build({
+    monster: [{ ...baseVampire, source: 'FIX', type: { type: { choose: ['celestial', 'fey', 'fiend'] } } }]
+  }).monsters[0];
+  assert.equal(open.type, 'celestial or fey or fiend');
+
+  const tagged = build({ monster: [{ ...baseVampire, source: 'FIX', type: { type: 'fiend', tags: ['devil'] } }] }).monsters[0];
+  assert.equal(tagged.type, 'fiend');
+
+  const word = build({ monster: [{ ...baseVampire, source: 'FIX', type: 'undead' }] }).monsters[0];
+  assert.equal(word.type, 'undead');
+
+  const absent = build({ monster: [{ ...baseVampire, source: 'FIX', type: undefined }] }).monsters[0];
+  assert.equal(absent.type, 'Unknown');
+});
+
 // --- a lineage of another book's race ------------------------------------------------------
 
 const ELF = {

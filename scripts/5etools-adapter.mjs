@@ -1074,6 +1074,24 @@ const mapMonsterSpellcastingBlock = (block, monsterName) => {
 };
 
 // `displayAs` is where the book prints the block; without it, it is a trait.
+/**
+ * A skill block is mostly `{perception: "+4"}`, but `other` carries the stat block's "plus one of
+ * the following" group as `[{oneOf: {...}}]` — the Adult Oblex's four knowledge skills. `String()`
+ * on that printed "Other [object Object]".
+ */
+const mapMonsterSkills = (skill) => Object.entries(skill ?? {}).flatMap(([key, value]) => {
+  if (key !== 'other') {
+    return [`${titleCaseSkill(key)} ${stripInlineTags(String(value))}`];
+  }
+
+  return [value].flat().filter(Boolean).flatMap((entry) => {
+    const group = entry?.oneOf;
+    if (!group) return [];
+    const options = Object.entries(group).map(([name, bonus]) => `${titleCaseSkill(name)} ${stripInlineTags(String(bonus))}`);
+    return options.length > 0 ? [`One of ${options.join(', ')}`] : [];
+  });
+});
+
 const mapMonsterSpellcasting = (monster, ctx) => (monster.spellcasting ?? []).map((block, index) => ({
   displayAs: block.displayAs ?? 'trait',
   entry: {
@@ -1099,6 +1117,24 @@ const mapMonster = (monster, ctx) => {
     ...spellcasting.filter((block) => block.displayAs === displayAs).map((block) => block.entry)
   ];
 
+  // An alignment entry is either a letter or `{alignment:[…], note:"…"}` — the Draconic Spirit and
+  // Bol'bara carry the object form, and `join(' ')` printed "[object Object]" for them.
+  const alignmentText = [monster.alignment].flat().filter(Boolean).map((entry) => {
+    if (typeof entry !== 'object') return String(entry);
+    const letters = [entry.alignment].flat().filter(Boolean).join(' ');
+    return entry.note ? `${letters} (${entry.note})`.trim() : letters;
+  }).filter(Boolean).join(' ');
+
+  // `type` is a word, `{type: "fiend", tags: […]}`, or `{type: {choose: […]}}` for a stat block the
+  // book leaves open — the Otherworldly Steed is "celestial, fey, or fiend", and reading one level
+  // of nesting printed "[object Object]" for it.
+  const readCreatureType = (value) => {
+    if (value == null) return '';
+    if (typeof value !== 'object') return String(value);
+    if (Array.isArray(value.choose)) return value.choose.join(' or ');
+    return readCreatureType(value.type);
+  };
+
   const speedText = typeof monster.speed === 'number'
     ? `${monster.speed} ft.`
     : Object.entries(monster.speed ?? {}).filter(([, value]) => typeof value === 'number' || typeof value?.number === 'number').map(([mode, value]) => `${mode === 'walk' ? '' : mode + ' '}${typeof value === 'object' ? value.number : value} ft.`).join(', ').trim();
@@ -1108,15 +1144,15 @@ const mapMonster = (monster, ctx) => {
     name: monster.name,
     description: `${monster.name} from ${ctx.label}.`,
     size: SIZE_MAP[Array.isArray(monster.size) ? monster.size[0] : monster.size] ?? 'Medium',
-    type: stripInlineTags(typeof monster.type === 'object' ? monster.type.type : monster.type ?? 'Unknown'),
-    alignment: Array.isArray(monster.alignment) ? monster.alignment.join(' ') : (monster.alignment ?? 'Unaligned'),
+    type: stripInlineTags(readCreatureType(monster.type)) || 'Unknown',
+    alignment: alignmentText || 'Unaligned',
     ac,
     hp: { average: monster.hp?.average ?? 0, formula: monster.hp?.formula ?? '' },
     speed: speedText || '30 ft.',
     abilityScores,
     challengeRating: typeof monster.cr === 'object' ? (monster.cr.cr ?? '0') : String(monster.cr ?? '0'),
     ...(monster.save ? { savingThrows: Object.entries(monster.save).map(([key, value]) => `${titleCaseWords(key)} ${stripInlineTags(String(value))}`) } : {}),
-    ...(monster.skill ? { skills: Object.entries(monster.skill).map(([key, value]) => `${titleCaseSkill(key)} ${stripInlineTags(String(value))}`) } : {}),
+    ...(monster.skill ? { skills: mapMonsterSkills(monster.skill) } : {}),
     ...(monster.vulnerable ? { damageVulnerabilities: flattenDamageList(monster.vulnerable, 'vulnerable') } : {}),
     ...(monster.resist ? { damageResistances: flattenDamageList(monster.resist, 'resist') } : {}),
     ...(monster.immune ? { damageImmunities: flattenDamageList(monster.immune, 'immune') } : {}),

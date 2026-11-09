@@ -10,6 +10,7 @@ import type { ContentBucketKey } from '@/lib/canonicalContent';
 import { defaultLanguageOptions, getRulesEdition } from '@/lib/builderRules';
 import { sanitizeImportedText } from '@/lib/importedText';
 import { fallbackTraits } from '@/lib/speciesReprints';
+import { getCanonicalSpeciesKey, normalizeContentKey, resolveSpeciesById } from '@/lib/speciesLookup';
 
 const getStoreBucket = <K extends ContentBucketKey>(bucket: K): ImportedContentBucket[K] => {
   const { importedPacks, homebrewLibrary } = useContentStore.getState();
@@ -97,14 +98,14 @@ const memoizeRuntimeResolver = <T>(key: string, resolve: (id: string) => T | und
   return resolved.get(id);
 };
 
-const normalizeIdentifier = (value: string) => value.toLowerCase().replaceAll(/[^a-z0-9]+/g, ' ').trim();
+const normalizeIdentifier = normalizeContentKey;
 const classIdPrefixPattern = /^(basic rules|player s handbook|phb)\s+(2014|2024)\s+/;
 const getCanonicalClassKey = (value: string) => normalizeIdentifier(value).replace(classIdPrefixPattern, '');
 const getClassKeyFromClass = (cls: Class) => getCanonicalClassKey(cls.name || cls.id);
 const getClassKeyFromSubclass = (subclass: Subclass) => getCanonicalClassKey(subclass.classId ?? '');
 const getCanonicalSubclassKey = (subclass: Subclass) => `${getClassKeyFromSubclass(subclass)}::${normalizeIdentifier(subclass.name)}`;
 const getCanonicalBackgroundKey = (background: Background) => normalizeIdentifier(background.name || background.id);
-const getCanonicalSpeciesKey = (species: Species) => normalizeIdentifier(species.name || species.id);
+
 const getCanonicalEquipmentKey = (equipment: Equipment) => normalizeIdentifier(equipment.name || equipment.id);
 const isPlaceholderText = (value?: string) => !value || /from the basic rules|available in the source data/i.test(value);
 const choosePreferredText = (primary?: string, fallback?: string) => {
@@ -1459,7 +1460,10 @@ export const getRuntimeLanguageNames = memoizeRuntime('languages:names', () => {
   return [...namesByKey.values()].sort((left, right) => left.localeCompare(right));
 });
 
-export const getRuntimeSpeciesById = memoizeRuntimeIndex('species:index', getRuntimeSpecies);
+export const getRuntimeSpeciesById = memoizeRuntimeResolver(
+  'species:resolved',
+  (id) => resolveSpeciesById(getRuntimeSpecies(), id)
+);
 
 export const getRuntimeSpeciesVariant = (speciesId: string, variantId: string) => {
   return getRuntimeSpeciesById(speciesId)?.variants?.find((variant) => variant.id === variantId);

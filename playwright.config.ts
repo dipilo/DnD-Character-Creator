@@ -14,6 +14,9 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? 'github' : [['list']],
+  // The app loads its content library as a lazy chunk, and several workers share one preview
+  // server; 5s was enough alone and not under load. A real failure still fails, only later.
+  expect: { timeout: 10_000 },
   use: {
     baseURL: 'http://127.0.0.1:4173',
     trace: 'retain-on-failure',

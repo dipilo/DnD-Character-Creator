@@ -6,6 +6,7 @@ import {
   deriveCharacterHitPoints,
   extractSelectedProficiencies,
   normalizeCharacterClassIds,
+  normalizeCharacterSpeciesId,
   normalizeClassKeyedSelections,
   resolveAbilityScoreEntryState,
   resolveBackgroundGrantedFeat,
@@ -113,6 +114,8 @@ function buildEditorState(character: Character): BuilderState {
   const background = character.backgroundId ? dndContent().getRuntimeBackgroundById(character.backgroundId) : undefined;
   // A character saved against an older printing otherwise behaves as though classless.
   const classes = normalizeCharacterClassIds(character.classes, dndContent().getRuntimeClassById);
+  // The same repair for the species: a pack retiring an id leaves the picker showing nothing chosen.
+  const speciesId = normalizeCharacterSpeciesId(character.speciesId, dndContent().getRuntimeSpeciesById);
   const resolvedClasses = resolveCharacterClasses({
     classes,
     getClassById: dndContent().getRuntimeClassById,
@@ -126,6 +129,7 @@ function buildEditorState(character: Character): BuilderState {
     character: {
       ...character,
       classes,
+      speciesId: speciesId ?? character.speciesId,
       multiclassSkillSelections: normalizeClassKeyedSelections(character.multiclassSkillSelections, dndContent().getRuntimeClassById),
       // The sheet stores merged proficiencies; the builder needs the player's own picks.
       proficiencies: extractSelectedProficiencies({
