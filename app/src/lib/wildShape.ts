@@ -1,6 +1,7 @@
 // What Wild Shape allows and what it replaces, read from the feature's own text. Nothing here
 // names a beast, a level or a challenge rating: the Beast Shapes table the books print is the
 // source, and a printing that states no table grants no forms rather than a guessed set.
+import { getRulesEdition, type RulesEdition } from '@/lib/builderRules';
 import type { DerivedAttack } from '@/lib/sheetMath';
 import type { AbilityScores, Character, Feature, Monster, WildShapeState } from '@/types/dnd';
 
@@ -34,6 +35,17 @@ export function parseChallengeRating(value: string | number | undefined): number
 
   const plain = Number.parseFloat(text);
   return Number.isFinite(plain) ? plain : undefined;
+}
+
+/**
+ * A rating is printed as a fraction wherever it is below 1. The 2014 pack stores "0.5" and the
+ * 2024 pack "1/2" for the same beast, and the books print only the fraction.
+ */
+export function formatChallengeRating(value: string | number | undefined): string {
+  const rating = parseChallengeRating(value);
+  if (rating === undefined) return '—';
+  if (rating > 0 && rating < 1) return `1/${Math.round(1 / rating)}`;
+  return String(rating);
 }
 
 /** "2nd" and "2" are the same row; both printings use one of the two. */
@@ -126,6 +138,11 @@ const TYPE_BEAST = /\bbeast\b/i;
 export function isEligibleForm(monster: Monster, limits: WildShapeLimits): boolean {
   if (!TYPE_BEAST.test(monster.type)) return false;
 
+  // A summon's or companion's template states no hit points and no rating because the feature that
+  // calls it sizes both ("Beast of the Land", "Bestial Spirit", "Giant Insect"). It is not a beast
+  // anyone can turn into.
+  if (monster.hp.average <= 0) return false;
+
   const rating = parseChallengeRating(monster.challengeRating);
   if (rating === undefined || rating > limits.maxChallengeRating) return false;
   if (!limits.flySpeed && SPEED_FLY.test(monster.speed)) return false;
@@ -134,13 +151,40 @@ export function isEligibleForm(monster: Monster, limits: WildShapeLimits): boole
   return true;
 }
 
+/** "Sea Horse" and "Seahorse" are one beast, so the key keeps only the letters and digits. */
+const formNameKey = (monster: Monster) => monster.name.toLowerCase().replaceAll(/[^a-z0-9]/g, '');
+
+/**
+ * Both printings stat the same 70-odd animals, so the library holds a Wolf twice with different
+ * ids and the picker listed every one of them twice. One row per animal, taking the printing the
+ * character plays wherever that book has it.
+ */
+function collapsePrintings(forms: readonly Monster[], edition: RulesEdition | undefined): Monster[] {
+  const best = new Map<string, Monster>();
+  for (const form of forms) {
+    const key = formNameKey(form);
+    const current = best.get(key);
+    if (!current) {
+      best.set(key, form);
+      continue;
+    }
+
+    if (edition && getRulesEdition(form.sourceId, form.source) === edition
+      && getRulesEdition(current.sourceId, current.source) !== edition) {
+      best.set(key, form);
+    }
+  }
+
+  return [...best.values()];
+}
+
 /** Every form the limits allow, in the order a picker should list them. */
 export function eligibleForms(
   monsters: readonly Monster[],
-  limits: WildShapeLimits
+  limits: WildShapeLimits,
+  edition?: RulesEdition
 ): Monster[] {
-  return monsters
-    .filter((monster) => isEligibleForm(monster, limits))
+  return collapsePrintings(monsters.filter((monster) => isEligibleForm(monster, limits)), edition)
     .sort((left, right) => {
       const byRating = (parseChallengeRating(left.challengeRating) ?? 0)
         - (parseChallengeRating(right.challengeRating) ?? 0);
@@ -318,6 +362,8 @@ export interface ResolvedWildShape {
   classLevel: number;
   limits: WildShapeLimits;
   rules: WildShapeRules;
+  /** The printing this character plays, so the picker lists one row per animal. */
+  edition?: RulesEdition;
   /** Every form this character knows that the table still allows. */
   known: Monster[];
   /** The form being worn, if any. */
@@ -329,6 +375,8 @@ export interface WildShapeInput {
   /** Each class with the level held in it, so a clause counts the right one. */
   classFeatures: ReadonlyArray<{ features: readonly Feature[]; level: number }>;
   monsters: readonly Monster[];
+  /** The printing the character plays, resolved by the caller from its first class. */
+  edition?: RulesEdition;
 }
 
 /**
@@ -336,7 +384,7 @@ export interface WildShapeInput {
  * Beast Shapes table *and* saying it assumes a form, so a homebrew class writing the same two
  * things gets the same screen and nothing in the app names the Druid.
  */
-export function resolveWildShape({ character, classFeatures, monsters }: WildShapeInput): ResolvedWildShape | undefined {
+export function resolveWildShape({ character, classFeatures, monsters, edition }: WildShapeInput): ResolvedWildShape | undefined {
   for (const { features, level } of classFeatures) {
     for (const feature of features) {
       if (feature.level > level) continue;
@@ -351,6 +399,7 @@ export function resolveWildShape({ character, classFeatures, monsters }: WildSha
         classLevel: level,
         limits,
         rules,
+        edition,
         known: knownForms(character.wildShape, limits, monsters),
         form: activeForm(character.wildShape, monsters)
       };

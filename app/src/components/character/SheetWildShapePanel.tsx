@@ -11,6 +11,7 @@ import { abilityModifier } from '@/lib/sheetMath';
 import {
   assumeFormPatch,
   eligibleForms,
+  formatChallengeRating,
   formWalkingSpeed,
   revertFormPatch,
   setKnownFormsPatch,
@@ -30,17 +31,15 @@ interface SheetWildShapePanelProps {
 
 /** "Max CR 1/4 · 4 forms known · no flying" — the row the table states, not a sentence we wrote. */
 function describeLimits(shift: ResolvedWildShape): string {
-  const rating = shift.limits.maxChallengeRating;
-  const printed = rating < 1 ? `1/${Math.round(1 / rating)}` : String(rating);
   return [
-    `Max CR ${printed}`,
+    `Max CR ${formatChallengeRating(shift.limits.maxChallengeRating)}`,
     shift.limits.knownForms === undefined ? undefined : `${shift.limits.knownForms} forms known`,
     shift.limits.flySpeed ? undefined : 'no flying speed',
     shift.limits.swimSpeed ? undefined : 'no swimming speed'
   ].filter(Boolean).join(' · ');
 }
 
-const challengeLabel = (form: Monster) => `CR ${form.challengeRating}`;
+const challengeLabel = (form: Monster) => `CR ${formatChallengeRating(form.challengeRating)}`;
 
 export function SheetWildShapePanel({ character, shift, monsters, resource, onChange }: Readonly<SheetWildShapePanelProps>) {
   // Assuming a form *is* using the feature, so Transform spends the use rather than leaving the
@@ -62,7 +61,7 @@ export function SheetWildShapePanel({ character, shift, monsters, resource, onCh
 
   const available = useMemo<CatalogPickerItem[]>(() => {
     const held = new Set(shift.known.map((form) => form.id));
-    return eligibleForms(monsters, shift.limits)
+    return eligibleForms(monsters, shift.limits, shift.edition)
       .filter((form) => !held.has(form.id))
       .map((form) => ({
         id: form.id,
@@ -70,7 +69,7 @@ export function SheetWildShapePanel({ character, shift, monsters, resource, onCh
         detail: `${challengeLabel(form)} · AC ${form.ac} · ${form.hp.average} HP · ${form.speed}`,
         keywords: `${form.type} ${form.size}`
       }));
-  }, [monsters, shift.known, shift.limits]);
+  }, [monsters, shift.edition, shift.known, shift.limits]);
 
   const addForm = (id: string) => {
     if (!onChange) return;

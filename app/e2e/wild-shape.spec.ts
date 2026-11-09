@@ -58,7 +58,9 @@ test('learning a form then transforming swaps AC, speed and the attack rows', as
   await page.getByPlaceholder('Search…').fill('Wolf');
   await page.getByRole('button', { name: /^Wolf/ }).first().click();
 
-  await expect(page.getByText('Wolf')).toBeVisible();
+  // Exact: the picker's own rows are still in the DOM while the dialog animates out, and
+  // "Giant Wolf Spider" is one of them.
+  await expect(page.getByText('Wolf', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Transform' }).first().click();
 
   // The badge beside the name is how the rail's numbers announce whose they are.
@@ -74,6 +76,22 @@ test('learning a form then transforming swaps AC, speed and the attack rows', as
   await page.getByRole('button', { name: 'Revert' }).click();
   await expect(page.getByText('In Wolf form')).toHaveCount(0);
   await expect(page.getByText('2 of 3 uses left')).toBeVisible();
+});
+
+test('the form list holds one row per animal, rated as a fraction, with no summon templates', async ({ page }) => {
+  await page.goto('/character/druid-2024');
+  await page.getByRole('button', { name: 'Learn a form' }).click();
+
+  // Both printings stat the Ape; the picker listed one per book until the printings were collapsed.
+  await page.getByPlaceholder('Search…').fill('Ape');
+  await expect(page.getByRole('button', { name: /^Ape/ })).toHaveCount(1);
+  // "0.5" is what the 2014 pack stores; the books print only the fraction.
+  await expect(page.getByRole('button', { name: /^Ape/ })).toContainText('CR 1/2');
+  await expect(page.getByText('CR 0.5')).toHaveCount(0);
+
+  // A summon's template states 0 HP because the feature calling it sizes the block.
+  await page.getByPlaceholder('Search…').fill('Beast of the');
+  await expect(page.getByRole('button', { name: /^Beast of the/ })).toHaveCount(0);
 });
 
 test('a character with no shape-shifting feature gets no panel', async ({ page }) => {

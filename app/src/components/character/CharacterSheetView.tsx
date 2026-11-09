@@ -296,9 +296,10 @@ export function CharacterSheetView({
     () => resolveWildShape({
       character,
       classFeatures: resolvedClasses.map(({ cls, entry }) => ({ features: cls.features, level: entry.level })),
-      monsters
+      monsters,
+      edition: preferredEdition
     }),
-    [character, monsters, resolvedClasses]
+    [character, monsters, preferredEdition, resolvedClasses]
   );
   const form = shift?.form;
 
